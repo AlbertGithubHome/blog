@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C/C++,智能指针,shared_ptr," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言这个指针近乎完美，原来出现在boost库中，C++11时引入了标准库，解决了auto_ptr对内部对象独占的机制，转而采用引用计数的方式，每增加一次赋值，则引用计数加1，每析构一个智能指针对象，则引用计数减1，当引用计数为1时销毁智能指针对象的同时，也析构内部对象。这种采用引用计数方式避免了对象所有权转移，所以作为函数返回值，函数参数，容器的元素都不会有问题，但是因为引用计数的加入，相应的会带">
+<meta name="keywords" content="C&#x2F;C++,智能指针,shared_ptr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shared_ptr浅析">
+<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2018&#x2F;08&#x2F;15&#x2F;shared-ptr%E6%B5%85%E6%9E%90&#x2F;index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言这个指针近乎完美，原来出现在boost库中，C++11时引入了标准库，解决了auto_ptr对内部对象独占的机制，转而采用引用计数的方式，每增加一次赋值，则引用计数加1，每析构一个智能指针对象，则引用计数减1，当引用计数为1时销毁智能指针对象的同时，也析构内部对象。这种采用引用计数方式避免了对象所有权转移，所以作为函数返回值，函数参数，容器的元素都不会有问题，但是因为引用计数的加入，相应的会带">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-16T16:58:44.218Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2018/08/15/shared-ptr浅析/"/>
+
+
+
+
+
+  <title>shared_ptr浅析 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/08/15/shared-ptr%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">shared_ptr浅析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T19:36:35+08:00">
+                2018-08-15
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-11-17T00:58:44+08:00">
+                2019-11-17
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2018/08/15/shared-ptr%E6%B5%85%E6%9E%90/" class="leancloud_visitors" data-flag-title="shared_ptr浅析">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个指针近乎完美，原来出现在boost库中，C++11时引入了标准库，解决了<code>auto_ptr</code>对内部对象独占的机制，转而采用引用计数的方式，每增加一次赋值，则引用计数加1，每析构一个智能指针对象，则引用计数减1，当引用计数为1时销毁智能指针对象的同时，也析构内部对象。这种采用引用计数方式避免了对象所有权转移，所以作为函数返回值，函数参数，容器的元素都不会有问题，但是因为引用计数的加入，相应的会带来对引用计数维护的开销。</p>
+<a id="more"></a>
+
+<p>与<code>auto_ptr</code>一样，<code>shared_ptr</code>本身也是一个模板类，那么一般情况下直接用它来定义一个智能指针的对象，例如<code>std::shared_ptr&lt;Test&gt; pa(new Test);</code>需要注意的是<code>pa</code>虽然叫智能指针，但是它是一个对象，在它的内部保存着一个原始的对象的指针。查看<code>shared_ptr</code>的代码时发现，它主要有<code>get</code>、<code>swap</code>、<code>reset</code>、<code>unique</code>、<code>use_count</code>、<code>operator bool</code>、<code>operator*</code>、<code>operator-&gt;</code>、<code>operator=</code>几个函数，与<code>auto_ptr</code>相比少了<code>release</code>函数，但是多了<code>swap</code>、<code>unique</code>、<code>use_count</code>、<code>operator bool</code>四个函数,下面通过一些例子来了解一下<code>shared_ptr</code>的具体用法。</p>
+<h1 id="使用环境"><a href="#使用环境" class="headerlink" title="使用环境"></a>使用环境</h1><ol>
+<li>VS2015 + Windows7（应该是C++11标准）</li>
+<li>头文件<code>#include &lt;memory&gt;</code></li>
+<li>命名空间<code>using namespace std;</code></li>
+</ol>
+<h1 id="测试过程"><a href="#测试过程" class="headerlink" title="测试过程"></a>测试过程</h1><p>首先我们先编写一些测试类，用来测试智能指针各个函数的作用，以及可能出现的问题，测试类的代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Example(<span class="keyword">int</span> param = <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        number = param;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Example: "</span> &lt;&lt; number &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Example() &#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"~Example: "</span> &lt;&lt; number &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test_print</span><span class="params">()</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"in test print: number = "</span> &lt;&lt; number &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_number</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123; number = num; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span>  <span class="title">get_number</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> number; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> number;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>测试函数<code>get reset operator* operator-&gt;</code><br>这几个函数与<code>auto_ptr</code>智能指针的用法一样，可以参考<a href="https://albertgithubhome.github.io/blog/2018/08/08/auto-ptr%E6%B5%85%E6%9E%90/">auto_ptr用法</a>，<code>get</code>函数可以获得智能指针包装的原始指针，可以用来判断被包装对象的有效性，也可以用来访问被包装对象，<code>operator*</code>可以直接对智能指针包装的原始指针解引用，获得被包装的对象，<code>operator-&gt;</code>用来取得原始对象的指针，引用成员时与<code>get</code>函数作用相同，<code>reset</code>函数用于重新设置内部对象，若参数为空，则表示取消对内部对象的引用，此时若引用计数大于1则进行减1操作，否则直接析构内部对象。需要注意的是普通的对象指针是无法隐式转换成<code>shared_ptr</code>的，需要利用构造函数实现，示例代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//error C2440: “初始化”: 无法从“Example *”转换为“std::shared_ptr&lt;Example&gt;”</span></span><br><span class="line">    <span class="comment">//shared_ptr&lt;Example&gt; ptr1 = new Example(1);</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr1(<span class="keyword">new</span> Example(<span class="number">1</span>));   <span class="comment">// Example: 1（输出内容）</span></span><br><span class="line">    <span class="keyword">if</span> (ptr1.<span class="built_in">get</span>())                             <span class="comment">// 调用函数get，获取原始指针，判断有效性</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr1 is valid"</span> &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// 原始指针有效</span></span><br><span class="line">    &#125;</span><br><span class="line">    ptr1-&gt;test_print();         <span class="comment">// in test print: number = 1（输出内容），调用operator-&gt;</span></span><br><span class="line"></span><br><span class="line">    ptr1.reset();               <span class="comment">// ~Example: 1（输出内容）,调用函数reset，设置为空，释放原内部对象</span></span><br><span class="line"></span><br><span class="line">    ptr1.reset(<span class="keyword">new</span> Example(<span class="number">2</span>)); <span class="comment">// Example: 2（输出内容）,重新申请对象并设置</span></span><br><span class="line"></span><br><span class="line">    (*ptr1).test_print();       <span class="comment">// in test print: number = 1（输出内容），调用operator*</span></span><br><span class="line">&#125;                               <span class="comment">// ~Example: 1（输出内容）,出定义域，释放内部对象</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试函数<code>operator bool</code>用法<br><code>operator bool</code>函数其实就是用来判断内部对象是否有效的，若内部对象不为空则返回true，否则返回false，大概的实现就是<code>return this-&gt;get() != nullptr;</code>，测试代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr2(<span class="keyword">new</span> Example(<span class="number">2</span>));   <span class="comment">// Example: 2（输出内容）</span></span><br><span class="line">    <span class="keyword">if</span> (ptr2)                                   <span class="comment">// 调用operator bool</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr2 is valid"</span> &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// ptr2 is valid（输出内容），说明ptr2是有效的</span></span><br><span class="line"></span><br><span class="line">    ptr2.reset();                               <span class="comment">// ~Example: 2（输出内容），设置内部对象为空</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ptr2)                                   <span class="comment">// 调用operator bool</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr2 is valid"</span> &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// 没有输出，说明ptr2已经无效</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试函数<code>swap</code>用法<br>从这个名字就可以看出，这个函数用于交换，那么是用来交换什么的呢？实际上是用来交换内部对象的，看下面的例子一试便知，代码运行过后，通过打印可以发现智能指针对象ptr3和ptr4的内部对象进行了交换：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr3(<span class="keyword">new</span> Example(<span class="number">3</span>));   <span class="comment">// Example: 3（输出内容）</span></span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr4(<span class="keyword">new</span> Example(<span class="number">4</span>));   <span class="comment">// Example: 4（输出内容）</span></span><br><span class="line">    ptr3-&gt;test_print();             <span class="comment">// in test print: number = 3（输出内容）</span></span><br><span class="line">    ptr4-&gt;test_print();             <span class="comment">// in test print: number = 4（输出内容）</span></span><br><span class="line"></span><br><span class="line">    ptr3.swap(ptr4);                <span class="comment">// 调用函数swap</span></span><br><span class="line"></span><br><span class="line">    ptr3-&gt;test_print();             <span class="comment">// in test print: number = 4（输出内容）</span></span><br><span class="line">    ptr4-&gt;test_print();             <span class="comment">// in test print: number = 3（输出内容）</span></span><br><span class="line">&#125;                                   <span class="comment">// ~Example: 3（输出内容）,出定义域，释放内部对象</span></span><br><span class="line">                                    <span class="comment">// ~Example: 4（输出内容）,出定义域，释放内部对象</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试函数<code>unique use_count operator=</code>用法<br>为什么把这几个函数放到一起来说，因为他们是息息相关的，首先函数<code>operator=</code>是用来处理赋值操作的，而赋值操作就会影响引用计数的变化，也就是赋值操作后，<code>use_count</code>函数查询到的引用计数会发生变化，而当<code>use_count</code>返回引用计数是1时，用来表明是否独自引用内部对象的函数<code>unique</code>也会返回true，换句话说<code>unique</code>函数的实现基本就是<code>return this-&gt;use_count() == 1</code>，测试代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr4(<span class="keyword">new</span> Example(<span class="number">4</span>));   <span class="comment">// Example: 4（输出内容）</span></span><br><span class="line">    <span class="keyword">if</span> (ptr4.unique())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 is unique"</span> &lt;&lt; <span class="built_in">endl</span>;       <span class="comment">// ptr4 is unique（输出内容）</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 use count : "</span> &lt;&lt; ptr4.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr4 use count : 1（输出内容）</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr5 = ptr4;</span><br><span class="line">    <span class="keyword">if</span> (ptr4)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 is valid"</span> &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr4 is valid(输出内容）说明赋值之后两个智能指针对象都有效</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ptr5)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr5 is valid"</span> &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr5 is valid(输出内容）说明赋值之后两个智能指针对象都有效</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ptr4.unique())</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 is unique"</span> &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// 没有输出，说明ptr4不是唯一管理内部对象的智能指针了</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 use count : "</span> &lt;&lt; ptr4.use_count() &lt;&lt; <span class="built_in">endl</span>;    <span class="comment">// ptr4 use count : 2（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr5 use count : "</span> &lt;&lt; ptr5.use_count() &lt;&lt; <span class="built_in">endl</span>;    <span class="comment">// ptr4 use count : 2（输出内容）</span></span><br><span class="line">&#125;                                                 <span class="comment">// ~Example: 4（输出内容）,出定义域，释放内部对象</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试用同一个对象指针生成两个<code>shared_ptr</code>对象<br>与<code>auto_ptr</code>一样，我测试的结果是崩溃，官方标准网站上说是结果未定义，基本上就是说不靠谱，别这样干，仔细想想也能理解，虽说<code>shared_ptr</code>是通过引用计数方式实现，但也不是无所不能，比如这种情况，两个对象都是通过构造生成的，对内部对象的指针<code>p</code>都是“唯一”引用的，也就是两个对象的内部引用计数都是1，当第一个智能指针对象销毁时，会析构内部对象，当第二个智能指针对象销毁时，同样会析构内部对象，这样就造成了崩溃，测试如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Example *p = <span class="keyword">new</span> Example(<span class="number">5</span>);    <span class="comment">// Example: 5（输出内容）</span></span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr5(p);</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr6(p);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr4 use count : "</span> &lt;&lt; ptr5.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr4 use count : 1（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr5 use count : "</span> &lt;&lt; ptr6.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr5 use count : 1（输出内容）</span></span><br><span class="line">&#125;           <span class="comment">// ~Example: 3（输出内容）,出定义域，ptr5释放内部对象</span></span><br><span class="line">            <span class="comment">// ~Example : -572662307（输出内容）,出定义域，ptr6释放内部对象，程序崩溃</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试<code>shared_ptr</code>作为函数参数和返回值<br>因为<code>shared_ptr</code>内部是引用计数，而不是独占所有权，所以在赋值的时候只改变引用计数，不会发生所有权转移，所以这两种用法基本没有问题，发生在<code>auto_ptr</code>上的崩溃惨剧也不会在这里上演，测试代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test6_inner1</span><span class="params">(<span class="built_in">shared_ptr</span>&lt;Example&gt; ptr6_1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ptr6_1-&gt;test_print();       <span class="comment">// in test print: number = 6（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr6_1 use count : "</span> &lt;&lt; ptr6_1.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr6 use count : 2（输出内容）</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Example&gt; test6_inner2()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr6_2(<span class="keyword">new</span> Example(<span class="number">62</span>));    <span class="comment">// Example:62（输出内容）</span></span><br><span class="line">    ptr6_2-&gt;test_print();           <span class="comment">// in test print: number = 62（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr6_2 use count : "</span> &lt;&lt; ptr6_2.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr6_2 use count : 1（输出内容）</span></span><br><span class="line">    <span class="keyword">return</span> ptr6_2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test6</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr6(<span class="keyword">new</span> Example(<span class="number">6</span>));   <span class="comment">// Example:6（输出内容）</span></span><br><span class="line">    ptr6-&gt;test_print();         <span class="comment">// in test print: number = 6（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr6 use count : "</span> &lt;&lt; ptr6.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr6 use count : 1（输出内容）</span></span><br><span class="line">    test6_inner1(ptr6);</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr6 use count : "</span> &lt;&lt; ptr6.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr6 use count : 1（输出内容）</span></span><br><span class="line"></span><br><span class="line">    ptr6 = test6_inner2();      <span class="comment">// ~Example: 6（输出内容）,ptr6接管新的对象，原来对象被析构</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr6 use count : "</span> &lt;&lt; ptr6.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr6 use count : 1（输出内容）</span></span><br><span class="line">&#125;                               <span class="comment">// ~Example: 62（输出内容）,出定义域，ptr6释放内部对象</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试<code>shared_ptr</code>作为容器元素<br>在这里也不存在<code>auto_ptr</code>作为容器元素时的争议，同样是引用计数的机制发挥了作用，使得他满足的容器的要求——其元素对象的拷贝与原对象相同或者等价，所以这里也不会出现问题，同时那些针对于容器的算法在<code>shared_ptr</code>上也可以大显身手，比如下面这个排序的例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一般会写成只读引用类型，这里为了说明问题才这样定义</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">comp</span><span class="params">(<span class="built_in">shared_ptr</span>&lt;Example&gt; a, <span class="built_in">shared_ptr</span>&lt;Example&gt; b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a-&gt;get_number() &gt; b-&gt;get_number();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test7</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="built_in">shared_ptr</span>&lt;Example&gt;&gt; v(<span class="number">10</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        v[i] = <span class="built_in">shared_ptr</span>&lt;Example&gt;(<span class="keyword">new</span> Example(<span class="number">70</span>+i));</span><br><span class="line">    &#125;<span class="comment">// 依次输出Example:70,Example:71,Example:72...Example:79</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环调用</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        v[i]-&gt;test_print();</span><br><span class="line">    &#125;<span class="comment">// 依次输出in test print: number = 70....in test print: number = 79</span></span><br><span class="line"></span><br><span class="line">    sort(v.<span class="built_in">begin</span>(), v.<span class="built_in">end</span>(), comp); <span class="comment">// 这可以正常运行，但是使用auto_ptr会死的很难看</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环调用</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        v[i]-&gt;test_print();</span><br><span class="line">    &#125;<span class="comment">// 依次输出in test print: number = 79....in test print: number = 70</span></span><br><span class="line">&#125;<span class="comment">// 依次输出~Example: 79,~Example: 78...~Example: 70</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试使用指针或者引用作为参数<br>虽然<code>shared_ptr</code>作为参数、返回值、容器元素貌似没有丝毫问题了，但是有时还是使用<code>shared_ptr</code>对象的指针或者引用比较好，因为这样可以减少对对象的拷贝，毕竟对象的拷贝是需要消耗时间的，用更好的方式为什么不用呢，参考下面的用法，没有任何问题：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test8_inner1</span><span class="params">(<span class="built_in">shared_ptr</span>&lt;Example&gt;* ptr8_1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    (*ptr8_1)-&gt;test_print();    <span class="comment">// in test print: number = 8（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr8_1 use count : "</span> &lt;&lt; (*ptr8_1).use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr8_1 use count : 1（输出内容）</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test8_inner2</span><span class="params">(<span class="built_in">shared_ptr</span>&lt;Example&gt;&amp; ptr8_2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ptr8_2-&gt;test_print();   <span class="comment">// in test print: number = 8（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr8_2 use count : "</span> &lt;&lt; ptr8_2.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr8_2 use count : 1（输出内容）</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span>  <span class="title">test8</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;Example&gt; ptr8(<span class="keyword">new</span> Example(<span class="number">8</span>));   <span class="comment">// Example:8（输出内容）</span></span><br><span class="line">    ptr8-&gt;test_print();         <span class="comment">// in test print: number = 8（输出内容）</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr8 use count : "</span> &lt;&lt; ptr8.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr8 use count : 1（输出内容)</span></span><br><span class="line">    test8_inner1(&amp;ptr8);</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr8 use count : "</span> &lt;&lt; ptr8.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr8 use count : 1（输出内容)</span></span><br><span class="line">    test8_inner2(ptr8);</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"ptr8 use count : "</span> &lt;&lt; ptr8.use_count() &lt;&lt; <span class="built_in">endl</span>;<span class="comment">// ptr8 use count : 1（输出内容)</span></span><br><span class="line">&#125;                                           <span class="comment">// ~Example: 8（输出内容）,出定义域，ptr8释放内部对像</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="现象分析"><a href="#现象分析" class="headerlink" title="现象分析"></a>现象分析</h1><p><code>shared_ptr</code>与<code>auto_ptr</code>相比要优秀的多，这得益于其内部引用计数的实现，正是这种非独占所有权的方式，使其摆脱了<code>auto_ptr</code>的种种限制，并将其踢出了C++标准（<code>auto_ptr</code>在C++17中被移除），但是<code>shared_ptr</code>也不是完美无缺的，引用计数不能解决所的问题，并且可能会带来一些问题，比如“循环引用问题”，这个得靠后面我们即将说到的<code>weak_ptr</code>来解决，所以说没有什么结构是完美的，选择合适的就是最好的，综合前面多个测试的例子，可以得到一些经验。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li><code>shared_ptr</code>作为目前最优秀的指针，取代<code>auto_ptr</code>是必然的，所以能使用<code>shared_ptr</code>的地方还是尽量使用<code>shared_ptr</code>。</li>
+<li>不要使用同一个原始对象的指针生成多个<code>shared_ptr</code>对象，这样使用会导致未定义的行为，比如<code>test5</code>这个函数就导致了崩溃和错误的输出。</li>
+<li><code>shared_ptr</code>不是万能的，如果不加思考的把原始指针都替换成<code>shared_ptr</code>，虽然大部分能防止内存泄露，但是还会造成其他的问题，比如循环引用，这种情况需要使用<code>weak_ptr</code>来解决问题，如果不解决就会造成另一种形式的内存泄漏。</li>
+<li>不要使用<code>get</code>返回的指针来初始化一个<code>shared_ptr</code>对象，这种的做法的本质与第2点一样，会造成未定义的行为。</li>
+<li>尽量不要保存<code>get</code>函数返回的指针，因为你不知道什么时候这个指针对应的对象就被析构掉了，所以请“随用随取”。</li>
+</ol>
+<h1 id="测试源码"><a href="#测试源码" class="headerlink" title="测试源码"></a>测试源码</h1><p><a href="https://github.com/AlbertGithubHome/Bella/blob/master/c%2B%2B/smartptr/shared_ptr.cpp" target="_blank" rel="noopener">示例传送门：shared_ptr用法</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://albertgithubhome.github.io/blog/2018/08/15/shared-ptr%E6%B5%85%E6%9E%90/" title="shared_ptr浅析">http://albertgithubhome.github.io/blog/2018/08/15/shared-ptr%E6%B5%85%E6%9E%90/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
+          
+            <a href="/blog/tags/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" rel="tag"><i class="fa fa-tag"></i> 智能指针</a>
+          
+            <a href="/blog/tags/shared-ptr/" rel="tag"><i class="fa fa-tag"></i> shared_ptr</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/08/08/auto-ptr%E6%B5%85%E6%9E%90/" rel="next" title="auto_ptr浅析">
+                <i class="fa fa-chevron-left"></i> auto_ptr浅析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/09/01/weak-ptr%E6%B5%85%E6%9E%90/" rel="prev" title="weak_ptr浅析">
+                weak_ptr浅析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      微博
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用环境"><span class="nav-number">2.</span> <span class="nav-text">使用环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试过程"><span class="nav-number">3.</span> <span class="nav-text">测试过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#现象分析"><span class="nav-number">4.</span> <span class="nav-text">现象分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试源码"><span class="nav-number">6.</span> <span class="nav-text">测试源码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Mysql,查询,EXPLAIN,Extra," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言之前总结了Mysql慢查询日志的开启与配置方法，通过分析慢查询日志可以锁定执行效率差的SQL，但是这仅仅是发现了需要优化的部分，还要分析执行缓慢的原因，这时候就可以使用EXPLAIN命令去分析，所执行的操作究竟慢在哪里，是不是可以通过加索引或者改变查询方法来解决。">
+<meta name="keywords" content="Mysql,查询,EXPLAIN,Extra">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql中explain命令简析">
+<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;04&#x2F;27&#x2F;Mysql%E4%B8%ADexplain%E5%91%BD%E4%BB%A4%E7%AE%80%E6%9E%90&#x2F;index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言之前总结了Mysql慢查询日志的开启与配置方法，通过分析慢查询日志可以锁定执行效率差的SQL，但是这仅仅是发现了需要优化的部分，还要分析执行缓慢的原因，这时候就可以使用EXPLAIN命令去分析，所执行的操作究竟慢在哪里，是不是可以通过加索引或者改变查询方法来解决。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-16T16:58:44.199Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2019/04/27/Mysql中explain命令简析/"/>
+
+
+
+
+
+  <title>Mysql中explain命令简析 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/04/27/Mysql%E4%B8%ADexplain%E5%91%BD%E4%BB%A4%E7%AE%80%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mysql中explain命令简析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-27T13:49:50+08:00">
+                2019-04-27
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-11-17T00:58:44+08:00">
+                2019-11-17
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">Mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2019/04/27/Mysql%E4%B8%ADexplain%E5%91%BD%E4%BB%A4%E7%AE%80%E6%9E%90/" class="leancloud_visitors" data-flag-title="Mysql中explain命令简析">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结了<a href="https://blog.csdn.net/shihengzhen101/article/details/88790447" target="_blank" rel="noopener">Mysql慢查询日志的开启与配置方法</a>，通过分析慢查询日志可以锁定执行效率差的SQL，但是这仅仅是发现了需要优化的部分，还要分析执行缓慢的原因，这时候就可以使用<code>EXPLAIN</code>命令去分析，所执行的操作究竟慢在哪里，是不是可以通过加索引或者改变查询方法来解决。</p>
+<a id="more"></a>
+
+<p>通过查询资料发现除了<code>EXPLAIN</code>命令，还有一个<code>DESCRIBE</code>命令，看起来很陌生是不是，但是如果写出简写<code>desc</code>应该很多人的就熟悉了，这不是查询表结构的时候常用的命令吗？实际上以上三个命令在mysql中是等价的，不过在使用时有些习惯性的偏向，通常使用 <code>EXPLAIN</code> 来分析SQL语句的执行缓慢的问题，而使用 <code>DESCRIBE</code> 或者 <code>desc</code> 来查看表的结构，就类似于惯用法，知道就好。</p>
+<h1 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h1><blockquote>
+<p>Windows 10<br>Welcome to the MySQL monitor.  Commands end with ; or \g.<br>Your MySQL connection id is 7<br>Server version: 5.7.21-log MySQL Community Server (GPL)<br>Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.<br>Oracle is a registered trademark of Oracle Corporation and/or its affiliates. Other names may be trademarks of their respective owners.<br>Type ‘help;’ or ‘\h’ for help. Type ‘\c’ to clear the current input statement.</p>
+</blockquote>
+<h1 id="EXPLAIN-的使用"><a href="#EXPLAIN-的使用" class="headerlink" title="EXPLAIN 的使用"></a><code>EXPLAIN</code> 的使用</h1><p>关于 <code>EXPLAIN</code> 使用其实很简单，就是在正常的执行语句之前加一个explain 就可以了，不过这里也存在一个疑问，就是发现很多篇文章，提到下面这种说法：</p>
+<blockquote>
+<p>explain 只能解释select查询，并不会对存储过程、insert、update、delete或其他语句做解释</p>
+</blockquote>
+<p>但是我查阅了官方文档发现，<code>EXPLAIN</code> 后面可以跟 <code>SELECT</code>、 <code>DELETE</code>、 <code>INSERT</code>、 <code>REPLACE</code>、和 <code>UPDATE</code>语句，另外之前使用的 <code>EXPLAIN EXTENDED</code> 选项现在也默认开启，<code>EXTENDED</code> 关键字后续会在 <code>Mysql 8.0</code> 版本删除，应该是版本问题导致了explain语句使用的差异，所以请记住在使用新版本的Mysql时，需要分析语句执行情况的，只需要在语句前面添加一个 <code>explain</code>关键字即可。</p>
+<p>不过在分析 <code>select</code> 语句时，<code>explain</code>命令会给出额外的提示信息，帮助我们优化查询语句，这也是我们需要学习的重点，先来简单看一下使用方法：</p>
+<ol>
+<li><p>普通的查询语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from a;</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">| id | num |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">|  1 | 100 |</span><br><span class="line">|  2 | 200 |</span><br><span class="line">|  3 | 300 |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>EXPLAIN</code> 来分析普通的查询语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from a;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">|  1 | SIMPLE      | a     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | NULL  |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>通过上面的例子可以很清楚的知道 <code>EXPLAIN</code> 命令的使用方法，使用了 <code>EXPLAIN</code> 关键之后会生成一个分析结果的表格，该表格有<code>id</code>、<code>select_type</code>、<code>table</code>、<code>partitions</code>、<code>type</code>、<code>possible_keys</code>、<code>key</code>、<code>key_len</code>、<code>ref</code>、<code>rows</code>、<code>filtered</code>、<code>Extra</code>一共12列，而这12列中的内容代表的含义是我们学习的重点，也是我们进行优化的依据，这个结果集可能包含多行，其中每一行都是关于一个表的查询信息，可以针对于具体的表查询优化。</p>
+<p>本来想每种情况后面紧跟一个例子的，但是发现这样会造成重点内容分散，不利于整体把握，所以还是先把各列可能的取值说清楚，然后在文末针对于上文的取值给出例子，如果看描述就能明白就可以省略例子的内容，否则可以对照着例子的写法理解一下, *[eg：<code>&lt;id-1&gt;</code>]*表示参考后面的例子<code>&lt;id-1&gt;</code>，想对照的话搜索即可。</p>
+<h1 id="EXPLAIN-各列的可能取值"><a href="#EXPLAIN-各列的可能取值" class="headerlink" title="EXPLAIN 各列的可能取值"></a><code>EXPLAIN</code> 各列的可能取值</h1><h2 id="id"><a href="#id" class="headerlink" title="id"></a><code>id</code></h2><p><code>id</code> 列的取值通常是一组数字，表示select查询的序号，也有可能是一个<code>NULL</code>：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">id数字相同</td>
+<td align="left">优先级相同，从上往下执行</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center">id数字不同</td>
+<td align="left">数字越大优先级越高，越先执行，比如包含子查询的语句，内部查询优先执行</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center">id值为<code>NULL</code></td>
+<td align="left">通常是使用了<code>union</code>，表示该行是一个结果集，不需要使用它来进行查询</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a><code>select_type</code></h2><p><code>select_type</code> 列表示查询的类型，主要是用于区分普通查询、联合查询、子查询等复杂的情况：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>SIMPLE</code></td>
+<td align="left">简单的查询语句，查询中不包括<code>UNION</code>操作和子查询</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>PRIMARY</code></td>
+<td align="left">在复杂查询中处于最外层的查询</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>UNION</code></td>
+<td align="left">查询语句中处于 <code>UNION</code> 关键字之后的查询</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>DEPENDENT UNION</code></td>
+<td align="left">查询语句中处于 <code>UNION</code> 关键字之后的查询，需要依赖于外部查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>UNION RESULT</code></td>
+<td align="left">表示 <code>UNION</code> 操作之后的结果，本身并不需要参与查询，通常该记录id字段为 <code>NULL</code></td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>SUBQUERY</code></td>
+<td align="left">在子查询中的第一个查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>DEPENDENT SUBQUERY</code></td>
+<td align="left">在子查询中的第一个查询，需要依赖于外部查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>DERIVED</code></td>
+<td align="left">在 <code>FROM</code> 列表中包含的子查询</td>
+<td align="center"><em>[eg：<code>&lt;id-4&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>MATERIALIZED</code></td>
+<td align="left">物化子查询</td>
+<td align="center"><em>[eg：<code>&lt;id-5&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>UNCACHEABLE SUBQUERY</code></td>
+<td align="left">一个结果不能被缓存并且对于外部查询的每一行都需要重新评估自身的子查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>UNCACHEABLE UNION</code></td>
+<td align="left">查询语句中处于 <code>UNION</code> 关键字之后的子查询，并且其结果属于<code>UNCACHEABLE SUBQUERY</code>类型</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+</tbody></table>
+<h2 id="table"><a href="#table" class="headerlink" title="table"></a><code>table</code></h2><p><code>table</code> 列表示查询所引用到的表名，如果查询中使用了别名，那么会显示别名，此外还有一些其他类型的引用：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">表名、别名</td>
+<td align="left">查询时引用了这个表</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>&lt;unionM,N&gt;</code></td>
+<td align="left">查询时引用了由id为M和N的两个查询的结果集构成的临时结果集</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>&lt;derivedN&gt;</code></td>
+<td align="left">查询时引用了id为N的查询形成的结果集</td>
+<td align="center"><em>[eg：<code>&lt;id-4&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>&lt;subqueryN&gt;</code></td>
+<td align="left">查询时引用了id为N的物化子查询形成的结果集</td>
+<td align="center"><em>[eg：<code>&lt;id-5&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="partitions"><a href="#partitions" class="headerlink" title="partitions"></a><code>partitions</code></h2><p><code>partitions</code> 列表示查询结果集所涉及到的分区，值为 <code>NULL</code> 时表示该表并未分区：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">分区名</td>
+<td align="left">查询结果集引用到了这个分区</td>
+<td align="center"><em>[eg：<code>&lt;id-6&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">该表格并未分区，或者结果集中数据不再分区中</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="type"><a href="#type" class="headerlink" title="type"></a><code>type</code></h2><p><code>type</code> 列表示访问类型，也就是找到所需数据所能使用的最好方式，取值类型很多，在下表中从上到下效果越来越差：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">查询经过优化执行时不用访问表数据，可能通过索引就搞定了，或者根本没有数据</td>
+<td align="center"><em>[eg：<code>&lt;id-8&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>system</code></td>
+<td align="left">在<code>MyISAM</code>类型的表中只有一行数据时出现，如果在 <code>Innodb</code> 类型表中只有一行数据通常显示 <code>ALL</code></td>
+<td align="center"><em>[eg：<code>&lt;id-9&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>const</code></td>
+<td align="left">表格使用了唯一索引或者主键，并且将其作为判定相等的筛选条件，得到一条记录</td>
+<td align="center"><em>[eg：<code>&lt;id-10&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>eq_ref</code></td>
+<td align="left">连接查询时，驱动表的每一条记录的条件列，与后面连接表的主键或唯一索引判定相等，后表采用的连接方式</td>
+<td align="center"><em>[eg：<code>&lt;id-11&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>ref</code></td>
+<td align="left">连接查询时，驱动表的每一条记录的条件列，与后面连接表的索引列判定相等，后表采用的连接方式，索引列数据不要求唯一，不连接表时就是查索引列等于一个具体的值</td>
+<td align="center"><em>[eg：<code>&lt;id-7&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>ref_or_null</code></td>
+<td align="left">与 <code>ref</code> 基本一致，另外包含查询索引列为 <code>NULL</code> 的记录</td>
+<td align="center"><em>[eg：<code>&lt;id-12&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>fulltext</code></td>
+<td align="left">包含全文索引的表的查询方式，全文索引的优先级要高于普通索引</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>index_merge</code></td>
+<td align="left">至少用到了两个索引，并且用到了索引合并优化</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>unique_subquery</code></td>
+<td align="left"><code>where</code>条件<code>in</code>形式的子查询子查询返回唯一结果时，等价于将类型为 <code>eq_ref</code> 的查询作为子查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>index_subquery</code></td>
+<td align="left"><code>where</code>条件<code>in</code>形式的子查询引用了非唯一索引，等价于将类型为 <code>ref</code> 的查询作为子查询</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>range</code></td>
+<td align="left">对于表的索引列使用范围判定的查询</td>
+<td align="center"><em>[eg：<code>&lt;id-13&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>index</code></td>
+<td align="left">除了查找索引树之外，与 <code>ALL</code> 选项基本一致，通常由于索引较小查询会快一点</td>
+<td align="center"><em>[eg：<code>&lt;id-14&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>ALL</code></td>
+<td align="left">完整浏览整个表格，查找符合条件的结果，属于最差的访问方式</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="possible-keys"><a href="#possible-keys" class="headerlink" title="possible_keys"></a><code>possible_keys</code></h2><p><code>possible_keys</code> 列表示查询所需数据过程可能用到的索引名，具体是否使用还要依赖于查询过程中表的连接顺序，该值为 <code>NULL</code> 时表示无索引可用，此时需要考虑对表进行优化来改善查询结果情况了。</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">索引名</td>
+<td align="left">查询时可能用到的索引名，是否使用取决于查询连接顺序</td>
+<td align="center"><em>[eg：<code>&lt;id-7&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">该查询没有可用索引，需要考虑优化</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="key"><a href="#key" class="headerlink" title="key"></a><code>key</code></h2><p><code>key</code> 列表示查询所需数据过程确实用到的索引名，该值为 <code>NULL</code> 时表示无索引可用，此时也需要考虑对表进行优化。</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">索引名</td>
+<td align="left">查询时确实用到的索引名</td>
+<td align="center"><em>[eg：<code>&lt;id-7&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">查询时没有可用索引，需考虑优化</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a><code>key_len</code></h2><p><code>key_len</code> 列表示查询所需数据过程用到的索引长度，该值为 <code>NULL</code> 时表示没有使用索引，由于存储格式的不同，对于可以为 <code>NULL</code> 的列储存索引所需空间要比不能为 <code>NULL</code> 列的大一个字节。</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">索引长度</td>
+<td align="left">查询时确实用到的索引长度</td>
+<td align="center"><em>[eg：<code>&lt;id-7&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">没有使用到索引</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a><code>ref</code></h2><p><code>key_len</code> 列表示查询时使用常数或者某一列来和索引列比较，有时会显示 <code>func</code>，表示使用了一些函数的结果与索引比较，值为 <code>NULL</code> 时表示没用到索引比较</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">引用列名</td>
+<td align="left">查询时与索引比较的列名，形式可能为<code>&lt;subquery2&gt;.id</code>，表示引用了子查询结果中的id列</td>
+<td align="center"><em>[eg：<code>&lt;id-5&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>const</code></td>
+<td align="left">查询时与索引比较的为常数</td>
+<td align="center"><em>[eg：<code>&lt;id-10&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>func</code></td>
+<td align="left">查询时与索引比较的一些函数结果</td>
+<td align="center"><em>[eg：`&lt;id-</em>&gt;`]*</td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">不是上述几种情况，可能没有使用索引比较</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="rows"><a href="#rows" class="headerlink" title="rows"></a><code>rows</code></h2><p><code>rows</code> 列表示查询符合条件的结果时所要检查的数据行数，在 <code>InnoDB</code> 类型的表中，这个值是一个估计值，可用来参考并不精确，值为 <code>NULL</code> 时表示表中无数据，或者无法找到匹配行，比如查找一条主键中不包含的数据。</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">数字</td>
+<td align="left">查询时所要检查的数据行数</td>
+<td align="center"><em>[eg：<code>&lt;id-3&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>NULL</code></td>
+<td align="left">没有数据或者不需要检测</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="filtered"><a href="#filtered" class="headerlink" title="filtered"></a><code>filtered</code></h2><p><code>filtered</code> 列表示通过筛选条件的记录数占可能参与检查的记录数，是一个估计值，该值与 <code>rows</code> 的乘积大概就是结果集中的记录数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">数字</td>
+<td align="left">通过筛选条件的记录数占可能参与检查的记录数，最大为 100.00</td>
+<td align="center"><em>[eg：<code>&lt;id-3&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h2 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a><code>Extra</code></h2><p><code>Extra</code> 列表示Mysql处理查询所使用的额外信息，类型很多，其中一些情况是需要进行优化的信号，对于SQL分析很有帮助：</p>
+<table>
+<thead>
+<tr>
+<th align="center">取值</th>
+<th align="left">含义</th>
+<th align="center">例子编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>Child of &#39;tbl_name&#39; pushed join@1</code></td>
+<td align="left">当表被当做另一个表’tbl_name’的子表能被存放在 <code>NDB</code> 内核的时候，该值只出现在存储选项被开启的 <code>NDB</code> 集群上</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>const row not found</code></td>
+<td align="left">当一个系统表没有数据可查的时候</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Deleting all rows</code></td>
+<td align="left">对于 <code>DELETE</code> 操作， <code>MyISAM</code> 引擎支持一个可以简单快速删除表数据的方法，如果使用了整个优化则显示此选项</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Distinct</code></td>
+<td align="left">查询时使用了 <code>distinct</code> 关键字，当查找到一个第一个匹配值后，相同匹配就不再搜索了</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>const</code></td>
+<td align="left">当一个系统表没有数据可查的时候</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>FirstMatch(tbl_name)</code></td>
+<td align="left">当 <code>semi-join FirstMatch</code> 访问简化策略被使用时候， 通常出现在 <code>Where</code>的 <code>in</code> 子句中，找到一个值后，后面相同值不再匹配出现</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Full scan on NULL key</code></td>
+<td align="left">当优化器不能使用索引查找访问方法时，将会显示该值，表示将子查询作为一种后备策略</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Impossible HAVING</code></td>
+<td align="left">当 <code>HAVING</code> 子句的条件总是不成立，无法匹配出任何数据</td>
+<td align="center"><em>[eg：<code>&lt;id-23&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Impossible WHERE</code></td>
+<td align="left">当 <code>WHERE</code> 子句的条件总是不成立，无法匹配出任何数据</td>
+<td align="center"><em>[eg：<code>&lt;id-22&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Impossible WHERE noticed after reading const tables</code></td>
+<td align="left">在读取const表和system表时，<code>WHERE</code> 子句的条件总是不成立</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>LooseScan(m..n)</code></td>
+<td align="left">当 <code>semi-join LooseScan</code> 策略被使用的时候. <code>m</code> 和 <code>n</code> 是索引的编号</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>No matching min/max row</code></td>
+<td align="left">在查询中包括系统函数，但是通过条件查询无法匹配出数据的时候， 比如<code>SELECT MIN(...) FROM ... WHERE CONDITION</code></td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>no matching row in const table</code></td>
+<td align="left">当连表查询时有一个空表或者没有匹配唯一索引的数据时，会给出此提示</td>
+<td align="center"><em>[eg：<code>&lt;id-18&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>No tables used</code></td>
+<td align="left">当查询中没有 <code>FROM</code> 子句或者只有 <code>FROM DUAL</code>子句时</td>
+<td align="center"><em>[eg：<code>&lt;id-20&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Not exists</code></td>
+<td align="left">发生在左外连接的优化，当要求右侧表字段为空时，如果查找到一条不为空匹配，则停止查找匹配这项记录， 比如 <code>SELECT * FROM t1 LEFT JOIN t2 ON t1.id=t2.id WHERE t2.id IS NULL</code></td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Plan isn&#39;t ready yet</code></td>
+<td align="left">执行命令 <code>EXPLAIN FOR CONNECTION</code> 时，优化器在命名连接中还没有完成为语句执行创建执行计划</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Range checked for each record(index map: N)</code></td>
+<td align="left">当没有好的默认索引可使用时，但当我们可以将以前表中的所有列都视为常量时，可能会使用某些索引就是这种情况</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Scanned N databases</code></td>
+<td align="left">表示在执行对INFORMATION_SCHEMA表的查询时，服务器执行了多少次目录扫描，数字可以是0,1或者任何整数</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Select tables optimized away</code></td>
+<td align="left">优化器发现只有一行，并且通过索引直接皆可以获得想要的数据，而不需要真正访问表数据，比如在索引列使用聚合函数</td>
+<td align="center"><em>[eg：<code>&lt;id-16&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Skip_open_table</code></td>
+<td align="left">对于 <code>INFORMATION_SCHEMA</code> 表的查询，不需要打开表，只需要浏览目录就可以完成查询</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Open_frm_only</code></td>
+<td align="left">对于 <code>INFORMATION_SCHEMA</code> 表的查询，需要打开 <code>.frm</code> 文件完成查询</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Open_full_table</code></td>
+<td align="left">对于 <code>INFORMATION_SCHEMA</code> 表的查询，需要打开 <code>.frm</code>, <code>.MYD</code>, <code>.MYI</code> 文件完成查询</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Start temporary,End temporary</code></td>
+<td align="left">表示使用临时表用于 <code>semi-join Duplicate Weedout</code> 策略</td>
+<td align="center"><em>[eg：<code>&lt;id-15&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>unique row not found</code></td>
+<td align="left">当一个拥有 <code>UNIQUE</code> 索引或者 <code>PRIMARY</code> 索引的表没有查到满足条件数据时</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using filesort</code></td>
+<td align="left">无法仅通过引用索引就完成排序，需要一个额外的阶段来进行外部排序，并且按排序结果取回记录</td>
+<td align="center"><em>[eg：<code>&lt;id-17&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Using index</code></td>
+<td align="left">只通过索引排序就可以取得排序后的数据，无需做额外的搜索真实记录数据的工作</td>
+<td align="center"><em>[eg：<code>&lt;id-7&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Using index condition</code></td>
+<td align="left">首先通过访问索引元组的方式来读取表格，除非必要时会通过索引索引信息延迟读取整个表格数据</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using index for group-by</code></td>
+<td align="left">索引用于处理包含 <code>GROUP BY</code> 和 <code>DISTINCT</code> 的查询，由于重复项会被快速跳过。所以非常高效</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using join buffer (Block Nested Loop)</code></td>
+<td align="left">连接访问之前表格数据被部分读入连接缓存区，然后使用缓存中的行与当前表进行连接，括号内容为使用算法</td>
+<td align="center"><em>[eg：<code>&lt;id-1&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Using join buffer (Batched Key Access)</code></td>
+<td align="left">连接访问之前表格数据被部分读入连接缓存区，然后使用缓存中的行与当前表进行连接，括号内容为使用算法</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using MRR</code></td>
+<td align="left">表格数据会通过 <code>Multi-Range Read</code> 优化策略来读取</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using sort_union(...), Using union(...), Using intersect(...)</code></td>
+<td align="left">针对于 <code>index_merge</code> 选项，表明索引浏览被合并的特定算法</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Using temporary</code></td>
+<td align="left">需要创建一个临时表来存储结果，通常出现在包含了作用在不同列的上的 <code>GROUP BY</code> 子句和 <code>ORDER BY</code>子句</td>
+<td align="center"><em>[eg：<code>&lt;id-2&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Using where</code></td>
+<td align="left">当查询使用了 <code>WHERE</code> 子句来过滤结果发送给客户端的时候</td>
+<td align="center"><em>[eg：<code>&lt;id-3&gt;</code>]</em></td>
+</tr>
+<tr>
+<td align="center"><code>Using where with pushed condition</code></td>
+<td align="left">仅适用于 <code>NDB</code> 类型表，它意味着<code>NDB</code>集群正在使用 “条件存储”优化选项来提高接近于非索引列和常量之间直接比较的效率。</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center"><code>Zero limit</code></td>
+<td align="left">当查询语句包含 <code>LIMIT 0</code>子句并不能查到任何记录的时候</td>
+<td align="center"><em>[eg：<code>&lt;id-19&gt;</code>]</em></td>
+</tr>
+</tbody></table>
+<h1 id="EXPLAIN-各列的可能取值对应的例子"><a href="#EXPLAIN-各列的可能取值对应的例子" class="headerlink" title="EXPLAIN 各列的可能取值对应的例子"></a><code>EXPLAIN</code> 各列的可能取值对应的例子</h1><h2 id="建表操作-1"><a href="#建表操作-1" class="headerlink" title="建表操作(1"></a>建表操作(1</h2><p>为了展示id取值的不同先创建 <code>a</code>、<code>b</code>两个表，然后插入测试数据，由于是测试的开始，我们分别查看表结构和数据，之后为了减少篇幅，只给出命令，不再查询表结构和数据，接着我们开始测试：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table a(id int, num int);</span><br><span class="line">Query OK, 0 rows affected (0.04 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into a values(1, 100),(2,200),(3,300);</span><br><span class="line">Query OK, 3 rows affected (0.01 sec)</span><br><span class="line">Records: 3  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">mysql&gt; desc a;</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">| Field | Type    | Null | Key | Default | Extra |</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">| id    | int(11) | YES  |     | NULL    |       |</span><br><span class="line">| num   | int(11) | YES  |     | NULL    |       |</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> a;</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">| id | num |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">|  1 | 100 |</span><br><span class="line">|  2 | 200 |</span><br><span class="line">|  3 | 300 |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">create</span> <span class="keyword">table</span> b(<span class="keyword">id</span> <span class="built_in">int</span>, <span class="keyword">num</span> <span class="built_in">int</span>);</span><br><span class="line">Query OK, 0 rows affected (0.03 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into b values(1, 100),(2,200),(4,400);</span><br><span class="line">Query OK, 3 rows affected (0.00 sec)</span><br><span class="line">Records: 3  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">mysql&gt; desc b;</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">| Field | Type    | Null | Key | Default | Extra |</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">| id    | int(11) | YES  |     | NULL    |       |</span><br><span class="line">| num   | int(11) | YES  |     | NULL    |       |</span><br><span class="line">+<span class="comment">-------+---------+------+-----+---------+-------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> b;</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">| id | num |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">|  1 | 100 |</span><br><span class="line">|  2 | 200 |</span><br><span class="line">|  4 | 400 |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-1-gt"><a href="#lt-id-1-gt" class="headerlink" title="&lt;id-1&gt;"></a><code>&lt;id-1&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from a, b;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+---------------------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                                 |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+---------------------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | a     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | NULL                                  |</span><br><span class="line">|  1 | SIMPLE      | b     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | Using join buffer (Block Nested Loop) |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+---------------------------------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-2-gt"><a href="#lt-id-2-gt" class="headerlink" title="&lt;id-2&gt;"></a><code>&lt;id-2&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from a union select * from b;</span><br><span class="line">+<span class="comment">------+--------------+------------+------------+------+---------------+------+---------+------+------+----------+-----------------+</span></span><br><span class="line">| id   | select_type  | table      | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra           |</span><br><span class="line">+<span class="comment">------+--------------+------------+------------+------+---------------+------+---------+------+------+----------+-----------------+</span></span><br><span class="line">|    1 | PRIMARY      | a          | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | NULL            |</span><br><span class="line">|    2 | UNION        | b          | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | NULL            |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | NULL       | ALL  | NULL          | NULL | NULL    | NULL | NULL | NULL     | Using temporary |</span><br><span class="line">+<span class="comment">------+--------------+------------+------------+------+---------------+------+---------+------+------+----------+-----------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-3-gt"><a href="#lt-id-3-gt" class="headerlink" title="&lt;id-3&gt;"></a><code>&lt;id-3&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from a where id = (select id from b where num = 100);</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">|  1 | PRIMARY     | a     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |    33.33 | Using where |</span><br><span class="line">|  2 | SUBQUERY    | b     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |    33.33 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.06</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-4-gt"><a href="#lt-id-4-gt" class="headerlink" title="&lt;id-4&gt;"></a><code>&lt;id-4&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@version;</span><br><span class="line">+<span class="comment">-----------+</span></span><br><span class="line">| @@version |</span><br><span class="line">+<span class="comment">-----------+</span></span><br><span class="line">| 5.6.33    |</span><br><span class="line">+<span class="comment">-----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">num</span> <span class="keyword">from</span> (<span class="keyword">select</span> * <span class="keyword">from</span> a) t <span class="keyword">where</span> t.id &gt; <span class="number">1</span>;</span><br><span class="line">+<span class="comment">----+-------------+------------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">| id | select_type | table      | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+------------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | ALL  | NULL          | NULL | NULL    | NULL |    3 | Using where |</span><br><span class="line">|  2 | DERIVED     | a          | ALL  | NULL          | NULL | NULL    | NULL |    3 | NULL        |</span><br><span class="line">+<span class="comment">----+-------------+------------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.06</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 很神奇的是我在5.7版本操作了半天也没出现，内部进行了优化，相同的语句操作如下：</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> @@<span class="keyword">version</span>;</span><br><span class="line">+<span class="comment">------------+</span></span><br><span class="line">| @@version  |</span><br><span class="line">+<span class="comment">------------+</span></span><br><span class="line">| 5.7.21-log |</span><br><span class="line">+<span class="comment">------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">num</span> <span class="keyword">from</span> (<span class="keyword">select</span> * <span class="keyword">from</span> a) t <span class="keyword">where</span> t.id &gt; <span class="number">1</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | a     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |    33.33 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="建表操作-2"><a href="#建表操作-2" class="headerlink" title="建表操作(2"></a>建表操作(2</h2><p>新建两个带索引的表格 <code>c</code> 和 <code>d</code>，其中表格<code>c</code>带有普通索引，表格<code>d</code>带有主键，这两个表格会参与后面用作展示的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table c(id int, num int, key idindex(id));</span><br><span class="line">Query OK, 0 rows affected (0.21 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into c values(1,103),(2,203),(6,603);</span><br><span class="line">Query OK, 3 rows affected (0.05 sec)</span><br><span class="line">Records: 3  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">mysql&gt; create table d(id int, num int, primary key(id));</span><br><span class="line">Query OK, 0 rows affected (0.14 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into d values(1,104),(2,204),(6,504);</span><br><span class="line">Query OK, 3 rows affected (0.11 sec)</span><br><span class="line">Records: 3  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-5-gt"><a href="#lt-id-5-gt" class="headerlink" title="&lt;id-5&gt;"></a><code>&lt;id-5&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from d where id in (select id from a);</span><br><span class="line">+<span class="comment">----+--------------+-------------+------------+--------+---------------+---------+---------+----------------+------+----------+-------------+</span></span><br><span class="line">| id | select_type  | table       | partitions | type   | possible_keys | key     | key_len | ref            | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+--------------+-------------+------------+--------+---------------+---------+---------+----------------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE       | &lt;subquery2&gt; | NULL       | ALL    | NULL          | NULL    | NULL    | NULL           | NULL |   100.00 | Using where |</span><br><span class="line">|  1 | SIMPLE       | d           | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | &lt;subquery2&gt;.id |    1 |   100.00 | Using index |</span><br><span class="line">|  2 | MATERIALIZED | a           | NULL       | ALL    | NULL          | NULL    | NULL    | NULL           |    3 |   100.00 | NULL        |</span><br><span class="line">+<span class="comment">----+--------------+-------------+------------+--------+---------------+---------+---------+----------------+------+----------+-------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="建表操作-3"><a href="#建表操作-3" class="headerlink" title="建表操作(3"></a>建表操作(3</h2><p>为了测试 <code>partitions</code> 字段的取值，创建表格 <code>p</code>，其实就是创建了一个带有分区的表，这个表格会参与后面用作展示的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table p(id int, num int) partition by range(id)(partition p0 values less than(3), partition p1 values less than(6));</span><br><span class="line">Query OK, 0 rows affected (0.02 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into p values(1, 111),(2,222),(4,444),(5,555);</span><br><span class="line">Query OK, 4 rows affected (0.01 sec)</span><br><span class="line">Records: 4  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-6-gt"><a href="#lt-id-6-gt" class="headerlink" title="&lt;id-6&gt;"></a><code>&lt;id-6&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from p where id &lt; 5;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | p     | p0,p1      | ALL  | NULL          | NULL | NULL    | NULL |    4 |    33.33 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-7-gt"><a href="#lt-id-7-gt" class="headerlink" title="&lt;id-7&gt;"></a><code>&lt;id-7&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c where id = 1;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key     | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | c     | NULL       | ref  | idindex       | idindex | 5       | const |    1 |   100.00 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.06</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="建表操作-4"><a href="#建表操作-4" class="headerlink" title="建表操作(4"></a>建表操作(4</h2><p>为了测试 <code>type</code> 字段的取值，有时需要特定的数据引擎才可以，所以创建了以 <code>MyISAM</code>引擎类型的表格 <code>m</code>，然后进行一些测试：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table m(id int, num int)engine=myisam;</span><br><span class="line">Query OK, 0 rows affected (0.02 sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-8-gt"><a href="#lt-id-8-gt" class="headerlink" title="&lt;id-8&gt;"></a><code>&lt;id-8&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from m;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                          |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | no matching row in const table |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-9-gt"><a href="#lt-id-9-gt" class="headerlink" title="&lt;id-9&gt;"></a><code>&lt;id-9&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; insert into m values(1,1001);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from m;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">| id | select_type | table | partitions | type   | possible_keys | key  | key_len | ref  | rows | filtered | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">|  1 | SIMPLE      | m     | NULL       | system | NULL          | NULL | NULL    | NULL |    1 |   100.00 | NULL  |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+------+---------+------+------+----------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-10-gt"><a href="#lt-id-10-gt" class="headerlink" title="&lt;id-10&gt;"></a><code>&lt;id-10&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from d where id = 1;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | d     | NULL       | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-11-gt"><a href="#lt-id-11-gt" class="headerlink" title="&lt;id-11&gt;"></a><code>&lt;id-11&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select a.id from a, d where a.id = d.id;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref           | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | a     | NULL       | ALL    | NULL          | NULL    | NULL    | NULL          |    3 |   100.00 | Using where |</span><br><span class="line">|  1 | SIMPLE      | d     | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | sqltest2.a.id |    1 |   100.00 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+-------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-12-gt"><a href="#lt-id-12-gt" class="headerlink" title="&lt;id-12&gt;"></a><code>&lt;id-12&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c where id = 1 or id is null;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------------+---------------+---------+---------+-------+------+----------+--------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type        | possible_keys | key     | key_len | ref   | rows | filtered | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------------+---------------+---------+---------+-------+------+----------+--------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | c     | NULL       | ref_or_null | idindex       | idindex | 5       | const |    2 |   100.00 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------------+---------------+---------+---------+-------+------+----------+--------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-13-gt"><a href="#lt-id-13-gt" class="headerlink" title="&lt;id-13&gt;"></a><code>&lt;id-13&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c where id &gt; 1;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+--------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows | filtered | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+--------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | c     | NULL       | range | idindex       | idindex | 5       | NULL |    2 |   100.00 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+--------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-14-gt"><a href="#lt-id-14-gt" class="headerlink" title="&lt;id-14&gt;"></a><code>&lt;id-14&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------------+</span></span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | c     | NULL       | index | NULL          | idindex | 5       | NULL |    3 |   100.00 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-15-gt"><a href="#lt-id-15-gt" class="headerlink" title="&lt;id-15&gt;"></a><code>&lt;id-15&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c where id in (select a.id from a, d where a.id = d.id);</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+------------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref           | rows | filtered | Extra                        |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+------------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | a     | NULL       | ALL    | NULL          | NULL    | NULL    | NULL          |    3 |   100.00 | Using where; <span class="keyword">Start</span> <span class="keyword">temporary</span> |</span><br><span class="line">|  <span class="number">1</span> | SIMPLE      | c     | <span class="literal">NULL</span>       | <span class="keyword">ref</span>    | idindex       | idindex | <span class="number">5</span>       | sqltest2.a.id |    <span class="number">1</span> |   <span class="number">100.00</span> | <span class="keyword">Using</span> <span class="keyword">index</span>                  |</span><br><span class="line">|  <span class="number">1</span> | SIMPLE      | d     | <span class="literal">NULL</span>       | eq_ref | PRIMARY       | PRIMARY | <span class="number">4</span>       | sqltest2.a.id |    <span class="number">1</span> |   <span class="number">100.00</span> | <span class="keyword">Using</span> <span class="keyword">index</span>; <span class="keyword">End</span> <span class="keyword">temporary</span>   |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+------------------------------+</span></span><br><span class="line"><span class="number">3</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-16-gt"><a href="#lt-id-16-gt" class="headerlink" title="&lt;id-16&gt;"></a><code>&lt;id-16&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select min(id) from c;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                        |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | <span class="keyword">Select</span> <span class="keyword">tables</span> optimized away |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-17-gt"><a href="#lt-id-17-gt" class="headerlink" title="&lt;id-17&gt;"></a><code>&lt;id-17&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from c order by num;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra          |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">|  1 | SIMPLE      | c     | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | Using filesort |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="lt-id-18-gt"><a href="#lt-id-18-gt" class="headerlink" title="&lt;id-18&gt;"></a><code>&lt;id-18&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from d where id = 100;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                          |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | no matching row in const table |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-19-gt"><a href="#lt-id-19-gt" class="headerlink" title="&lt;id-19&gt;"></a><code>&lt;id-19&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from d limit 0;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra      |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | Zero limit |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-20-gt"><a href="#lt-id-20-gt" class="headerlink" title="&lt;id-20&gt;"></a><code>&lt;id-20&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select 1 from dual;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra          |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | No tables used |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-22-gt"><a href="#lt-id-22-gt" class="headerlink" title="&lt;id-22&gt;"></a><code>&lt;id-22&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from a where 1 = 2;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra            |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | Impossible WHERE |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="lt-id-23-gt"><a href="#lt-id-23-gt" class="headerlink" title="&lt;id-23&gt;"></a><code>&lt;id-23&gt;</code></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select sum(num) from a group by id having 1 =2;</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------------+</span></span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra             |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------------+</span></span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | NULL     | Impossible HAVING |</span><br><span class="line">+<span class="comment">----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>关于 <code>EXPLAIN</code> 命令的所有可能取值后面，还有部分例子是空的，完全是由于个人水平有限，等找到所说的取值情况再补充，也欢迎大家提供例子</li>
+<li>另外 <code>EXPLAIN</code> 提供的信息中没有关于触发器、存储过程的信息或者评估用户自定义函数对查询的影响情况</li>
+<li>所有的可能取值中 <code>possible_keys</code>、<code>rows</code>、<code>filtered</code>中的统计信息基本是估算的，并非精确值，只能用来做优化参考</li>
+<li><code>Extra</code> 列的信息对于尝试优化起到了至关重要的作用，当出现 <code>Using filesort</code>、<code>Using temporary</code>、<code>Using join buffer</code>的时候一般就要考虑采取优化方案了</li>
+<li>首先了解这些可能出现的情况，之后我们留这里利用这些说明来进行查询优化了</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://albertgithubhome.github.io/blog/2019/04/27/Mysql%E4%B8%ADexplain%E5%91%BD%E4%BB%A4%E7%AE%80%E6%9E%90/" title="Mysql中explain命令简析">http://albertgithubhome.github.io/blog/2019/04/27/Mysql%E4%B8%ADexplain%E5%91%BD%E4%BB%A4%E7%AE%80%E6%9E%90/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Mysql/" rel="tag"><i class="fa fa-tag"></i> Mysql</a>
+          
+            <a href="/blog/tags/%E6%9F%A5%E8%AF%A2/" rel="tag"><i class="fa fa-tag"></i> 查询</a>
+          
+            <a href="/blog/tags/EXPLAIN/" rel="tag"><i class="fa fa-tag"></i> EXPLAIN</a>
+          
+            <a href="/blog/tags/Extra/" rel="tag"><i class="fa fa-tag"></i> Extra</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/04/16/gcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" rel="next" title="gcc编译生成可执行文件的过程中发生了什么">
+                <i class="fa fa-chevron-left"></i> gcc编译生成可执行文件的过程中发生了什么
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/05/05/Python%E5%88%A9%E7%94%A8requests%E6%A8%A1%E5%9D%97%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%90%86%E8%AE%BF%E9%97%AE%E7%BD%91%E7%BB%9C/" rel="prev" title="Python利用requests模块实现代理访问网络">
+                Python利用requests模块实现代理访问网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      微博
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试环境"><span class="nav-number">2.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPLAIN-的使用"><span class="nav-number">3.</span> <span class="nav-text">EXPLAIN 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPLAIN-各列的可能取值"><span class="nav-number">4.</span> <span class="nav-text">EXPLAIN 各列的可能取值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#id"><span class="nav-number">4.1.</span> <span class="nav-text">id</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select-type"><span class="nav-number">4.2.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table"><span class="nav-number">4.3.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#partitions"><span class="nav-number">4.4.</span> <span class="nav-text">partitions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type"><span class="nav-number">4.5.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#possible-keys"><span class="nav-number">4.6.</span> <span class="nav-text">possible_keys</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key"><span class="nav-number">4.7.</span> <span class="nav-text">key</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-len"><span class="nav-number">4.8.</span> <span class="nav-text">key_len</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ref"><span class="nav-number">4.9.</span> <span class="nav-text">ref</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rows"><span class="nav-number">4.10.</span> <span class="nav-text">rows</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#filtered"><span class="nav-number">4.11.</span> <span class="nav-text">filtered</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra"><span class="nav-number">4.12.</span> <span class="nav-text">Extra</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPLAIN-各列的可能取值对应的例子"><span class="nav-number">5.</span> <span class="nav-text">EXPLAIN 各列的可能取值对应的例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建表操作-1"><span class="nav-number">5.1.</span> <span class="nav-text">建表操作(1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-1-gt"><span class="nav-number">5.1.1.</span> <span class="nav-text">&lt;id-1&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-2-gt"><span class="nav-number">5.1.2.</span> <span class="nav-text">&lt;id-2&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-3-gt"><span class="nav-number">5.1.3.</span> <span class="nav-text">&lt;id-3&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-4-gt"><span class="nav-number">5.1.4.</span> <span class="nav-text">&lt;id-4&gt;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建表操作-2"><span class="nav-number">5.2.</span> <span class="nav-text">建表操作(2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-5-gt"><span class="nav-number">5.2.1.</span> <span class="nav-text">&lt;id-5&gt;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建表操作-3"><span class="nav-number">5.3.</span> <span class="nav-text">建表操作(3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-6-gt"><span class="nav-number">5.3.1.</span> <span class="nav-text">&lt;id-6&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-7-gt"><span class="nav-number">5.3.2.</span> <span class="nav-text">&lt;id-7&gt;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建表操作-4"><span class="nav-number">5.4.</span> <span class="nav-text">建表操作(4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-8-gt"><span class="nav-number">5.4.1.</span> <span class="nav-text">&lt;id-8&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-9-gt"><span class="nav-number">5.4.2.</span> <span class="nav-text">&lt;id-9&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-10-gt"><span class="nav-number">5.4.3.</span> <span class="nav-text">&lt;id-10&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-11-gt"><span class="nav-number">5.4.4.</span> <span class="nav-text">&lt;id-11&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-12-gt"><span class="nav-number">5.4.5.</span> <span class="nav-text">&lt;id-12&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-13-gt"><span class="nav-number">5.4.6.</span> <span class="nav-text">&lt;id-13&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-14-gt"><span class="nav-number">5.4.7.</span> <span class="nav-text">&lt;id-14&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-15-gt"><span class="nav-number">5.4.8.</span> <span class="nav-text">&lt;id-15&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-16-gt"><span class="nav-number">5.4.9.</span> <span class="nav-text">&lt;id-16&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-17-gt"><span class="nav-number">5.4.10.</span> <span class="nav-text">&lt;id-17&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-18-gt"><span class="nav-number">5.4.11.</span> <span class="nav-text">&lt;id-18&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-19-gt"><span class="nav-number">5.4.12.</span> <span class="nav-text">&lt;id-19&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-20-gt"><span class="nav-number">5.4.13.</span> <span class="nav-text">&lt;id-20&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-22-gt"><span class="nav-number">5.4.14.</span> <span class="nav-text">&lt;id-22&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lt-id-23-gt"><span class="nav-number">5.4.15.</span> <span class="nav-text">&lt;id-23&gt;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
