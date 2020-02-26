@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="C&#x2F;C++,类成员访问，成员指针">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作指向类成员的指针需要了解的两个操作符-&gt;*和.*">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2018&#x2F;05&#x2F;12&#x2F;%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言关于 -&amp;gt;* 这种写法在很早就在项目代码里见过了，并且还写过，不过当时并没有正确的理解这样写的含义，一直到最近发现这样写很奇怪，于是根据自己的理解，开始改代码，发现无论怎么改都无法通过编译，仔细搜索后才发现这是一种固定的写法，也就是说 -&amp;gt;* 是一个操作符，无法拆分，同时还有一个 .* 也是相同的作用，只不过是用于对象上，而 -&amp;gt;* 是用于对象的指针上。 那么这两个操作符究竟">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.222Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="操作指向类成员的指针需要了解的两个操作符-&gt;*和.*">
+<meta name="twitter:description" content="前言关于 -&amp;gt;* 这种写法在很早就在项目代码里见过了，并且还写过，不过当时并没有正确的理解这样写的含义，一直到最近发现这样写很奇怪，于是根据自己的理解，开始改代码，发现无论怎么改都无法通过编译，仔细搜索后才发现这是一种固定的写法，也就是说 -&amp;gt;* 是一个操作符，无法拆分，同时还有一个 .* 也是相同的作用，只不过是用于对象上，而 -&amp;gt;* 是用于对象的指针上。 那么这两个操作符究竟">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/05/12/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2018/05/12/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C/" class="leancloud_visitors" data-flag-title="操作指向类成员的指针需要了解的两个操作符->*和.*">
+             <span id="/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/" class="leancloud_visitors" data-flag-title="操作指向类成员的指针需要了解的两个操作符->*和.*">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">2,283(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">9(分)</span>
           </span>
 
           
@@ -480,34 +484,25 @@
 <p>那么这两个操作符究竟有什么作用呢？实际上它们主要用于操作指向类成员的指针，可能你会说指向类成员的指针直接定义就好了，为什么这么麻烦，还要是用这两个操作符呢？接下来我们举几个例子就明白了。</p>
 <a id="more"></a>
 <!-- http://en.cppreference.com/w/cpp/language/pointer -->
-
 <h1 id="指向类数据成员的指针"><a href="#指向类数据成员的指针" class="headerlink" title="指向类数据成员的指针"></a>指向类数据成员的指针</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span></span><br><span class="line"><span class="class">&#123;</span> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> C::* p = &amp;C::m;          <span class="comment">// pointer to data member m of class C</span></span><br><span class="line">    C c = &#123;<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; c.*p &lt;&lt; <span class="string">'\n'</span>;   <span class="comment">// prints 7</span></span><br><span class="line">    C* cp = &amp;c;</span><br><span class="line">    cp-&gt;m = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; cp-&gt;*p &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// prints 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>看到上述代码中的<code>p</code>指针有什么不同了吧，这是一个指向类成员变量的指针，如果我们不这样定义<code>p</code>也想操作c对象的成员变量<code>m</code>要怎么办呢？我们可以这样写：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span></span><br><span class="line"><span class="class">&#123;</span> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    C c = &#123;<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span> *p = &amp;c.m;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; *p &lt;&lt; <span class="string">'\n'</span>;   <span class="comment">// prints 7</span></span><br><span class="line">    *p = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; *p &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// prints 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这样代码中的变量<code>p</code>就变成了一个简单的指向整型数据的指针，我们也可以通过它访问c对象的m变量，并且给它赋值，但是你有没有发现区别，前一种指针<code>p</code>只依赖于类C的定义，可以在类C创建对象之前就给指针<code>p</code>定义赋值，但是后一种数据指针<code>p</code>就只能在类C创建对象之后才能给它赋值，还有一点，前一种指针<code>p</code>可以根据调用它的对象不同而访问不同类C对象的值，而后一种指针<code>p</code>就只能访问它所指向的那个对象的m值，如果要访问其他对象，需要重新给p赋值。</p>
 <p>注意指向类成员指针的定义和赋值方法，是<code>int C::* p = &amp;C::m;</code>，取变量m的地址还有两种写法，<code>&amp;(C::m)</code> 或者 <code>&amp;m</code>这两种写法只能写在类C的成员函数中，所表示的也就是一个简单的指向整型变量的指针，即<code>int*</code>，与 <code>&amp;C::m</code>的含义是大不相同的。</p>
 <p>而操作符<code>-&gt;*</code> 和<code>.*</code>在代码中起什么作用呢，我们只看这一句<code>std::cout &lt;&lt; cp-&gt;*p &lt;&lt; &#39;\n&#39;;</code>，其中表达式<code>cp-&gt;*p</code>用到了操作符<code>-&gt;*</code>，根据我的理解这个操作符的作用就是将后面的指针解引用，然后再被前面的对象调用，首先我们看cp是一个指向c对象的指针，如果想访问m变量，可以直接使用cp-&gt;m，假设现在不想这么写，我们有一个指向类C中m变量的指针p，那么直接写成<code>cp-&gt;p</code>肯定是不行的，因为p并不是类C的成员，它只是一个指向类C成员的指针，所以需要将其解引用，转换成真正的成员才能被cp指针引用到，那么<code>*cp</code>其实就是类C中的m，组合到一起就是<code>cp-&gt;        *p</code>，这只是理解，其实<code>-&gt;*</code>是一个不可分割的操作符，需要紧挨着写成<code>cp-&gt;*p</code>才能编译通过。</p>
 <p> 另外关于指向类成员指针，在操作对象是父类对象和子类对象时有什么不同呢?答案是：指向可访问的非虚拟基类的数据成员的指针可以隐式地转换为指向派生类的同一数据成员的指针，反过来结果就是未定义的了，可以参考代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span></span><br><span class="line"><span class="class">&#123;</span> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m; </span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> Base::* bp = &amp;Base::m;</span><br><span class="line">    <span class="keyword">int</span> Derived::* dp = bp;</span><br><span class="line">    Derived d;</span><br><span class="line">    d.m = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; d.*dp &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// prints 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; d.*bp &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// prints 1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
 <h1 id="指向类成员函数的指针"><a href="#指向类成员函数的指针" class="headerlink" title="指向类成员函数的指针"></a>指向类成员函数的指针</h1><p>其实前面的例子我在工作中还真没遇到过，但是指向类数据成员的指针确实经常用，熟悉函数指针的工程师都知道，类似于<code>void (*func)();</code> 就是定义了指向一个无返回值无参数函数的指针，调用时只要写成<code>(*func)();</code>就行，但是如果定义指向类成员函数的指针可就麻烦一点了，接下来看一个例子：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; n &lt;&lt; <span class="string">'\n'</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">void</span> (C::* p)(<span class="keyword">int</span>) = &amp;C::f; <span class="comment">// pointer to member function f of class C</span></span><br><span class="line">    C c;</span><br><span class="line">    (c.*p)(<span class="number">1</span>);                  <span class="comment">// prints 1</span></span><br><span class="line">    C* cp = &amp;c;</span><br><span class="line">    (cp-&gt;*p)(<span class="number">2</span>);                <span class="comment">// prints 2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这个例子中的函数指针<code>p</code>是有作用域的，也就是只能指向类C中的无返回值并且有一个整型参数的函数，代码中赋值为<code>&amp;C::f</code>，这个形式与数据成员指针的赋值一样，其实函数f就是类C的一个成员而已。</p>
 <p>那么它是怎么通过<code>p</code>指针调用到函数<code>f</code>的呢？我们看一句代码<code>(cp-&gt;*p)(2);</code>其实<code>-&gt;*</code>在这里还是起到了解引用并访问的作用，如果要访问f函数，只要<code>cp-&gt;f(2)</code>即可，但是这里没有f只有一个指向f的指针p，所以将<code>f</code>替换成<code>*p</code>编程<code>cp-&gt;*p(2);</code>但是这样无法通过编译，它无法区分那一部分是函数体，那一部分是参数，所以加个括号指明一下变成<code>(cp-&gt;*p)(2);</code>就可以正常访问<code>f</code>函数了。</p>
 <p>实际上对面向对象编程了解的深入一点就会知道，调用对象的成员函数，实际上就是把对象的指针<code>this</code>作为函数第一个参数传进去，比如<code>cp-&gt;f(2)</code>，假如函数f的函数指针是<code>func</code>，那么<code>cp-&gt;f(2)</code>就是调用<code>func(cp, 2)</code>，这样在函数<code>f</code>中就可以调用对象的成员变量或者其他的成员函数了，但是如果你的成员函数中没有访问成员内容，那么这个<code>this</code>指针传什么都可以，也就是说<code>func(cp, 2)</code>和<code>func(0, 2)</code>、<code>func(0x1234567890, 2)</code>都是等价的，在这个例子中就是这样，所有你可以这样来写一段代码：<code>(((C*)0)-&gt;*p)(2)</code>，也是可以打印出数字2的。</p>
 <p>另外关于指向类成员函数指针，在操作对象是父类对象和子类对象时与成员变量的规则一致：指向可访问的非虚拟基类的成员函数的指针可以隐式地转换为指向派生类的同一成员函数的指针，反过来也是未定义，可以参考代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; n &lt;&lt; <span class="string">'\n'</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base &#123;&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">void</span> (Base::* bp)(<span class="keyword">int</span>) = &amp;Base::f;</span><br><span class="line">    <span class="keyword">void</span> (Derived::* dp)(<span class="keyword">int</span>) = bp;</span><br><span class="line">    Derived d;</span><br><span class="line">    (d.*dp)(<span class="number">1</span>);</span><br><span class="line">    (d.*bp)(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h1 id="具体使用"><a href="#具体使用" class="headerlink" title="具体使用"></a>具体使用</h1><p>前面提到过指向类数据成员的指针我之前真的没用到过，但是指向成员函数的指针，我却用了不少，一般都是放在函数数组中使用，比如有这样一个场景，游戏npc根据状态执行对应的状态函数，这些状态函数是成员函数，为此我们需要将npc所有的状态函数添加到一个函数数组中，假设有idle、run、walk、jump四种状态，下面是实现代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNpc</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(CNpc::*StateFunction)</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> state; <span class="comment">// 0,1,2,3 对应 idle、run、walk、jump</span></span><br><span class="line">    StateFunction state_function_array[<span class="number">4</span>];</span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CNpc()</span><br><span class="line">    &#123;</span><br><span class="line">        state = <span class="number">0</span>;</span><br><span class="line">        state_function_array [<span class="number">0</span>] = &amp;CNpc::idle;</span><br><span class="line">        state_function_array [<span class="number">1</span>] = &amp;CNpc::<span class="built_in">run</span>;</span><br><span class="line">        state_function_array [<span class="number">2</span>] = &amp;CNpc::walk;</span><br><span class="line">        state_function_array [<span class="number">3</span>] = &amp;CNpc::jump;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">change_state</span><span class="params">(<span class="keyword">int</span> new_state)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        state = new_state;   </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">process_state</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (state_function_array[state])</span><br><span class="line">        &#123;</span><br><span class="line">            (<span class="keyword">this</span>-&gt;*state_function_array[state])(); <span class="comment">// 调用函数指针的地方</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">idle</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = idle"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = run"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">walk</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = walk"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">jump</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = jump"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;  </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CNpc npc;</span><br><span class="line">    </span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">1</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">3</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">2</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">0</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNpc</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(CNpc::*StateFunction)</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> state; <span class="comment">// 0,1,2,3 对应 idle、run、walk、jump</span></span><br><span class="line">    StateFunction state_function_array[<span class="number">4</span>];</span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CNpc()</span><br><span class="line">    &#123;</span><br><span class="line">        state = <span class="number">0</span>;</span><br><span class="line">        state_function_array [<span class="number">0</span>] = &amp;CNpc::idle;</span><br><span class="line">        state_function_array [<span class="number">1</span>] = &amp;CNpc::run;</span><br><span class="line">        state_function_array [<span class="number">2</span>] = &amp;CNpc::walk;</span><br><span class="line">        state_function_array [<span class="number">3</span>] = &amp;CNpc::jump;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">change_state</span><span class="params">(<span class="keyword">int</span> new_state)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        state = new_state;   </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">process_state</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (state_function_array[state])</span><br><span class="line">        &#123;</span><br><span class="line">            (<span class="keyword">this</span>-&gt;*state_function_array[state])(); <span class="comment">// 调用函数指针的地方</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">idle</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = idle"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = run"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">walk</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = walk"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">jump</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"state = jump"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; &#125;  </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CNpc npc;</span><br><span class="line">    </span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">1</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">3</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">2</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    npc.change_state(<span class="number">0</span>);</span><br><span class="line">    npc.process_state();</span><br><span class="line">    npc.process_state();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>运行结果</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">state = idle</span><br><span class="line">state = idle</span><br><span class="line">state = run</span><br><span class="line">state = jump</span><br><span class="line">state = jump</span><br><span class="line">state = jump</span><br><span class="line">state = walk</span><br><span class="line">state = idle</span><br><span class="line">state = idle</span><br></pre></td></tr></table></figure>
-
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
 <li>牢记<code>-&gt;*</code>和<code>.*</code>也是一种操作符，使用的时候不要拆开</li>
 <li>理解操作符中的<code>*</code>符号的解引用的作用</li>
@@ -541,7 +536,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2018/05/12/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C/" title="操作指向类成员的指针需要了解的两个操作符->*和.*">http://albertgithubhome.github.io/blog/2018/05/12/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/" title="操作指向类成员的指针需要了解的两个操作符->*和.*">http://AlbertGithubHome.github.io/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -599,7 +594,7 @@
           
             <a href="/blog/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
           
-            <a href="/blog/tags/%E7%B1%BB%E6%88%90%E5%91%98%E8%AE%BF%E9%97%AE%EF%BC%8C%E6%88%90%E5%91%98%E6%8C%87%E9%92%88/" rel="tag"><i class="fa fa-tag"></i> 类成员访问，成员指针</a>
+            <a href="/blog/tags/类成员访问，成员指针/" rel="tag"><i class="fa fa-tag"></i> 类成员访问，成员指针</a>
           
         </div>
       
@@ -612,7 +607,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2018/04/12/bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2/" rel="next" title="bat批处理替换字符串中匹配的子串">
+              <a href="/blog/2018/04/12/bat批处理替换字符串中匹配的子串/" rel="next" title="bat批处理替换字符串中匹配的子串">
                 <i class="fa fa-chevron-left"></i> bat批处理替换字符串中匹配的子串
               </a>
             
@@ -622,7 +617,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2018/06/23/VS%E8%B0%83%E8%AF%95dump%E6%96%87%E4%BB%B6%E6%97%B6%E6%8F%90%E7%A4%BA%E6%9C%AA%E6%89%BE%E5%88%B0Xxxx-exe%E6%88%96xxx-dlll/" rel="prev" title="VS2015调试dump文件时提示未找到xxx.exe或xxx.dll">
+              <a href="/blog/2018/06/23/VS调试dump文件时提示未找到Xxxx-exe或xxx-dlll/" rel="prev" title="VS2015调试dump文件时提示未找到xxx.exe或xxx.dll">
                 VS2015调试dump文件时提示未找到xxx.exe或xxx.dll <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -726,7 +721,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -737,7 +732,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -748,7 +743,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -756,6 +751,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -768,17 +770,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -823,6 +814,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -904,7 +906,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -913,12 +915,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -950,7 +952,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

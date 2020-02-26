@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="linux,grep,查找,find">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux环境下查找包含指定内容的文件及其所在行数">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;03&#x2F;13&#x2F;linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言在linux系统下搜索文件一般情况下一个命令就搞定了，之前搜索文件的时候一直使用find，今天排查问题时想查一个函数的调用者在哪个文件中，发现不会写了，搜了一下发现使用grep命令就可以实现，改变了我对grep命令的理解，原来使用grep命令的情况通常是作为结果的过滤函数，比如ps aux | grep gameserver，这次发现他居然还可以直接用来搜索，其实也是过滤的一种。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.216Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux环境下查找包含指定内容的文件及其所在行数">
+<meta name="twitter:description" content="前言在linux系统下搜索文件一般情况下一个命令就搞定了，之前搜索文件的时候一直使用find，今天排查问题时想查一个函数的调用者在哪个文件中，发现不会写了，搜了一下发现使用grep命令就可以实现，改变了我对grep命令的理解，原来使用grep命令的情况通常是作为结果的过滤函数，比如ps aux | grep gameserver，这次发现他居然还可以直接用来搜索，其实也是过滤的一种。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/03/13/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/03/13/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0/" class="leancloud_visitors" data-flag-title="linux环境下查找包含指定内容的文件及其所在行数">
+             <span id="/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/" class="leancloud_visitors" data-flag-title="linux环境下查找包含指定内容的文件及其所在行数">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">836(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">4(分)</span>
           </span>
 
           
@@ -478,11 +482,7 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在linux系统下搜索文件一般情况下一个命令就搞定了，之前搜索文件的时候一直使用<code>find</code>，今天排查问题时想查一个函数的调用者在哪个文件中，发现不会写了，搜了一下发现使用<code>grep</code>命令就可以实现，改变了我对<code>grep</code>命令的理解，原来使用<code>grep</code>命令的情况通常是作为结果的过滤函数，比如<code>ps aux | grep gameserver</code>，这次发现他居然还可以直接用来搜索，其实也是过滤的一种。</p>
 <a id="more"></a>
-
-
-<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>这里直接给出命令的写法，简单替换搜索内容就可以使用，也方便自己后续查找使用(例如查找包含<code>stream</code>的文件)：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rn <span class="string">'stream'</span> . --include=<span class="string">'*.cpp'</span></span><br></pre></td></tr></table></figure>
-
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>这里直接给出命令的写法，简单替换搜索内容就可以使用，也方便自己后续查找使用(例如查找包含<code>stream</code>的文件)：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rn <span class="string">'stream'</span> . --include=<span class="string">'*.cpp'</span></span><br></pre></td></tr></table></figure></p>
 <h1 id="命令解析"><a href="#命令解析" class="headerlink" title="命令解析"></a>命令解析</h1><p>上述命令是一种比较常用的写法，就是在当前目录下（一定要注意那个<code>.</code>）查找包含<code>stream</code>的文件，并显示其所在的行，搜索的文件类型是<code>.cpp</code>，其实<code>--include=</code>后面的内容是遵循<code>glob</code>语法的，详细的就不展开了，简单来说就是支持通配符，而查找选项<code>-rn</code>中的<code>r</code>表示递归查找，其中的<code>n</code>表示显示行号，此外还可以使用选项<code>-i</code>表示忽略大小写，下面简单展示一下3个选项的功能：</p>
 <ol>
 <li><p><code>-r</code>：只递归查找不显示行号</p>
@@ -493,7 +493,6 @@
 </li>
 <li><p><code>-rni</code>：递归查找显示行号并且忽略大小写</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">[albert@localhost#</span><span class="bash">18:17:53<span class="comment">#/home/albert/test]$grep -rni 'stream' . --include='*.cpp'</span></span></span><br><span class="line">./testPtr.cpp:4:#include &lt;iostream&gt;</span><br><span class="line">./crab-server/code/main/crab.cpp:3:#include &lt;iostream&gt;</span><br><span class="line">./testConstructor.cpp:1:#include &lt;iostream&gt;</span><br><span class="line">./epoll_cs_demo/testfd.cpp:5:   int listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/testfd.cpp:8:   listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/testfd.cpp:11:  listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/testfd.cpp:14:  listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/testfd.cpp:21:  listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/testfd.cpp:25:  listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/client.cpp:18:    int client_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./epoll_cs_demo/server.cpp:24:    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./smartptr/auto_ptr.cpp:4:#include &lt;iostream&gt;</span><br><span class="line">./io.cpp:1:#include &lt;fstream&gt;</span><br><span class="line">./io.cpp:9:    ofstream logfile("./logs/players_distribution.txt", ios::out);</span><br><span class="line">./network/zgetaddrinfo.cpp:37:    hints.ai_socktype = SOCK_STREAM;/* Stream socket */</span><br><span class="line">./linux_version/client.cpp:15:    int client_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./linux_version/server.cpp:15:    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">./ptr.cpp:4:#include &lt;iostream&gt;</span><br><span class="line">./gdbtest/main.cpp:1:#include &lt;iostream&gt;</span><br><span class="line">./test_t.cpp:1:#include &lt;iostream&gt;</span><br><span class="line">./testshareptr.cpp:4:#include &lt;iostream&gt;</span><br></pre></td></tr></table></figure>
-
 </li>
 </ol>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
@@ -528,7 +527,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/03/13/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0/" title="linux环境下查找包含指定内容的文件及其所在行数">http://albertgithubhome.github.io/blog/2019/03/13/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/" title="linux环境下查找包含指定内容的文件及其所在行数">http://AlbertGithubHome.github.io/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -588,7 +587,7 @@
           
             <a href="/blog/tags/grep/" rel="tag"><i class="fa fa-tag"></i> grep</a>
           
-            <a href="/blog/tags/%E6%9F%A5%E6%89%BE/" rel="tag"><i class="fa fa-tag"></i> 查找</a>
+            <a href="/blog/tags/查找/" rel="tag"><i class="fa fa-tag"></i> 查找</a>
           
             <a href="/blog/tags/find/" rel="tag"><i class="fa fa-tag"></i> find</a>
           
@@ -603,7 +602,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/03/09/%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" rel="next" title="为目标打好基础的希尔排序">
+              <a href="/blog/2019/03/09/为目标打好基础的希尔排序/" rel="next" title="为目标打好基础的希尔排序">
                 <i class="fa fa-chevron-left"></i> 为目标打好基础的希尔排序
               </a>
             
@@ -613,7 +612,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/03/15/Mysql%E6%9F%A5%E8%AF%A2%E5%8F%AF%E9%80%9A%E8%BF%87%E7%BB%99%E6%9D%A1%E4%BB%B6%E5%AD%97%E6%AE%B5%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95%E6%8F%90%E9%AB%98%E6%9F%A5%E8%AF%A2%E9%80%9F%E5%BA%A6/" rel="prev" title="Mysql查询可通过给条件字段添加索引提高查询速度">
+              <a href="/blog/2019/03/15/Mysql查询可通过给条件字段添加索引提高查询速度/" rel="prev" title="Mysql查询可通过给条件字段添加索引提高查询速度">
                 Mysql查询可通过给条件字段添加索引提高查询速度 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -717,7 +716,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -728,7 +727,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -739,7 +738,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -747,6 +746,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -759,17 +765,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -814,6 +809,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -895,7 +901,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -904,12 +910,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -941,7 +947,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="排序,算法,概念,Sort,希尔">
 <meta property="og:type" content="article">
 <meta property="og:title" content="为目标打好基础的希尔排序">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;03&#x2F;09&#x2F;%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/03/09/为目标打好基础的希尔排序/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言刚刚分析过的插入排序通常被叫做简单插入排序或者直接插入排序，而这篇文章刚好以插入排序为基础来说说希尔排序，还是先从名字开始，结果发现完全没有头绪，说实话第一次听说这个排序时还以为是个特别神奇的高端算法，结果了解一番之后发现其实是一个被改造的插入排序，“希尔”居然是发明者的名字，所以从名字来判断算法思想在这里行不通，甚至说快速排序起码说明了这种方法排序快，而希尔排序等于什么都没说。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.221Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为目标打好基础的希尔排序">
+<meta name="twitter:description" content="前言刚刚分析过的插入排序通常被叫做简单插入排序或者直接插入排序，而这篇文章刚好以插入排序为基础来说说希尔排序，还是先从名字开始，结果发现完全没有头绪，说实话第一次听说这个排序时还以为是个特别神奇的高端算法，结果了解一番之后发现其实是一个被改造的插入排序，“希尔”居然是发明者的名字，所以从名字来判断算法思想在这里行不通，甚至说快速排序起码说明了这种方法排序快，而希尔排序等于什么都没说。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/03/09/%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/03/09/为目标打好基础的希尔排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/03/09/%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" class="leancloud_visitors" data-flag-title="为目标打好基础的希尔排序">
+             <span id="/blog/2019/03/09/为目标打好基础的希尔排序/" class="leancloud_visitors" data-flag-title="为目标打好基础的希尔排序">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">1,882(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">7(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>刚刚分析过的<a href="https://albertgithubhome.github.io/blog/2018/12/04/%E6%8A%93%E6%89%91%E5%85%8B%E7%89%8C%E9%A3%8E%E6%A0%BC%E7%9A%84%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/">插入排序</a>通常被叫做简单插入排序或者直接插入排序，而这篇文章刚好以插入排序为基础来说说希尔排序，还是先从名字开始，结果发现完全没有头绪，说实话第一次听说这个排序时还以为是个特别神奇的高端算法，结果了解一番之后发现其实是一个被改造的插入排序，“希尔”居然是发明者的名字，所以从名字来判断算法思想在这里行不通，甚至说快速排序起码说明了这种方法排序快，而希尔排序等于什么都没说。</p>
 <a id="more"></a>
-
 <p>希尔排序的基础是插入排序，整个排序也是在新元素不断插入到有序序列适当位置的过程中完成的，唯一的不同的就是通过不同的步长将整个序列划分为不同的小序列不断插入，直到步长为1时就退化成了最基本的直接插入排序，但是此时整个序列已经“基本”有序了，需要交换的元素对比一开始直接插入的方法明显减少，从而可以加快排序的速度，因为最后步长为1的一次插入排序与简单插入排序完全相同，所以前面的几趟排序完全可以看做是最后的排序目标“打基础”，让最后一次的排序序列尽可能有序，下面描述一下希尔排序的过程，前提是你已经了解简单插入排序的过程，可以参考文章<a href="https://albertgithubhome.github.io/blog/2018/12/04/%E6%8A%93%E6%89%91%E5%85%8B%E7%89%8C%E9%A3%8E%E6%A0%BC%E7%9A%84%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/">抓扑克牌风格的插入排序</a>熟悉一下。</p>
 <h1 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h1><p>希尔排序的有一个关键的元素是步长，关于步长的选择有很多种方法，比如只选奇数，选择互为质数等等，其目的就是为了减少重复比较的次数，我们现在只为了解希尔排序的过程，所以先选择一种简单的步长选定方法，以元素个数的一半为基础，每次减少一半直到步长降为1，比如10个元素的步长选择分别为5,2,1，本质思想就是分别以步长5,2,1对整个待排序列进行简单的插入排序，最后就完成了整个序列的排序。</p>
 <p>我们用物品重量排序作为例子吧，原来插入排序的例子是将新得到的扑克牌不断插入到有序序列中得到最终排序，这次可以直接先给出物品质量序列的初始排列，假设为<code>99, 34, 54, 65, 11, 1, 5, 12, 89, 42</code>，一共10件物品摆在面前，目标为将物品重量从小到大排序，首先选取步长5开始排序过程：</p>
@@ -500,13 +503,11 @@
 <li><p>最后再将整个待排序列进行一次简单插入排序，便可得到最终排好的序列，实际上最后一次插入排序只有中间几个元素需要移动了：<br><code>1, 5, 11, 12, 34, 42, 54, 65, 89, 99</code></p>
 </li>
 </ol>
-<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  交换两个变量</span></span><br><span class="line"><span class="comment">参数：  element1--被交换的第一个元素的地址</span></span><br><span class="line"><span class="comment">        element2--被交换的第二个元素的地址</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意：  只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap_data</span><span class="params">(<span class="keyword">int</span>* element1, <span class="keyword">int</span>* element2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> middle_value = *element1;</span><br><span class="line">    *element1 = *element2;</span><br><span class="line">    *element2 = middle_value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  希尔排序，实现数组元素从小到大排列</span></span><br><span class="line"><span class="comment">参数：  array--表示待排序的数组，此处会退化成指针</span></span><br><span class="line"><span class="comment">        count--数组元素的个数</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意： 只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shell_sort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">step</span> = count / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">step</span> &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> pos = <span class="built_in">step</span>; pos &lt; count; ++pos)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> insert_index = pos; insert_index &gt;= <span class="built_in">step</span>; insert_index -= <span class="built_in">step</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">array</span>[insert_index] &lt; <span class="built_in">array</span>[insert_index - <span class="built_in">step</span>])</span><br><span class="line">                    swap_data(&amp;<span class="built_in">array</span>[insert_index], &amp;<span class="built_in">array</span>[insert_index - <span class="built_in">step</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">step</span> /= <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  交换两个变量</span></span><br><span class="line"><span class="comment">参数：  element1--被交换的第一个元素的地址</span></span><br><span class="line"><span class="comment">        element2--被交换的第二个元素的地址</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意：  只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap_data</span><span class="params">(<span class="keyword">int</span>* element1, <span class="keyword">int</span>* element2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> middle_value = *element1;</span><br><span class="line">    *element1 = *element2;</span><br><span class="line">    *element2 = middle_value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  希尔排序，实现数组元素从小到大排列</span></span><br><span class="line"><span class="comment">参数：  array--表示待排序的数组，此处会退化成指针</span></span><br><span class="line"><span class="comment">        count--数组元素的个数</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意： 只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shell_sort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> step = count / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span> (step &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> pos = step; pos &lt; count; ++pos)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> insert_index = pos; insert_index &gt;= step; insert_index -= step)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">array</span>[insert_index] &lt; <span class="built_in">array</span>[insert_index - step])</span><br><span class="line">                    swap_data(&amp;<span class="built_in">array</span>[insert_index], &amp;<span class="built_in">array</span>[insert_index - step]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        step /= <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>对比插入排序源代码，找找不同</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert_sort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> pos = <span class="number">1</span>; pos &lt; count; ++pos)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> insert_index = pos; insert_index &gt; <span class="number">0</span>; --insert_index)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">array</span>[insert_index] &lt; <span class="built_in">array</span>[insert_index - <span class="number">1</span>])</span><br><span class="line">                swap_data(&amp;<span class="built_in">array</span>[insert_index], &amp;<span class="built_in">array</span>[insert_index - <span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h1 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h1><p>以上代码就是希尔排序的实现方式了，对比直接插入的源代码发现，如果将希尔排序的初始步长设置成1，那么整个希尔排序的代码就和简单插入排序完全一样了，这也符合我们之前分析的过程，其实希尔排序就是分多次，每次用不同的步长执行简单插入排序。</p>
 <p>还有一点就是代码执行的过程与上面示例中的分组插入看起来有些不同，只是因为这个写起来更方便一些，分组只是为了人脑能更快的理解算法的思想，但是代码编写时还要考虑复杂性，将数据拆分成几组然后分别进行插入排序完全可以做到，但是实际上完全没有必要。</p>
 <p>比如分成两组排序的那一步，直观上先排索引为0,2,4,6,8上的元素，依次做插入操作，然后排索引为1,3,5,7,9上的元素，在依次做插入操作，但是在实现的代码中就做了变通，反正都要做插入操作，并且步长都是2，所以可以直接对索引是0,1,2,3,4,5,6,7,8,9上的元素做插入排序，只要注意步长是2，就不会影响到其他组（实际上并不存在）的元素了，整个过程顺着代码，一步步执行就明白了。</p>
@@ -540,7 +541,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/03/09/%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" title="为目标打好基础的希尔排序">http://albertgithubhome.github.io/blog/2019/03/09/%E4%B8%BA%E7%9B%AE%E6%A0%87%E6%89%93%E5%A5%BD%E5%9F%BA%E7%A1%80%E7%9A%84%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/03/09/为目标打好基础的希尔排序/" title="为目标打好基础的希尔排序">http://AlbertGithubHome.github.io/blog/2019/03/09/为目标打好基础的希尔排序/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -596,15 +597,15 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/%E6%8E%92%E5%BA%8F/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
+            <a href="/blog/tags/排序/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
           
-            <a href="/blog/tags/%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+            <a href="/blog/tags/算法/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
           
-            <a href="/blog/tags/%E6%A6%82%E5%BF%B5/" rel="tag"><i class="fa fa-tag"></i> 概念</a>
+            <a href="/blog/tags/概念/" rel="tag"><i class="fa fa-tag"></i> 概念</a>
           
             <a href="/blog/tags/Sort/" rel="tag"><i class="fa fa-tag"></i> Sort</a>
           
-            <a href="/blog/tags/%E5%B8%8C%E5%B0%94/" rel="tag"><i class="fa fa-tag"></i> 希尔</a>
+            <a href="/blog/tags/希尔/" rel="tag"><i class="fa fa-tag"></i> 希尔</a>
           
         </div>
       
@@ -617,7 +618,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/02/25/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F%E5%B8%B8%E7%94%A8%E7%9A%84nohup%E5%92%8C-%E7%9A%84%E5%8C%BA%E5%88%AB/" rel="next" title="linux环境下运行程序常用的nohup和&的区别">
+              <a href="/blog/2019/02/25/linux环境下运行程序常用的nohup和-的区别/" rel="next" title="linux环境下运行程序常用的nohup和&的区别">
                 <i class="fa fa-chevron-left"></i> linux环境下运行程序常用的nohup和&的区别
               </a>
             
@@ -627,7 +628,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/03/13/linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E6%89%BE%E5%8C%85%E5%90%AB%E6%8C%87%E5%AE%9A%E5%86%85%E5%AE%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%8A%E5%85%B6%E6%89%80%E5%9C%A8%E8%A1%8C%E6%95%B0/" rel="prev" title="linux环境下查找包含指定内容的文件及其所在行数">
+              <a href="/blog/2019/03/13/linux环境下查找包含指定内容的文件及其所在行数/" rel="prev" title="linux环境下查找包含指定内容的文件及其所在行数">
                 linux环境下查找包含指定内容的文件及其所在行数 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -731,7 +732,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -742,7 +743,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -753,7 +754,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -761,6 +762,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -773,17 +781,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -828,6 +825,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -909,7 +917,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -918,12 +926,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -955,7 +963,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

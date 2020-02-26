@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="Mysql,char,varchar,length,char_length">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql中char和varchar的区别">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;07&#x2F;27&#x2F;Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/07/27/Mysql中char和varchar的区别/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言这个标题起的过于俗套，前一段时间我还写了一篇总结《Mysql5.7版本中数据表字段可用的类型》来批判这种对比，原因是对比时没有指明数据库，内容写的是char、varchar和nvarchar的对比，结果我测试了半天发现Mysql当前版本根本没有nvarchar，浪费来了不少时间。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.198Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql中char和varchar的区别">
+<meta name="twitter:description" content="前言这个标题起的过于俗套，前一段时间我还写了一篇总结《Mysql5.7版本中数据表字段可用的类型》来批判这种对比，原因是对比时没有指明数据库，内容写的是char、varchar和nvarchar的对比，结果我测试了半天发现Mysql当前版本根本没有nvarchar，浪费来了不少时间。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/07/27/Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/07/27/Mysql中char和varchar的区别/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/07/27/Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB/" class="leancloud_visitors" data-flag-title="Mysql中char和varchar的区别">
+             <span id="/blog/2019/07/27/Mysql中char和varchar的区别/" class="leancloud_visitors" data-flag-title="Mysql中char和varchar的区别">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">2,174(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">9(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个标题起的过于俗套，前一段时间我还写了一篇总结<a href="https://albertgithubhome.github.io/blog/2019/07/02/Mysql5-7%E7%89%88%E6%9C%AC%E4%B8%AD%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AD%97%E6%AE%B5%E5%8F%AF%E7%94%A8%E7%9A%84%E7%B1%BB%E5%9E%8B/">《Mysql5.7版本中数据表字段可用的类型》</a>来批判这种对比，原因是对比时没有指明数据库，内容写的是<code>char</code>、<code>varchar</code>和<code>nvarchar</code>的对比，结果我测试了半天发现Mysql当前版本根本没有<code>nvarchar</code>，浪费来了不少时间。</p>
 <a id="more"></a>
-
 <h1 id="问题起因"><a href="#问题起因" class="headerlink" title="问题起因"></a>问题起因</h1><p>真香定律来的总是这么快，这才过了几天，我也来写写Mysql中<code>char</code>和<code>varchar</code>究竟有什么区别，起因是看到CSDN好友“铁柱同学”一篇关于innodb主键长度最大为767字节的讲解，里面涉及到一个<code>char</code>类型最大存储255个字符，按照utf8编码来看最大的字节数应该是255*3=765个字节的知识点。现在来看767的来源好像并不是256*3-1，而是255*3+2，这个2就是存储<code>char</code>类型字段中实际有多少个字节的。</p>
 <p>有点跑题了，实际上是在研究索引长度的过程中，我发现我对<code>char</code>和<code>varchar</code>这两个类型一直存在着误解，因为一直做游戏开发的缘故，游戏数据的存储一般使用<code>varbinary</code>来存，导致我把字符和字节有点弄混了，所以我一直认为在utf8编码下<code>char(9)</code>可以存储9个英文字符，或者3个中文汉字，实际我做完实验后发现<code>char(9)</code>也可以正常存储9个汉字。</p>
 <p>提到字符和字节，初学者可能会有点蒙，实际上它们两者之间是需要通过编码来转换的，之前做过游戏的多语言版本，所以对这一块还是比较熟的，字节就是计算机中的8个二进制位，而字符是每个语言中的不可分割的单元，字符转换成字节需要依赖编码，实际上编码就是一本大字典，里面对应了每个字符在当前编码下转换成字节是什么样的，ANSI是一本字典，UTF8也是一本字典，编码的类型还有很多，每种编码都记录了各自的转换结果。</p>
@@ -502,54 +505,57 @@
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; insert into diff values(2, "测试策划和开发做游戏OK", "测试策划和开发做游戏");</span><br><span class="line">1406 - Data too long for column 's1' at row 1</span><br><span class="line">mysql&gt; insert into diff values(2, "测试策划和开发做游戏", "测试策划和开发做游戏OK");</span><br><span class="line">1406 - Data too long for column 's2' at row 1</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>至此没有看出区别，在插入内容前后都加上空格测试一下</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select id, s1, concat('#', s1, '$'), length(s1) as len_s1, char_length(s1) as clen_s1,</span><br><span class="line">                s2, concat('<span class="comment">#', s2, '$'), length(s2) as len_s2, char_length(s2) as clen_s2 from diff;</span></span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br><span class="line">| id | s1                   | concat('<span class="comment">#', s1, '$')   | len_s1 | clen_s1 | s2                   | concat('#', s2, '$')   | len_s2 | clen_s2 |</span></span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br><span class="line">|  1 | 测试test             | <span class="comment">#测试test$             |     10 |       6 | 测试test             | #测试test$             |     10 |       6 |</span></span><br><span class="line">|  2 | 测试策划和开发做游戏 | <span class="comment">#测试策划和开发做游戏$ |     30 |      10 | 测试策划和开发做游戏 | #测试策划和开发做游戏$ |     30 |      10 |</span></span><br><span class="line">|  3 |  OK                  | <span class="comment"># OK$                  |      3 |       3 |  OK                  | # OK $                 |      4 |       4 |</span></span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br></pre></td></tr></table></figure>
-<p>这一次出现了区别，<code>char</code>类型的字段去掉了尾部的空格，而<code>varcahr</code>了类型的字段原样存储，没有去掉尾部空格，两者对于头部的空格都是存储的，这导致两者显示的字节数和字符数都不相同了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select id, s1, concat('#', s1, '$'), length(s1) as len_s1, char_length(s1) as clen_s1,</span><br><span class="line">                s2, concat('#', s2, '$'), length(s2) as len_s2, char_length(s2) as clen_s2 from diff;</span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br><span class="line">| id | s1                   | concat('#', s1, '$')   | len_s1 | clen_s1 | s2                   | concat('#', s2, '$')   | len_s2 | clen_s2 |</span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br><span class="line">|  1 | 测试test             | #测试test$             |     10 |       6 | 测试test             | #测试test$             |     10 |       6 |</span><br><span class="line">|  2 | 测试策划和开发做游戏 | #测试策划和开发做游戏$ |     30 |      10 | 测试策划和开发做游戏 | #测试策划和开发做游戏$ |     30 |      10 |</span><br><span class="line">|  3 |  OK                  | # OK$                  |      3 |       3 |  OK                  | # OK $                 |      4 |       4 |</span><br><span class="line">+<span class="comment">----+----------------------+------------------------+--------+---------+----------------------+------------------------+--------+---------+</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<ol start="5">
+<p>这一次出现了区别，<code>char</code>类型的字段去掉了尾部的空格，而<code>varcahr</code>了类型的字段原样存储，没有去掉尾部空格，两者对于头部的空格都是存储的，这导致两者显示的字节数和字符数都不相同了。</p>
+<ol>
 <li>分别使用不带空格、带头部空格，头尾都带空格进行测试<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from diff where s1 = 'OK ';</span><br><span class="line">Empty <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> diff <span class="keyword">where</span> s2 = <span class="string">'OK '</span>;</span><br><span class="line">Empty <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> diff <span class="keyword">where</span> s1 = <span class="string">' OK '</span>;</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">| id | s1  | s2   |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">|  3 |  OK |  OK  |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> diff <span class="keyword">where</span> s2 = <span class="string">' OK '</span>;</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">| id | s1  | s2   |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">|  3 |  OK |  OK  |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> diff <span class="keyword">where</span> s1 = <span class="string">' OK'</span>;</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">| id | s1  | s2   |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">|  3 |  OK |  OK  |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> diff <span class="keyword">where</span> s2 = <span class="string">' OK'</span>;</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">| id | s1  | s2   |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">|  3 |  OK |  OK  |</span><br><span class="line">+<span class="comment">----+-----+------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
-测试结果可能让人出乎意料，虽然s1和s2中存储的内容不同（差一个空格），但是查找时的行为却完全一样，这说明查找时尾部的空格并不会被考虑。</li>
+</li>
 </ol>
+<p>测试结果可能让人出乎意料，虽然s1和s2中存储的内容不同（差一个空格），但是查找时的行为却完全一样，这说明查找时尾部的空格并不会被考虑。</p>
 <h1 id="char和varchar区别"><a href="#char和varchar区别" class="headerlink" title="char和varchar区别"></a>char和varchar区别</h1><p>做了半天试验发现char和varchar还是没有多大区别，实际上有些区别通过表面数据是测试不出来的，具体区别整理如下：</p>
 <table>
 <thead>
 <tr>
-<th align="center">行为</th>
-<th align="center"><code>char</code>字段</th>
-<th align="center"><code>varchar</code>字段</th>
+<th style="text-align:center">行为</th>
+<th style="text-align:center"><code>char</code>字段</th>
+<th style="text-align:center"><code>varchar</code>字段</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">最大长度</td>
-<td align="center">255字符</td>
-<td align="center">65535个字节，所以括号中最大的字符数还得通过编码来算</td>
+<tbody>
+<tr>
+<td style="text-align:center">最大长度</td>
+<td style="text-align:center">255字符</td>
+<td style="text-align:center">65535个字节，所以括号中最大的字符数还得通过编码来算</td>
 </tr>
 <tr>
-<td align="center">是否定长</td>
-<td align="center">定长，不足的部分用隐藏空格填充</td>
-<td align="center">不定长</td>
+<td style="text-align:center">是否定长</td>
+<td style="text-align:center">定长，不足的部分用隐藏空格填充</td>
+<td style="text-align:center">不定长</td>
 </tr>
 <tr>
-<td align="center">空间使用</td>
-<td align="center">会有浪费</td>
-<td align="center">更加节省</td>
+<td style="text-align:center">空间使用</td>
+<td style="text-align:center">会有浪费</td>
+<td style="text-align:center">更加节省</td>
 </tr>
 <tr>
-<td align="center">查找效率</td>
-<td align="center">高</td>
-<td align="center">低</td>
+<td style="text-align:center">查找效率</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
 </tr>
 <tr>
-<td align="center">尾部空格</td>
-<td align="center">插入时省略</td>
-<td align="center">插入时不会省略，查找时省略</td>
+<td style="text-align:center">尾部空格</td>
+<td style="text-align:center">插入时省略</td>
+<td style="text-align:center">插入时不会省略，查找时省略</td>
 </tr>
 <tr>
-<td align="center">like查找</td>
-<td align="center">语句中like后的’ ‘不会省</td>
-<td align="center">语句中like后的’ ‘不会省，字段结尾的空格也不会省</td>
+<td style="text-align:center">like查找</td>
+<td style="text-align:center">语句中like后的’ ‘不会省</td>
+<td style="text-align:center">语句中like后的’ ‘不会省，字段结尾的空格也不会省</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
 <li><code>char(n)</code>中的n是字符数，范围是0~255（额外需要1到2个字节来存长度）</li>
 <li><code>varchar(n)</code>中的n也是字符数，但是最大值需要通过编码来算，不能超过65535字节（从中还需要拿出1到2个字节来存长度）</li>
@@ -584,7 +590,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/07/27/Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB/" title="Mysql中char和varchar的区别">http://albertgithubhome.github.io/blog/2019/07/27/Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/07/27/Mysql中char和varchar的区别/" title="Mysql中char和varchar的区别">http://AlbertGithubHome.github.io/blog/2019/07/27/Mysql中char和varchar的区别/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -661,7 +667,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/07/23/%E6%97%B6%E5%88%86%E7%A7%92%E9%92%88%E5%9C%A8%E4%B8%80%E5%A4%A9%E4%B9%8B%E5%86%85%E9%87%8D%E5%90%88%E5%A4%9A%E5%B0%91%E6%AC%A1/" rel="next" title="时分秒针在一天之内重合多少次">
+              <a href="/blog/2019/07/23/时分秒针在一天之内重合多少次/" rel="next" title="时分秒针在一天之内重合多少次">
                 <i class="fa fa-chevron-left"></i> 时分秒针在一天之内重合多少次
               </a>
             
@@ -671,7 +677,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/" rel="prev" title="std::bind（一）：包装普通函数">
+              <a href="/blog/2019/08/01/std-bind（一）：包装普通函数/" rel="prev" title="std::bind（一）：包装普通函数">
                 std::bind（一）：包装普通函数 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -775,7 +781,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -786,7 +792,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -797,7 +803,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -805,6 +811,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -817,17 +830,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -872,6 +874,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -953,7 +966,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -962,12 +975,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -999,7 +1012,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

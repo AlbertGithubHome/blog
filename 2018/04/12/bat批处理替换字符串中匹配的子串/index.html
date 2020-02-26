@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="实用工具,bat">
 <meta property="og:type" content="article">
 <meta property="og:title" content="bat批处理替换字符串中匹配的子串">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2018&#x2F;04&#x2F;12&#x2F;bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2018/04/12/bat批处理替换字符串中匹配的子串/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言关于字符串的操作通常是编程生涯中不可避免的，在各种竞赛中、工作中常常能使用到，许多语言中都有专门负责处理字符串的模块或者类，对于字符串的替换一般也有专门的函数，比如Lua中的string.gsub()、Python中的replece()等，那么批处理在进行字符串操作的时候，有没有好用的替换函数呢？">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.211Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bat批处理替换字符串中匹配的子串">
+<meta name="twitter:description" content="前言关于字符串的操作通常是编程生涯中不可避免的，在各种竞赛中、工作中常常能使用到，许多语言中都有专门负责处理字符串的模块或者类，对于字符串的替换一般也有专门的函数，比如Lua中的string.gsub()、Python中的replece()等，那么批处理在进行字符串操作的时候，有没有好用的替换函数呢？">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/04/12/bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/04/12/bat批处理替换字符串中匹配的子串/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2018/04/12/bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2/" class="leancloud_visitors" data-flag-title="bat批处理替换字符串中匹配的子串">
+             <span id="/blog/2018/04/12/bat批处理替换字符串中匹配的子串/" class="leancloud_visitors" data-flag-title="bat批处理替换字符串中匹配的子串">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">548(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">2(分)</span>
           </span>
 
           
@@ -478,13 +482,10 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>关于字符串的操作通常是编程生涯中不可避免的，在各种竞赛中、工作中常常能使用到，许多语言中都有专门负责处理字符串的模块或者类，对于字符串的替换一般也有专门的函数，比如Lua中的<code>string.gsub()</code>、Python中的<code>replece()</code>等，那么批处理在进行字符串操作的时候，有没有好用的替换函数呢？</p>
 <a id="more"></a>
-
 <p>前两天在使用批处理更新资源文件的时候发现，批处理中也有专门处理字符串替换的方法，并且这是我见到的最有意思的字符串替换方式，就是利用<code>A:B=C</code>的方式来替换字符串，具体含义就是在字符串变量<code>A</code>中查找所有的子串<code>B</code>并且替换成子串<code>C</code>，看起来很有意思吧？下面举一个具体的示例看一下。</p>
 <h1 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h1><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line"><span class="built_in">SET</span> INPUT_PARAM=%<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">rem 替换输入变量中的world为China</span></span><br><span class="line"><span class="built_in">echo</span> source string is <span class="variable">%INPUT_PARAM%</span></span><br><span class="line"><span class="built_in">echo</span> ===   China <span class="built_in">replace</span> world   ===</span><br><span class="line"><span class="built_in">echo</span> <span class="built_in">replace</span> result is <span class="variable">%INPUT_PARAM:world=China%</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span>.</span><br><span class="line"></span><br><span class="line"><span class="comment">rem 将路径中的反斜杠替换成斜杠</span></span><br><span class="line"><span class="built_in">SET</span> IMAGE_PATH=C:\NVIDIA\AndroidWorks\<span class="number">001</span></span><br><span class="line"><span class="built_in">echo</span> source string is <span class="variable">%IMAGE_PATH%</span></span><br><span class="line"><span class="built_in">echo</span> ===   \ <span class="built_in">replace</span> /   ===</span><br><span class="line"><span class="built_in">echo</span> <span class="built_in">replace</span> result is <span class="variable">%IMAGE_PATH:\=/%</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span>.</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> ABCD:A=a</span><br><span class="line"></span><br><span class="line"><span class="built_in">pause</span></span><br></pre></td></tr></table></figure>
-
 <p>代码中举了两个例子，将变量中的world为China、将路径中的反斜杠替换成斜杠都成功地替换了子串的内容，但是我们发现这个的作用对象只能是变量，对于最后一句<code>echo ABCD:A=a</code>并没有发生替换，下面可以看一下运行结果。</p>
 <h1 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">E:\batTool&gt;Replace.bat &quot;Hello wolrd, All over the world!&quot;</span><br><span class="line">source string is &quot;Hello wolrd, All over the world!&quot;</span><br><span class="line">===   China replace world   ===</span><br><span class="line">replace result is &quot;Hello wolrd, All over the China!&quot;</span><br><span class="line"></span><br><span class="line">source string is C:\NVIDIA\AndroidWorks\001</span><br><span class="line">===   \ replace /   ===</span><br><span class="line">replace result is C:/NVIDIA/AndroidWorks/001</span><br><span class="line"></span><br><span class="line">ABCD:A=a</span><br><span class="line">请按任意键继续. . .</span><br></pre></td></tr></table></figure>
-
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
 <li>bat处理字符串替换的方式比较有意思，需要知道<code>A:B=C</code>形式的替换方法</li>
 <li>字符串替换只能是针对变量，对于文本貌似不起作用。</li>
@@ -517,7 +518,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2018/04/12/bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2/" title="bat批处理替换字符串中匹配的子串">http://albertgithubhome.github.io/blog/2018/04/12/bat%E6%89%B9%E5%A4%84%E7%90%86%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AD%90%E4%B8%B2/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2018/04/12/bat批处理替换字符串中匹配的子串/" title="bat批处理替换字符串中匹配的子串">http://AlbertGithubHome.github.io/blog/2018/04/12/bat批处理替换字符串中匹配的子串/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -573,7 +574,7 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/%E5%AE%9E%E7%94%A8%E5%B7%A5%E5%85%B7/" rel="tag"><i class="fa fa-tag"></i> 实用工具</a>
+            <a href="/blog/tags/实用工具/" rel="tag"><i class="fa fa-tag"></i> 实用工具</a>
           
             <a href="/blog/tags/bat/" rel="tag"><i class="fa fa-tag"></i> bat</a>
           
@@ -588,7 +589,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2018/04/08/%E7%95%A5%E6%98%BE%E7%A5%9E%E7%A7%98%E7%9A%84%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" rel="next" title="略显神秘的快速排序">
+              <a href="/blog/2018/04/08/略显神秘的快速排序/" rel="next" title="略显神秘的快速排序">
                 <i class="fa fa-chevron-left"></i> 略显神秘的快速排序
               </a>
             
@@ -598,7 +599,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2018/05/12/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%90%91%E7%B1%BB%E6%88%90%E5%91%98%E7%9A%84%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6-%E5%92%8C/" rel="prev" title="操作指向类成员的指针需要了解的两个操作符->*和.*">
+              <a href="/blog/2018/05/12/操作指向类成员的指针需要了解的两个操作符-和/" rel="prev" title="操作指向类成员的指针需要了解的两个操作符->*和.*">
                 操作指向类成员的指针需要了解的两个操作符->*和.* <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -702,7 +703,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -713,7 +714,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -724,7 +725,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -732,6 +733,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -744,17 +752,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -799,6 +796,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -880,7 +888,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -889,12 +897,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -926,7 +934,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

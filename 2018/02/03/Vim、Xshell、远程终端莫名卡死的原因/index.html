@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="Vim,Xshell,终端卡死">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vim、Xshell、远程终端莫名卡死的原因">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2018&#x2F;02&#x2F;03&#x2F;Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言最近通过Xshell连接远程服务器，然后使用Vim修改文件时会莫名其妙的卡死，一开始我还没注意，因为近期的网络一直不太好，经常出现按下一个字母半天才反应过来的情况，所以我没有太在意，直接关闭终端重新打开就好。直到有一天我开着两个终端的时候，Vim又卡着不动了，而另一个终端还以流畅的处理我敲击的命令，我就断定这肯定不是网络原因了。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.209Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vim、Xshell、远程终端莫名卡死的原因">
+<meta name="twitter:description" content="前言最近通过Xshell连接远程服务器，然后使用Vim修改文件时会莫名其妙的卡死，一开始我还没注意，因为近期的网络一直不太好，经常出现按下一个字母半天才反应过来的情况，所以我没有太在意，直接关闭终端重新打开就好。直到有一天我开着两个终端的时候，Vim又卡着不动了，而另一个终端还以流畅的处理我敲击的命令，我就断定这肯定不是网络原因了。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/02/03/Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2018/02/03/Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0/" class="leancloud_visitors" data-flag-title="Vim、Xshell、远程终端莫名卡死的原因">
+             <span id="/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/" class="leancloud_visitors" data-flag-title="Vim、Xshell、远程终端莫名卡死的原因">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">647(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">2(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近通过Xshell连接远程服务器，然后使用Vim修改文件时会莫名其妙的卡死，一开始我还没注意，因为近期的网络一直不太好，经常出现按下一个字母半天才反应过来的情况，所以我没有太在意，直接关闭终端重新打开就好。直到有一天我开着两个终端的时候，Vim又卡着不动了，而另一个终端还以流畅的处理我敲击的命令，我就断定这肯定不是网络原因了。</p>
 <a id="more"></a>
-
 <h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><p>既然是Vim卡住了那就查查Vim本身有什么BUG吧，结果上网搜了一圈发现原来是远程终端的问题，根本就不关Vim的事，它只是躺着中枪了而已<code>(*^▽^*)</code>，实际上就是不小心按下了快捷键 <code>Ctrl+S</code> 导致的，为什么常常是Vim卡住呢？那是因为很多人习惯了在 Windows上 的保存快捷键，写写文档总是习惯性按下快捷键 <code>Ctrl+S</code> 保存一下，来避免程序突然崩溃导致文档丢失，这就解释了为什么出问题的总是Vim，因为使用Vim编辑文本有时会习惯性的按下 <code>Ctrl+S</code> 保存，而在执行Shell命令是很小的概率会按 <code>Ctrl+S</code>，所以大多数人卡住往往是在使用Vim的时候。</p>
 <p>可是快捷键 <code>Ctrl+S</code> 为什么会导致终端卡死呢？实际上这个快捷键的含义是“阻断向终端输出内容”，很多人说这个快捷键的作用是暂停终端，我个人感觉这种说法并不准确，实际是上终端并没有暂停，按下 <code>Ctrl+S</code>快捷键后，你依然可以像终端发送命令，终端也会正常执行，只是不会将反馈内容和结果显示在终端上而已，这个特性可以用来暂停显示快速滚动输出的内容，比如在编译大型项目的时候。</p>
 <h1 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h1><p>解除这种状态的方法很简单，按下快捷键 <code>Ctrl+Q</code> 就可以“恢复向终端输出内容”，只是很多时候我们并不知道，以为是终端卡死了然后错杀了程序！</p>
@@ -515,7 +518,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2018/02/03/Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0/" title="Vim、Xshell、远程终端莫名卡死的原因">http://albertgithubhome.github.io/blog/2018/02/03/Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/" title="Vim、Xshell、远程终端莫名卡死的原因">http://AlbertGithubHome.github.io/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -575,7 +578,7 @@
           
             <a href="/blog/tags/Xshell/" rel="tag"><i class="fa fa-tag"></i> Xshell</a>
           
-            <a href="/blog/tags/%E7%BB%88%E7%AB%AF%E5%8D%A1%E6%AD%BB/" rel="tag"><i class="fa fa-tag"></i> 终端卡死</a>
+            <a href="/blog/tags/终端卡死/" rel="tag"><i class="fa fa-tag"></i> 终端卡死</a>
           
         </div>
       
@@ -588,7 +591,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2018/02/02/Vim%E4%B8%AD%E7%AE%80%E5%8D%95%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81/" rel="next" title="Vim中简单格式化代码">
+              <a href="/blog/2018/02/02/Vim中简单格式化代码/" rel="next" title="Vim中简单格式化代码">
                 <i class="fa fa-chevron-left"></i> Vim中简单格式化代码
               </a>
             
@@ -598,7 +601,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2018/02/25/%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1/" rel="prev" title="关于游戏中仓库类的设计">
+              <a href="/blog/2018/02/25/关于游戏中仓库类的设计/" rel="prev" title="关于游戏中仓库类的设计">
                 关于游戏中仓库类的设计 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -702,7 +705,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -713,7 +716,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -724,7 +727,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -732,6 +735,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -744,17 +754,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -799,6 +798,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -880,7 +890,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -889,12 +899,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -926,7 +936,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

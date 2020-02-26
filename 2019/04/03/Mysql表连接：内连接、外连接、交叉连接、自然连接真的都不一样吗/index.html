@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,14 +106,16 @@
 <meta name="keywords" content="Mysql,查询,表连接,内连接,外连接">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;04&#x2F;03&#x2F;Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言提起这几种表连接方式就让人头大，想当初还因为这个面试被刷了，长得挺像，用法挺像，可就是有点不一样，其实的它们的差异不是固定的，要在一个具体的环境下才能进行对比，比如在Mysql环境下, JOIN, INNER JOIN, CROSS JOIN 三者在语法上是等价的，也就是作用相同，但是在标准的SQL下却又存在差异。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20190404155437159.png?x-oss-process=image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_108,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190404155437159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_108,color_FFFFFF,t_70#pic_center">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.202Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20190404155437159.png?x-oss-process=image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_108,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:title" content="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
+<meta name="twitter:description" content="前言提起这几种表连接方式就让人头大，想当初还因为这个面试被刷了，长得挺像，用法挺像，可就是有点不一样，其实的它们的差异不是固定的，要在一个具体的环境下才能进行对比，比如在Mysql环境下, JOIN, INNER JOIN, CROSS JOIN 三者在语法上是等价的，也就是作用相同，但是在标准的SQL下却又存在差异。">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190404155437159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_108,color_FFFFFF,t_70#pic_center">
 
 
 
@@ -184,7 +188,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -281,7 +285,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -344,7 +348,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/04/03/Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -425,7 +429,7 @@
 
           
           
-             <span id="/blog/2019/04/03/Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97/" class="leancloud_visitors" data-flag-title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
+             <span id="/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/" class="leancloud_visitors" data-flag-title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -443,7 +447,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">3,998(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -451,7 +455,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">18(分)</span>
           </span>
 
           
@@ -480,8 +484,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>提起这几种表连接方式就让人头大，想当初还因为这个面试被刷了，长得挺像，用法挺像，可就是有点不一样，其实的它们的差异不是固定的，要在一个具体的环境下才能进行对比，比如在Mysql环境下, <code>JOIN, INNER JOIN, CROSS JOIN</code> 三者在语法上是等价的，也就是作用相同，但是在标准的SQL下却又存在差异。</p>
 <a id="more"></a>
-
-
 <p>选一个自己熟悉的环境对比一下，那就是Mysql数据库的表连接了，测试的多了渐渐的发现了一些规律和神坑，貌似一切表连接都是以内连接为基础，然后再此基础上进行变换可以得到一种新的连接，接下来就采用这种对比的逻辑，看看这些连接类型都有什么区别和联系。</p>
 <h1 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h1><blockquote>
 <p>Welcome to the MySQL monitor.  Commands end with ; or \g.<br>Your MySQL connection id is 8<br>Server version: 5.7.21-log MySQL Community Server (GPL)<br>Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.<br>Oracle is a registered trademark of Oracle Corporation and/or its affiliates. Other names may be trademarks of their respective owners.</p>
@@ -501,7 +503,6 @@
 </li>
 <li><p>分别查看两表中的数据如下</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from a;</span><br><span class="line">+<span class="comment">----+--------+</span></span><br><span class="line">| id | name   |</span><br><span class="line">+<span class="comment">----+--------+</span></span><br><span class="line">|  1 | albert |</span><br><span class="line">|  2 | bella  |</span><br><span class="line">|  3 | amy    |</span><br><span class="line">|  4 | forier |</span><br><span class="line">+<span class="comment">----+--------+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> b;</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">| id | age |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">|  1 |  18 |</span><br><span class="line">|  2 |  19 |</span><br><span class="line">|  3 |  25 |</span><br><span class="line">|  5 |  70 |</span><br><span class="line">+<span class="comment">----+-----+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.05</span> sec)</span><br></pre></td></tr></table></figure>
-
 </li>
 </ol>
 <h1 id="对比测试"><a href="#对比测试" class="headerlink" title="对比测试"></a>对比测试</h1><p>这篇对比文章可能和以往你看到的不太一样，对比的基础是内连接，其他的连接基本可以看做是在内连接的基础上加了一些条件和扩展得到的，所以首先我们需要先来看一下内连接。</p>
@@ -523,87 +524,89 @@
 <table>
 <thead>
 <tr>
-<th align="left">连接类型</th>
-<th align="center">语法</th>
-<th align="center">不加条件</th>
-<th align="center">加<code>ON</code>子句</th>
-<th align="center">加<code>USING</code>子句</th>
-<th align="center">与内连接关系</th>
+<th style="text-align:left">连接类型</th>
+<th style="text-align:center">语法</th>
+<th style="text-align:center">不加条件</th>
+<th style="text-align:center">加<code>ON</code>子句</th>
+<th style="text-align:center">加<code>USING</code>子句</th>
+<th style="text-align:center">与内连接关系</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">内连接</td>
-<td align="center"><code>a [INNER] JOIN b</code></td>
-<td align="center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
-<td align="center">只按照条件匹配，所有列均显示</td>
-<td align="center">按照共有的列匹配，去除重复列</td>
-<td align="center">X</td>
+<tbody>
+<tr>
+<td style="text-align:left">内连接</td>
+<td style="text-align:center"><code>a [INNER] JOIN b</code></td>
+<td style="text-align:center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
+<td style="text-align:center">只按照条件匹配，所有列均显示</td>
+<td style="text-align:center">按照共有的列匹配，去除重复列</td>
+<td style="text-align:center">X</td>
 </tr>
 <tr>
-<td align="left">交叉连接</td>
-<td align="center"><code>a [CROSS] JOIN b</code></td>
-<td align="center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
-<td align="center">只按照条件匹配，所有列均显示</td>
-<td align="center">按照共有的列匹配，去除重复列</td>
-<td align="center">语法等价，完全相同</td>
+<td style="text-align:left">交叉连接</td>
+<td style="text-align:center"><code>a [CROSS] JOIN b</code></td>
+<td style="text-align:center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
+<td style="text-align:center">只按照条件匹配，所有列均显示</td>
+<td style="text-align:center">按照共有的列匹配，去除重复列</td>
+<td style="text-align:center">语法等价，完全相同</td>
 </tr>
 <tr>
-<td align="left">左外连接</td>
-<td align="center"><code>a LEFT [OUTER] JOIN b</code></td>
-<td align="center">必须加条件，否则报语法错误</td>
-<td align="center">只按照条件匹配，并且包含a表中没有匹配上的记录</td>
-<td align="center">按照共有的列匹配，并且包含a表中没有匹配上的记录</td>
-<td align="center">额外包含a表中没有匹配上的记录</td>
+<td style="text-align:left">左外连接</td>
+<td style="text-align:center"><code>a LEFT [OUTER] JOIN b</code></td>
+<td style="text-align:center">必须加条件，否则报语法错误</td>
+<td style="text-align:center">只按照条件匹配，并且包含a表中没有匹配上的记录</td>
+<td style="text-align:center">按照共有的列匹配，并且包含a表中没有匹配上的记录</td>
+<td style="text-align:center">额外包含a表中没有匹配上的记录</td>
 </tr>
 <tr>
-<td align="left">右外连接</td>
-<td align="center"><code>a RIGHT [OUTER] JOIN b</code></td>
-<td align="center">必须加条件，否则报语法错误</td>
-<td align="center">只按照条件匹配，并且包含b表中没有匹配上的记录</td>
-<td align="center">按照共有的列匹配，并且包含b表中没有匹配上的记录</td>
-<td align="center">额外包含b表中没有匹配上的记录</td>
+<td style="text-align:left">右外连接</td>
+<td style="text-align:center"><code>a RIGHT [OUTER] JOIN b</code></td>
+<td style="text-align:center">必须加条件，否则报语法错误</td>
+<td style="text-align:center">只按照条件匹配，并且包含b表中没有匹配上的记录</td>
+<td style="text-align:center">按照共有的列匹配，并且包含b表中没有匹配上的记录</td>
+<td style="text-align:center">额外包含b表中没有匹配上的记录</td>
 </tr>
 <tr>
-<td align="left">一般自然连接</td>
-<td align="center"><code>a NATURAL JOIN b</code></td>
-<td align="center">使用两表中共有的字段匹配</td>
-<td align="center">不能使用<code>ON</code>子句</td>
-<td align="center">不能使用<code>USING</code>子句</td>
-<td align="center">相当于内连接使用USING子句</td>
+<td style="text-align:left">一般自然连接</td>
+<td style="text-align:center"><code>a NATURAL JOIN b</code></td>
+<td style="text-align:center">使用两表中共有的字段匹配</td>
+<td style="text-align:center">不能使用<code>ON</code>子句</td>
+<td style="text-align:center">不能使用<code>USING</code>子句</td>
+<td style="text-align:center">相当于内连接使用USING子句</td>
 </tr>
 <tr>
-<td align="left">自然左外连接</td>
-<td align="center"><code>a NATURAL LEFT [OUTER] JOIN b</code></td>
-<td align="center">使用两表中共有的字段匹配，并且包含a表中没有匹配上的记录</td>
-<td align="center">不能使用<code>ON</code>子句</td>
-<td align="center">不能使用<code>USING</code>子句</td>
-<td align="center">相当于内连接使用USING子句，并且包含a表中没有匹配上的记录</td>
+<td style="text-align:left">自然左外连接</td>
+<td style="text-align:center"><code>a NATURAL LEFT [OUTER] JOIN b</code></td>
+<td style="text-align:center">使用两表中共有的字段匹配，并且包含a表中没有匹配上的记录</td>
+<td style="text-align:center">不能使用<code>ON</code>子句</td>
+<td style="text-align:center">不能使用<code>USING</code>子句</td>
+<td style="text-align:center">相当于内连接使用USING子句，并且包含a表中没有匹配上的记录</td>
 </tr>
 <tr>
-<td align="left">自然右外连接</td>
-<td align="center"><code>a NATURAL RIGHT [OUTER] JOIN b</code></td>
-<td align="center">使用两表中共有的字段匹配，并且包含b表中没有匹配上的记录</td>
-<td align="center">不能使用<code>ON</code>子句</td>
-<td align="center">不能使用<code>USING</code>子句</td>
-<td align="center">相当于内连接使用USING子句，并且包含b表中没有匹配上的记录</td>
+<td style="text-align:left">自然右外连接</td>
+<td style="text-align:center"><code>a NATURAL RIGHT [OUTER] JOIN b</code></td>
+<td style="text-align:center">使用两表中共有的字段匹配，并且包含b表中没有匹配上的记录</td>
+<td style="text-align:center">不能使用<code>ON</code>子句</td>
+<td style="text-align:center">不能使用<code>USING</code>子句</td>
+<td style="text-align:center">相当于内连接使用USING子句，并且包含b表中没有匹配上的记录</td>
 </tr>
 <tr>
-<td align="left">STRAIGHT_JOIN</td>
-<td align="center"><code>a STRAIGHT_JOIN b</code></td>
-<td align="center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
-<td align="center">只按照条件匹配，所有列均显示</td>
-<td align="center">不能使用<code>USING</code>子句</td>
-<td align="center">在内连接基础上确定读表顺序</td>
+<td style="text-align:left">STRAIGHT_JOIN</td>
+<td style="text-align:center"><code>a STRAIGHT_JOIN b</code></td>
+<td style="text-align:center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
+<td style="text-align:center">只按照条件匹配，所有列均显示</td>
+<td style="text-align:center">不能使用<code>USING</code>子句</td>
+<td style="text-align:center">在内连接基础上确定读表顺序</td>
 </tr>
 <tr>
-<td align="left">逗号分隔表</td>
-<td align="center"><code>a, b</code></td>
-<td align="center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
-<td align="center">不能使用<code>ON</code>子句</td>
-<td align="center">不能使用<code>USING</code>子句</td>
-<td align="center">不能使用连接子句，只能使用<code>Where</code>筛选</td>
+<td style="text-align:left">逗号分隔表</td>
+<td style="text-align:center"><code>a, b</code></td>
+<td style="text-align:center">两表中任意两条记录分别匹配，形成笛卡尔积</td>
+<td style="text-align:center">不能使用<code>ON</code>子句</td>
+<td style="text-align:center">不能使用<code>USING</code>子句</td>
+<td style="text-align:center">不能使用连接子句，只能使用<code>Where</code>筛选</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
 <li>总的来看外连接中的<code>outer</code>是最没有存在感的，凡是它出现的地方都可以省略</li>
 <li>黑魔法：<code>a inner join b</code>与<code>a cross join b</code>是等价的，后来我偶然间拼写错误发现<code>a across join b</code>也是可以的，另外<code>a love join b</code>也行，开始还以为发现了bug，后来再理解应该是拼错的单词作了表a的别名，虚惊一场！</li>
@@ -639,7 +642,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/04/03/Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97/" title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">http://albertgithubhome.github.io/blog/2019/04/03/Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/" title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">http://AlbertGithubHome.github.io/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -697,13 +700,13 @@
           
             <a href="/blog/tags/Mysql/" rel="tag"><i class="fa fa-tag"></i> Mysql</a>
           
-            <a href="/blog/tags/%E6%9F%A5%E8%AF%A2/" rel="tag"><i class="fa fa-tag"></i> 查询</a>
+            <a href="/blog/tags/查询/" rel="tag"><i class="fa fa-tag"></i> 查询</a>
           
-            <a href="/blog/tags/%E8%A1%A8%E8%BF%9E%E6%8E%A5/" rel="tag"><i class="fa fa-tag"></i> 表连接</a>
+            <a href="/blog/tags/表连接/" rel="tag"><i class="fa fa-tag"></i> 表连接</a>
           
-            <a href="/blog/tags/%E5%86%85%E8%BF%9E%E6%8E%A5/" rel="tag"><i class="fa fa-tag"></i> 内连接</a>
+            <a href="/blog/tags/内连接/" rel="tag"><i class="fa fa-tag"></i> 内连接</a>
           
-            <a href="/blog/tags/%E5%A4%96%E8%BF%9E%E6%8E%A5/" rel="tag"><i class="fa fa-tag"></i> 外连接</a>
+            <a href="/blog/tags/外连接/" rel="tag"><i class="fa fa-tag"></i> 外连接</a>
           
         </div>
       
@@ -716,7 +719,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/04/03/IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB/" rel="next" title="IP地址常见分类：A类、B类、C类、D类、E类">
+              <a href="/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/" rel="next" title="IP地址常见分类：A类、B类、C类、D类、E类">
                 <i class="fa fa-chevron-left"></i> IP地址常见分类：A类、B类、C类、D类、E类
               </a>
             
@@ -726,7 +729,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/04/09/C-C-%E7%89%88%E6%9C%AC%E6%9B%B4%E8%BF%AD%E5%8E%86%E7%A8%8B/" rel="prev" title="C/C++版本更迭历程">
+              <a href="/blog/2019/04/09/C-C-版本更迭历程/" rel="prev" title="C/C++版本更迭历程">
                 C/C++版本更迭历程 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -830,7 +833,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -841,7 +844,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -852,7 +855,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -860,6 +863,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -872,17 +882,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -927,6 +926,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -1008,7 +1018,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1017,12 +1027,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -1054,7 +1064,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="游戏,架构设计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于游戏中仓库类的设计">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2018&#x2F;02&#x2F;25&#x2F;%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2018/02/25/关于游戏中仓库类的设计/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言这个游戏中的仓库类设计开始于春节前，和大家一样，我也是期盼着放假而无心工作，所以在放假前一天虽然蹦出了思维的火花，我却没有使用文字记录下来，但是大致的思路我已经记录到脑子中了，这一次的突然感悟，与上次突然明白什么是选择排序，什么是冒泡排序很类似，都是一瞬间突然明白，是一个从量变到质变的过程，接下来简单记录下我关于仓库的理解。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.221Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于游戏中仓库类的设计">
+<meta name="twitter:description" content="前言这个游戏中的仓库类设计开始于春节前，和大家一样，我也是期盼着放假而无心工作，所以在放假前一天虽然蹦出了思维的火花，我却没有使用文字记录下来，但是大致的思路我已经记录到脑子中了，这一次的突然感悟，与上次突然明白什么是选择排序，什么是冒泡排序很类似，都是一瞬间突然明白，是一个从量变到质变的过程，接下来简单记录下我关于仓库的理解。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/02/25/%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2018/02/25/关于游戏中仓库类的设计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2018/02/25/%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1/" class="leancloud_visitors" data-flag-title="关于游戏中仓库类的设计">
+             <span id="/blog/2018/02/25/关于游戏中仓库类的设计/" class="leancloud_visitors" data-flag-title="关于游戏中仓库类的设计">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">995(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">3(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个游戏中的仓库类设计开始于春节前，和大家一样，我也是期盼着放假而无心工作，所以在放假前一天虽然蹦出了思维的火花，我却没有使用文字记录下来，但是大致的思路我已经记录到脑子中了，这一次的突然感悟，与上次突然明白什么是选择排序，什么是冒泡排序很类似，都是一瞬间突然明白，是一个从量变到质变的过程，接下来简单记录下我关于仓库的理解。</p>
 <a id="more"></a>
-
 <h1 id="初觉不妥"><a href="#初觉不妥" class="headerlink" title="初觉不妥"></a>初觉不妥</h1><p>游戏中的仓库是用来存放道具的，这是我在接触这套游戏代码时形成的稳固的印象，结果就是代码中充斥着道具属性的判断，因为是很古老的代码，一开始我并没有产生疑问，同时也是修修补补的解决了许多BUG，可是渐渐的问题暴露了出来，设计上仓库里存储的是道具的索引，通过索引可以找到唯一的一个道具，这个思想根深蒂固，导致在写代码时自然而然的就在仓库的类里直接判断了道具属性，仔细想想这是不正确的。</p>
 <p>起初感觉有问题时，大概是工作两年后，第一次重构道具系统的时候，当时在写放入道具和取出道具的时候总感觉怪怪的，但是又说不出问题出在哪里，其实就是在放入和取出的逻辑中，操作了道具的属性，修改了道具的坐标。也就是在仓库类的代码中设置了道具的属性，但是他们两个类不是依赖关系，硬生生的产生了依赖关系。</p>
 <h1 id="新的任务"><a href="#新的任务" class="headerlink" title="新的任务"></a>新的任务</h1><p>道具系统的第一次重构，我并没有找到为什么代码怪怪的，也就没有修改，但是新的任务在工作4年之后给了我一个新的机会，再写一遍道具系统，这时候那段奇怪的代码给我的感觉更强烈了，绝对有问题，也就是那么一瞬，我似乎明白了，仓库这个类被我们强加了太多的东西，谁说仓库中就一定要放道具了，我们在游戏中也没有直接把道具的对象保存在仓库中，而是把道具的索引存在了仓库中，也就是仓库中存储了道具的身份证，同理如果我们把人的身份中存在仓库中，那么仓库就是管理人的，如果我们把车牌号存储在仓库中，那么仓库就是管理车辆的。</p>
@@ -512,7 +515,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2018/02/25/%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1/" title="关于游戏中仓库类的设计">http://albertgithubhome.github.io/blog/2018/02/25/%E5%85%B3%E4%BA%8E%E6%B8%B8%E6%88%8F%E4%B8%AD%E4%BB%93%E5%BA%93%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2018/02/25/关于游戏中仓库类的设计/" title="关于游戏中仓库类的设计">http://AlbertGithubHome.github.io/blog/2018/02/25/关于游戏中仓库类的设计/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -568,9 +571,9 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/%E6%B8%B8%E6%88%8F/" rel="tag"><i class="fa fa-tag"></i> 游戏</a>
+            <a href="/blog/tags/游戏/" rel="tag"><i class="fa fa-tag"></i> 游戏</a>
           
-            <a href="/blog/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 架构设计</a>
+            <a href="/blog/tags/架构设计/" rel="tag"><i class="fa fa-tag"></i> 架构设计</a>
           
         </div>
       
@@ -583,7 +586,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2018/02/03/Vim%E3%80%81Xshell%E3%80%81%E8%BF%9C%E7%A8%8B%E7%BB%88%E7%AB%AF%E8%8E%AB%E5%90%8D%E5%8D%A1%E6%AD%BB%E7%9A%84%E5%8E%9F%E5%9B%A0/" rel="next" title="Vim、Xshell、远程终端莫名卡死的原因">
+              <a href="/blog/2018/02/03/Vim、Xshell、远程终端莫名卡死的原因/" rel="next" title="Vim、Xshell、远程终端莫名卡死的原因">
                 <i class="fa fa-chevron-left"></i> Vim、Xshell、远程终端莫名卡死的原因
               </a>
             
@@ -593,7 +596,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2018/03/21/bat%E6%89%B9%E5%A4%84%E7%90%86%E9%81%8D%E5%8E%86%E6%8C%87%E5%AE%9A%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%87%E4%BB%B6%E5%B9%B6%E6%9B%B4%E6%96%B0/" rel="prev" title="bat批处理遍历指定目录下文件并更新">
+              <a href="/blog/2018/03/21/bat批处理遍历指定目录下文件并更新/" rel="prev" title="bat批处理遍历指定目录下文件并更新">
                 bat批处理遍历指定目录下文件并更新 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -697,7 +700,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -708,7 +711,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -719,7 +722,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -727,6 +730,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -739,17 +749,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -794,6 +793,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -875,7 +885,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -884,12 +894,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -921,7 +931,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C/C++,继承,多态,虚函数表," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言最近被问到一个关于多继承虚函数表的问题，当时回答是可能存在多个虚函数表，应该是顺序排列的，但具体怎么排列还是有些疑惑的，回答的时候到有点儿心虚。之后查了资料，做了简单的实验，可以确定的是对于继承了多个含有虚函数基类的子类来说，指向虚函数表的指针应该不止一个。">
+<meta name="keywords" content="C&#x2F;C++,继承,多态,虚函数表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单继承、多继承、菱形继承的虚函数表">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言最近被问到一个关于多继承虚函数表的问题，当时回答是可能存在多个虚函数表，应该是顺序排列的，但具体怎么排列还是有些疑惑的，回答的时候到有点儿心虚。之后查了资料，做了简单的实验，可以确定的是对于继承了多个含有虚函数基类的子类来说，指向虚函数表的指针应该不止一个。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-09T09:46:09.532Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单继承、多继承、菱形继承的虚函数表">
+<meta name="twitter:description" content="前言最近被问到一个关于多继承虚函数表的问题，当时回答是可能存在多个虚函数表，应该是顺序排列的，但具体怎么排列还是有些疑惑的，回答的时候到有点儿心虚。之后查了资料，做了简单的实验，可以确定的是对于继承了多个含有虚函数基类的子类来说，指向虚函数表的指针应该不止一个。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/"/>
+
+
+
+
+
+  <title>单继承、多继承、菱形继承的虚函数表 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">单继承、多继承、菱形继承的虚函数表</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-03T13:45:05+08:00">
+                2020-01-03
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-02-09T17:46:09+08:00">
+                2020-02-09
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/" class="leancloud_visitors" data-flag-title="单继承、多继承、菱形继承的虚函数表">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">5,159(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">23(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近被问到一个关于多继承虚函数表的问题，当时回答是可能存在多个虚函数表，应该是顺序排列的，但具体怎么排列还是有些疑惑的，回答的时候到有点儿心虚。之后查了资料，做了简单的实验，可以确定的是对于继承了多个含有虚函数基类的子类来说，指向虚函数表的指针应该不止一个。</p>
+<a id="more"></a>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>虚函数表的问题是从C++多态的概念引出的，要想实现多态有3个条件：</p>
+<ol>
+<li>存在继承：没有继承就没有多态（运行时），在多态中必须存在有继承关系的父类和子类。</li>
+<li>重写函数：父类中需要定义带有 <code>virtual</code> 关键字的函数，而在子类中重写一个名字和参数与父类中定义完全相同的函数。</li>
+<li>向上转型：将父类的指针和引用指向子类的对象。</li>
+</ol>
+<p>满足以上三个条件，当使用父类的指针调用带有 <code>virtual</code> 关键字的函数时，就会产生多态行为。</p>
+<p>实现这种多态表现的核心内容就是虚函数表，对于带有 <code>virtual</code> 关键字的函数地址会被放入一个表格，而在类中会有一个指向虚函数表的指针指向这个表格，表明这个表格属于类的一部分。</p>
+<p>对于父类来说，这个表格中都是自己类的虚函数，而对于子类来说，首先这个虚函数表包含父类中所有的虚函数，当子类重写某个虚函数时就会用子类重写后的函数地址替换原来父类中定义的函数地址，同时在子类的虚函数表中还会包含子类独有的虚函数。</p>
+<p>由此可见虚函数表的不同和复杂性还是体现在子类上，所以之后会分别测试单继承、多继承、菱形继承三种情况下虚函数表的不同，主要看一下虚函数表的个数和内存布局情况。</p>
+<h1 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h1><p>首先来说明一下测试环境，测试工具是<code>VS2013</code>，对于<code>int *p; sizeof(p)</code>的结果是4，说明编译环境是32位的，这个对后面查看内存结构非常关键。</p>
+<h1 id="开始测试"><a href="#开始测试" class="headerlink" title="开始测试"></a>开始测试</h1><p>使用VS2013查看类的内存布局非常方便，因为类的大小在编译期间就已经确定了，不用运行就可以通过添加编译选项知道类的大小和布局，而指向虚函数表的指针也会占用类的大小，如果说编译的时候确定了类的大小，那从侧面也说明了在编译期间虚函数表实际上也确定了。</p>
+<p>使用VS2013查看类的布局时，可以在项目的属性页：“配置属性”–&gt;“C/C++”–&gt;“命令行”中输入以下任意一个命令，</p>
+<ul>
+<li><code>/d1reportAllClassLayout</code> ：这个选项可以在VS的输出窗口显示所有相关联的类结构，因为一些外部类也会显示，最终的内容会非常多，需要自己辨别有用的信息。</li>
+<li><code>/d1reportSingleClassLayoutXXX</code> ：这个选项只会在输出窗口显示指定的类结构，只需要将<code>XXX</code>替换成想显示的类的名字即可，缺点就是无法同时显示多个想查看的类。</li>
+</ul>
+<h2 id="无虚函数简单类结构"><a href="#无虚函数简单类结构" class="headerlink" title="无虚函数简单类结构"></a>无虚函数简单类结构</h2><p>在查看虚函数表的结构之前，先使用之前的编译参数来查看一下简单的类结构，排除虚函数的干扰，能更清楚的了解类成员在类中的布局情况，有一点需要提一下，成员变量会占用类的大小，但是成员函数不会，如果有虚函数，所有的虚函数会被放入一个表格，而在类中放置一个指向虚函数表的指针，来看一下简单代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var1;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDerived</span> :</span> <span class="keyword">public</span> CBase</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译输出的类的内存布局为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1&gt;  class CBase    size(4):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CDerived  size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var2</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br></pre></td></tr></table></figure>
+<p>从上面的输出内容来看，很清楚的可以看到基类 <code>CBase</code> 的大小 <code>size(4)</code> 占用4个字节，只有一个成员变量 <code>m_var1</code>，在类中偏移量为0的位置，而派生类 <code>CDerived</code> 占用8个字节大小，第一个成员继承自基类 <code>CBase</code> 的 <code>m_var1</code>，在类中偏移量为0的位置，还有一个子类独有的成员变量 <code>m_var2</code>，在类中偏移量为4的位置。</p>
+<p>掌握着这种简单类的查看类结构的方法，接下来开始看一下包含虚函数的类的内存布局。</p>
+<h2 id="包含虚函数的类结构"><a href="#包含虚函数的类结构" class="headerlink" title="包含虚函数的类结构"></a>包含虚函数的类结构</h2><p>查看包含虚函数的类结构相对来说麻烦一点，先来说两个符号，免得一会看见结构发懵，<code>vfptr</code> 表示类中指向虚函数表的指针，通常放在类的起始位置，比成员变量的位置都要靠前， <code>vftable</code> 表示类中引用的虚函数表，在具体分析是还有有一些修饰符，用来表明是谁的虚函数表。</p>
+<h3 id="单继承"><a href="#单继承" class="headerlink" title="单继承"></a>单继承</h3><p>这种情况的下的子类的虚函数表很简单，在该子类的内存布局上，最开始的位置保存了一个指向虚函数表的指针，虚函数表中包含了从父类继承的虚函数，当子类中重写父类虚函数时会将虚函数表中对应的函数地址替换，最后添加上自己独有的虚函数地址，下面上代码分析一下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var1;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDerived</span> :</span> <span class="keyword">public</span> CBase</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func4</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面这两个类的内存布局情况如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">1&gt;  class CBase size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase::func2</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CDerived  size(12):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | m_var2</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CDerived_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CDerived::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CDerived::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func3 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>看起来是不是比没有虚函数时复杂多了，不过不要着急，从上到下慢慢分析就好了，这次的基类 <code>CBase</code> 大小是8个字节，首先是<code>{vfptr}</code>这个指向虚函数表的指针，在类中的偏移量是0，接下来是成员变量 <code>m_var1</code>，在类中偏移量是4。</p>
+<p>然后是 <code>CBase::$vftable@</code> 表示基类 <code>CBase</code> 的虚函数表，其中第一行 <code>&amp;CBase_meta</code> 看起来怪怪的，这里我们不展开（因为我也没弄太懂），应该是和虚函数表相关的元数据，第二行是一个0，看起来是一个偏移量，这里没有偏移，当出现偏移时我们再试着分析（相信我，马上就会出现），第三行内容 <code>&amp;CBase::func1</code> 是自己类的虚函数，前面有一个0，应该是指该虚函数在虚函数表中索引，第四行也是相同的情况。</p>
+<p>接下来出现了两行非常相似的内容，看一下<code>CBase::func1 this adjustor: 0</code>，这句代码中的关键是 <code>adjustor</code>，其实有是一个偏移量，据说涉及到thunk技术，据说“thunk其实就是一条汇编指令，操作码是0xe9，就是jmp，后面紧跟操作数”，这里我们就不展开了，如果后面弄明白了可以单独写一篇总结，到此为止基类的内存结构就分析完了。</p>
+<p>继续看派生类 <code>CDerived</code>，它的大小是12个字节，内部结构首先是 <code>{vfptr}</code> 一个指向虚函数表的指针，偏移量为0，<code>m_var1</code> 是从父类继承的成员变量，偏移量为4，而 <code>m_var2</code> 是自己类独有的成员变量，偏移量是8。</p>
+<p>然后看派生类对应的虚函数表 <code>CDerived::$vftable@</code>，跳过前两行直接看一下后面几个函数，发现只有 <code>func1</code> 是基类的，而函数 <code>func2</code> 和 <code>func3</code> 都是派生类的，出现这种情况的原因是子类重写了函数 <code>func2</code> 和 <code>func3</code> ，所以用重写后的函数地址替换了从基类继承的虚函数，造成了目前看到的状况。</p>
+<p>最后又出现了两行 <code>adjustor</code>，很奇怪为什么 <code>func1</code> 函数没有 <code>adjustor</code>，貌似这个 <code>adjustor</code> 只对当前类有效，先留个疑问，接下来看一下多继承。</p>
+<h3 id="多继承"><a href="#多继承" class="headerlink" title="多继承"></a>多继承</h3><p>当多个父类中都包含虚函数的时候，和子类关联的虚函数表就不止一个了，这个情况是可以通过使用sizeof(子类)来简单验证的：</p>
+<p>这一部分是在没有VS的情况下预先写下的，本来考虑使用VS展开布局后，这一段就没有什么必要了，但是后来想想还是留着吧，因为这一段使用的g++编译器，64位环境，每个指针占用8个字节，通过不同的环境调试，更加可以证明，多继承下的多个虚函数表的存在性：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">W</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">long</span> n;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对于这样的一个简单类，sizeof(W) = 8，类的大小等于成员变量的大小。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">W1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">long</span> n1;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">W2</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">long</span> n2;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对于上面这两个简单的包含虚函数的类，sizeof(W1) = 16，sizeof(W2) = 16，因为每个类都除了一个 <code>long</code> 类型的成员变量以外，还包含了指向虚函数的一个指针，所以类的大小是16个字节。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WW</span> :</span> <span class="keyword">public</span> W1, <span class="keyword">public</span> W2</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">long</span> nn;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>而继承了 <code>W1</code> 和 <code>W2</code> 这两个父类的子类 <code>WW</code> 在继承了两个成员变量 <code>n1</code> 和 <code>n2</code> 之外，还有自己的成员变量 <code>nn</code>，三个变量占用字节24个，而计算类 <code>WW</code> 的的大小 sizeof(W1) = 40，也就是说除了成员变量24个字节，还剩余了16个字节的空间没有着落，我们知道它至少包含一个指向虚函数表的指针，占用8个字节的大小，还剩8个字节没有找到用处，从此处分析应该还有一个指向虚函数表的指针，具体的情况可以看一下内存分布。</p>
+<p>接下来和单继承的分析方法一样，写代码编译查看布局：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase0</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var0;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func4</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var1;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDerived</span> :</span> <span class="keyword">public</span> CBase0, <span class="keyword">public</span> CBase1</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func4</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func5</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func6</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面3个类描述了一个简单的多继承的情况，之所以写这么多函数就是构建一种，既有虚函数覆盖，又有单独不被覆盖的情况，下面展示了这段代码的内存布局。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">1&gt;  class CBase0    size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase0_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase0::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase0::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase0::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func3 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CBase1    size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase1_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase1::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase1::func3</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase1::func4</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func3 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func4 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CDerived  size(20):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase0)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase1)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">12</span>  | | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">16</span>  | m_var2</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase0@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CDerived_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CDerived::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CDerived::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase0::func3</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">3</span>  | &amp;CDerived::func5</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase1@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-8</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;thunk: <span class="keyword">this</span>-=<span class="number">8</span>; <span class="keyword">goto</span> CDerived::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase1::func3</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CDerived::func4</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func4 <span class="keyword">this</span> adjustor: <span class="number">8</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func5 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>内容很多，前面两个基类 <code>CBase0</code> 和 <code>CBase1</code> 的布局很简单，参照之前的分析很容易看懂，直接从派生类看起吧。</p>
+<p>我们发现派生类 <code>CDerived</code> 中确实有两个指向虚函数表的指针，接下来看一下这两个虚函数表，这个虚函数表和前面遇到的格式一样，除了第一行的元数据，第二行的诡异偏移量0，剩下的虚函数指针有的是从基类继承来的，有的是被当前派生类覆盖的，还有派生类自己独有的。</p>
+<p>而第二个虚函数表就有点意思了，首先是少了 <code>&amp;CDerived_meta</code> 这一行，然后偏移量终于不是0了，而是-8，从派生类 <code>CDerived</code> 的内存布局上来看，以下开始大胆假设，至于小心求证的部分放到以后来做（看自己的进步状态了）。</p>
+<p>第二个指向虚函数表的指针是不是距离类的起始偏移量是8，我猜这个-8的意思就是指的这个偏移量，这个值有可能被后面使用，第二行出现了 <code>&amp;thunk: this-=8; goto CDerived::func2</code>，其中包含 <code>thunk</code> 字样，表示这个 <code>func2</code> 不归我管，你去-8偏移量的那个虚函数表里找一找。</p>
+<p>还有一点你有没有发现 <code>func5</code> 这个函数只在第一个虚函数表中出现，而没有出现在第二个虚函数表中，这也是一个规则，自己独有的虚函数放到第一个虚函数表中，这可能也是为什么只有第一个虚函数表包含元数据行。</p>
+<p>最后一点，我们发现对于函数 <code>func4</code> 来说 <code>adjustor</code> 终于不是0了，而值变成了8，仿佛在说这个虚函数只在偏移量的为8的位置。</p>
+<h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p>对于这一部分，并没有太多新的内容，只是简单的菱形继承中，最初的基类在最终的子类中会包含两份，而虚函数的样子并没有太大的不同，接下来简单看一下代码和对应的内存布局即可，因为菱形继承并不被提倡，所以也不用花太多时间来分析这个问题。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CSuper</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase0</span> :</span> <span class="keyword">public</span> CSuper</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var0;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase1</span> :</span> <span class="keyword">public</span> CSuper</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var1;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDerived</span> :</span> <span class="keyword">public</span> CBase0, <span class="keyword">public</span> CBase1</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func4</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">1&gt;  class CSuper    size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CSuper::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CSuper_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CSuper::func1</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CSuper::func0 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CSuper::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CBase0    size(12):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CSuper)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | m_var</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase0_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase0::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase0::func2</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CBase1    size(12):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CSuper)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | m_var</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase1_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase1::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase1::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func3 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CDerived  size(28):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase0)</span><br><span class="line"><span class="number">1</span>&gt;      | | +--- (base class CSuper)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | | m_var</span><br><span class="line"><span class="number">1</span>&gt;      | | +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase1)</span><br><span class="line"><span class="number">1</span>&gt;      | | +--- (base class CSuper)</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">12</span>  | | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">16</span>  | | | m_var</span><br><span class="line"><span class="number">1</span>&gt;      | | +---</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">20</span>  | | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">24</span>  | m_var2</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase0@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CDerived_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CDerived::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CBase0::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">3</span>  | &amp;CDerived::func4</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase1@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-12</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;thunk: <span class="keyword">this</span>-=<span class="number">12</span>; <span class="keyword">goto</span> CDerived::func1</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">2</span>  | &amp;CDerived::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func3 <span class="keyword">this</span> adjustor: <span class="number">12</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func4 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>解决菱形继承的一个常用的办法就是改为虚继承，实际上虚继承中就是将从最基类中继承的公共部分提取出来放在最子类的末尾，然后在提取之前的位置用一个叫做<code>vbptr</code>的指针指向这里。</p>
+<p>之前看到过一种说法：</p>
+<blockquote>
+<p>虚继承内部实现也相当复杂，似乎破坏了OO的纯洁性</p>
+</blockquote>
+<p>至于复杂不复杂，看看后面的内存布局就很清楚了，那是相当复杂，其中出现了各种偏移，简单了解下就行了，如果不是维护老代码，谁现在还写这样的结构。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CSuper</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase0</span> :</span> <span class="keyword">virtual</span> <span class="keyword">public</span> CSuper</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var0;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBase1</span> :</span> <span class="keyword">virtual</span> <span class="keyword">public</span> CSuper</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var1;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDerived</span> :</span> <span class="keyword">public</span> CBase0, <span class="keyword">public</span> CBase1</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func4</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> m_var2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">1&gt;  class CSuper    size(8):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | m_var</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CSuper::$vftable@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CSuper_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CSuper::func1</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CSuper::func0 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;  CSuper::func1 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line">1&gt;  class CBase0    size(20):</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | &#123;vbptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      +--- (<span class="keyword">virtual</span> base CSuper)</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">12</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">16</span>  | m_var</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::$vftable@CBase0@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase0_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase0::func2</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::$vbtable@:</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | <span class="number">-4</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | <span class="number">8</span> (CBase0d(CBase0+<span class="number">4</span>)CSuper)</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::$vftable@CSuper@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-12</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase0::func1</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func1 <span class="keyword">this</span> adjustor: <span class="number">12</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase0::func2 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  vbi:       <span class="class"><span class="keyword">class</span>  <span class="title">offset</span> <span class="title">o</span>.<span class="title">vbptr</span>  <span class="title">o</span>.<span class="title">vbte</span> <span class="title">fVtorDisp</span></span></span><br><span class="line"><span class="class">1&gt;            <span class="title">CSuper</span>      12       4       4 0</span></span><br><span class="line"><span class="class">1&gt;</span></span><br><span class="line"><span class="class">1&gt;</span></span><br><span class="line"><span class="class">1&gt;  <span class="title">class</span> <span class="title">CBase1</span>    <span class="title">size</span>(20):</span></span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | &#123;vbptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      +--- (<span class="keyword">virtual</span> base CSuper)</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">12</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">16</span>  | m_var</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::$vftable@CBase1@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CBase1_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase1::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::$vbtable@:</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | <span class="number">-4</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | <span class="number">8</span> (CBase1d(CBase1+<span class="number">4</span>)CSuper)</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::$vftable@CSuper@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-12</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CBase1::func1</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func1 <span class="keyword">this</span> adjustor: <span class="number">12</span></span><br><span class="line"><span class="number">1</span>&gt;  CBase1::func3 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  vbi:       <span class="class"><span class="keyword">class</span>  <span class="title">offset</span> <span class="title">o</span>.<span class="title">vbptr</span>  <span class="title">o</span>.<span class="title">vbte</span> <span class="title">fVtorDisp</span></span></span><br><span class="line"><span class="class">1&gt;            <span class="title">CSuper</span>      12       4       4 0</span></span><br><span class="line"><span class="class">1&gt;</span></span><br><span class="line"><span class="class">1&gt;</span></span><br><span class="line"><span class="class">1&gt;  <span class="title">class</span> <span class="title">CDerived</span>  <span class="title">size</span>(36):</span></span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase0)</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">4</span>  | | &#123;vbptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">8</span>  | | m_var0</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;      | +--- (base class CBase1)</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">12</span>  | | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">16</span>  | | &#123;vbptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">20</span>  | | m_var1</span><br><span class="line"><span class="number">1</span>&gt;      | +---</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">24</span>  | m_var2</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;      +--- (<span class="keyword">virtual</span> base CSuper)</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">28</span>  | &#123;vfptr&#125;</span><br><span class="line"><span class="number">1</span>&gt;  <span class="number">32</span>  | m_var</span><br><span class="line"><span class="number">1</span>&gt;      +---</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase0@:</span><br><span class="line"><span class="number">1</span>&gt;      | &amp;CDerived_meta</span><br><span class="line"><span class="number">1</span>&gt;      |  <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CBase0::func2</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CDerived::func4</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CBase1@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-12</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CDerived::func3</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vbtable@CBase0@:</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | <span class="number">-4</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | <span class="number">24</span> (CDerivedd(CBase0+<span class="number">4</span>)CSuper)</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vbtable@CBase1@:</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | <span class="number">-4</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | <span class="number">12</span> (CDerivedd(CBase1+<span class="number">4</span>)CSuper)</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::$vftable@CSuper@:</span><br><span class="line"><span class="number">1</span>&gt;      | <span class="number">-28</span></span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">0</span>  | &amp;CSuper::func0</span><br><span class="line"><span class="number">1</span>&gt;   <span class="number">1</span>  | &amp;CDerived::func1</span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func1 <span class="keyword">this</span> adjustor: <span class="number">28</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func3 <span class="keyword">this</span> adjustor: <span class="number">12</span></span><br><span class="line"><span class="number">1</span>&gt;  CDerived::func4 <span class="keyword">this</span> adjustor: <span class="number">0</span></span><br><span class="line"><span class="number">1</span>&gt;</span><br><span class="line"><span class="number">1</span>&gt;  vbi:       <span class="class"><span class="keyword">class</span>  <span class="title">offset</span> <span class="title">o</span>.<span class="title">vbptr</span>  <span class="title">o</span>.<span class="title">vbte</span> <span class="title">fVtorDisp</span></span></span><br><span class="line"><span class="class">1&gt;            <span class="title">CSuper</span>      28       4       4 0</span></span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>虚函数表是用来实现多态的核心内容。</li>
+<li>多继承很强大但是不要滥用，当多个基类都含有虚函数时，派生类会有多个指向虚函数表的指针。</li>
+<li>忘记菱形继承吧，为了取消二义性引入虚继承，结果造成内存分布复杂而又难以理解，大道至简，回归本质吧！</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/" title="单继承、多继承、菱形继承的虚函数表">http://AlbertGithubHome.github.io/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
+          
+            <a href="/blog/tags/继承/" rel="tag"><i class="fa fa-tag"></i> 继承</a>
+          
+            <a href="/blog/tags/多态/" rel="tag"><i class="fa fa-tag"></i> 多态</a>
+          
+            <a href="/blog/tags/虚函数表/" rel="tag"><i class="fa fa-tag"></i> 虚函数表</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/" rel="next" title="C++ STL中map的[]操作符使用时的一个坑">
+                <i class="fa fa-chevron-left"></i> C++ STL中map的[]操作符使用时的一个坑
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/01/03/2019！一份迟到的年终总结/" rel="prev" title="2019！一份迟到的年终总结">
+                2019！一份迟到的年终总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">167</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试环境"><span class="nav-number">3.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始测试"><span class="nav-number">4.</span> <span class="nav-text">开始测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#无虚函数简单类结构"><span class="nav-number">4.1.</span> <span class="nav-text">无虚函数简单类结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#包含虚函数的类结构"><span class="nav-number">4.2.</span> <span class="nav-text">包含虚函数的类结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单继承"><span class="nav-number">4.2.1.</span> <span class="nav-text">单继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多继承"><span class="nav-number">4.2.2.</span> <span class="nav-text">多继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#菱形继承"><span class="nav-number">4.2.3.</span> <span class="nav-text">菱形继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚继承"><span class="nav-number">4.2.4.</span> <span class="nav-text">虚继承</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

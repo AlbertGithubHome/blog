@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="C&#x2F;C++,linux,函数,堆栈">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux环境下C++代码打印函数堆栈调用情况">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;09&#x2F;06&#x2F;linux%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/09/06/linux环境下C-代码打印函数堆栈调用情况/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言关于什么是函数调用堆栈在上篇文章《windows环境下C++代码打印函数堆栈调用情况》中已经介绍过了，简单的来说就是可以展现出函数之间的调用关系，上篇文章展示了如何在windows上打印出函数调用堆栈，其中用到了windows系统上的API，这些接口在linux上是无法使用的，因为工作的关系，也常常需要在linux的调试程序，所以本文介绍一下如何在linux上打印出C++程序的调用堆栈。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.215Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux环境下C++代码打印函数堆栈调用情况">
+<meta name="twitter:description" content="前言关于什么是函数调用堆栈在上篇文章《windows环境下C++代码打印函数堆栈调用情况》中已经介绍过了，简单的来说就是可以展现出函数之间的调用关系，上篇文章展示了如何在windows上打印出函数调用堆栈，其中用到了windows系统上的API，这些接口在linux上是无法使用的，因为工作的关系，也常常需要在linux的调试程序，所以本文介绍一下如何在linux上打印出C++程序的调用堆栈。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/09/06/linux%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/09/06/linux环境下C-代码打印函数堆栈调用情况/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/09/06/linux%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5/" class="leancloud_visitors" data-flag-title="linux环境下C++代码打印函数堆栈调用情况">
+             <span id="/blog/2019/09/06/linux环境下C-代码打印函数堆栈调用情况/" class="leancloud_visitors" data-flag-title="linux环境下C++代码打印函数堆栈调用情况">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">1,284(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">5(分)</span>
           </span>
 
           
@@ -478,20 +482,14 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>关于什么是函数调用堆栈在上篇文章<a href="https://blog.csdn.net/albertsh/article/details/100540338" target="_blank" rel="noopener">《windows环境下C++代码打印函数堆栈调用情况》</a>中已经介绍过了，简单的来说就是可以展现出函数之间的调用关系，上篇文章展示了如何在windows上打印出函数调用堆栈，其中用到了windows系统上的API，这些接口在linux上是无法使用的，因为工作的关系，也常常需要在linux的调试程序，所以本文介绍一下如何在linux上打印出C++程序的调用堆栈。</p>
 <a id="more"></a>
-
 <h1 id="实现打印堆栈信息的函数"><a href="#实现打印堆栈信息的函数" class="headerlink" title="实现打印堆栈信息的函数"></a>实现打印堆栈信息的函数</h1><p>在linux系统上想打印函数调用堆栈信息，需要引用头文件<code>&lt;execinfo.h&gt;</code>，然后利用函数<code>backtrace</code>、<code>backtrace_symbols</code>来获取当时的函数调用堆栈信息，以下的代码实现了一个简单的打印堆栈新的函数，堆栈深度最大同样设置为12层。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;execinfo.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> STACK_INFO_LEN  1024</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowTraceStack</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* szBriefInfo)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> MAX_STACK_FRAMES = <span class="number">12</span>;</span><br><span class="line">    <span class="keyword">void</span> *pStack[MAX_STACK_FRAMES];</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">char</span> szStackInfo[STACK_INFO_LEN * MAX_STACK_FRAMES];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> ** pStackList = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> frames = backtrace(pStack, MAX_STACK_FRAMES);</span><br><span class="line">    pStackList = backtrace_symbols(pStack, frames);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == pStackList)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">strcpy</span>(szStackInfo, szBriefInfo == <span class="literal">NULL</span> ? <span class="string">"stack traceback:\n"</span> : szBriefInfo);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; frames; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">NULL</span> == pStackList[i])</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">strncat</span>(szStackInfo, pStackList[i], STACK_INFO_LEN);</span><br><span class="line">        <span class="built_in">strcat</span>(szStackInfo, <span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%s"</span>, szStackInfo); <span class="comment">// 输出到控制台，也可以打印到日志文件中</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">bool</span> isError = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">if</span> (isError)</span><br><span class="line">    &#123;</span><br><span class="line">        ShowTraceStack(<span class="string">"error in func2\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"this is func2\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; ++i)</span><br><span class="line">        sum += i;</span><br><span class="line"></span><br><span class="line">    func2();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"hello world\n"</span>);</span><br><span class="line">    func1();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h1 id="显示堆栈调用信息"><a href="#显示堆栈调用信息" class="headerlink" title="显示堆栈调用信息"></a>显示堆栈调用信息</h1><p>上面的测试代码中函数的调用逻辑为：<code>main()</code>函数调用<code>func1()</code>函数，然后<code>func1()</code>函数调用<code>func2()</code>函数，当<code>func2()</code>中发生问题的时候打印当时的堆栈信息，然后我们编译一下查看运行结果</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[albert@localhost<span class="comment">#10:59:03#/home/albert/test/backtrace]$g++ -rdynamic linuxtraceback.cpp -o linuxtraceback</span></span><br><span class="line">[albert@localhost<span class="comment">#10:59:05#/home/albert/test/backtrace]$./linuxtraceback</span></span><br><span class="line">hello world</span><br><span class="line">error <span class="keyword">in</span> func2</span><br><span class="line">./linuxtraceback(_Z14ShowTraceStackPKc+0x25) [0x400a19]</span><br><span class="line">./linuxtraceback(_Z5func2v+0x1c) [0x400b06]</span><br><span class="line">./linuxtraceback(_Z5func1v+0x32) [0x400b46]</span><br><span class="line">./linuxtraceback(main+0x1e) [0x400b66]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xfd) [0x7fbbcae43d1d]</span><br><span class="line">./linuxtraceback() [0x400939]</span><br></pre></td></tr></table></figure>
-
 <p>上面的运行结果已经展示了程序函数的调用关系，其中编译选项中的<code>-rdynamic</code>是很重要的，它实际上是一个链接选项，作用是把所有符号（而不仅仅只是程序已使用到的外部符号）都添加到动态符号表里，以便那些通过 <code>dlopen()</code> 或 <code>backtrace()</code>这样的函数使用，换句话说就是如果不加这个选项在调用堆栈中就可能看不到函数名。</p>
-<p>上面的调用堆栈中函数名大致能看出来，但是有些奇怪的字母，可以通过工具<code>c++fileter</code>来处理，处理之后就可以看到正常的函数名了，具体使用方式如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[albert@localhost<span class="comment">#10:59:12#/home/albert/test/backtrace]$./linuxtraceback | c++filt</span></span><br><span class="line">hello world</span><br><span class="line">error <span class="keyword">in</span> func2</span><br><span class="line">./linuxtraceback(ShowTraceStack(char const*)+0x25) [0x400a19]</span><br><span class="line">./linuxtraceback(func2()+0x1c) [0x400b06]</span><br><span class="line">./linuxtraceback(func1()+0x32) [0x400b46]</span><br><span class="line">./linuxtraceback(main+0x1e) [0x400b66]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xfd) [0x7f73aea34d1d]</span><br><span class="line">./linuxtraceback() [0x400939]</span><br></pre></td></tr></table></figure>
-
+<p>上面的调用堆栈中函数名大致能看出来，但是有些奇怪的字母，可以通过工具<code>c++fileter</code>来处理，处理之后就可以看到正常的函数名了，具体使用方式如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[albert@localhost<span class="comment">#10:59:12#/home/albert/test/backtrace]$./linuxtraceback | c++filt</span></span><br><span class="line">hello world</span><br><span class="line">error <span class="keyword">in</span> func2</span><br><span class="line">./linuxtraceback(ShowTraceStack(char const*)+0x25) [0x400a19]</span><br><span class="line">./linuxtraceback(func2()+0x1c) [0x400b06]</span><br><span class="line">./linuxtraceback(func1()+0x32) [0x400b46]</span><br><span class="line">./linuxtraceback(main+0x1e) [0x400b66]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xfd) [0x7f73aea34d1d]</span><br><span class="line">./linuxtraceback() [0x400939]</span><br></pre></td></tr></table></figure></p>
 <h1 id="编译时无法添加-rdynamic选项"><a href="#编译时无法添加-rdynamic选项" class="headerlink" title="编译时无法添加-rdynamic选项"></a>编译时无法添加-rdynamic选项</h1><p>如果是自己写的小项目或者小程序，编译选项是可以随便改的，没有什么关系，需要查看堆栈信息加上<code>-rdynamic</code>就可以了，但是如果是公司的大型项目，编译选项是不会随便改的，可能是直接使用<code>automake</code>生成的，先来看一下不添加<code>-rdynamic</code>选项编译之后的运行结果</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[albert@localhost<span class="comment">#11:22:15#/home/albert/test/backtrace]$g++ linuxtraceback.cpp -o linuxtraceback</span></span><br><span class="line">[albert@localhost<span class="comment">#11:22:18#/home/albert/test/backtrace]$./linuxtraceback</span></span><br><span class="line">hello world</span><br><span class="line">error <span class="keyword">in</span> func2</span><br><span class="line">./linuxtraceback() [0x4007d9]</span><br><span class="line">./linuxtraceback() [0x4008c6]</span><br><span class="line">./linuxtraceback() [0x400906]</span><br><span class="line">./linuxtraceback() [0x400926]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xfd) [0x7f4e12ba2d1d]</span><br><span class="line">./linuxtraceback() [0x4006f9]</span><br></pre></td></tr></table></figure>
-
 <p>可以看到不添加<code>-rdynamic</code>选项编译之后运行虽然能显示出调用堆栈，但都是一些函数地址，无法看到函数名，这时可以通过工具<code>addr2line</code>帮助我们定位问题，这个工具的作用就是将函数地址转换成函数所在的行，使用方法就是在命令行运行<code>addr2line 0x4008c6 -e ./linuxtraceback</code>，具体使用时替换函数地址和可运行程序的名字即可</p>
 <p>说实话这个小程序中使用运行<code>addr2line 0x4008c6 -e ./linuxtraceback</code>没有看到我想要的，只显示了<code>??:0</code>，仿佛被优化掉了，但是我在正式的项目中使用这个方法是可以得到函数所在行的，这也帮助我查到了一个隐藏很深的BUG。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
@@ -528,7 +526,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/09/06/linux%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5/" title="linux环境下C++代码打印函数堆栈调用情况">http://albertgithubhome.github.io/blog/2019/09/06/linux%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/09/06/linux环境下C-代码打印函数堆栈调用情况/" title="linux环境下C++代码打印函数堆栈调用情况">http://AlbertGithubHome.github.io/blog/2019/09/06/linux环境下C-代码打印函数堆栈调用情况/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -588,9 +586,9 @@
           
             <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
           
-            <a href="/blog/tags/%E5%87%BD%E6%95%B0/" rel="tag"><i class="fa fa-tag"></i> 函数</a>
+            <a href="/blog/tags/函数/" rel="tag"><i class="fa fa-tag"></i> 函数</a>
           
-            <a href="/blog/tags/%E5%A0%86%E6%A0%88/" rel="tag"><i class="fa fa-tag"></i> 堆栈</a>
+            <a href="/blog/tags/堆栈/" rel="tag"><i class="fa fa-tag"></i> 堆栈</a>
           
         </div>
       
@@ -603,7 +601,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/09/03/windows%E7%8E%AF%E5%A2%83%E4%B8%8BC-%E4%BB%A3%E7%A0%81%E6%89%93%E5%8D%B0%E5%87%BD%E6%95%B0%E5%A0%86%E6%A0%88%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5/" rel="next" title="windows环境下C++代码打印函数堆栈调用情况">
+              <a href="/blog/2019/09/03/windows环境下C-代码打印函数堆栈调用情况/" rel="next" title="windows环境下C++代码打印函数堆栈调用情况">
                 <i class="fa fa-chevron-left"></i> windows环境下C++代码打印函数堆栈调用情况
               </a>
             
@@ -613,7 +611,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/10/14/Mysql%E4%B8%AD%E6%9F%A5%E8%AF%A2%E5%BD%93%E5%89%8D%E7%94%A8%E6%88%B7%E3%80%81%E5%BD%93%E5%89%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AD%89%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF/" rel="prev" title="Mysql中查询当前用户、当前数据库等基础信息">
+              <a href="/blog/2019/10/14/Mysql中查询当前用户、当前数据库等基础信息/" rel="prev" title="Mysql中查询当前用户、当前数据库等基础信息">
                 Mysql中查询当前用户、当前数据库等基础信息 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -717,7 +715,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -728,7 +726,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -739,7 +737,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -747,6 +745,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -759,17 +764,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -814,6 +808,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -895,7 +900,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -904,12 +909,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -941,7 +946,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

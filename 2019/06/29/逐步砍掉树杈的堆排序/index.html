@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="排序,算法,概念,Sort,堆">
 <meta property="og:type" content="article">
 <meta property="og:title" content="逐步砍掉树杈的堆排序">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;06&#x2F;29&#x2F;%E9%80%90%E6%AD%A5%E7%A0%8D%E6%8E%89%E6%A0%91%E6%9D%88%E7%9A%84%E5%A0%86%E6%8E%92%E5%BA%8F&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/06/29/逐步砍掉树杈的堆排序/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言在实现堆排序之前，我们先来看看常见的数据结构，在网上我看到了一个特别全的版本：数组，栈，链表，队列，树，堆，图，散列表，本着鸡蛋里挑骨头的态度，我们来看看数组和链表，这两个到底算不算数据结构，貌似它们应该算是线性表这个结构，它们更应该被称作是一个实现结构的元素，比如通过数组和链表可以实现线性表、队列、栈，二叉树等等，可是看看数据结构的定义是计算机存储、组织数据的方式，貌似它们又算是数据结构，反">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.226Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逐步砍掉树杈的堆排序">
+<meta name="twitter:description" content="前言在实现堆排序之前，我们先来看看常见的数据结构，在网上我看到了一个特别全的版本：数组，栈，链表，队列，树，堆，图，散列表，本着鸡蛋里挑骨头的态度，我们来看看数组和链表，这两个到底算不算数据结构，貌似它们应该算是线性表这个结构，它们更应该被称作是一个实现结构的元素，比如通过数组和链表可以实现线性表、队列、栈，二叉树等等，可是看看数据结构的定义是计算机存储、组织数据的方式，貌似它们又算是数据结构，反">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/06/29/%E9%80%90%E6%AD%A5%E7%A0%8D%E6%8E%89%E6%A0%91%E6%9D%88%E7%9A%84%E5%A0%86%E6%8E%92%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/06/29/逐步砍掉树杈的堆排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/06/29/%E9%80%90%E6%AD%A5%E7%A0%8D%E6%8E%89%E6%A0%91%E6%9D%88%E7%9A%84%E5%A0%86%E6%8E%92%E5%BA%8F/" class="leancloud_visitors" data-flag-title="逐步砍掉树杈的堆排序">
+             <span id="/blog/2019/06/29/逐步砍掉树杈的堆排序/" class="leancloud_visitors" data-flag-title="逐步砍掉树杈的堆排序">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">3,820(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">15(分)</span>
           </span>
 
           
@@ -478,44 +482,44 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在实现堆排序之前，我们先来看看常见的数据结构，在网上我看到了一个特别全的版本：数组，栈，链表，队列，树，堆，图，散列表，本着鸡蛋里挑骨头的态度，我们来看看数组和链表，这两个到底算不算数据结构，貌似它们应该算是线性表这个结构，它们更应该被称作是一个实现结构的元素，比如通过数组和链表可以实现线性表、队列、栈，二叉树等等，可是看看数据结构的定义是计算机存储、组织数据的方式，貌似它们又算是数据结构，反正这个概念模模糊糊，不太清楚，要按我的理解常见结构应该只有线性表、栈、队列、树、图，其他的像堆其实是一种树，散列表很多的内部实现也是树。</p>
 <a id="more"></a>
-
 <p>好了，数据结构的事情也放一边，今天的目的是排序，主角是堆，那么究竟什么是堆呢？它的形状和山一样，只不过比山要“便宜”，比如土堆、煤堆、垃圾堆，这和金山、银山、绿水青山是没法比的，但是形状相似，只是小一点而已，上边小下边大，尖尖的，从侧面看就是第一个三角形。堆排序中的堆也是这种形状，上边窄下边宽呈现出一个三角形，其本质是一颗完全二叉树，一个n层的二叉树只有最后一层叶子节点可能不完整，但是都靠左排列，最多只有一个单叶子节点，如果说到这里你根本不知道什么是完全二叉树，甚至对树结构都是一头雾水，那么请去补补课，查询一下相关的定义就明白了。</p>
 <p>一棵树要想被称为堆结构，光满足完全二叉树还不够，其中的元素也有要求，如果每个父节点都大于等于左右子节点被称为大根堆，如果每个父节点都小于等于左右子节点被称为小根堆，这样我们就知道在堆这个结构中，堆的顶端不是最大的值就是最小的值。</p>
 <p>堆顶元素恰恰是堆排序的关键，试想一个有大根堆，我们把堆顶的数据拿下来放到一旁，把剩下的元素再调整成一个大根堆，然后再把堆顶数据拿下来放在刚才拿出那个元素的前面，再调整剩下的元素，反复这样操作，最后拿出来的这些元素就构成了一个有序序列，也就达到了排序的目的。</p>
 <p>在进行升序排列时常使用大根堆，降序排列时常使用小根堆，这个知识点不是绝对的，也不需要记忆，只是这样操作更加方便，当你理解了堆排序的流程之后，很自然就能明白这样的用意，并且到那时候你完全可以反着操作来提升自己，不过效果和可读性可能会差一点。</p>
 <h1 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h1><p>树结构可以用数组表示出来，特别是完全二叉树用数组表示起来更加方便，从上往下，从左往右依次把数据放入数组，我们就把一颗完全二叉树塞进了一维数组里，本来打算一个图都不画的，但是突然良心发现了，不能对你们太残忍，还是画一个吧，下面这个图展示了完全二叉树与数组的对应关系，这可是本文中唯一的一个图了，可要珍惜一下，把这个图弄明白，之后我们就只操作数组，不再画树了，因为我太懒了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    2--&gt;3;</span><br><span class="line">    2--&gt;9;</span><br><span class="line">    3--&gt;4;</span><br><span class="line">    3--&gt;7;</span><br><span class="line">    9--&gt;12;</span><br><span class="line">    9--&gt;6;</span><br><span class="line">    4--&gt;1;</span><br><span class="line">    4--&gt;11;</span><br><span class="line">    7--&gt;5;</span><br><span class="line">    7--&gt;8;</span><br></pre></td></tr></table></figure>
-
 <table>
 <thead>
 <tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
+<th style="text-align:center">idx_0</th>
+<th style="text-align:center">idx_1</th>
+<th style="text-align:center">idx_2</th>
+<th style="text-align:center">idx_3</th>
+<th style="text-align:center">idx_4</th>
+<th style="text-align:center">idx_5</th>
+<th style="text-align:center">idx_6</th>
+<th style="text-align:center">idx_7</th>
+<th style="text-align:center">idx_8</th>
+<th style="text-align:center">idx_9</th>
+<th style="text-align:center">idx_10</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">7</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">11</td>
-<td align="center">5</td>
-<td align="center">8</td>
+<tbody>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">8</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>这个用数组表示的完全二叉树有一个性质，这个性质是我编的，你之前可能没有听过，那就是从后面删除n个节点之后，剩下的元素还是一颗完全二叉树，这一点隐含在堆排序的整个过程中，并且二叉树的父节点都排列在数组前面，叶子节点都排在数组后边，父节点和子节点对应的索引满足一定的关系：</p>
 <ul>
 <li>假设父节点索引是i，左节点索引=2*i+1</li>
@@ -527,33 +531,35 @@
 <table>
 <thead>
 <tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
+<th style="text-align:center">idx_0</th>
+<th style="text-align:center">idx_1</th>
+<th style="text-align:center">idx_2</th>
+<th style="text-align:center">idx_3</th>
+<th style="text-align:center">idx_4</th>
+<th style="text-align:center">idx_5</th>
+<th style="text-align:center">idx_6</th>
+<th style="text-align:center">idx_7</th>
+<th style="text-align:center">idx_8</th>
+<th style="text-align:center">idx_9</th>
+<th style="text-align:center">idx_10</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">7</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">11</td>
-<td align="center">5</td>
-<td align="center">8</td>
+<tbody>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">8</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <ol>
 <li><p>先将数组代表的完全二叉树调整成一个大根堆</p>
 <p>首先需要确认的是这个调整应该从下往上调整，先看最下边的子树，调整父节点和子节点的数据，使得父节点数据最大，然后再看前一个子树，继续把父子节点的数据调整好，这样一直调整到根节点时，整个完全二叉树的最大值就被调整到根节点了。这个过程有点像冒泡，从下往上，把最大的数据慢慢的冒到最上面。</p>
@@ -563,539 +569,46 @@
 <ul>
 <li>子树父节点，索引i=4时，调整父节点和右孩子的值（从左右孩子中找一个较大的值，并且要大于父节点）</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">7(parent)</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">11</td>
-<td align="center">5(left)</td>
-<td align="center">8(right)</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">8(parent)</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">11</td>
-<td align="center">5(left)</td>
-<td align="center">7(right)</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|9|4|7(parent)|12|6|1|11|5(left)|8(right)|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|9|4|8(parent)|12|6|1|11|5(left)|7(right)|</p>
 <ul>
 <li>子树父节点，索引i=3时，调整父节点和右孩子的值</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">4(parent)</td>
-<td align="center">8</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1(left)</td>
-<td align="center">11(right)</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9</td>
-<td align="center">11(parent)</td>
-<td align="center">8</td>
-<td align="center">12</td>
-<td align="center">6</td>
-<td align="center">1(left)</td>
-<td align="center">4(right)</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|9|4(parent)|8|12|6|1(left)|11(right)|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|9|11(parent)|8|12|6|1(left)|4(right)|5|7|</p>
 <ul>
 <li>子树父节点，索引i=2时，调整父节点和左孩子的值</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">9(parent)</td>
-<td align="center">11</td>
-<td align="center">8</td>
-<td align="center">12(left)</td>
-<td align="center">6(right)</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">12(parent)</td>
-<td align="center">11</td>
-<td align="center">8</td>
-<td align="center">9(left)</td>
-<td align="center">6(right)</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|9(parent)|11|8|12(left)|6(right)|1|4|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3|12(parent)|11|8|9(left)|6(right)|1|4|5|7|</p>
 <ul>
 <li>子树父节点，索引i=1时，调整父节点和左孩子的值，这时左孩子同时也是下面子树的父节点，所以还要调整一下该节点作为父节点的子树</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">3(parent)</td>
-<td align="center">12</td>
-<td align="center">11(left)</td>
-<td align="center">8(right)</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">11(parent)</td>
-<td align="center">12</td>
-<td align="center">3(left)</td>
-<td align="center">8(right)</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|3(parent)|12|11(left)|8(right)|9|6|1|4|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|11(parent)|12|3(left)|8(right)|9|6|1|4|5|7|</p>
 <ul>
 <li>左子树节点作为父节点进行调整</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">11</td>
-<td align="center">12</td>
-<td align="center">3(tmp parent)</td>
-<td align="center">8</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1(tmp left)</td>
-<td align="center">4(tmp right)</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2</td>
-<td align="center">11</td>
-<td align="center">12</td>
-<td align="center">4(tmp parent)</td>
-<td align="center">8</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1(tmp left)</td>
-<td align="center">3(tmp right)</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|11|12|3(tmp parent)|8|9|6|1(tmp left)|4(tmp right)|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2|11|12|4(tmp parent)|8|9|6|1(tmp left)|3(tmp right)|5|7|</p>
 <ul>
 <li>子树父节点，索引i=0时，调整父节点和右孩子的值，这时右孩子同时也是下面子树的父节点，同样还要调整一下该节点作为父节点的子树</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">2(parent)</td>
-<td align="center">11(left)</td>
-<td align="center">12(right)</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">12(parent)</td>
-<td align="center">11(left)</td>
-<td align="center">2(right)</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">9</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|2(parent)|11(left)|12(right)|4|8|9|6|1|3|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|12(parent)|11(left)|2(right)|4|8|9|6|1|3|5|7|</p>
 <ul>
 <li>右子树节点作为父节点进行调整</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">12</td>
-<td align="center">11</td>
-<td align="center">2(tmp parent)</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">9(tmp left)</td>
-<td align="center">6(tmp right)</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">12</td>
-<td align="center">11</td>
-<td align="center">9(tmp parent)</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">2(tmp left)</td>
-<td align="center">6(tmp right)</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|12|11|2(tmp parent)|4|8|9(tmp left)|6(tmp right)|1|3|5|7|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|12|11|9(tmp parent)|4|8|2(tmp left)|6(tmp right)|1|3|5|7|</p>
 <p>到此为止整个大根堆就调整完成了，为了看的更加清楚。我不得不打脸再画一个图了，有时候还是看图更加方便，一图胜千言啊：</p>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">12</td>
-<td align="center">11</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">2</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|12|11|9|4|8|2|6|1|3|5|7|</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    12--&gt;11;</span><br><span class="line">    12--&gt;9;</span><br><span class="line">    11--&gt;4;</span><br><span class="line">    11--&gt;8;</span><br><span class="line">    9--&gt;2;</span><br><span class="line">    9--&gt;6;</span><br><span class="line">    4--&gt;1;</span><br><span class="line">    4--&gt;3;</span><br><span class="line">    8--&gt;5;</span><br><span class="line">    8--&gt;7;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>将大根堆根节点保存的最大值与当前大根堆最后一个节点进行交换，然后将这个节点“砍掉”</p>
 <p>交换数据后，将剩余的这个完全二叉树继续调整成大根堆，既然已经打脸了，那就再画个图，这个砍树杈的动作已经和标题呼应了，每次生成大根堆后，将根节点和堆的最后一个结点交换，然后砍掉这个树杈，等整棵树被砍的只剩下根节点，排序也就完成了。</p>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">12(head)</td>
-<td align="center">11</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">2</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">7(tail)</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">idx_0</th>
-<th align="center">idx_1</th>
-<th align="center">idx_2</th>
-<th align="center">idx_3</th>
-<th align="center">idx_4</th>
-<th align="center">idx_5</th>
-<th align="center">idx_6</th>
-<th align="center">idx_7</th>
-<th align="center">idx_8</th>
-<th align="center">idx_9</th>
-<th align="center">idx_10</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">7(head)</td>
-<td align="center">11</td>
-<td align="center">9</td>
-<td align="center">4</td>
-<td align="center">8</td>
-<td align="center">2</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">5</td>
-<td align="center">12(tail)</td>
-</tr>
-</tbody></table>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|12(head)|11|9|4|8|2|6|1|3|5|7(tail)|</p>
+<p>|idx_0|idx_1|idx_2|idx_3|idx_4|idx_5|idx_6|idx_7|idx_8|idx_9|idx_10|<br>|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|<br>|7(head)|11|9|4|8|2|6|1|3|5|12(tail)|</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    7--&gt;11;</span><br><span class="line">    7--&gt;9;</span><br><span class="line">    11--&gt;4;</span><br><span class="line">    11--&gt;8;</span><br><span class="line">    9--&gt;2;</span><br><span class="line">    9--&gt;6;</span><br><span class="line">    4--&gt;1;</span><br><span class="line">    4--&gt;3;</span><br><span class="line">    8--&gt;5;</span><br><span class="line">    8--&gt;|X|12;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>重复上面的步骤，循环执行调整剩余元素为大根堆，首位交换，砍掉末尾元素这三步</p>
@@ -1104,7 +617,6 @@
 </li>
 </ol>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  交换两个变量</span></span><br><span class="line"><span class="comment">参数：  element1--被交换的第一个元素的地址</span></span><br><span class="line"><span class="comment">       element2--被交换的第二个元素的地址</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意： 只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap_data</span><span class="params">(<span class="keyword">int</span>* element1, <span class="keyword">int</span>* element2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> middle_value = *element1;</span><br><span class="line">    *element1 = *element2;</span><br><span class="line">    *element2 = middle_value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  从start到end构成最大堆，前提是start之后的部分已满足最大堆，</span></span><br><span class="line"><span class="comment">       也就是说start存在左右子树的情况下，子树已经是最大堆</span></span><br><span class="line"><span class="comment">参数：  array--表示待排序的数组，此处会退化成指针</span></span><br><span class="line"><span class="comment">       start--需要调整的父节点索引</span></span><br><span class="line"><span class="comment">       end  --最后一个可以被调整的节点索引，当形成最大堆后，第一个节点与当前最后节点交换后，那么这个当前最后节点下一轮就不能被调整了</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意： 只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">max_heapify</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> parent_index = start;</span><br><span class="line">    <span class="keyword">int</span> child_index = start * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (child_index &lt;= end)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (child_index + <span class="number">1</span> &lt;= end &amp;&amp; <span class="built_in">array</span>[child_index] &lt; <span class="built_in">array</span>[child_index + <span class="number">1</span>])</span><br><span class="line">            ++child_index; <span class="comment">// 如果右边的孩子更大，选择右边的</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">array</span>[parent_index] &gt; <span class="built_in">array</span>[child_index])</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        swap_data(&amp;<span class="built_in">array</span>[parent_index], &amp;<span class="built_in">array</span>[child_index]);</span><br><span class="line">        parent_index = child_index;</span><br><span class="line">        child_index = parent_index * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">功能：  堆排序，实现数组元素从小到大排列</span></span><br><span class="line"><span class="comment">参数：  array--表示待排序的数组，此处会退化成指针</span></span><br><span class="line"><span class="comment">       count--数组元素的个数</span></span><br><span class="line"><span class="comment">返回值：无</span></span><br><span class="line"><span class="comment">注意： 只用来表示思路，不考虑指针为空等特殊情况</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heap_sort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> pos = count / <span class="number">2</span> - <span class="number">1</span>; pos &gt;= <span class="number">0</span>; --pos)</span><br><span class="line">        max_heapify(<span class="built_in">array</span>, pos, count - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> target_pos = count - <span class="number">1</span>; target_pos &gt; <span class="number">0</span>; --target_pos)</span><br><span class="line">    &#123;</span><br><span class="line">        swap_data(&amp;<span class="built_in">array</span>[<span class="number">0</span>], &amp;<span class="built_in">array</span>[target_pos]);</span><br><span class="line">        max_heapify(<span class="built_in">array</span>, <span class="number">0</span>, target_pos - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h1 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h1><p>堆排序其实是一种选择排序，但是堆排序的代码比选择排序要复杂一下，其实理解了算法思路这些代码还是很容易看懂的，函数<code>heap_sort</code>是堆排序的主体逻辑，第一个<code>for</code>循环是从最后一个父节点开始调整，将父节点与较大的子节点交换，一直调整到根节点，初始化成一个大根堆。</p>
 <p>第二个<code>for</code>循环就是重复做交换首尾元素，然后调整剩余元素使其成为大根堆这两件事，重复n-1轮，排序过程也就完成了。</p>
 <h1 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h1><p><a href="https://tool.lu/coderunner/" target="_blank" rel="noopener">在线编辑器</a>是一个很方便的测试代码的环境，如果想本地调试一下，也可以直接下载<a href="https://github.com/AlbertGithubHome/Bella/blob/master/c%2B%2B/sort_algorithm/heap_sort.cpp" target="_blank" rel="noopener">堆排序–源码</a>，在本地编译后进行调试，其实单步调试是理解算法思路很有效的方式。</p>
@@ -1136,7 +648,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/06/29/%E9%80%90%E6%AD%A5%E7%A0%8D%E6%8E%89%E6%A0%91%E6%9D%88%E7%9A%84%E5%A0%86%E6%8E%92%E5%BA%8F/" title="逐步砍掉树杈的堆排序">http://albertgithubhome.github.io/blog/2019/06/29/%E9%80%90%E6%AD%A5%E7%A0%8D%E6%8E%89%E6%A0%91%E6%9D%88%E7%9A%84%E5%A0%86%E6%8E%92%E5%BA%8F/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/06/29/逐步砍掉树杈的堆排序/" title="逐步砍掉树杈的堆排序">http://AlbertGithubHome.github.io/blog/2019/06/29/逐步砍掉树杈的堆排序/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -1192,15 +704,15 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/%E6%8E%92%E5%BA%8F/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
+            <a href="/blog/tags/排序/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
           
-            <a href="/blog/tags/%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+            <a href="/blog/tags/算法/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
           
-            <a href="/blog/tags/%E6%A6%82%E5%BF%B5/" rel="tag"><i class="fa fa-tag"></i> 概念</a>
+            <a href="/blog/tags/概念/" rel="tag"><i class="fa fa-tag"></i> 概念</a>
           
             <a href="/blog/tags/Sort/" rel="tag"><i class="fa fa-tag"></i> Sort</a>
           
-            <a href="/blog/tags/%E5%A0%86/" rel="tag"><i class="fa fa-tag"></i> 堆</a>
+            <a href="/blog/tags/堆/" rel="tag"><i class="fa fa-tag"></i> 堆</a>
           
         </div>
       
@@ -1213,7 +725,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/06/27/float%E7%9A%84%E7%B2%BE%E5%BA%A6%E5%92%8C%E5%8F%96%E5%80%BC%E8%8C%83%E5%9B%B4/" rel="next" title="float的精度和取值范围">
+              <a href="/blog/2019/06/27/float的精度和取值范围/" rel="next" title="float的精度和取值范围">
                 <i class="fa fa-chevron-left"></i> float的精度和取值范围
               </a>
             
@@ -1223,7 +735,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/07/02/Mysql5-7%E7%89%88%E6%9C%AC%E4%B8%AD%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AD%97%E6%AE%B5%E5%8F%AF%E7%94%A8%E7%9A%84%E7%B1%BB%E5%9E%8B/" rel="prev" title="Mysql5.7版本中数据表字段可用的类型">
+              <a href="/blog/2019/07/02/Mysql5-7版本中数据表字段可用的类型/" rel="prev" title="Mysql5.7版本中数据表字段可用的类型">
                 Mysql5.7版本中数据表字段可用的类型 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -1327,7 +839,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1338,7 +850,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1349,7 +861,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1357,6 +869,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -1369,17 +888,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -1424,6 +932,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -1505,7 +1024,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1514,12 +1033,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -1551,7 +1070,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

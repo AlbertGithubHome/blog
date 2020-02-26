@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="C&#x2F;C++,bind,placeholders,auto">
 <meta property="og:type" content="article">
 <meta property="og:title" content="std::bind（一）：包装普通函数">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;08&#x2F;01&#x2F;std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/08/01/std-bind（一）：包装普通函数/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言不知道大家在做项目写程序的过程中有没有遇到这样的情况，别的模块类提供了一个拥有很多参数接口函数，但是我这个功能只用到其中几个，其他的参数都是固定的，可是为了调用这个接口函数，不得不将所有的参数写一遍，每次写一堆固定参数都感觉在浪费生命。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.218Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="std::bind（一）：包装普通函数">
+<meta name="twitter:description" content="前言不知道大家在做项目写程序的过程中有没有遇到这样的情况，别的模块类提供了一个拥有很多参数接口函数，但是我这个功能只用到其中几个，其他的参数都是固定的，可是为了调用这个接口函数，不得不将所有的参数写一遍，每次写一堆固定参数都感觉在浪费生命。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/08/01/std-bind（一）：包装普通函数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/" class="leancloud_visitors" data-flag-title="std::bind（一）：包装普通函数">
+             <span id="/blog/2019/08/01/std-bind（一）：包装普通函数/" class="leancloud_visitors" data-flag-title="std::bind（一）：包装普通函数">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">2,757(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">11(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>不知道大家在做项目写程序的过程中有没有遇到这样的情况，别的模块类提供了一个拥有很多参数接口函数，但是我这个功能只用到其中几个，其他的参数都是固定的，可是为了调用这个接口函数，不得不将所有的参数写一遍，每次写一堆固定参数都感觉在浪费生命。</p>
 <a id="more"></a>
-
 <p>有的人可能想到默认参数，的确，默认参数可以解决部分问题，因为默认参数只能出现参数列表的尾部，如果4个参数中，我需要传递的参数是第4个，而前3个参数想默认的话，默认参数是做不到这种效果的，并且别人的接口函数也不一定会有默认参数。</p>
 <p>函数封装，这是一个办法，我们在自己的模块中添加一个对接口函数进行包装后的函数，将不变的参数进行固定，然后只留可变的参数供我们自己调用，如果我们有3种常用的调用方式可能就需要定义3个函数，这种方法可行，不过比较麻烦，而<code>std::bind()</code>函数就是为了包装函数而生的，使用起来更加方便。</p>
 <h1 id="std-bind-的作用"><a href="#std-bind-的作用" class="headerlink" title="std::bind()的作用"></a>std::bind()的作用</h1><p><code>std::bind()</code>的作用就是对原函数进行包装，可以将参数值固定，调换顺序然后生成新的函数供我们调用。举个例子，一块铁片你可以拿它来做很多事情，打造一下可以做成一把刀，敲敲打打可以做成一个桶，甚至直接拿来就可以挡窗户上的洞。<code>std::bind()</code>的作用就是把这块铁的作用固定，比如给她安上一个刀把，这样我们每次使用就可以把这块铁片当成菜刀来使用了。</p>
@@ -486,17 +489,14 @@
 <p>在包装普通函数时，<code>std::bind()</code>的第1个参数就是原函数的名字，当然也可以是指向函数的指针，或者函数引用，从第2个参数开始，填写的内容依次对应原函数中的各个参数，所以说如果原函数是3个参数，如果想包装它，那么<code>std::bind()</code>需要传入4个参数，如果原函数是8个参数，那么包装它的<code>std::bind()</code>就需要传入9个参数，这里为了将原函数和包装后的函数参数建立联系，需要引入命名空间<code>std::placeholders</code>。</p>
 <h1 id="placeholders的作用"><a href="#placeholders的作用" class="headerlink" title="placeholders的作用"></a>placeholders的作用</h1><p><code>std::placeholders</code>的命名空间下有多个参数占位符，比如<code>placeholders::_1</code>、<code>placeholders::_2</code>等等，最大为<code>placeholders::_20</code>，在包装普通函数时，固定的参数很好说，就是填写固定值就可以，但是要想原函数的参数和包装后函数的参数建立联系就需要用到刚刚提到的占位符， <code>placeholders::_1</code>就表示包装后函数的调用时的第1个参数，同理<code>placeholders::_2</code>就表示包装后函数的调用时的第2个参数。</p>
 <p>有了占位符的概念，我们就可以推断出，包装后的函数与原函数相比，不但可以减少函数参数，也可以增加函数参数，虽然暂时没有想到什么实际的使用场景，但是理论上是可行的。</p>
-<h1 id="std-bind-使用测试"><a href="#std-bind-使用测试" class="headerlink" title="std::bind()使用测试"></a>std::bind()使用测试</h1><p>首先需要先引入头文件，免得找不到命名空间和函数定义</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br></pre></td></tr></table></figure>
-
+<h1 id="std-bind-使用测试"><a href="#std-bind-使用测试" class="headerlink" title="std::bind()使用测试"></a>std::bind()使用测试</h1><p>首先需要先引入头文件，免得找不到命名空间和函数定义<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br></pre></td></tr></table></figure></p>
 <h2 id="固定参数、调换顺序"><a href="#固定参数、调换顺序" class="headerlink" title="固定参数、调换顺序"></a>固定参数、调换顺序</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func1</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span> n3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; n1 &lt;&lt; <span class="string">' '</span> &lt;&lt; n2 &lt;&lt; <span class="string">' '</span> &lt;&lt; n3  &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test1_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f1 = <span class="built_in">std</span>::bind(func1, placeholders::_1, <span class="number">101</span>, placeholders::_2);</span><br><span class="line">    f1(<span class="number">11</span>, <span class="number">22</span>);   <span class="comment">// same as call func1(11, 101, 22)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test1_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f1 = <span class="built_in">std</span>::bind(func1, placeholders::_2, <span class="number">101</span>, placeholders::_1);</span><br><span class="line">    f1(<span class="number">11</span>, <span class="number">22</span>);   <span class="comment">// same as call func1(22, 101, 11)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">//11 101 22</span></span><br><span class="line"><span class="comment">//22 101 11</span></span><br></pre></td></tr></table></figure>
 <p>函数<code>test1_1()</code>展示了<code>std::bind()</code>函数最常见的用法，其中参数<code>n2</code>被固定为101，参数<code>n1</code>使用占位符<code>placeholders::_1</code>表示，表示包装后函数的第1个参数会传给形参<code>n1</code>使用，同理包装后函数的第2个参数会传给形参<code>n3</code>使用，所以调用函数<code>f1(11, 22)</code> 就等同于调用函数 <code>func1(11, 101, 22)</code>，<code>test1_2()</code>函数简单展示了调换参数顺序的方法，只要明白了<code>placeholders</code>的作用，这两个例子也就明白了。</p>
 <h2 id="包装后函数的参数个数可增可减"><a href="#包装后函数的参数个数可增可减" class="headerlink" title="包装后函数的参数个数可增可减"></a>包装后函数的参数个数可增可减</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func2</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span> n3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; n1 &lt;&lt; <span class="string">' '</span> &lt;&lt; n2 &lt;&lt; <span class="string">' '</span> &lt;&lt; n3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f2 = <span class="built_in">std</span>::bind(func2, placeholders::_3, <span class="number">101</span>, placeholders::_1);</span><br><span class="line">    f2(<span class="number">11</span>, <span class="number">22</span>, <span class="number">33</span>);   <span class="comment">// same as call func2(33, 101, 11)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f2 = <span class="built_in">std</span>::bind(func2, placeholders::_1, <span class="number">101</span>, placeholders::_1);</span><br><span class="line">    f2(<span class="number">11</span>);   <span class="comment">// same as call func2(11, 101, 11)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2_3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f2 = <span class="built_in">std</span>::bind(func2, placeholders::_1, <span class="number">101</span>, placeholders::_2);</span><br><span class="line">    f2(<span class="number">11</span>);   <span class="comment">// 报错，因为没有参数传给placeholders::_2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">//33 101 11</span></span><br><span class="line"><span class="comment">//11 101 11</span></span><br><span class="line"><span class="comment">//编译错误</span></span><br></pre></td></tr></table></figure>
 <p>其实在理解了<code>placeholders</code>的作用之后，这个测试结果也能想到的，函数<code>test2_1()</code>中使用了<code>placeholders::_3</code>，所以包装后函数的参数至少要传3个才不会报错，而<code>test2_2()</code>函数中使用了<code>placeholders::_1</code>，所以被包装函数调用时只需要传入一个参数，最后是函数<code>test2_3()</code>，绑定时引用了<code>placeholders::_2</code>，而在调用时只传了一个参数，所以出现编译错误。</p>
 <h2 id="bind-绑定时参数个数固定，类型需匹配"><a href="#bind-绑定时参数个数固定，类型需匹配" class="headerlink" title="bind()绑定时参数个数固定，类型需匹配"></a>bind()绑定时参数个数固定，类型需匹配</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func3</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span> n3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; n1 &lt;&lt; <span class="string">' '</span> &lt;&lt; n2 &lt;&lt; <span class="string">' '</span> &lt;&lt; n3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test3_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f3 = <span class="built_in">std</span>::bind(func3, placeholders::_1, <span class="number">101</span>);</span><br><span class="line">    <span class="comment">//f3(11);   // 编译错误，因为bind函数中少了一个参数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test3_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f3 = <span class="built_in">std</span>::bind(func3, placeholders::_1, <span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>);</span><br><span class="line">    <span class="comment">//f3(11);   // 编译错误，因为bind函数中多了一个参数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test3_3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f3 = <span class="built_in">std</span>::bind(func3, placeholders::_1, <span class="string">"test"</span>, placeholders::_1);</span><br><span class="line">    <span class="comment">//f3(11);   // 编译错误，第二个参数类型不匹配，无法将参数 2 从“const char *”转换为“int”</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看了之前的测试之后，是不是觉得参数的个数很随意，可以随便增加和减少，所以在绑定的时候也不好好写了，结果发现上述3个函数全部编译错误，<code>test3_1()</code>函数中因为绑定时少了一个参数而报错，<code>test3_2()</code>函数中因为绑定时多了一个参数而报错，而<code>test3_3()</code>函数中因为绑定时第二个参数的类型不匹配而报错，所以参数个数的增减只能是包装后的函数，而绑定时必须严格与原函数的参数个数以及类型相匹配。</p>
-<h2 id="普通函数的参数中有引用类型"><a href="#普通函数的参数中有引用类型" class="headerlink" title="普通函数的参数中有引用类型"></a>普通函数的参数中有引用类型</h2><p>弄明白上面的例子之后，可能会产生一种我会了的错觉，想象一下如果原函数参数中包含引用类型应该怎样写，可以自己先想一下，然后看看下面的例子</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func4</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span>&amp; n3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; n1 &lt;&lt; <span class="string">' '</span> &lt;&lt; n2 &lt;&lt; <span class="string">' '</span> &lt;&lt; n3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    n3 = <span class="number">101</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, n);</span><br><span class="line">    n = <span class="number">33</span>;</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, 10)</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"n = "</span> &lt;&lt; n &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, n);</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, 30)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, ref(n));</span><br><span class="line">    n = <span class="number">33</span>;</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, n)</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"n = "</span> &lt;&lt; n &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_4</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, ref(n));</span><br><span class="line">    <span class="comment">//f4();   // 编译错误，无法将参数 3 从“const int”转换为“int &amp;”</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">//11 22 10</span></span><br><span class="line"><span class="comment">//n = 33</span></span><br><span class="line"><span class="comment">//11 22 30</span></span><br><span class="line"><span class="comment">//11 22 33</span></span><br><span class="line"><span class="comment">//n = 101</span></span><br></pre></td></tr></table></figure>
+<h2 id="普通函数的参数中有引用类型"><a href="#普通函数的参数中有引用类型" class="headerlink" title="普通函数的参数中有引用类型"></a>普通函数的参数中有引用类型</h2><p>弄明白上面的例子之后，可能会产生一种我会了的错觉，想象一下如果原函数参数中包含引用类型应该怎样写，可以自己先想一下，然后看看下面的例子<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func4</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span>&amp; n3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; n1 &lt;&lt; <span class="string">' '</span> &lt;&lt; n2 &lt;&lt; <span class="string">' '</span> &lt;&lt; n3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    n3 = <span class="number">101</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, n);</span><br><span class="line">    n = <span class="number">33</span>;</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, 10)</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"n = "</span> &lt;&lt; n &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, n);</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, 30)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, ref(n));</span><br><span class="line">    n = <span class="number">33</span>;</span><br><span class="line">    f4();   <span class="comment">// same as call func4(11, 22, n)</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"n = "</span> &lt;&lt; n &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test4_4</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> n = <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">auto</span> f4 = <span class="built_in">std</span>::bind(func4, <span class="number">11</span>, <span class="number">22</span>, ref(n));</span><br><span class="line">    <span class="comment">//f4();   // 编译错误，无法将参数 3 从“const int”转换为“int &amp;”</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">//11 22 10</span></span><br><span class="line"><span class="comment">//n = 33</span></span><br><span class="line"><span class="comment">//11 22 30</span></span><br><span class="line"><span class="comment">//11 22 33</span></span><br><span class="line"><span class="comment">//n = 101</span></span><br></pre></td></tr></table></figure></p>
 <p>如果能准确说出<code>test4_1()</code>函数的输出结果，那么后面的内容应该是不需要看了，如果只回答对了部分内容，或者干脆全错了，那么我们还有很长的路要走。</p>
 <p>在<code>std::bind()</code>的官方文档中有这样一句话，<code>std::bind()</code>函数中的参数在被复制或者移动时绝不会以引用的方式传递，除非你使用了<code>std::ref()</code>或者<code>std::cref()</code>包装的参数，如果知道了这个限定，就很容易明白函数<code>test4_1()</code>函数的输出结果了。</p>
 <p>在函数<code>test4_1()</code>中<code>std::bind(func4, 11, 22, n)</code>就相当于<code>std::bind(func4, 11, 22, 10)</code>，所以输出结果为<code>11 22 10</code>，可是函数<code>func4()</code>中还有一句 <code>n3 = 101;</code>，这就很让人奇怪了，我们知道常数是没办法作为参数传递给可变引用变量的，如果说把10作为参数传递给参数<code>int&amp; n3</code>肯定会报错，而函数<code>test4_1()</code>却正常执行，没有任何问题。</p>
@@ -538,7 +538,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/" title="std::bind（一）：包装普通函数">http://albertgithubhome.github.io/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/08/01/std-bind（一）：包装普通函数/" title="std::bind（一）：包装普通函数">http://AlbertGithubHome.github.io/blog/2019/08/01/std-bind（一）：包装普通函数/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -613,7 +613,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/07/27/Mysql%E4%B8%ADchar%E5%92%8Cvarchar%E7%9A%84%E5%8C%BA%E5%88%AB/" rel="next" title="Mysql中char和varchar的区别">
+              <a href="/blog/2019/07/27/Mysql中char和varchar的区别/" rel="next" title="Mysql中char和varchar的区别">
                 <i class="fa fa-chevron-left"></i> Mysql中char和varchar的区别
               </a>
             
@@ -623,7 +623,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/08/09/%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB/" rel="prev" title="雷电模拟器一键宏实现循环点击">
+              <a href="/blog/2019/08/09/雷电模拟器一键宏实现循环点击/" rel="prev" title="雷电模拟器一键宏实现循环点击">
                 雷电模拟器一键宏实现循环点击 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -727,7 +727,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -738,7 +738,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -749,7 +749,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -757,6 +757,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -769,17 +776,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -824,6 +820,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -905,7 +912,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -914,12 +921,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -951,7 +958,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

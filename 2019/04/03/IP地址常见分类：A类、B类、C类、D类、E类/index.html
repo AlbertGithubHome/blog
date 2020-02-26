@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,16 @@
 <meta name="keywords" content="Network,网络,IP,IPv4,Ipv6">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IP地址常见分类：A类、B类、C类、D类、E类">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;04&#x2F;03&#x2F;IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言虽然IPv6渐渐出现在了人们的视线之中，但是目前来看IPv4仍然占据着主导地位，在日常的编码过程中两者都会接触到，但实际上两者在使用范围、消息头结构等细节上有诸多不同，具体的那些细节对于应用层来说可能体会不到，所以我们先从两者的表示方式来看看，学会认出哪些是IPv4类型的地址，而哪些是IPv6类型的地址。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://albertgithubhome.github.io/blog/images/IPv4_Classify.png">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.196Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IP地址常见分类：A类、B类、C类、D类、E类">
+<meta name="twitter:description" content="前言虽然IPv6渐渐出现在了人们的视线之中，但是目前来看IPv4仍然占据着主导地位，在日常的编码过程中两者都会接触到，但实际上两者在使用范围、消息头结构等细节上有诸多不同，具体的那些细节对于应用层来说可能体会不到，所以我们先从两者的表示方式来看看，学会认出哪些是IPv4类型的地址，而哪些是IPv6类型的地址。">
+<meta name="twitter:image" content="http://albertgithubhome.github.io/blog/images/IPv4_Classify.png">
 
 
 
@@ -182,7 +188,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +285,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +348,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/04/03/IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +429,7 @@
 
           
           
-             <span id="/blog/2019/04/03/IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB/" class="leancloud_visitors" data-flag-title="IP地址常见分类：A类、B类、C类、D类、E类">
+             <span id="/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/" class="leancloud_visitors" data-flag-title="IP地址常见分类：A类、B类、C类、D类、E类">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +447,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">963(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +455,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">4(分)</span>
           </span>
 
           
@@ -478,28 +484,18 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>虽然IPv6渐渐出现在了人们的视线之中，但是目前来看IPv4仍然占据着主导地位，在日常的编码过程中两者都会接触到，但实际上两者在使用范围、消息头结构等细节上有诸多不同，具体的那些细节对于应用层来说可能体会不到，所以我们先从两者的表示方式来看看，学会认出哪些是IPv4类型的地址，而哪些是IPv6类型的地址。</p>
 <a id="more"></a>
-
 <h1 id="IPv4地址表示方法"><a href="#IPv4地址表示方法" class="headerlink" title="IPv4地址表示方法"></a>IPv4地址表示方法</h1><p>每个IPv4地址占用4个字节，长度为32位，由网络号和主机号部分组成，最常采用点分十进制表示法，格式为 <code>ddd.ddd.ddd.ddd</code>，其中 <code>0 &lt;= ddd &lt;= 255</code>，而每个 d 都是十进制数，可省略前导零，比如常见的<code>192.168.1.1</code>，理论上最多能表示的地址个数为$2^32$。</p>
 <h1 id="IPv6地址表示方法"><a href="#IPv6地址表示方法" class="headerlink" title="IPv6地址表示方法"></a>IPv6地址表示方法</h1><p>每个IPv6地址占用16个字节，长度为128位，占用空间是IPv4地址的4倍，但是这里要注意，IPv4所能表示的地址个数相比于IPv4来说可不是4倍的关系，IPv6理论上最多能表示的地址个数为$2^128$，是IPv4能力的$2^96$倍，换算成10进制也就是大约79228162514264337593543950336倍，在很长一段时间内不用再担心IP地址不够用的问题了。</p>
 <p>而IPv6地址由于占用位数较多，所以采用更容易书写和理解的冒分十六进制表示法，格式为<code>xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx</code>，其中每个 x 表示一个十六进制的符号，也就是0-9A-F，比如一个普通IPv6地址<code>23CD:0F01:0005:0789:ABED:EF01:2345:67D9</code>，前导零也是可以省略的，例如前一个地址可以记作<code>23CD:F01:5:789:ABED:EF01:2345:67D9</code>。</p>
 <p>在某些情况下，一个IPv6地址内可能包含很长的一段0，这时可以把连续的一段0压缩为<code>::</code>, 但要注意是，地址中<code>::</code>只能出现一次，这样才能保证地址解析的唯一性，比如地址<code>FF20:A:0:0:0:0:0:1AC2</code>，可以写成<code>FF20:A::1AC2</code>，而地址<code>FF20:A:0:0:1:0:0:1AC2</code>中间有两段0，为保证解析的唯一性，只能选择一段0来压缩，比如写成<code>FF20:A::1:0:0:1AC2</code>或者是<code>FF20:A:0:0:1::1AC2</code>。</p>
 <p>为了实现IPv4地址和IPv6地址互相通信，在IPv6的环境下，IPv4地址会被扩展成IPv6地址，此时地址的格式常表示为：<code>xxxx:xxxx:xxxx:xxxx:xxxx:FFFF:ddd.ddd.ddd.ddd</code>，前面的96位采用IPv6冒分十六进制表示，而后面32位地址则使用IPv4的点分十进制表示，例如常用的IPv4地址<code>192.168.1.1</code>与表示成IPv6地址就是<code>FFFF:192.168.1.1</code>。</p>
 <h1 id="IPv4地址常见分类"><a href="#IPv4地址常见分类" class="headerlink" title="IPv4地址常见分类"></a>IPv4地址常见分类</h1><p><code>192.168.1.1</code>这个IP地址随着路由器的普及逐渐为人们所熟知，有些人可能知道这是一个C类地址，究竟什么是C类地址？难道还有A类、B类地址？不是说IP地址是惟一表示一台主机的吗，为什么我家的路由器和邻居家的路由器地址都是<code>192.168.1.1</code>，关于这些问题就涉及到了IPv4地址的常见分类，其实IPv4地址一般被分为A、B、C、D、E五类，其中还包含一些保留地址和局域网地址，关于这些信息为了对比方便，我整理了下面这幅图，有关分类的疑惑可以看图了解一下：</p>
-<div align=center>
-![IPv4_classify](/blog/images/IPv4_Classify.png)
-</div>
+<div align="center"><br><img src="/blog/images/IPv4_Classify.png" alt="IPv4_classify"><br></div>
 
 
 <blockquote>
-<div align=center>
-**书愤**
-*陆游*
-早岁那知世事艰，中原北望气如山。
-楼船夜雪瓜洲渡，铁马秋风大散关。
-塞上长城空自许，镜中衰鬓已先斑。
-出师一表真名世，千载谁堪伯仲间。
-</blockquote>
-</div>
+<div align="center"><br><strong>书愤</strong><br><em>陆游</em><br>早岁那知世事艰，中原北望气如山。<br>楼船夜雪瓜洲渡，铁马秋风大散关。<br>塞上长城空自许，镜中衰鬓已先斑。<br>出师一表真名世，千载谁堪伯仲间。<br></div></blockquote>
+
       
     </div>
     
@@ -527,7 +523,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/04/03/IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB/" title="IP地址常见分类：A类、B类、C类、D类、E类">http://albertgithubhome.github.io/blog/2019/04/03/IP%E5%9C%B0%E5%9D%80%E5%B8%B8%E8%A7%81%E5%88%86%E7%B1%BB%EF%BC%9AA%E7%B1%BB%E3%80%81B%E7%B1%BB%E3%80%81C%E7%B1%BB%E3%80%81D%E7%B1%BB%E3%80%81E%E7%B1%BB/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/" title="IP地址常见分类：A类、B类、C类、D类、E类">http://AlbertGithubHome.github.io/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -585,7 +581,7 @@
           
             <a href="/blog/tags/Network/" rel="tag"><i class="fa fa-tag"></i> Network</a>
           
-            <a href="/blog/tags/%E7%BD%91%E7%BB%9C/" rel="tag"><i class="fa fa-tag"></i> 网络</a>
+            <a href="/blog/tags/网络/" rel="tag"><i class="fa fa-tag"></i> 网络</a>
           
             <a href="/blog/tags/IP/" rel="tag"><i class="fa fa-tag"></i> IP</a>
           
@@ -604,7 +600,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/03/25/Mysql%E5%BC%80%E5%90%AF%E3%80%81%E6%9F%A5%E7%9C%8B%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97/" rel="next" title="Mysql开启、查看慢查询日志">
+              <a href="/blog/2019/03/25/Mysql开启、查看慢查询日志/" rel="next" title="Mysql开启、查看慢查询日志">
                 <i class="fa fa-chevron-left"></i> Mysql开启、查看慢查询日志
               </a>
             
@@ -614,7 +610,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/04/03/Mysql%E8%A1%A8%E8%BF%9E%E6%8E%A5%EF%BC%9A%E5%86%85%E8%BF%9E%E6%8E%A5%E3%80%81%E5%A4%96%E8%BF%9E%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5%E3%80%81%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9C%9F%E7%9A%84%E9%83%BD%E4%B8%8D%E4%B8%80%E6%A0%B7%E5%90%97/" rel="prev" title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
+              <a href="/blog/2019/04/03/Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗/" rel="prev" title="Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗">
                 Mysql表连接：内连接、外连接、交叉连接、自然连接真的都不一样吗 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -718,7 +714,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -729,7 +725,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -740,7 +736,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -748,6 +744,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -760,17 +763,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -815,6 +807,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -896,7 +899,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -905,12 +908,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -942,7 +945,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         

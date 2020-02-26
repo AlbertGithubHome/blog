@@ -90,6 +90,8 @@
 
 
 
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
 
 
 
@@ -104,12 +106,14 @@
 <meta name="keywords" content="雷电,模拟器,按键操控,一键宏,loop">
 <meta property="og:type" content="article">
 <meta property="og:title" content="雷电模拟器一键宏实现循环点击">
-<meta property="og:url" content="http:&#x2F;&#x2F;albertgithubhome.github.io&#x2F;blog&#x2F;2019&#x2F;08&#x2F;09&#x2F;%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB&#x2F;index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2019/08/09/雷电模拟器一键宏实现循环点击/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言今天在使用雷电模拟器测试游戏的时候，有一个领奖界面需要点击领奖100次，程序猿作为解放劳动力的先锋，必须想个办法解决这个事情，按键精灵是个好东西，但是重装系统之后还没有安装，然后发现这个雷电模拟器里除了简单的按键映射，还有一键宏的功能，那就用它解决了。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-11-16T16:58:44.227Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="雷电模拟器一键宏实现循环点击">
+<meta name="twitter:description" content="前言今天在使用雷电模拟器测试游戏的时候，有一个领奖界面需要点击领奖100次，程序猿作为解放劳动力的先锋，必须想个办法解决这个事情，按键精灵是个好东西，但是重装系统之后还没有安装，然后发现这个雷电模拟器里除了简单的按键映射，还有一键宏的功能，那就用它解决了。">
 
 
 
@@ -182,7 +186,7 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-      <a href="https://github.com/AlbertGithubHome" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -279,7 +283,7 @@
       
         <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" target="_blank" rel="noopener" class="popup-trigger">
+            <a href="javascript:;" class="popup-trigger">
           
             
               <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
@@ -342,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/08/09/%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/08/09/雷电模拟器一键宏实现循环点击/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -423,7 +427,7 @@
 
           
           
-             <span id="/blog/2019/08/09/%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB/" class="leancloud_visitors" data-flag-title="雷电模拟器一键宏实现循环点击">
+             <span id="/blog/2019/08/09/雷电模拟器一键宏实现循环点击/" class="leancloud_visitors" data-flag-title="雷电模拟器一键宏实现循环点击">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -441,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">(字)</span>
+            <span class="post-count">733(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -449,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">(分)</span>
+            <span class="post-count">3(分)</span>
           </span>
 
           
@@ -478,7 +482,6 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天在使用雷电模拟器测试游戏的时候，有一个领奖界面需要点击领奖100次，程序猿作为解放劳动力的先锋，必须想个办法解决这个事情，按键精灵是个好东西，但是重装系统之后还没有安装，然后发现这个雷电模拟器里除了简单的按键映射，还有一键宏的功能，那就用它解决了。</p>
 <a id="more"></a>
-
 <h1 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h1><p>关于雷电模拟器的按键操控功能，<a href="http://www.ldmnq.com/bbs/thread-751-1-1.html" target="_blank" rel="noopener">官方论坛-帮助教程</a>已经写得很清楚了，一键宏怎么设置教程里也写的很清楚，唯一的缺点就是各个截图中的代码太模糊了，根本看不清，所以我在尝试的过程中还花了点时间，其中遇到了几个坑和大家分享下。</p>
 <p>我用的模拟器版本是3.54，这个版本在编写一键宏的时候可以直接在界面上获得对应点的坐标，非常的方便，在开始写一键宏的时候有一个误区，就是怎么控制我写的这段宏代码的开始与结束，起初我还控制按键的按下和抬起，发现没有什么用，最后测试发现，就是设置的按键按下时执行，如果存在循环就一直执行，按键抬起时执行结束，简单粗暴。</p>
 <h1 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h1><p>其实这个一键宏也算不上代码，最多也就算个伪代码，然后通过模拟器解析一下，要实现循环点击的功能需要的指令不多，只有4个：</p>
@@ -490,7 +493,6 @@
 </ul>
 <p>其中坑人最深的就是<code>size</code>这个命令，我一开始以为是设置分辨率的，而我玩游戏默认的分辨率是1600X900，所以设置的点击位置也是在这个分辨率下取的点，然后就没加这个指令，结果一键宏一直不生效，后来加上了<code>size 1600 900</code>这一句才好使，这时我才明白这个指令不是设置分辨率的，而是告诉以下指令，当前的分辨率是多少，在操作像素点时不至于选错，宏的内容很简单，只有四句：</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">size <span class="number">1600</span> <span class="number">900</span></span><br><span class="line">loop</span><br><span class="line">touch <span class="number">1400</span> <span class="number">350</span></span><br><span class="line">wait <span class="number">1000</span></span><br></pre></td></tr></table></figure>
-
 <p>这个宏组合的意思也很清楚，在分辨率1600X900的情况下，循环点击(1400, 350)这个像素点，每次点击间隔1s，防止点击过快。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
 <li>一键宏设置完成后，按键按下执行，如果是循环指令，则按键抬起结束</li>
@@ -524,7 +526,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://albertgithubhome.github.io/blog/2019/08/09/%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB/" title="雷电模拟器一键宏实现循环点击">http://albertgithubhome.github.io/blog/2019/08/09/%E9%9B%B7%E7%94%B5%E6%A8%A1%E6%8B%9F%E5%99%A8%E4%B8%80%E9%94%AE%E5%AE%8F%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E7%82%B9%E5%87%BB/</a>
+    <a href="http://AlbertGithubHome.github.io/blog/2019/08/09/雷电模拟器一键宏实现循环点击/" title="雷电模拟器一键宏实现循环点击">http://AlbertGithubHome.github.io/blog/2019/08/09/雷电模拟器一键宏实现循环点击/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -580,13 +582,13 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/%E9%9B%B7%E7%94%B5/" rel="tag"><i class="fa fa-tag"></i> 雷电</a>
+            <a href="/blog/tags/雷电/" rel="tag"><i class="fa fa-tag"></i> 雷电</a>
           
-            <a href="/blog/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/" rel="tag"><i class="fa fa-tag"></i> 模拟器</a>
+            <a href="/blog/tags/模拟器/" rel="tag"><i class="fa fa-tag"></i> 模拟器</a>
           
-            <a href="/blog/tags/%E6%8C%89%E9%94%AE%E6%93%8D%E6%8E%A7/" rel="tag"><i class="fa fa-tag"></i> 按键操控</a>
+            <a href="/blog/tags/按键操控/" rel="tag"><i class="fa fa-tag"></i> 按键操控</a>
           
-            <a href="/blog/tags/%E4%B8%80%E9%94%AE%E5%AE%8F/" rel="tag"><i class="fa fa-tag"></i> 一键宏</a>
+            <a href="/blog/tags/一键宏/" rel="tag"><i class="fa fa-tag"></i> 一键宏</a>
           
             <a href="/blog/tags/loop/" rel="tag"><i class="fa fa-tag"></i> loop</a>
           
@@ -601,7 +603,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/08/01/std-bind%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0/" rel="next" title="std::bind（一）：包装普通函数">
+              <a href="/blog/2019/08/01/std-bind（一）：包装普通函数/" rel="next" title="std::bind（一）：包装普通函数">
                 <i class="fa fa-chevron-left"></i> std::bind（一）：包装普通函数
               </a>
             
@@ -611,7 +613,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blog/2019/08/15/std-bind%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%8C%85%E8%A3%85%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0/" rel="prev" title="std::bind（二）：包装成员函数">
+              <a href="/blog/2019/08/15/std-bind（二）：包装成员函数/" rel="prev" title="std::bind（二）：包装成员函数">
                 std::bind（二）：包装成员函数 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -715,7 +717,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -726,7 +728,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -737,7 +739,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-count">167</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -745,6 +747,13 @@
 
         </nav>
 
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
         
 
         <div class="links-of-author motion-element">
@@ -757,17 +766,6 @@
                   
                     
                       GitHub
-                    
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/u/2292282307" target="_blank" title="微博">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                    
-                      微博
                     
                 </a>
               </span>
@@ -812,6 +810,17 @@
                   
                     
                       知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
                     
                 </a>
               </span>
@@ -893,7 +902,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -902,12 +911,12 @@
 
 
 <div class="powered-by">
-   <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Mist
   </a>
 </div>
@@ -939,7 +948,7 @@
 
         
   <div class="theme-info">
-    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0 International License</a>.
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
   </div>
 
         
