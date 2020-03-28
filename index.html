@@ -346,6 +346,275 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/" itemprop="url">git stash帮你在切换分支前暂存不想提交的修改</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-25T23:27:38+08:00">
+                2020-03-25
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-03-28T23:38:56+08:00">
+                2020-03-28
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/" class="leancloud_visitors" data-flag-title="git stash帮你在切换分支前暂存不想提交的修改">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">4,091(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">18(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然间发现这个命令，正好解决了最近遇到的问题，使用 <code>Git</code> 管理代码时有这样一种场景，你正在分支 <code>branch2</code> 上开发新功能，突然刚刚提交测试的 <code>branch1</code> 分支上报了严重的BUG，需要尽快修改，这时候就需要切换到 <code>branch1</code> 分支上去修复BUG，但是你刚刚在分支 <code>branch2</code> 修改的文件还没有提交，接下来该怎么办？</p>
+<p>如果本地的修改正好到达一个比较完整的阶段，可以直接提交，然后切换分支改BUG，那再好不过了。可是发生这种情况的时候往往是函数写了一半，或者功能大致写完但是还没来得及测试，这样的代码你敢提交吗？我感觉最好还是不要提交吧，那么如果这时候切换分支会有什么后果呢？一般会遇到两种情况：第一种是你在 <code>branch2</code> 分支上所做的修改与 <code>branch1</code> 上做过的修改不冲突，这时切换分支会将本地修改带到 <code>branch1</code> 分支，如果冲突了就是第二种情况，<code>git checkout branch1</code> 命令会被拒绝，当然你可以添加 <code>-f</code> 参数强行切换分支是可以成功的，代价就是你会丢掉本地的所有修改。</p>
+<h1 id="git-stash"><a href="#git-stash" class="headerlink" title="git stash"></a>git stash</h1><p>上面提到的切换分支时遇到的两种情况一般都不是我们想要的，之前说过“在 <code>Git</code> 中没有真正的方法来做任何事情，这就是它的妙处！”，但是关于切换分支有这样一个建议，那就是在切换分支时尽量保证你的工作区和暂存区是干净的，而 <code>git stash</code> 命令就是用来做这件事的。</p>
+<p>正如前面分析的，本地的修改我不能提交，不想带到新切换的分支，更不想直接丢掉，只想把他们暂存到一个地方，等我切换完分支修改好BUG，再切换回来迎接他们。使用 <code>SVN</code> 想保存本地修改可以使用 <code>patch</code>，而使用 <code>Git</code> 想要解决这种情况更加方便，那就是利用 <code>git stash</code> 命令。</p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>这个命令的使用方法非常简单，最常用的 <code>git stash push</code> 和 <code>git stash pop</code> 就能应付大部分情况了，其中 <code>push</code> 这个单词还可以省略，使用起来可以说是相当方便了，接下来尝试一下具体用法。</p>
+<h2 id="本地有修改时切换分支的两种情况"><a href="#本地有修改时切换分支的两种情况" class="headerlink" title="本地有修改时切换分支的两种情况"></a>本地有修改时切换分支的两种情况</h2><p>之前提到过这两种情况，一种是将当前分支修改带到要切换的分支，另一种是切换会导致冲突，本次切换操作被拒绝，下面具体操作一下。</p>
+<h3 id="将当前分支修改带到要切换的分支"><a href="#将当前分支修改带到要切换的分支" class="headerlink" title="将当前分支修改带到要切换的分支"></a>将当前分支修改带到要切换的分支</h3><p>首先以 <code>dev</code> 分支为基础新建 <code>feature</code> 分支</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is up to date with <span class="string">'origin/dev'</span>.</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git checkout -b feature</span><br><span class="line">Switched to a new branch <span class="string">'feature'</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>feature</code> 分支上修改文件，再切换回 <code>dev</code> 分支，可以正常切换，<code>git status</code> 查看状态，发现修改的文件被带到了 <code>dev</code> 分支上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"test checkout"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git checkout dev</span><br><span class="line">Switched to branch <span class="string">'dev'</span></span><br><span class="line">M       README.md</span><br><span class="line">Your branch is up to date with <span class="string">'origin/dev'</span>.</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is up to date with <span class="string">'origin/dev'</span>.</span><br><span class="line"></span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br></pre></td></tr></table></figure>
+<p>这里要注意一点，在切换到 <code>dev</code> 分支的时候，有一行 <code>M       README.md</code>的内容，表示这个文件在切换过来的时候就是修改的。</p>
+<p>如果你想要的效果就是这样，就可以直接提交了，比如修改了代码发现分支弄错了，可以这样带着修改的内容切换分支，假设就是这种情况，我们直接在 <code>dev</code> 分支提交修改。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git add README.md</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git commit -m<span class="string">"add comments"</span></span><br><span class="line">[dev 5f4181e] add comments</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line">git</span><br><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is ahead of <span class="string">'origin/dev'</span> by 1 commit.</span><br><span class="line">  (use <span class="string">"git push"</span> to publish your <span class="built_in">local</span> commits)</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+<h3 id="切换分支操作被拒绝"><a href="#切换分支操作被拒绝" class="headerlink" title="切换分支操作被拒绝"></a>切换分支操作被拒绝</h3><p>上面一种情况，在 <code>feature</code> 分支的修改被带到 <code>dev</code> 分支提交，我们在此基础上切换回 <code>feature</code> 分支看一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git checkout feature</span><br><span class="line">Switched to branch <span class="string">'feature'</span></span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+<p>发现此时 <code>feature</code> 分支上没有任何修改了，我们再改一次，然后切换到 <code>dev</code> 分支上试试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"second try"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git checkout dev</span><br><span class="line">error: Your <span class="built_in">local</span> changes to the following files would be overwritten by checkout:</span><br><span class="line">        README.md</span><br><span class="line">Please commit your changes or stash them before you switch branches.</span><br><span class="line">Aborting</span><br></pre></td></tr></table></figure>
+<p>看到了吧，切换分支的操作被拒绝了，原因是这次切换可能导致本地的修改被覆盖，你可以在切换分支前尝试 <code>commit</code> 你的修改或者 <code>stash</code> 你的修改，等等，这里出现了 <code>stash</code> 这个单词，其实之前我都没注意到，不是修改好提交了就是直接加 <code>-f</code> 参数放弃了所做的修改，没想到还有这样神奇 <code>stash</code> 命令帮我渡过难关。</p>
+<h2 id="stash-一般操作"><a href="#stash-一般操作" class="headerlink" title="stash 一般操作"></a><code>stash</code> 一般操作</h2><p>接下来展示一下 <code>git stash</code> 最常用的操作，也就是标题中提到的——在切换分支前暂存不想提交的修改，继续在上面的环境下操作，现在 <code>feature</code><br> 分支上修改了 <code>README.md</code> 文件，切换到 <code>dev</code> 分支时因为可能产生冲突而被拒绝，我们先来看一下文件状态。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git diff</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line">diff --git a/README.md b/README.md</span><br><span class="line">index 76a124a..4c2bfb8 100644</span><br><span class="line">--- a/README.md</span><br><span class="line">+++ b/README.md</span><br><span class="line">@@ -1,2 +1,3 @@</span><br><span class="line"> learn git branch <span class="built_in">command</span></span><br><span class="line"> m2</span><br><span class="line">+second try</span><br></pre></td></tr></table></figure>
+<p>对比显示我们增加了一行，然后执行 <code>git stash</code> 命令，再查看一下文件状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line">Saved working directory and index state WIP on feature: 6ae97d0 Revert <span class="string">"modify README 1"</span></span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+<p>执行完 <code>git stash</code> 之后我们发现，刚才的修改不见了，本地状态提示为 <code>nothing to commit, working tree clean</code>，这时我们再来切换分支：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git checkout dev</span><br><span class="line">Switched to branch <span class="string">'dev'</span></span><br><span class="line">Your branch is ahead of <span class="string">'origin/dev'</span> by 1 commit.</span><br><span class="line">  (use <span class="string">"git push"</span> to publish your <span class="built_in">local</span> commits)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is ahead of <span class="string">'origin/dev'</span> by 1 commit.</span><br><span class="line">  (use <span class="string">"git push"</span> to publish your <span class="built_in">local</span> commits)</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+<p>这次切换就没有被拒绝，成功的切换到了 <code>dev</code> 分支，你可以在 <code>dev</code> 分支上进行想要的操作，全部操作完成后再切换回 <code>feature</code> 分支，我们这里就不操作了，直接切回 <code>feature</code> 分支查看一下状态。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git checkout feature</span><br><span class="line">Switched to branch <span class="string">'feature'</span></span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+<p>我们看到工作区很干净，这时如果想还原刚才在 <code>feature</code> 分支的修改，可以使用 <code>git stash pop</code> 命令，我们执行一下然后查看状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash pop</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line">Dropped refs/stash@&#123;0&#125; (bd500adb74d57a3d916a89ff2cd4536cf4eaf6ae)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git status</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br></pre></td></tr></table></figure>
+<p>刚刚被临时暂存的修改又恢复了，我们可以在 <code>feature</code> 分支上继续愉快的开发了。</p>
+<h2 id="stash-进阶操作"><a href="#stash-进阶操作" class="headerlink" title="stash 进阶操作"></a><code>stash</code> 进阶操作</h2><p>作为这么神奇的命令，<code>stash</code> 肯定不止这么一点点用法，接下来再列举几个较为常用的参数组合：</p>
+<h3 id="查看临时存储的所有条目-git-stash-list"><a href="#查看临时存储的所有条目-git-stash-list" class="headerlink" title="查看临时存储的所有条目 git stash list"></a>查看临时存储的所有条目 <code>git stash list</code></h3><p>当你使用几次 <code>git stash</code> 命令之后就会发现，这个命令有点像建立还原点，所以暂存命令不止可以用一次，当使用多次暂存命令之后就会形成一个暂存列表，这时可以使用 <code>git stash list</code> 命令查看所有的暂存操作，执行命令后大概就是下面的样子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: WIP on feature: 84dfd79 add <span class="built_in">test</span> file</span><br><span class="line">stash@&#123;1&#125;: WIP on feature: 6ae97d0 Revert <span class="string">"modify README 1"</span></span><br></pre></td></tr></table></figure>
+<p>这个列表的构成很像一个栈，<code>stash@{0}</code> 是栈顶元素，<code>stash@{1}</code> 是栈顶下面的一个元素，当使用 <code>git stash</code> 命令时会把新的暂存信息压入栈顶，原来的信息向栈底移动，当使用 <code>git stash pop</code> 命令的时候又会把栈顶的元素弹出，恢复到工作区和暂存区。</p>
+<h3 id="临时存储未追踪的新文件-git-stash-u"><a href="#临时存储未追踪的新文件-git-stash-u" class="headerlink" title="临时存储未追踪的新文件 git stash -u"></a>临时存储未追踪的新文件 <code>git stash -u</code></h3><p>在开发过程中新添加的文件不属于任何一个分支，在不冲突的文件情况下也可以在切换分支的时候带到新的分支，默认在使用 <code>git stash</code> 命令的时候不会把这些文件临时存起来，如果想要存起来加上 <code>-u</code> 参数就可以了，执行之后你会发现这个新加的文件在工作区中消失了。</p>
+<h3 id="临时存储被忽略的文件-git-stash-a"><a href="#临时存储被忽略的文件-git-stash-a" class="headerlink" title="临时存储被忽略的文件 git stash -a"></a>临时存储被忽略的文件 <code>git stash -a</code></h3><p>被忽略的文件在默认情况下也不会被 <code>git stash</code> 命令存储，想要临时存储这部分文件只要使用 <code>-a</code> 参数就可以了，这样不仅会把忽略的文件临时存储，连未追踪的文件也存储了起来。</p>
+<h2 id="stash-操作的标号"><a href="#stash-操作的标号" class="headerlink" title="stash 操作的标号"></a><code>stash</code> 操作的标号</h2><p>前面的 <code>git stash list</code> 命令也提到了，使用 <code>git stash</code> 命令的结果会形成一个栈形式的列表，其中 <code>stash@{n}</code> 就是每次临时存储对应的标号，针对于这些标号的操作也有很多，如果不加这些标号默认使用 <code>stash@{0}</code> ，也就是栈顶元素。</p>
+<h3 id="查看临时修改的具体内容-git-stash-show-stash-0"><a href="#查看临时修改的具体内容-git-stash-show-stash-0" class="headerlink" title="查看临时修改的具体内容 git stash show stash@{0}"></a>查看临时修改的具体内容 <code>git stash show stash@{0}</code></h3><p>这个查询过程和查询提交日志的形式有点像，主要展示了某次临时存储时改了哪些内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash show stash@&#123;0&#125;</span><br><span class="line"> test.txt | 1 +</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash show stash@&#123;1&#125;</span><br><span class="line"> README.md | 1 +</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br></pre></td></tr></table></figure>
+<h3 id="恢复指定标号的临时修改-git-stash-apply-stash-0"><a href="#恢复指定标号的临时修改-git-stash-apply-stash-0" class="headerlink" title="恢复指定标号的临时修改 git stash apply stash@{0}"></a>恢复指定标号的临时修改 <code>git stash apply stash@{0}</code></h3><p>在恢复临时存储的修改时不仅可以使用 <code>git stash pop</code> 命令来恢复栈顶那一次修改，也可以按照标号恢复指定的某次修改，测试如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash apply stash@&#123;1&#125;</span><br><span class="line">On branch feature</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: WIP on feature: 84dfd79 add <span class="built_in">test</span> file</span><br><span class="line">stash@&#123;1&#125;: WIP on feature: 6ae97d0 Revert <span class="string">"modify README 1"</span></span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash apply stash@&#123;1&#125;</span><br><span class="line">error: Your <span class="built_in">local</span> changes to the following files would be overwritten by merge:</span><br><span class="line">        README.md</span><br><span class="line">Please commit your changes or stash them before you merge.</span><br><span class="line">Aborting</span><br></pre></td></tr></table></figure>
+<p>这个命令在执行后，指定标号的修改会被恢复到工作区和暂存区，但是临时存储的列表不会被删除，这时可以尝试再次恢复相同标号的修改到工作区，会因为修改了相同的文件被拒绝。</p>
+<h1 id="刪除指定标号的临时存储的修改-git-stash-drop-stash-0"><a href="#刪除指定标号的临时存储的修改-git-stash-drop-stash-0" class="headerlink" title="刪除指定标号的临时存储的修改 git stash drop stash@{0}"></a>刪除指定标号的临时存储的修改 <code>git stash drop stash@{0}</code></h1><p>可以在临时存储列表中删除指定标号的一些修改，可以测试一下看看效果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: WIP on feature: 84dfd79 add <span class="built_in">test</span> file</span><br><span class="line">stash@&#123;1&#125;: WIP on feature: 6ae97d0 Revert <span class="string">"modify README 1"</span></span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash drop stash@&#123;1&#125;</span><br><span class="line">Dropped stash@&#123;1&#125; (8408e56305fabcd82c1d05db18e177c89c47c5ac)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: WIP on feature: 84dfd79 add <span class="built_in">test</span> file</span><br></pre></td></tr></table></figure>
+<h3 id="利用临时存储的修改内容新建分支-git-stash-branch-lt-branchname-gt-lt-stash-gt"><a href="#利用临时存储的修改内容新建分支-git-stash-branch-lt-branchname-gt-lt-stash-gt" class="headerlink" title="利用临时存储的修改内容新建分支 git stash branch &lt;branchname&gt; [&lt;stash&gt;]"></a>利用临时存储的修改内容新建分支 <code>git stash branch &lt;branchname&gt; [&lt;stash&gt;]</code></h3><p>一般这种情况就是使用过多次 <code>git stash push</code> 命令，而本地分支还修改了其他内容，直接恢复之前的修改不太合适，所以利用这个命令新建一个分支，分支的内容以指定的存储标号 <code>&lt;stash&gt;</code> 对应的提交 <code>commit-id</code> 为基础，然后应用 <code>&lt;stash&gt;</code> 的修改，实际上就是新建了一个对应 <code>&lt;stash&gt;</code> 的分支，继续之前未完成的工作，<code>&lt;stash&gt;</code> 默认为 <code>stash@{0}</code>，测试如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@homepc MINGW64 /d/gitstart (feature)</span><br><span class="line">$ git stash branch feature1</span><br><span class="line">Switched to a new branch <span class="string">'feature1'</span></span><br><span class="line">M       README.md</span><br><span class="line">On branch feature1</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git restore &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line">        modified:   README.md</span><br><span class="line">        modified:   test.txt</span><br><span class="line"></span><br><span class="line">no changes added to commit (use <span class="string">"git add"</span> and/or <span class="string">"git commit -a"</span>)</span><br><span class="line">Dropped refs/stash@&#123;0&#125; (2922b3eeeda44c98316453b93fcf07c1fcfffca4)</span><br><span class="line"></span><br><span class="line">albert@homepc MINGW64 /d/gitstart (feature1)</span><br><span class="line">$ git stash list</span><br></pre></td></tr></table></figure>
+<p>这个操作会消耗掉对应 <code>&lt;stash&gt;</code> 标号的临时存储的内容，将这些内容从存储列表中移除。</p>
+<h1 id="stash-的注意事项"><a href="#stash-的注意事项" class="headerlink" title="stash 的注意事项"></a><code>stash</code> 的注意事项</h1><p>这个命令不仅可以在同一分支上存储和还原，也可用于不同分支之间，这时就可以有一个应用，当我们发现在错误的分支上开发了代码，可以先 <code>git stash push</code> 将这些修改临时存储起来， 然后切换到正确的分支，再执行 <code>git stash pop</code> 命令将刚才的修改引用到现在的分支上。</p>
+<p><code>git stash push</code> 命令默认是存储工作区和暂存区的修改内容的，但是 <code>git stash pop</code> 命令在还原是默认将所有的修改还原到工作区，如果想还原到对应的暂存区，需要加额外的参数，像这样 <code>git stash pop --index</code>。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>这个命令挺有用的，在合作开发的时候经常碰到临时问题需要处理，切换分支暂存一下很方便</li>
+<li>感觉这个命令其实和 <code>commit</code> 也很像的，在操作过程中你会发现，它也有自己的 <code>hash-id</code>，但是不会放到 <code>commit</code> 列表中</li>
+<li>这个命令参数也有好多个，不过记住常用的就可以面对大多数情况了，简单列举下</li>
+<li><code>git stash push</code> 会将当前本地的修改临时保存起来，<code>push</code> 可以省略</li>
+<li><code>git stash list</code> 查看当前<code>stash push</code>操作的记录</li>
+<li><code>git stash pop</code> 取出最近一次修改，并应用到本地</li>
+<li><code>git stash apply stash@{n}</code> 应用 <code>stash@{n}</code> 对应的修改，但是不删除这条记录</li>
+<li><code>git stash show stash@{n}</code> 展示 <code>stash@{n}</code> 对应的修改的实际修改内容</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/03/19/没想到C-中的std-remove-if-函数历史还挺悠久/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,7 +662,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-03-21T11:39:49+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2020-03-21T20:50:58+08:00">
                 2020-03-21
               </time>
             
@@ -447,7 +716,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,394(字)</span>
+            <span class="post-count">2,481(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2290,222 +2559,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/" itemprop="url">C++ STL中map的[]操作符使用时的一个坑</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-14T10:39:58+08:00">
-                2019-12-14
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-02-26T23:02:09+08:00">
-                2020-02-26
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
-                    <span itemprop="name">C/C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/" class="leancloud_visitors" data-flag-title="C++ STL中map的[]操作符使用时的一个坑">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,660(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">7(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>学习C++，自从发现了map这个结构以后，就深深的被这种键值对的方式吸引了，写代码时也渐渐离不开这种结构了，一次偶然的机会发现这个map还有个 <code>[]</code> 运算符，仿佛又发现了新大陆一样，写代码更加方便了，殊不知一个深深的大坑正在前面等着我。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2556,7 +2609,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-count">75</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2578,7 +2631,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">179</span>
+                <span class="site-state-item-count">181</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
