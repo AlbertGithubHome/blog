@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[汇编指令入门级整理]]></title>
+    <url>%2Fblog%2F2020%2F05%2F09%2F%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%B4%E7%90%86%2F</url>
+    <content type="text"><![CDATA[前言我们大都是被高级语言惯坏了的一代，源源不断的新特性正在逐步添加到各类高级语言之中，汇编作为最接近机器指令的低级语言，已经很少被直接拿来写程序了，不过我还真的遇到了一个，那是之前的一个同事，因为在写代码时遇到了成员函数权限及可见性的问题，导致他无法正确调用想执行的函数，结果他就开始在 C++ 代码里嵌入汇编了，绕过了种种限制终于如愿以偿，但是读代码的我们傻眼了… 因为项目是跨平台的，代码推送的 Linux 上编译的时候他才发现，汇编代码的语法在 Linux 和 Windows 上居然是不一样的，结果他又用一个判断平台的宏定义“完美”的解决了，最终这些代码肯定是重写了啊，因为可读性太差了，最近在学习左值、右值、左引用和右引用的时候，总是有人用程序编译生成的中间汇编代码来解释问题，看得我迷迷糊糊，所以决定熟悉一下简单的汇编指令，边学习边记录，方便今后忘记了可以直接拿来复习。 什么是汇编语言汇编语言是最接近机器语言的编程语言，引用百科中的一段话解释为： 汇编语言（assembly language）是一种用于电子计算机、微处理器、微控制器或其他可编程器件的低级语言，亦称为符号语言。在汇编语言中，用助记符代替机器指令的操作码，用地址符号或标号代替指令或操作数的地址。汇编语言又被称为第二代计算机语言。 汇编语言产生的原因对于绝大多数人来说，二进制程序是不可读的，当然有能人可以读，比如第一代程序员，但这类人快灭绝了，直接看二进制不容易看出来究竟做了什么事情，比如最简单的加法指令二进制表示为 00000011，如果它混在一大串01字符串中就很难把它找出来，所以汇编语言主要就是为了解决二进制编码的可读性问题。 汇编与二进制的关系换句话来说，汇编语言就是把给机器看的二进制编码翻译成人话，汇编指令是机器指令的助记符，与机器指令是一一对应的关系，是一种便于阅读和记忆的书写格式。有效地解决了机器指令编写程序难度大的问题，并且使用编译器，可以很方便的把汇编程序转译成机器指令程序，比如之前提到的 00000011 加法指令，对应的汇编指令是 ADD，在调用汇编器时就会把 ADD 翻译成 00000011。 寄存器说到汇编指令不得不提到寄存器，寄存器本身是用来存数据的，因为 CPU 本身只负责逻辑运算，数据需要单独储存在其他的地方，但是对于不熟悉寄存器的人来说会有疑惑，数据不是存在硬盘上吗？或者说数据不是存在内存中吗？这些想法都没错，那么寄存器是用来做什么的呢？ 寄存器作用其实硬盘、内存都是用来存储数据的，但是 CPU 的运算速度远高于内存的读写速度，更不用说从硬盘上取数据了，所以为了避免被拖慢速度影响效率，CPU 都自带一级缓存和二级缓存，一些 CPU 甚至增加了三级缓存，从这些缓存中读写数据要比内存快很多，但是还是无法使用飞速运转的 CPU，所以才会有寄存器的存在。 寄存器不是后来增加的，在最初的计算中就已经设计出来，相比而言，多级缓存出现的更晚一些，通常那些最频繁读写的数据都会被放在寄存器里面，CPU 优先读写寄存器，再通过寄存器、缓存跟内存来交换数据，达到缓冲的目的，因为可以通过名称访问寄存器，这样访问速度是最快的，因此也被称为零级缓存。 存取速度比较通过上面的叙述我们可以知道存取速度从高到低分别是: 寄存器 &gt; 1级缓存 &gt; 2级缓存 &gt; 3级缓存 &gt; 内存 &gt; 硬盘，关于它们的存取速度，举个例子很容易就能明白了，比如我们做菜（CPU工作）时，取手中（寄存器）正拿着的肉和蔬菜肯定是最快的，如果没有就需要把案板上（1级缓存）处理好的菜拿过来，如果案板上没有就在更远一点的洗菜池（2级缓存）中找一找，还没找到的话就要到冰箱（3级缓存）中看一看了，这时发现家里真没有，那去楼下的菜店（内存）去买点吧，转了一圈发现没有想要的，最后还是开车去农贸市场（硬盘）买吧。 通过上面这个例子应该能明白它们的速度关系了，既然缓存这么快，为什么不用缓存代替内存，或者将2、3级缓存都换成1级缓存呢？这里边有一个成本问题，速度越快对应着价格越高，如果你买过机械硬盘和固态硬盘应该很容易就理解了。 寄存器分类常用的 x86 CPU 寄存器有8个：EAX 、EBX、ECX、EDX、EDI、ESI、EBP、ESP，据说现在寄存器总数已经超过100个了，等我找到相关资料再来补充，上面这几个寄存器是最常用的，这些名字也常常出现在汇编的代码中。 我们常说的32位、64位 CPU 是指数据总线的宽度或根数，而寄存器是暂存数据和中间结果的单元，因此寄存器的位数也就是处理数据的长度与数据总线的根数是相同的，所以32位 CPU 对应的寄存器也应该是32位的。 常用寄存器用途上面提到大8个寄存器都有其特定的用途，我们以32位 CPU 为例简单说明下这些寄存器的作用，整理如下表： 寄存器 含义 用途 包含寄存器 EAX 累加(Accumulator)寄存器 常用于乘、除法和函数返回值 AX(AH、AL) EBX 基址(Base)寄存器 常做内存数据的指针, 或者说常以它为基址来访问内存. BX(BH、BL) ECX 计数器(Counter)寄存器 常做字符串和循环操作中的计数器 CX(CH、CL) EDX 数据(Data)寄存器 常用于乘、除法和 I/O 指针 DX(DH、DL) ESI 来源索引(Source Index)寄存器 常做内存数据指针和源字符串指针 SI EDI 目的索引(Destination Index)寄存器 常做内存数据指针和目的字符串指针 DI ESP 堆栈指针(Stack Point)寄存器 只做堆栈的栈顶指针; 不能用于算术运算与数据传送 SP EBP 基址指针(Base Point)寄存器 只做堆栈指针, 可以访问堆栈内任意地址, 经常用于中转 ESP 中的数据, 也常以它为基址来访问堆栈; 不能用于算术运算与数据传送 BP 寄存器EAX、AX、AH、AL的关系在上面的图标中每个常用寄存器后面还有其他的名字，它们是同一个寄存器不同用法下的不同名字，比如在32位 CPU 上，EAX是32位的寄存器，而AX是EAX的低16位，AH是AX的高8位，而AL是AX的低8位，它们的对照关系如下: 1234500000000 00000000 00000000 00000000|===============EAX===============|---4个字节 |======AX=======|---2个字节 |==AH===|-----------1个字节 |===AL==|---1个字节 汇编语言指令终于说到汇编常用指令了，因为 linux 和 windows 下的汇编语法是有些不同的，所以下面我们先通过 windows 下的汇编指令来简单学习一下，后续再来比较两者的不同。 数据传送指令 指令 名称 示例 备注 MOV 传送指令 MOV dest, src 将数据从src移动到dest PUSH 进栈指令 PUSH src 把源操作数src压入堆栈 POP 出栈指令 POP desc 从栈顶弹出字数据到dest 算术运算指令 指令 名称 示例 备注 ADD 加法指令 ADD dest, src 在dest基础上加src SUB 减法指令 SUB dest, src 在dest基础上减src INC 加1指令 INC dest 在dest基础上加1 DEC 减1指令 DEC dest 在dest基础上减1 逻辑运算指令 指令 名称 示例 备注 NOT 取反运算指令 NOT dest 把操作数dest按位取反 AND 与运算指令 AND dest, src 把dest和src进行与运算之后送回dest OR 或运算指令 OR dest, src 把dest和src进行或运算之后送回dest XOR 异或运算 XOR dest, src 把dest和src进行异或运算之后送回dest 循环控制指令 指令 名称 示例 备注 LOOP 计数循环指令 LOOP label 使ECX的值减1，当ECX的值不为0的时候跳转至label，否则执行LOOP之后的语句 转移指令 指令 名称 示例 备注 JMP 无条件转移指令 JMP lable 无条件地转移到标号为label的位置 CALL 过程调用指令 CALL labal 直接调用label JE 条件转移指令 JE lable zf =1 时跳转到标号为label的位置 JNE 条件转移指令 JNE lable zf=0 时跳转到标号为label的位置 linux 和 windows 下汇编的区别前面说到 linux 和 windows 下的汇编语法是不同的，其实两种语法的不同和系统不同没有绝对的关系，一般在 linux 上会使用 gcc/g++ 编译器，而在 windows 上会使用微软的 cl 也就是 MSBUILD，所以产生不同的代码是因为编译器不同，gcc 下采用的是AT&amp;T的汇编语法格式，MSBUILD 采用的是Intel汇编语法格式。 差异 Intel AT&amp;T 引用寄存器名字 eax %eax 赋值操作数顺序 mov dest, src movl src, dest 寄存器、立即数指令前缀 mov ebx, 0xd00d movl $0xd00d, %ebx 寄存器间接寻址 [eax] (%eax) 数据类型大小 操作码后加后缀字母，“l” 32位，“w” 16位，“b” 8位（mov dx, word ptr [eax]） 操作数前面加dword ptr， word ptr，byte ptr的格式 （movb %bl %al） 总结 汇编指令是机器指令的助记符，与机器指令是一一对应的 AT&amp;T的汇编语法格式和Intel汇编语法格式的是不同的 常用寄存器：EAX 、EBX、ECX、EDX、EDI、ESI、EBP、ESP 存取速度从高到低分别是: 寄存器 &gt; 1级缓存 &gt; 2级缓存 &gt; 3级缓存 &gt; 内存 &gt; 硬盘 常用的汇编指令：mov、je、jmp、call、add、sub、inc、dec、and、or 如今的每分每秒都是人生，不要总想着将自然发生的事情拖到预定的时刻才进行~]]></content>
+      <categories>
+        <category>ASM</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>汇编</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>asm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++11在左值引用的基础上增加右值引用]]></title>
     <url>%2Fblog%2F2020%2F05%2F05%2FC-11%E5%9C%A8%E5%B7%A6%E5%80%BC%E5%BC%95%E7%94%A8%E7%9A%84%E5%9F%BA%E7%A1%80%E4%B8%8A%E5%A2%9E%E5%8A%A0%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%2F</url>
     <content type="text"><![CDATA[前言右值引用这个词是最开始是学习 easylogging++ 这个日志开源项目的时候遇到的，当时遇到 &amp;&amp; 这样的写法先是一愣，还有这种写法？难道是引用的地址？结果查询资料才明白这叫做右值引用。 右值引用的出现其实右值引用是在 C++11 时增加的新内容，在此之前，引用是没有左值和右值之分的，只存在一种引用，也就是后来 C++11 标准中的左值引用，而右值引用的提出主要是为了解决之前左值引用出现的一些尴尬的问题。 左值和右值说到右值引用需要先了解下左值和右值，这也是我自己学习的过程，之前在 《简单聊聊C/C++中的左值和右值》 这篇笔记中总结过，可以简单理解左值就是放在 = 左边，可以取到地址，可以被赋值的表达式，而右值通常是放在 = 右侧，不能取地址，只能被当成一个“值”的表达式。 右值引用的作用右值引用的出现并不是为了取代左值引用，也不是和左值引用形成对立，而是充分利用右值内容来减少对象构造和析构操作，以达到提高程序代码效率的目的。 也就是说增加右值引用这个特性是为了提高效率，之前的总结中也提到过，在 C++11 中还引入了 std::move() 函数，并用这个函数改写了 std::remove_if() 函数，这就是提高效率的例子。 使用 std::move() 函数意味着放弃所有权，对于一个左值，如果我们明确放弃对其资源的所有权，则可以通过 std::move() 来将其转为右值引用，放弃所有权的这个操作不一定都是方便的，比如 std::auto_ptr 这个第一代的智能指针，就是因为转移了所有权，使用起来不太方便，才在最新标准中被废弃的。但如果你明确要转移所有权，并且合理使用，有时可以有效的提高程序效率。 引用类型的对比在学习使用右值引用之前先复习一下左值引用，对比学习更有利于我们的记忆。 左值引用1234int i = 22;int&amp; j = i;j = 11; 上面这几行代码就是最常见左值引用的例子，变量 j 引用了变量 i 的存储位置，修改变量 j 就修改了变量 i 的值，但是如果引用一个值会怎么样呢？比如下面这行代码： 1int&amp; j = 22; 编译这行代码会得到一个编译错误： error: invalid initialization of non-const reference of type ‘int&amp;’ from an rvalue of type ‘int’ int&amp; j = 22; 像上面这种问题，可以使用常量引用来解决。 常量引用针对上面的编译错误，改成常量引用就可以通过编译了，就像这样： 1const int&amp; j = 22; 使用常量引用来引用数字常量22，可以编译通过是因为内存上产生了临时变量保存了22这个数据，这个临时变量是可以进行取地址操作的，因此变量 j 引用的其实是这个临时变量，相当于下面的这两句： 12const int temp = 22;const int &amp;j = temp; 看到这里我们发现常量引用可以解决引用常量的问题，那么为什么非得新增一个右值引用呢？那是因为使用常引用后，我们只能通过引用来读取数据，无法去修改数据，这在很多情况下是很不方便的。 右值引用常量引用可以使用右值引用来改写，改写之后可以正常编译，并且还可以进行修改： 1int&amp;&amp; j = 22; 这句代码有两个需要注意的点，第一是右值引用是 C++11 中才增加的，所以需要增加 --std=c++11 这个编译选项才能正常编译，第二是右值引用的两个地址符需要连着写成 &amp;&amp;, 如果中间有空格写成 &amp; &amp; 会被认为是引用的引用而导致编译错误，这是不符合语法的。 右值引用的示例前面对引用类型进行了对比，但是还没有发现右值引用的好处，接下来用一个例子来展示一下增加右值引用之前的写法，和使用右值引用的写法，通过对比来了解一下右值引用究竟有什么好处。 我们来实现一个自定义缓冲区，先使用最常见的方法来实现拷贝构造函数和拷贝赋值函数，简单实现如下，功能不太完整，但是可以说明右值引用的作用： 常量引用实现12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273#include &lt;iostream&gt;#include &lt;cstring&gt;using namespace std;class CBuffer&#123;public: // 构造函数 CBuffer(int size = 1024): m_size(size) &#123; cout &lt;&lt; "CBuffer(int)" &lt;&lt; endl; m_buffer = new char[size]; &#125; // 析构函数 ~CBuffer() &#123; cout &lt;&lt; "~CBuffer()" &lt;&lt; endl; delete[] m_buffer; m_buffer = nullptr; m_size = 0; &#125; // 拷贝构造 CBuffer(const CBuffer &amp;origin): m_size(origin.m_size) &#123; cout &lt;&lt; "CBuffer(const CBuffer&amp;)" &lt;&lt; endl; m_buffer = new char[origin.m_size]; memcpy(m_buffer, origin.m_buffer, m_size); &#125; // 赋值重载 CBuffer&amp; operator=(const CBuffer &amp;origin) &#123; cout &lt;&lt; "operator=(const CBuffer&amp;)" &lt;&lt; endl; if (this == &amp;origin) return *this; delete[] m_buffer; m_size = origin.m_size; m_buffer = new char[origin.m_size]; memcpy(m_buffer, origin.m_buffer, m_size); return *this; &#125; int get_size() &#123; return m_size; &#125; static CBuffer gen_buffer(const int size) &#123; CBuffer temp_buffer(size); return temp_buffer; &#125;private: char *m_buffer; int m_size;&#125;;int main()&#123; CBuffer b1; CBuffer b2(b1); cout &lt;&lt; "b1.size = " &lt;&lt; b1.get_size() &lt;&lt; endl; cout &lt;&lt; "b2.size = " &lt;&lt; b2.get_size() &lt;&lt; endl; b2 = CBuffer::gen_buffer(100); return 0;&#125; 运行结果是： CBuffer(int)CBuffer(const CBuffer&amp;)b1.size = 1024b2.size = 1024CBuffer(int)operator=(const CBuffer&amp;)~CBuffer()~CBuffer()~CBuffer() 这个例子不具有实用性，只为了说明问题，CBuffer 这个类定义为了拷贝构造函数并且重载了 = 运算符，两个函数参数均使用常量引用的类型，这就是一般的写法。 但是这样实现有一个问题，因为参数是常量引用，所以没办法修改原对象的值，我们看到拷贝构造和赋值重载两个函数中都有申请空间和拷贝的操作，这种操作在操作内存较大的对象是比较耗时，所以应该尽量避免，我们想到可以使用新对象的指针指向旧对象指针来解决，这样就不用拷贝了，可是这样修改会导致两个对象指向同一块内存，这个问题需要解决。 改为左值引用实现报错如果两个对象指向同一块内存，那么对象在析构的时候就会将一块内存释放两次导致奔溃，这时考虑在拷贝构造或者赋值重载时，将原来对象的指针设置成空就可以了，但是参数是常量没有办法修改啊，那我们将 const 关键字去掉试试，将两个函数改成这样： 1234567891011121314151617181920212223// 拷贝构造CBuffer(CBuffer &amp;origin): m_size(origin.m_size)&#123; cout &lt;&lt; "CBuffer(CBuffer&amp;)" &lt;&lt; endl; m_buffer = origin.m_buffer; origin.m_buffer = nullptr; origin.m_size = 0;&#125;// 赋值重载CBuffer&amp; operator=(CBuffer &amp;origin)&#123; cout &lt;&lt; "operator=(CBuffer&amp;)" &lt;&lt; endl; if (this == &amp;origin) return *this; m_buffer = origin.m_buffer; origin.m_buffer = nullptr; origin.m_size = 0; return *this;&#125; 看起来没有什么问题，但是编译的时候会报错： error: invalid initialization of non-const reference of type ‘CBuffer&amp;’ from an rvalue of type ‘CBuffer’ b2 = CBuffer::gen_buffer(100); ^note: initializing argument 1 of ‘CBuffer&amp; CBuffer::operator=(CBuffer&amp;)’ CBuffer&amp; operator=(CBuffer &amp;origin) 这个错误是什么意思呢？其实说的就是在调用 CBuffer::gen_buffer(100); 函数时，会产生一个临时对象，这个临时对象在赋值给 b2 是会调用CBuffer&amp; operator=(CBuffer &amp;origin) 函数，但是这个函数的参数是一个左值引用类型，而临时对象是一个右值，无法绑定到左值引用上，所以报错了。 还有拷贝构造函数也是有相同的问题，当写出类似 b2 = CBuffer(CBuffer(1000)) 类型会产生临时对象的语句时，同样会因为左值引用不能绑定到右值上而报错，这时候就要请出右值引用了。 改为右值引用实现对于赋值重载函数，我们使用右值引用将其改写为: 12345678910111213// 赋值重载CBuffer&amp; operator=(CBuffer &amp;&amp;origin)&#123; cout &lt;&lt; "operator=(CBuffer&amp;&amp;)" &lt;&lt; endl; if (this == &amp;origin) return *this; m_buffer = origin.m_buffer; origin.m_buffer = nullptr; origin.m_size = 0; return *this;&#125; 这时可以正常通过编译，并且只是修改了指针的指向，并没有申请和拷贝另外一份内存。 std::move() 函数如果我们将拷贝构造函数的参数也改成右值引用的形式： 123456789// 拷贝构造CBuffer(CBuffer &amp;&amp;origin): m_size(origin.m_size)&#123; cout &lt;&lt; "CBuffer(CBuffer&amp;)" &lt;&lt; endl; m_buffer = origin.m_buffer; origin.m_buffer = nullptr; origin.m_size = 0;&#125; 编译时就会发现编译错误： error: use of deleted function ‘constexpr CBuffer::CBuffer(const CBuffer&amp;)’ CBuffer b2(b1); ^note: ‘constexpr CBuffer::CBuffer(const CBuffer&amp;)’ is implicitly declared as deleted because ‘CBuffer’ declares a move constructor or move assignment operator class CBuffer 其本质问题就是主函数中 CBuffer b2(b1); 这一句引起的，因为变量 b1 是一个左值，但是拷贝构造函数接受的是右值引用，所以类型不匹配导致了编译错误，这时可以使用 std::move() 函数改成这条语句为 CBuffer b2(std::move(b1)); 就可以正常编译运行了，运行结果为： CBuffer(int)CBuffer(CBuffer&amp;)b1.size = 0b2.size = 1024CBuffer(int)operator=(CBuffer&amp;&amp;)~CBuffer()~CBuffer()~CBuffer() 查看运行结果会发现 b1.size = 0，因为 b1 调用了 std::move() 函数，转移了资源的所有权，内部已经被“掏空”了，所以在明确所有权转移之后，不要再直接使用变量 b1 了。 万能引用听到这个名字就感觉很厉害，什么是万能引用，其实就是可以同时接受左值和右值的引用类型，但是这种完能引用只能发生在推导的情况下，下面给出了一个例子： 12345678910111213141516#include &lt;iostream&gt;using namespace std;template&lt;typename T&gt;void func(T&amp;&amp; val)&#123; cout &lt;&lt; val &lt;&lt; endl;&#125;int main()&#123; int year = 2020; func(year); func(2020); return 0;&#125; 这段代码中 T&amp;&amp; val 就是万能引用，因为是在模板中，类型需要推导，如果是在普通函数中 T&amp;&amp; val 这个形式就是右值引用。 左值引用和右值引用判定的函数文中多次提到左值和右值，可能刚学习这块内容的小伙伴会有些懵，其实 C++ 中提供了判定左值引用和右值引用的函数，头文件为 &lt;type_traits&gt;，函数名为 is_reference、 is_rvalue_reference、 is_lvalue_reference，看名字就可以知道他们的用途，看下面的例子就更清楚了。 12345678910111213141516171819202122232425#include &lt;iostream&gt;#include &lt;type_traits&gt;using namespace std;int main()&#123; int i = 22; int&amp; j = i; int&amp;&amp; k = 11; cout &lt;&lt; "i is_reference: " &lt;&lt; is_reference&lt;decltype(i)&gt;::value &lt;&lt; endl; cout &lt;&lt; "i is_lvalue_reference: " &lt;&lt; is_lvalue_reference&lt;decltype(i)&gt;::value &lt;&lt; endl; cout &lt;&lt; "i is_rvalue_reference: " &lt;&lt; is_rvalue_reference&lt;decltype(i)&gt;::value &lt;&lt; endl; cout &lt;&lt; "j is_reference: " &lt;&lt; is_reference&lt;decltype(j)&gt;::value &lt;&lt; endl; cout &lt;&lt; "j is_lvalue_reference: " &lt;&lt; is_lvalue_reference&lt;decltype(j)&gt;::value &lt;&lt; endl; cout &lt;&lt; "j is_rvalue_reference: " &lt;&lt; is_rvalue_reference&lt;decltype(j)&gt;::value &lt;&lt; endl; cout &lt;&lt; "k is_reference: " &lt;&lt; is_reference&lt;decltype(k)&gt;::value &lt;&lt; endl; cout &lt;&lt; "k is_lvalue_reference: " &lt;&lt; is_lvalue_reference&lt;decltype(k)&gt;::value &lt;&lt; endl; cout &lt;&lt; "k is_rvalue_reference: " &lt;&lt; is_rvalue_reference&lt;decltype(k)&gt;::value &lt;&lt; endl; return 0;&#125; 运行结果如下，满足返回1，否则返回0： i is_reference: 0i is_lvalue_reference: 0i is_rvalue_reference: 0j is_reference: 1j is_lvalue_reference: 1j is_rvalue_reference: 0k is_reference: 1k is_lvalue_reference: 0k is_rvalue_reference: 1 总结 右值引用的写法为 T&amp;&amp; val，两个地址符要挨在一起，在模板中被称为万能引用 注意左值引用和右值引用的使用区别，其实本质都是为了减少无效的拷贝 std::move() 函数会转移对象的所有权，转移操作之后将左值转为右值引用，原对象不可再直接使用 可以使用 is_reference、 is_rvalue_reference、 is_lvalue_reference 来判断引用类型 陪伴是最长情的告白，等待是最极致的思念五一离家返工了，心里有些不是滋味，为了家出来奋斗却将“家”抛在了身后，珍惜眼前人吧~]]></content>
@@ -122,8 +137,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -137,8 +152,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -151,10 +166,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -180,10 +195,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -194,10 +209,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -422,9 +437,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
