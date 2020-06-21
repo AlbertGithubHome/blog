@@ -6,7 +6,7 @@
   <link href="/blog/atom.xml" rel="self"/>
   
   <link href="http://AlbertGithubHome.github.io/blog/"/>
-  <updated>2020-06-15T14:53:13.612Z</updated>
+  <updated>2020-06-20T04:09:35.073Z</updated>
   <id>http://AlbertGithubHome.github.io/blog/</id>
   
   <author>
@@ -15,6 +15,60 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>码龄10年工作6年的搬砖小哥，最常访问的学习网站都在这里了</title>
+    <link href="http://AlbertGithubHome.github.io/blog/2020/06/18/%E7%A0%81%E9%BE%8410%E5%B9%B4%E5%B7%A5%E4%BD%9C6%E5%B9%B4%E7%9A%84%E6%90%AC%E7%A0%96%E5%B0%8F%E5%93%A5%EF%BC%8C%E6%9C%80%E5%B8%B8%E8%AE%BF%E9%97%AE%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%BD%91%E7%AB%99%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%E4%BA%86/"/>
+    <id>http://AlbertGithubHome.github.io/blog/2020/06/18/码龄10年工作6年的搬砖小哥，最常访问的学习网站都在这里了/</id>
+    <published>2020-06-18T14:31:18.000Z</published>
+    <updated>2020-06-20T04:09:35.073Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这完全是一篇水文，主要看别人分享的文章很有收藏价值，所以也想试着总结一下这种类型的文章，不过之前确实用过一些比较好的网站，有些网站是查找问题时找到的，但是解决完问题就找不到了很可惜，所以我养成了收藏网址的习惯，感觉有用就会分门别类的添加到书签中，再次遇到之前解决过的问题就先在书签里搜一下，有时候会加快解决问题的进度，下面这幅图是我浏览器书签中的一部分。</p><a id="more"></a><p><img src="https://img-blog.csdnimg.cn/20200618224021946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="bookmark"><br>网络技术飞速发展到今天，越来越多的功能被搬到了“云”上，导致原来需要在本地安装的多种开发环境完全不需要搭建了，如果是临时使用完全可以在浏览器中实现，比如对于程序猿来说不可或缺的编程开发环境，已经出现很多在线编译和运行的网站，再比如原来被称作 <code>PS大神</code> 的设计者们必须要在电脑上安装 <code>Photoshop</code> 这个庞然大物，可是现在你可以发现很多在线 <code>PS</code> 的软件，处理简单功能分分钟搞定，这是我截取的网页上 <code>在线PS软件</code> 的一部分，足以以假乱真。</p><p><img src="https://img-blog.csdnimg.cn/2020061822583286.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="onlinePS"><br>好了，开始进入正题了，作为一个天天写代码的搬砖小伙，每天都在敲敲敲，不是在敲代码就是在敲代码的路上，还有一种可能就是在学习如何敲代码，那么这样的榆木脑袋每天都会访问哪些学习网站呢？接下来我把最常访问的一些网站列举一下，有可能后续会更新，但我要是犯懒就算了。</p><h1 id="网站列表"><a href="#网站列表" class="headerlink" title="网站列表"></a>网站列表</h1><p>接下来会分成几个大类来列举一个我最常用的一些网站，每个人的喜好不同，但是仔细看看，或许有些你会感兴趣哦！</p><h2 id="一、文档项目"><a href="#一、文档项目" class="headerlink" title="一、文档项目"></a>一、文档项目</h2><p>如果写一个功能有现成的轮子给我用就好了，其实网络上有很多现成的轮子，我们要善于利用别人的成果转换为自己进步的阶梯。</p><p>1、<strong>cppreference</strong> &gt;&gt; <a href="https://en.cppreference.com/w/" target="_blank" rel="noopener">https://en.cppreference.com/w/</a></p><p>首推这个网站其实是有点偏心的，因为每天都在写C++，所以还是首先就想到了这个网站，这个网站中可以查到已经发布的各个C++标准的库函数，特性、头文件等等，对于不确定的函数返回值、新标准的特性、函数的常见用法都可以在这个网站找到，这个网站还有中文版的，学习C++的小伙伴可以常来逛逛。</p><p><img src="https://img-blog.csdnimg.cn/20200618233424911.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="cppreference"></p><p>2、 <strong>GitHub</strong> &gt;&gt; <a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a></p><p>被广大程序员调侃成“全球最大的同性交友网站”怎么能不上榜，<code>GitHub</code> 这个网站就算你不常用但也会常听到吧，上面充满了全世界精英团队编写的轮子，有趣的是这样一个最支持开源的网站居然被微软的这个最大的闭源厂商受够了，不过现在还是发展的越来越好了。你可以在上面阅读一些开源代码，看看那些明星产品究竟是怎样实现的，真正为我所用。</p><p><img src="https://img-blog.csdnimg.cn/20200618233959952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="github"></p><h2 id="二、数据仓库"><a href="#二、数据仓库" class="headerlink" title="二、数据仓库"></a>二、数据仓库</h2><p>程序发展离不开数据存储，数据是支撑程序发展的基石，现在的数据库已经不是当初的关系数据满天下了，各种各样的数据库类型被发明了出来，列数据库、文档数据库、键值数据库等等，真的是太多了。</p><p>1、 <strong>Redis</strong> &gt;&gt; <a href="https://redis.io/commands" target="_blank" rel="noopener">https://redis.io/commands</a></p><p>非关系型数据库中最火的一个了吧，在认真学习之前一度认为它是一个新产品，后来才知道 <code>Redis</code> 其实在 2009 年就已经诞生了，作为一款键值型的内存数据库，现在被广泛引用于各个领域，而 <code>Redis</code> 的官方文档是需要不断去翻阅的，最近发布了 <code>Redis 6.0</code>，引入了网络多线程，以后的面试题可能要留神了。</p><p><img src="https://img-blog.csdnimg.cn/20200618235824411.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="redis"></p><p>2、 <strong>MySQL</strong>  &gt;&gt; <a href="https://dev.mysql.com/doc/refman/8.0/en/" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/8.0/en/</a></p><p>虽然 <code>NoSQL</code> 数据库在各个领域兴起，但是现在还是关系数据库占据着主导地位，<code>MySQL</code> 就是关系数据库中的明星产品了，自从被 <code>ORACLE</code> 收购以后也在不断发展，最近版本从5.7一跃直接到8.0，据说<code>MySQL 8</code> 要比 <code>MySQL 5.7</code> 快 2 倍，还带来了大量的改进和更快的性能！感兴趣的可以查阅一下 <code>MySQL</code> 的文档，它的文档格式特别棒，看着就让人赏心悦目。</p><p><img src="https://img-blog.csdnimg.cn/20200619000455910.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="MySQL"><br>3、 <strong>墨天轮</strong> &gt;&gt; <a href="https://www.modb.pro/dbRank" target="_blank" rel="noopener">https://www.modb.pro/dbRank</a></p><p>墨天轮上聚集了很多数据库爱好者，是一个新兴的数据库技术交流平台，一直渴望成为一个专业的技术社区，高效便捷、开放互助、乐于分享，能够承载我们数据人的学习和成长，促进整个行业的发展和创新，在这个网站上我们可以看到各大数据库排行，了解数据库相关的最新发展和方向。</p><p><img src="https://img-blog.csdnimg.cn/20200619002322531.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="modb"></p><h2 id="三、工具集合"><a href="#三、工具集合" class="headerlink" title="三、工具集合"></a>三、工具集合</h2><p>文章开头也提到了，如今很多工具都搬到了线上，这样既节省了电脑空间，也免去了安装和配置工具的麻烦，只要不是IDE的重度依赖者，使用在线工具还是很方便的。</p><p>1、 <strong>在线工具</strong> &gt;&gt; <a href="https://tool.lu/" target="_blank" rel="noopener">https://tool.lu/</a></p><p>这个网站提供了众多的在线工具，每次一用到时间戳转换或者URL编码等操作，我肯定会第一时间打开这个页面，因为本地调 <code>API</code> 太麻烦了，有时还需要搭建环境，在网站上找到对应的工具直接操作就可以了，还带有实时刷新的功能，完全没必要自己在本地写代码。</p><p><img src="https://img-blog.csdnimg.cn/2020061922082255.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="tool"></p><p>2、<strong>AlbertWorld</strong> &gt;&gt; <a href="http://www.008ct.top/blog/tools/" target="_blank" rel="noopener">http://www.008ct.top</a></p><p>这个网站收录了很多有用的网址，不仅仅是工具，文档、教程、数据、资源包括方方面面，其中包括很多讲解原理的知识和有用的素材，很像一个小小的杂货铺，偶尔上新哦！</p><p><img src="https://img-blog.csdnimg.cn/20200619220657719.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="008ct"></p><h2 id="四、疑难解答"><a href="#四、疑难解答" class="headerlink" title="四、疑难解答"></a>四、疑难解答</h2><p>解决问题是程序员每天都要面临的功课，而程序员要解决的问题往往是没见过的，如果一个程序猿天天值只处理那么几个相同的问题，那么他已经走上了被淘汰的道路，查找问题原因，给出解决方案，祝贺你，你今天又进步了。</p><p>1、 <strong>CSDN</strong> &gt;&gt; <a href="https://www.csdn.net/" target="_blank" rel="noopener">https://www.csdn.net/</a></p><p>用了这么久的 <code>CSDN</code> 一直不知道全称是什么？前几天才查了一下全称是 <code>Chinese Software Developer Network</code>，立意很深远的样子，不过确实是一个不错的网站，从去年开始大面积调整，原来的广告真是惨不忍睹，改版后现在好多了，工作中很多解决方案都出自这个网站，之前在论坛里没少逛，解答问题的同时，自己的知识也得到了巩固。</p><p><img src="https://img-blog.csdnimg.cn/20200619220017417.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="csdn"></p><p>2、 <strong>StackOverflow</strong> &gt;&gt; <a href="https://stackoverflow.com/" target="_blank" rel="noopener">https://stackoverflow.com/</a></p><p>一个和 <code>GitHub</code> 比肩的网站，一个专门解决程序猿问题的网站，你要坚信，作为一个普通的程序搬砖工，你遇到的问题别人也遇到过，所以遇到问题来这个网站查一查，有时问题瞬间就被解决了，特别是一些专业的工具仅仅报了一个错误代码，通过搜索引擎很难定位具体问题，但是在这个网站上的前辈已经为你趟好路了。</p><p><img src="https://img-blog.csdnimg.cn/20200619002926880.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="stackoverflow"></p><h2 id="五、进阶刷题"><a href="#五、进阶刷题" class="headerlink" title="五、进阶刷题"></a>五、进阶刷题</h2><p>程序猿就是一个活到老学到老的职业（如果35岁被淘汰就不用学了），必须时刻保证自己的学习状态，更新自己的知识储备，刷题成为了一项锻炼脑力的活动，因为很多公司特别是大公司都会要求算法达到一定的水平，所以没事多刷刷题，不要让自己的大脑锈住了。</p><p>1、<strong>力扣</strong> &gt;&gt; <a href="https://leetcode-cn.com/problemset/all/" target="_blank" rel="noopener">https://leetcode-cn.com/problemset/all/</a></p><p>这个网站貌似有很多名字，现在显示的是力扣，之前是在全球服注册的，后来莫名其妙的有注册了一次，变成了家门口的版本，这上面有很多算法题，一段时间没看居然还加上了面试题，不过它搞的那个竞赛挺有意思的，作为长期的两题选手，看着高手们10分钟做完4题，犹如神仙打架一般。</p><p><img src="https://img-blog.csdnimg.cn/20200619220440231.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="leetcode"></p><p>2、 <strong>POJ</strong> &gt;&gt; <a href="http://poj.org/" target="_blank" rel="noopener">http://poj.org/</a></p><p>这个 <code>Online Judge</code> 有些历史了，不过一直保持着更新，<code>ACM</code> 竞赛时也尝试在这里刷过题，和 <code>LeetCode</code> 比起来这里的题似乎更难一些，如果想挑战更高难度，不妨来这里试一下。</p><p><img src="https://img-blog.csdnimg.cn/20200619221129502.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="poj"></p><h2 id="六、教程案例"><a href="#六、教程案例" class="headerlink" title="六、教程案例"></a>六、教程案例</h2><p>当我们想学习一门新技术的时候，很渴望得到一份简单明了的教程，实际上很多技术的官方网站文档都非常完整，但是对于初学者来说理解起来会有些难度，这时候可以看一些边学边做的教程，在不断尝试中学习知识。</p><p>1、<strong>廖雪峰官网</strong> &gt;&gt; <a href="https://www.liaoxuefeng.com/wiki/1016959663602400" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400</a></p><p>廖雪峰此乃神人也，看看我截取的这篇教程的访问量你就清楚了，前两年我看到这篇文章的时候访问量才几亿，跟着教程完整的学了一遍，现在访问量已经400多亿了，受欢迎程序难以想象，廖大神写得教程浅显易懂，非常适合初学者，从头来一步步的就学会了，想当初我跟着他学爬虫把他的文章都爬了，哈哈~<br><img src="https://img-blog.csdnimg.cn/20200619221531788.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="liaoxuefeng"><br>2、 <strong>菜鸟教程</strong> &gt;&gt; <a href="https://www.runoob.com/" target="_blank" rel="noopener">https://www.runoob.com/</a></p><p>同样是一个接地气的教程网站，谁刚开始学的时候不是一只菜鸟呢，这个网站教程很多，只要你想学总能找到你喜欢的那款，并且在讲解时会有例子和函数参数说明，非常适合初学者。<br><img src="https://img-blog.csdnimg.cn/20200619221355785.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_10,color_FFFFFF,t_70#pic_center" alt="runoob"></p><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul><li>总有小伙伴调侃说：收藏从未停止，学习从未开始，其实收藏是一个好苗头，只有想学才有可能去学</li><li>如果仔细看了这些网站，你会发现有些网站的设计让人真的很舒服，临时补充一个 <code>https://git-scm.com/</code></li><li>真正应了那句话，比你优秀的人比你还努力，你的产品都那么强了，网站居然还那么好看，还让不让人活了~</li></ul><hr><center><a href="https://blog.csdn.net/albertsh/article/details/106754135" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center><hr><blockquote><p>我们没有生活在和平的年代，只是生活在了和平的国度，想开点，珍惜眼前的一切，灾难都会过去，我们还有一双手去争夺属于自己的未来。</p><p>2020-6-20 00:16:49</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;这完全是一篇水文，主要看别人分享的文章很有收藏价值，所以也想试着总结一下这种类型的文章，不过之前确实用过一些比较好的网站，有些网站是查找问题时找到的，但是解决完问题就找不到了很可惜，所以我养成了收藏网址的习惯，感觉有用就会分门别类的添加到书签中，再次遇到之前解决过的问题就先在书签里搜一下，有时候会加快解决问题的进度，下面这幅图是我浏览器书签中的一部分。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Thinking" scheme="http://AlbertGithubHome.github.io/blog/categories/Thinking/"/>
+    
+    
+      <category term="收集" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%94%B6%E9%9B%86/"/>
+    
+      <category term="网站" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%BD%91%E7%AB%99/"/>
+    
+      <category term="working" scheme="http://AlbertGithubHome.github.io/blog/tags/working/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>C++中的std::lower_bound()和std::upper_bound()函数</title>
+    <link href="http://AlbertGithubHome.github.io/blog/2020/06/15/C-%E4%B8%AD%E7%9A%84std-lower-bound-%E5%92%8Cstd-upper-bound-%E5%87%BD%E6%95%B0/"/>
+    <id>http://AlbertGithubHome.github.io/blog/2020/06/15/C-中的std-lower-bound-和std-upper-bound-函数/</id>
+    <published>2020-06-15T15:17:39.000Z</published>
+    <updated>2020-06-15T15:43:03.056Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>问题是躲不掉的，该来的总会来，这不是代码中又遇到了 <code>std::upper_bound()</code> 函数，再来学习一遍好了，在我的印象中每次看到这两个函数都有些别扭，每次看到他们必须查一遍，因为我记得它们两个函数意思不对称，这一点记得很清楚，但是它们两个函数查找的细节却记不住，这次总结一下，强化记忆，下次回忆起来应该会快一点。</p><a id="more"></a><h1 id="函数定义"><a href="#函数定义" class="headerlink" title="函数定义"></a>函数定义</h1><p>今天看到这两个函数时挠挠头打开了搜索引擎，看到文章里写到 <code>std::lower_bound()</code> 是返回大于等于 <code>value</code> 值的位置，而 <code>std::upper_bound()</code> 是返回第一个大于 <code>value</code> 值的位置，第一反应真是瞎写，怎么俩都是大于，肯定应该是一个大于一个小于啊，这样才“合理”嘛！</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;问题是躲不掉的，该来的总会来，这不是代码中又遇到了 &lt;code&gt;std::upper_bound()&lt;/code&gt; 函数，再来学习一遍好了，在我的印象中每次看到这两个函数都有些别扭，每次看到他们必须查一遍，因为我记得它们两个函数意思不对称，这一点记得很清楚，但是它们两个函数查找的细节却记不住，这次总结一下，强化记忆，下次回忆起来应该会快一点。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="C/C++" scheme="http://AlbertGithubHome.github.io/blog/categories/C-C/"/>
+    
+    
+      <category term="C/C++" scheme="http://AlbertGithubHome.github.io/blog/tags/C-C/"/>
+    
+      <category term="lower_bound" scheme="http://AlbertGithubHome.github.io/blog/tags/lower-bound/"/>
+    
+      <category term="upper_bound" scheme="http://AlbertGithubHome.github.io/blog/tags/upper-bound/"/>
+    
+      <category term="查找" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%9F%A5%E6%89%BE/"/>
+    
+  </entry>
   
   <entry>
     <title>认证、HTTPS、证书的基本含义</title>
@@ -125,9 +179,9 @@
       <category term="Git" scheme="http://AlbertGithubHome.github.io/blog/categories/Git/"/>
     
     
-      <category term="工具" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%B7%A5%E5%85%B7/"/>
-    
       <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
+    
+      <category term="工具" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%B7%A5%E5%85%B7/"/>
     
       <category term="mergetool" scheme="http://AlbertGithubHome.github.io/blog/tags/mergetool/"/>
     
@@ -188,9 +242,9 @@
     
       <category term="C/C++" scheme="http://AlbertGithubHome.github.io/blog/tags/C-C/"/>
     
-      <category term="linux" scheme="http://AlbertGithubHome.github.io/blog/tags/linux/"/>
-    
       <category term="汇编" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%B1%87%E7%BC%96/"/>
+    
+      <category term="linux" scheme="http://AlbertGithubHome.github.io/blog/tags/linux/"/>
     
       <category term="windows" scheme="http://AlbertGithubHome.github.io/blog/tags/windows/"/>
     
@@ -360,9 +414,9 @@
     
       <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
     
-      <category term="checkout" scheme="http://AlbertGithubHome.github.io/blog/tags/checkout/"/>
-    
       <category term="stash" scheme="http://AlbertGithubHome.github.io/blog/tags/stash/"/>
+    
+      <category term="checkout" scheme="http://AlbertGithubHome.github.io/blog/tags/checkout/"/>
     
       <category term="merge" scheme="http://AlbertGithubHome.github.io/blog/tags/merge/"/>
     
@@ -550,68 +604,6 @@
       <category term="DLL" scheme="http://AlbertGithubHome.github.io/blog/tags/DLL/"/>
     
       <category term="Windows" scheme="http://AlbertGithubHome.github.io/blog/tags/Windows/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2020年的春节，我们一起抗击新型冠状病毒</title>
-    <link href="http://AlbertGithubHome.github.io/blog/2020/01/29/2020%E5%B9%B4%E7%9A%84%E6%98%A5%E8%8A%82%EF%BC%8C%E6%88%91%E4%BB%AC%E4%B8%80%E8%B5%B7%E6%8A%97%E5%87%BB%E6%96%B0%E5%9E%8B%E5%86%A0%E7%8A%B6%E7%97%85%E6%AF%92/"/>
-    <id>http://AlbertGithubHome.github.io/blog/2020/01/29/2020年的春节，我们一起抗击新型冠状病毒/</id>
-    <published>2020-01-29T07:52:16.000Z</published>
-    <updated>2020-02-09T09:46:09.532Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>终于到了什么都不用做，在家躺着就能为国家做贡献的时候了！</p></blockquote><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>新型冠状病毒，一个看起来陌生的词语，使得原本最热闹的春季变得异常冷清，随着疫情范围的扩大，这个本来陌生的词语一次次冲击着人们的认知。这个病毒到底是什么，为什么扩散起来这么凶猛？</p><a id="more"></a><h1 id="2019-nCoV"><a href="#2019-nCoV" class="headerlink" title="2019-nCoV"></a>2019-nCoV</h1><p>新型冠状病毒，在各种媒体上还会以“2019-nCoV”的名字出现，人感染了冠状病毒后常见体征有呼吸道症状、发热、咳嗽、气促和呼吸困难等。在较严重病例中，感染可导致肺炎、严重急性呼吸综合征、肾衰竭，甚至死亡。</p><p>引用百度百科中文字，对其描述为：</p><blockquote><p>2019新型冠状病毒，即“2019-nCoV”，因2019年武汉病毒性肺炎病例而被发现，2020年1月12日被世界卫生组织命名。冠状病毒是一个大型病毒家族，已知可引起感冒以及中东呼吸综合征（MERS）和严重急性呼吸综合征（SARS）等较严重疾病。新型冠状病毒是以前从未在人体中发现的冠状病毒新毒株。</p></blockquote><p>目前掌握的情况：</p><ul><li>传染源: 野生动物，可能为中华菊头蝠</li><li>传播途径: 经呼吸道飞沫传播，亦可通过接触传播</li><li>易感人群: 人群普遍易感。老年人及有基础疾病者感染后病情较重，儿童及婴幼儿也有发病</li><li>潜伏期: 1 ~ 14 天，平均 10 天，潜伏期内存在传染性</li></ul><h1 id="2019-nCoV与SARS"><a href="#2019-nCoV与SARS" class="headerlink" title="2019-nCoV与SARS"></a>2019-nCoV与SARS</h1><p>这个新型冠状病毒导致的肺炎传播速度如此之快，很多人拿它和03年的非典（SARS）相比，确实这两个病毒有很多相似的地方，同样都是新型冠状病毒，同样都会引起肺炎，甚至连发生的时间都非常相似，非典是02年11月出现病例，而2019-nCoV出现的时间大概是12月。</p><p>那它们两个这么像，能不能用相同的方法和药物治疗呢？目前来看是办不到的，两者虽然很相似，但是毕竟都是新型病毒，我们知道一种病毒变异后原来的药物很可能就起不到作用了，更何况这是两种不同的病毒，但是也有好的一面，毕竟在抗击非典时我们积累了宝贵的经验，对于防控类似的疾病能够提供很大的帮助。</p><p>比如当年非典时期,北京市在小汤山就建立起了一座封闭式的医院,就是小汤山医院，而武汉参照北京“小汤山模式” 神速建造了“火神山医院”，从开工到投入使用预计会花费10天左右，这个速度也是令人惊叹了，没有之前的经验积累是很难办到的。</p><h1 id="为什么传播的这么快"><a href="#为什么传播的这么快" class="headerlink" title="为什么传播的这么快"></a>为什么传播的这么快</h1><p>其实一开始我们都没有重视这场战斗，导致这个新型冠状病毒钻了空子，传播速度之快达到了让人心惊的地步，感觉主要有下面几方面的原因吧：</p><ul><li>华南海鲜市场存在大量新型冠状病毒，源头上就很广</li><li>起初没有得到足够重视，认为不存在人传人的可能，导致接触者甚至医务人员被感染</li><li>病毒在潜伏期也有可能传播，这是与非典不同的，导致一些携带病毒的人在无意识的情况下成了传染源</li><li>正好赶上春节返乡高峰，而武汉作为九省通衢的枢纽，反倒为病毒散播提供了便捷的条件，扩散范围很快就达到了全国</li></ul><h1 id="目前的形式"><a href="#目前的形式" class="headerlink" title="目前的形式"></a>目前的形式</h1><p>新型冠状病毒疫情已经开始进入初期扩散阶段，并呈上升趋势，但是应对措施也已经铺开，延长假期，控制人员流动，积极研制疫苗，组织医疗救援队赶赴武汉等等，相信不久疫情就能够控制住。</p><p>本来春节是一年中最忙碌的日子，今年却异常的冷清了，为了大家的健康，今年周围的人都取消了拜年聚会活动，村口也安排了人专门劝返探亲人员，因为这样我们反而多了一些陪伴家人的时间，而我居然有时间来码字了，往年不是在这喝酒就是在那聚会的，现在这样安安静静的待在家里感觉也不错。</p><p>引用网上一段顺口溜，写的不错与大家分享：</p><blockquote><p>国家有难，咱不添乱。<br>坐在家里，就是贡献。<br>亲戚不走，来年还有。<br>朋友不聚，回头再叙。<br>利人利己，互不传染。<br>吃好睡好，悠闲过年。<br>坚持几天，你我平安。</p></blockquote><h1 id="新型冠状病毒最新消息"><a href="#新型冠状病毒最新消息" class="headerlink" title="新型冠状病毒最新消息"></a>新型冠状病毒最新消息</h1><p>目前新型冠状病毒处于蔓延的趋势，各种消息满天飞，真真假假难以辨认，所以我单独建了一个项目用来收集最新的消息，尽可能保证消息的准确，其中包含最新的疫情地图、最新疫情新闻、以及正规的捐助渠道等等，有兴趣的小伙伴可以一起舔砖加瓦。</p><p>抗击2019-nCoV最新情报-<a href="https://github.com/AlbertGithubHome/ChineseVictory" target="_blank" rel="noopener">ChineseVictory</a></p><hr><blockquote><p>更新于2020年1月29日21:25:30</p></blockquote><p>今天看到一个同类型的记录武汉抗击新型冠状病毒的项目，已经有3000多的star了，我们两个项目创建的时间很接近，再看看我的项目情况有点惨淡啊！贴个图，大家感兴趣可以来逛逛，不过人家那个项目确实很规范，我还有很多东西可以学习。</p><p><img src="https://img-blog.csdnimg.cn/20200129213049802.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_12,color_FFFFFF,t_70#pic_center" alt="项目简况"><br><img src="https://img-blog.csdnimg.cn/20200129213150117.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_12,color_FFFFFF,t_70#pic_center" alt="主要内容"><br>从star数为0来看确实惨淡，再放一遍项目地址-<a href="https://github.com/AlbertGithubHome/ChineseVictory" target="_blank" rel="noopener">ChineseVictory</a>，感兴趣可以来看看;)</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;终于到了什么都不用做，在家躺着就能为国家做贡献的时候了！&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;新型冠状病毒，一个看起来陌生的词语，使得原本最热闹的春季变得异常冷清，随着疫情范围的扩大，这个本来陌生的词语一次次冲击着人们的认知。这个病毒到底是什么，为什么扩散起来这么凶猛？&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="Thinking" scheme="http://AlbertGithubHome.github.io/blog/categories/Thinking/"/>
-    
-    
-      <category term="生活" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%94%9F%E6%B4%BB/"/>
-    
-      <category term="病毒" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%97%85%E6%AF%92/"/>
-    
-      <category term="武汉" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%AD%A6%E6%B1%89/"/>
-    
-      <category term="春节" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%98%A5%E8%8A%82/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2019！一份迟到的年终总结</title>
-    <link href="http://AlbertGithubHome.github.io/blog/2020/01/03/2019%EF%BC%81%E4%B8%80%E4%BB%BD%E8%BF%9F%E5%88%B0%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
-    <id>http://AlbertGithubHome.github.io/blog/2020/01/03/2019！一份迟到的年终总结/</id>
-    <published>2020-01-03T05:49:35.000Z</published>
-    <updated>2020-02-09T09:46:09.532Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>长大了就要为小时候吹过的牛而奋斗~</p></blockquote><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>2019即将过去，瞅一眼桌面右下角的时间，距离2020年还有63分51秒，这是我第一次这么强烈地想在一年结束之际写下点什么。本身是一个喜欢收集和总结知识的性格，但对自己的人生却少有总结，一方面感觉没什么可写，一方面也确实对自己太过宽容。</p><a id="more"></a><p>每年年初总是在朋友圈和各大平台浏览着一个个新年展望，而每年年末总是在相同的位置看着他们把年初展望的日期向后推一年，这是个段子，同样也是事实，很多人的生活过得平平淡淡，我们都是人群中的大多数，平庸而碌碌无为。</p><h1 id="迟到"><a href="#迟到" class="headerlink" title="迟到"></a>迟到</h1><p>之所以在年终总结前冠以“迟到”二字，是因为我突然意识到这份总结早就应该做了，对于参加工作已经6年的我来说，刚刚意识到需要做年终总结确实有些不应该。作为普通人的我来说记忆能力有限，小时候吹过的牛早就忘了，如果能及时的做年终总结，或许我还可以为了去年吹过的牛奋斗一把，可是我没有，我连去年的想法也忘得差不多了，此时此刻才刚刚意识到曾经的失误。</p><h1 id="得与失"><a href="#得与失" class="headerlink" title="得与失"></a>得与失</h1><p>既然是总结就要回想一下在过去的一年中我得到了什么，失去了什么，而在新的一年中我想获得什么，回想即将过去的2019年发现，今年确实发生了很多往年没有发生过的事情，这可能也是我突然非常想写点东西，记录下来的原因。</p><h1 id="回顾2019"><a href="#回顾2019" class="headerlink" title="回顾2019"></a>回顾2019</h1><p>这一年发生的事情太多，相互之间纠葛不断，不过还是从最简单的分类：工作、学习、生活这三个方面来聊聊吧，虽然很多事情不能完全归为某一类，但是贴一个标签总能清楚一点。</p><h2 id="工作上"><a href="#工作上" class="headerlink" title="工作上"></a>工作上</h2><p>依旧是踏踏实实，勤勤恳恳的一年，做了整整一年的游戏开发几乎颗粒无收，这已经不是第一年没有收成了，有时候真的有点后悔为了工作侵占了陪家人的时间，特别是看不到回报的时候。</p><p>从年初就开始做收尾工作，几次上线几次调整，不知不觉我们又过了一个年，在我心中这款游戏的开发工作已经接近尾声，这样的状态不应该再持续下去了。</p><h2 id="学习上"><a href="#学习上" class="headerlink" title="学习上"></a>学习上</h2><p>作为一个好学的程序猿，深知“学如逆水行舟，不进则退”的道理，今年在CSDN上写了42篇原创博客，算是高产的一年了，也终于迈进了总排名前一万名的大关，截个图记录一下：</p><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/20191231csdn.png" alt="20191231csdn"></p><p>有点小遗憾，访问量差几百才到50万，不过新年第一天应该差不多啦，不仅仅是知识的总结，由于加了CSDN的博客群，今年还认识了许多有意思的小伙伴，比如：铁柱同学（一个冒充小白的大佬）、第三女神（粉丝炸裂式增长）、TRHX（网站做的特漂亮），还有很多小伙伴就不一一列举啦。</p><p>关于读书，我只喜欢读纸质的书籍，喜欢那种在书上乱画，随便记笔记的方式，当然有一点不好，就是想查一个知识点，知道是哪一本书，不得不翻一翻才能找到，好希望纸质书能有个搜索按钮，不过这个问题找个电子版就能解决了。</p><p>今年一共读了7本关于编程技术的书籍：</p><ul><li>Redis入门指南(第2版)</li><li>图解HTTP</li><li>自动化平台测试开发 ——Python测试开发实践</li><li>图解密码技术</li><li>图解TCP/IP</li><li>漫画算法 ——小灰的算法之旅</li><li>MySQL必知必会</li></ul><p>推荐这本《小灰的算法之旅》，可以把学知识当做一种乐趣，绝对能达到事半功倍的效果。</p><p>附上 <a href="https://github.com/AlbertGithubHome/Bella/blob/master/books/booklist.md" target="_blank" rel="noopener">我的完整书单</a></p><h2 id="生活上"><a href="#生活上" class="headerlink" title="生活上"></a>生活上</h2><p>今年在生活上发生的事情好像比之前几年加起来都要多，年中得到了一个特别可爱的宝宝，为了解决宝宝上学问题，之前从没考虑买房的我到了售楼处就买了一套，几乎都没挑就定下了，当然这么冲动的行为必须要付出代价，因此背上了近百万的债务，从此变成了一个给银行打工按月还款的房奴。</p><p>说实话宝宝刚出生时并不好看，可是越长越可爱，现在已经7个月大了，开始会爬了，真想不去上班一直陪她玩，有时候确实有一种为了她放弃全世界的冲动，宝宝今天有点发烧，凌晨一点了还没有睡，陪我一起跨年总结了，好在这会儿烧退了一些，快点好起来吧！</p><p>2019年生活上发生的另外一件很重要的事情就是投资，入市有风险，投资需谨慎，这不是一句玩笑话，今年年初股市行情一片大好，正当我们陶醉其中的时候，贸易大棒直接挥下，给准备一飞冲天的行情当头一棒，还好跑得快，不然年初那波行情的盈利在贸易战初期就会飞烟灭了。</p><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/20191231tonghuashun.png" alt="20191231tonghuashun"></p><p>年初的基金行情也异常火爆，在支付宝买了点指数基金，贸易战开始之后就抛掉了，并没有多少盈利：</p><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/20191231zhifubao.png" alt="20191231zhifubao"></p><p>说完赚钱的接下来就是赔钱的，P2P暴雷给我炸的遍体鳞伤，从5月份出事到现在毫无音信，真应了那句话，你看上了人家的高息，而人家看上的是你的本金，P2P今年可谓损失惨重。</p><p>因为赚钱心切，今年还投资了一点数字货币，结果因爆仓而结束，每次都是到了爆仓点位迅速反弹，好像在提示我压根就不是我应该玩的，不过从这次投资来看，我才明白为什么有钱的人越来越有钱，而穷人一辈子很难翻身。</p><p>一句话，穷人没有东山再起的资本和承担风险的能力，举个例子：我和一个富有的人同时买一只数字货币，而我们都只花了500块来买相同的点位，不同的是富有的人保证金更多一些，这样当行情来到我的爆仓点位时，我和富有的人损失相同的钱，但是我爆仓了，而他没有，待到行情迅速反弹，他却赚的盆满钵满。</p><p>或者换一种情况，我们两个同时爆仓，他立马在低位投入2倍的钱，迅速赚回损失，而我只能眼睁睁的看着行情反弹却没有投资的砝码，忽然觉得T+1好像真的是帮助我们这些散户的。</p><h1 id="展望2020"><a href="#展望2020" class="headerlink" title="展望2020"></a>展望2020</h1><p>2019已经过去，面对着已经到来的2020年，我们需要踏上新的征程，我还没有适应给自己定出量化的目标，不过可以暂时写下大致的方向，也算是给自己一个时刻的提醒。</p><h2 id="对工作"><a href="#对工作" class="headerlink" title="对工作"></a>对工作</h2><p>新的一年不能再碌碌无为，真的需要去闯一闯了，最近和一些互联网公司的员工沟通过，仿佛我们不是生活在一个地球，外面的世界真的很大，外面的机会真的很多，是时候出去看看了，浏览一下世界的另一面，当然，脚踏实地的工作风格不能丢弃。</p><h2 id="对学习"><a href="#对学习" class="headerlink" title="对学习"></a>对学习</h2><p>经过一段时间的与大牛们的沟通，我渐渐的明白了自己的差距，也大致了解了需要重点学习哪些知识，所以简单列举如下：</p><ul><li>巩固基础知识，对于一些函数不仅要会用，还应该花时间探究实现的方式，往深处挖掘，比如listen函数backlog参数意义。</li><li>阅读 redis 源码，这是很多人都提到的一点，适当可以看一下 STL 源码</li><li>看两本有关分布式知识的图书</li></ul><h2 id="对生活"><a href="#对生活" class="headerlink" title="对生活"></a>对生活</h2><ul><li>尽最大可能陪陪家人</li><li>投资达到2019的水平（只看赚的，不看赔的）</li></ul><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>接触了一些大牛之后备受打击，可是以往的岁月已经无法改变，只要认清了自己从现在开始就不晚，2019悄然离开，2020已经隆重登场！加油~</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;长大了就要为小时候吹过的牛而奋斗~&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;2019即将过去，瞅一眼桌面右下角的时间，距离2020年还有63分51秒，这是我第一次这么强烈地想在一年结束之际写下点什么。本身是一个喜欢收集和总结知识的性格，但对自己的人生却少有总结，一方面感觉没什么可写，一方面也确实对自己太过宽容。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="Thinking" scheme="http://AlbertGithubHome.github.io/blog/categories/Thinking/"/>
-    
-    
-      <category term="总结" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%80%BB%E7%BB%93/"/>
-    
-      <category term="工作" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%B7%A5%E4%BD%9C/"/>
-    
-      <category term="学习" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%AD%A6%E4%B9%A0/"/>
-    
-      <category term="生活" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%94%9F%E6%B4%BB/"/>
     
   </entry>
   
