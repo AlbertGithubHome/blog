@@ -536,9 +536,9 @@
     
       <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
     
-      <category term="checkout" scheme="http://AlbertGithubHome.github.io/blog/tags/checkout/"/>
-    
       <category term="branch" scheme="http://AlbertGithubHome.github.io/blog/tags/branch/"/>
+    
+      <category term="checkout" scheme="http://AlbertGithubHome.github.io/blog/tags/checkout/"/>
     
       <category term="push" scheme="http://AlbertGithubHome.github.io/blog/tags/push/"/>
     

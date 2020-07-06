@@ -252,8 +252,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -867,8 +867,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1196,8 +1196,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>实用工具</tag>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
