@@ -137,8 +137,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -264,9 +264,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>git</tag>
         <tag>checkout</tag>
+        <tag>reset</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -565,9 +565,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
