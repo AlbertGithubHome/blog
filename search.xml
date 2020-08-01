@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[小白眼中的docker究竟是个什么东西]]></title>
+    <url>%2Fblog%2F2020%2F07%2F28%2F%E5%B0%8F%E7%99%BD%E7%9C%BC%E4%B8%AD%E7%9A%84docker%E7%A9%B6%E7%AB%9F%E6%98%AF%E4%B8%AA%E4%BB%80%E4%B9%88%E4%B8%9C%E8%A5%BF%2F</url>
+    <content type="text"><![CDATA[前言Docker，中文名：容器引擎，别名：小鲸鱼，生于2013年3月20日，有一个法裔美籍的母亲 Solumon Hykes，父亲是谁，不得而知。虽然只有7岁，但是在 Hello World 平行宇宙中也算进入了青壮年吧，正在飞速的发展着。 Docker 这个动物选的比较有意思，是一只蓝色的鲸鱼，作为地球上最大的动物，用它来代表容器再合适不过了。不过有谁知道为什么编程技术总是和动物挂钩啊？比如 Linux 的企鹅，Python 的大蛇，Hadoop 的大象等等，有知道的小伙伴还请告知一下。 俗话说的好，“程序不逛动物园，肯定技术有点悬”，经常看到网上有人推荐编程学习方法，先学学基础，然后再看几本儿动物书就可以了，看来这些封面上的动物已经深入人心了。 先把这些动物放到一边，来看看这个 docker 究竟是什么，之前我也不知道它是什么，甚至到了现在我也不能准确的说出它是什么，我只是以一个小白的身份来学习和使用，并且把一些弄懂的知识点总结起来，方便日后查找。 关于docker的疑问如果你之前看到 docker 时会有下面这些疑问，可以跟着文章梳理了解一下，如果你对这些问题的答案早已烂熟于胸，那么可以简单浏览下，帮我挑挑毛病，也是帮助想学习的同学们： docker 最近很火啊，它到底能用来做什么？ docker 和虚拟机好像啊，难道就是轻量虚拟机吗？它们两者还有其他的区别吗？ docker 教程里有 ubuntu 上安装 docker，还有 docker 上安装 linux，什么鬼，到底谁装谁啊？ docker 真的这么牛吗？那开发项目必须得用上它啊，显得高端大气上档次！ docker 宣称构建一次，处处运行，那它应该能跨平台吧？ 作为小白我也是带着这些疑问开始慢慢了解 docker 的，特别是那个 ubuntu 上装 docker，docker 上还能装 ubuntu，都给我整蒙圈了，通过不断学习才渐渐弄清了其中的原因。 疑问探索解答docker 是什么关于 docker 我们来看下常见的介绍： Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器或 Windows 机器上，也可以实现虚拟化，容器是完全使用沙箱机制，相互之间不会有任何接口。 从这一段话中我们可以得到以下几个知识点： 它是一个容器引擎 可以用来打包应用 可以发布到 linux 或者 windows 上 可以实现虚拟化 采用沙箱机制，相互隔离 结合查到的资料来了解一下 docker，首先它是一个容器引擎，引擎这个词经常出现，什么游戏引擎，物理引擎，发动机引擎等等，每种引擎其实就是负责一种核心工作的模块或事物，通过封装来简化工作流程，降低工作难度，而 docker 作为容器引擎的作用当然就是生产容器了。 它的目的就是隔离应用，在隔离空间内部署自己独特的环境，需要了解的是它并不是一项新的技术，而是利用了 Linux 核心中的 cgroups 和 namespace 等资源分脱机制来进行隔离，这种被称为容器的进程独立于宿主和其它的隔离的进程，是很早就存在的技术，只不过经过 docker 封装之后使用起来更加方便了。 再说打包应用，这也是 docker 迅速火起来的一个原因，因为环境部署是在太费时费力了，之前在服务器配置一个应用的运行环境，要安装各种软件，Java/Tomcat/MySQL等等。安装和配置这些东西非常麻烦，并且还存在各种版本，而当我们换另一台同样操作系统的服务器还要再配置一遍，有没有办法这些配置直接拷贝过来呢？其实这就是 docker 要做的事情，将应用与运行环境打包到一起，直接在 docker 中运行一个容器就好了，你所依赖的环境直接就装好了。 前面提到 docker 是利用了 linux 内核的一些特性，那么 windows 可以运行吗？如果你查询早期一点的资料会得到不可以的答案，或者说即使在 windows 上运行 docker，也是在中间加了一层 linux 虚拟机。而如今已经 2020 年了，windows 上可以直接安装 docker for windows 来启动提供 docker 服务，而 docker for mac 也使得 docker 运行在 mac 上不再困难，windows 很早就和 docker 进行了合作，最新的 win10 上启动 docker 甚至可以切换内核为 linux 或者 windows，很神奇吧。 说到这里你应该对 docker 有了一个简单的了解，其中有一点很重要，它和宿主机是共享内核的，这是解答上面很多疑惑的钥匙，至于虚拟化，隔离这些都很容易理解了，而这些概念在虚拟机上常常出现，所以很容易把它俩弄混。 容器与虚拟机自从 docker 出现，容器和虚拟机的对比就没有停过，这些对比常常从启动时间、资源占用、隔离性，操作便利性等方面来进行比较，可以用搜索引擎搜一下，大概就是下面这个样子： 特性 Docker容器 VM虚拟机 启动速速 秒级 分钟级 性能 接近原生 明显弱于原生 硬盘使用 相对较小，可以自由分配 创建时分配，易造成浪费 系统支持量 支持上千个 一般几十个 造成这种差异的原因是什么？还是前面说的 docker 和宿主机是共享内核，而虚拟机是自己创建了一整套系统，虽然隔离性更强，但是也造成了资源的浪费和效率的降低。 一直想找一个例子来形象地对比一下虚拟机和容器，我强行编一个吧，比如你是一个财富自由的人，准备回老家养养牛种种菜，包个鱼塘钓钓鱼，顺便再养一窝小白兔，但是小白兔会吃你种的蔬菜，牛偶尔也会踩到小白兔，这时怎么办，把它们隔开呗。 作为一个钱花不完的人，你准备造几个“小地球”，然后把饲养的动物和种植的植物都放到各自的“地球”中放养，每个小地球都是一个密封的环境，里面有自己的太阳、月亮、空气、河流、山川等等，这种方法当然可以，只是成本有些高，一旦建立了这个小地球，它所占有的资源就定下来了，基本上与大地球隔离，但是它还要依赖大地球，还要建立在地球上，可以类比下虚拟机。 因为建造小地球太费时费力了，所以你改了策略，这次不创建完全密闭的环境了，我直接造个篱笆就可以了，阳光、空气、河流我还是使用大地球的，只是在篱笆里我进行定制，做一些鱼塘、蔬菜大棚等等。由于建造篱笆非常省事，我可以批量生产，有需要了我可以直接拿来几个，放在地上就可以使用了，并且不同动物以及植物之间都有篱笆挡着，不会出现相互影响的问题了，这就有点像容器了。 虽然有些牵强，但是这个例子还是可以帮助我们了解容器和虚拟机的区别，实际上容器与虚拟机并不是对立的关系，有时为了防止容器无限制的占用物理机资源，还会现在物理机上运行虚拟机，然后在虚拟机里运行 docker，他们两者只是不同需求下的不同选择而已。 操作系统和容器到底谁安装谁前面说过 ubuntu 上装 docker，docker 上还能装 ubuntu 这个问题困扰了我好久，实际上 windows 可以装虚拟机，而虚拟机中有可以装 windows 这没什么好奇怪的，这里的 dokcker 指的就是 docker 引擎，或者认为是 docker 服务器。 它们确实可以相互安装，但情况是不同的，首先说 ubuntu 上装 docker，docker 说白了还是一种软件，本质上和你在电脑上装个QQ也没有多大差别，只不过这个软件有点特殊，通过它还能下载、安装别的环境，这么说它看起来有点像应用商店了，不过他虽然提供仓库，但是不仅仅是仓库，本质上它就是一种帮助你搭建环境的软件。 再来看看 docker 上装 ubuntu，还记得之前说过的一个重点吗？ docker 上安装的环境与宿主机共享内核，这就决定了他不能安装完整的系统，不管是 ubuntu、CentOS 还是 RedHat，它所安装的系统仅仅包含运行库和工具链，内核还是用宿主机的，相当于在 docker 中给内核套了一个新的壳子而已。 这下应该清楚了，ubuntu 上装 docker 就是在 ubuntu 上装了一个容器软件， docker 上装 ubuntu 就是在 docker 容器中给宿主内核套上了一个新系统的壳子，使其满足应用软件的环境，配备应用软件可使用的工具链。 这么厉害的容器项目中一定要用吗相信这种问题就是不了解容器也可以回答，肯定不是都要用啊，没有什么技术是只有优点没有缺点吧，凡是技术总有其适合的领域和场景，一味的追求最新的技术不一定符合所要开发的项目。 docker 也没有传说的那么神，它也有着这样那样的问题，比如一直津津乐道的资源伸缩机制，不像虚拟机那样创建时便规定了资源大小，即使不使用也占用着，而 docker 可以直接使用宿主资源，避免了很多浪费。但是反过来想，虚拟机规定了资源的多少，如果不够用了只影响它自己，而 docker 如果一个环境出了问题，它可以把整个物理机的资源耗完，影响机器上的所有服务。 另外，docker 建议只部署无状态的服务，它们不应该承载任何交易数据，所有数据应该保存在数据库服务器中，器随时可以停止、或者删除。当容器被删除掉，容器里的数据将会丢失，即使你要把 docker 数据放在主机来存储，它依然不能保证不丢数据，具体的细节我也在学习，有这方面经验的朋友可以发表一下见解。 docker的跨平台先来看看跨平台的概念： 跨平台概念是软件开发中一个重要的概念，即不依赖于操作系统，也不依赖硬件环境。一个操作系统下开发的应用，放到另一个操作系统下依然可以运行。 首先要弄明白你说的跨平台指的是 docker 跨平台，还是它里边的应用使用 docker 就能跨平台了，从定义来说 docker 这个容器软件应该算是跨平台的，毕竟 Linux、 Windows、 Mac 都有了 docker 的安装包，那么他里面的镜像运行之后的容器能跨平台吗？这还要看具体的应用，docker 没有让一个非跨平台软件变成跨平台软件的能力。 关于这一点你还要牢记前面说的，docker 中的环境与宿主机共享内核，你创建了一个自己编写的exe程序的镜像，拿到安装了 docker 的 ubuntu 机器上显然是无法成功运行的。 基础知识点docker的缺点docker 的卖点是让你摆脱配置环境的困扰，但真实情况是你打包镜像的机器和系统版本，最好和你要运行的目标机器和系统版本一致，另外 docker 环境最好也一样，忽然感觉它没有那么神奇了，这不还是要求版本吗？ 试想一下，你用一个高版本的 docker 服务打包，其中使用了一些新特性，然后放到低版本的 docker 服务下怎么能保证成功运行，机器配置也是一样，之前看到过一个问题 “尝试在具有 4.19 或更高内核的 Linux 系统上运行 docker official centos:6 或 centos:5 容器，当尝试启动它时，你会发现内核和程序不兼容”。 这样看来，docker 只适合在相同环境下批量复制，使得实现自动化测试和持续的集成很方便，但还是有些问题需要注意的： docker 是基于64位系统环境的，32位环境下无法使用 隔离性相比 KVM 之类的虚拟化方案还是有些欠缺 容器随着用户进程的停止而销毁，其中的日志、打点等用户数据不便收集 网络管理相对简单，主要是基于 namespace 隔离 容器的 root 和宿主机 root 等同，这使得容器容易受到攻击 … docker 的组成前面一直在说初学 docker 时的疑问，接下来看看 docker 究竟都包括哪些内容，docker 这个容器引擎实际上是一个客户端/服务器应用程序，客户端负责与守护的服务进程进行对话，而服务进程负责构建、运行和分发 docker 容器。docker 客户端和服务进程可以在同一系统上运行，也可以进行远程访问，通过网络接口使用 RESTful API 进行通信。 使用 docker 时常常要接触三个概念：镜像（Image）、容器（Container）和仓库（Repository）。简单来说镜像就是我们的想要打包的程序机加上程序运行环境，打包出来的一个文件，相当于程序安装包。当镜像运行起来我们就得到了容器，镜像与容器的关系就类似于类和对象的关系。仓库就是存放镜像的地方，与代码的仓库 Github 很像，docker 镜像也有一个常用的仓库叫 Docker Hub，方便人们直接下载镜像来运行。 运行一个镜像Hello world 常常被拿来新知识的入门和开头，今天我们用这个例子来做一下收尾吧，首先你得有 docker 环境，说人话就是你得装了 docker 软件，之前不是一直说 docker 就是一个软件吗，你想用它当然得安装了，这类教程很多，假设你已经安装完了， 我们在一台 CentOS 上操作使用一下 docker，查询下系统版本和 docker 版本： 123456789[root@remote-os ~]# lsb_release -aLSB Version: :core-4.1-amd64:core-4.1-noarchDistributor ID: CentOSDescription: CentOS Linux release 7.7.1908 (Core)Release: 7.7.1908Codename: Core[root@remote-os ~]# docker --versionDocker version 19.03.7, build 7141c199a2[root@remote-os ~]# 首先下载 hello world 镜像，使用 docker image pull hello-world 命令 123456[root@remote-os ~]# docker image pull hello-worldUsing default tag: latestlatest: Pulling from library/hello-worldDigest: sha256:49a1c8800c94df04e9658809b006fd8a686cab8028d33cfba2cc049724254202Status: Image is up to date for hello-world:latestdocker.io/library/hello-world:latest 查看本地镜，使用 docker image ls 命令，发现 hell-world 镜像已经在本地了 12345678[root@remote-os ~]# docker image lsREPOSITORY TAG IMAGE ID CREATED SIZEubuntu latest adafef2e596e 3 weeks ago 73.9MBregistry latest 708bc6af7e5e 6 months ago 25.8MBhello-world latest bf756fb1ae65 7 months ago 13.3kBwurstmeister/zookeeper latest 3f43f72cb283 18 months ago 510MBhyper/docker-registry-web latest 0db5683824d8 3 years ago 599MB[root@remote-os ~]# 下载完成之后直接使用 docker container run hello-world 命令运行就可以了，这个镜像运行打印完直接就退出了 12345678910111213141516171819202122[root@remote-os ~]# docker container run hello-worldHello from Docker!This message shows that your installation appears to be working correctly.To generate this message, Docker took the following steps: 1. The Docker client contacted the Docker daemon. 2. The Docker daemon pulled the "hello-world" image from the Docker Hub. (amd64) 3. The Docker daemon created a new container from that image which runs the executable that produces the output you are currently reading. 4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.To try something more ambitious, you can run an Ubuntu container with: $ docker run -it ubuntu bashShare images, automate workflows, and more with a free Docker ID: https://hub.docker.com/For more examples and ideas, visit: https://docs.docker.com/get-started/ 如果不想退出，运行的镜像应该是能提供某种服务的，比如前面一直说的 ubuntu，它可以在 docker 中运行起来，直接使用 docker container run -it ubuntu bash 命令就行，这里为什么我们不先下载呢？实际上如果你指定的镜像在本地没有的话会自动下载，不需要手动下载完再运行。 1234567891011[root@remote-os ~]# docker container run -it ubuntu bashroot@0577050677ac:/# cat /etc/issueUbuntu 20.04 LTS \n \lroot@0ecfed0920aa:/# lsbin boot dev etc home lib lib32 lib64 libx32 media mnt opt proc root run sbin srv sys tmp usr varroot@0ecfed0920aa:/# ll home/total 8drwxr-xr-x 2 root root 4096 Apr 15 11:09 ./drwxr-xr-x 1 root root 4096 Jul 31 16:23 ../root@0ecfed0920aa:/# 可以看到上面的操作，我们又进入了 ubuntu 系统，成功运行了镜像，现在得到了一个容器，可以通过 docker container ls 命令查看，还可以通过 docker container rm [containerID] 命令来删除容器。 总结 docker 软件可以运行在windows、linux 和 mac 上 docker 容器与宿主机共享一个系统内核，如果依赖内核版本的应用最好保证物理机系统版本一致 docker 容器与虚拟机并不是对立的，有时候会放在一起配合使用 docker 有自己的镜像仓库，可以直接下载安装，使用起来相当方便，因为网络原因，如果想快速搭建最好提前准备好镜像文件 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 海纳百川有容乃大，壁立千仞无欲则刚~ 2020-8-1 00:31:35]]></content>
+      <categories>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>容器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[GDB调试指北大全]]></title>
     <url>%2Fblog%2F2020%2F07%2F18%2FGDB%E8%B0%83%E8%AF%95%E6%8C%87%E5%8C%97%E5%A4%A7%E5%85%A8%2F</url>
     <content type="text"><![CDATA[前言GDB 作为程序调试利器，是一个受通用公共许可证（GPL）保护的自由软件，全称是 GNU Debugger，又常常被称为 GNU symbolic debugger 或者 GNU project debugger，能够帮助开发者调试程序，分析应用程序运行过程。目前支持调试 C、 C++、 D、 Go、 Objective-C、 Fortran、 Java、 OpenCL C、 Pascal、 assembly、 Modula-2、 Ada 等多种编程语言。 GDB能做什么GDB 是调试程序的强大武器，能够帮助开发者找出程序出现BUG的原因，但是不要指望它能自己查问题，它仅仅是一个工具，可以帮助我们查找问题原因，常常被用来做以下事情： 分析程序崩溃的原因 查找程序表现出错误行为的原因 找到一些从源码上难以发现的逻辑错误 GDB调试步骤 使用 g++ 附加 -g 参数编译程序，g++ -g mainpro.cpp -o mainpro 使用 gdb 程序来启动调试我们自己构建的程序，gdb mainpro 使用 run、break、print 等命令调试程序 使用 quit 命令退出程序 GDB调试示例 编写示例程序代码，保存到文件 mainpro.cpp 中 1234567891011#include &lt;iostream&gt;int main()&#123; int a = 110, b = 119, c; c = a + b; std::cout &lt;&lt; "c = " &lt;&lt; c &lt;&lt; std::endl; return 0;&#125; 使用 g++ 附加 -g 参数编译程序 123albert@home-pc:~$ g++ -g mainpro.cpp -o mainproalbert@home-pc:~$ lsmainpro mainpro.cpp 使用 gdb 命令来启动调试 1234567891011121314151617albert@home-pc:~$ gdb mainproGNU gdb (Ubuntu 7.11.1-0ubuntu1~16.5) 7.11.1Copyright (C) 2016 Free Software Foundation, Inc.License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;This is free software: you are free to change and redistribute it.There is NO WARRANTY, to the extent permitted by law. Type "show copying"and "show warranty" for details.This GDB was configured as "x86_64-linux-gnu".Type "show configuration" for configuration details.For bug reporting instructions, please see:&lt;http://www.gnu.org/software/gdb/bugs/&gt;.Find the GDB manual and other documentation resources online at:&lt;http://www.gnu.org/software/gdb/documentation/&gt;.For help, type "help".Type "apropos word" to search for commands related to "word"...Reading symbols from mainpro...done.(gdb) 使用 break 8 在第8行打断点，使用 run 命令启动程序，使用 print c 打印程序变量 12345678910(gdb) break 8Breakpoint 1 at 0x4008b7: file mainpro.cpp, line 8.(gdb) runStarting program: /home/albert/mainproBreakpoint 1, main () at mainpro.cpp:88 std::cout &lt;&lt; "c = " &lt;&lt; c &lt;&lt; std::endl;(gdb) print c$1 = 239(gdb) 使用 quit 命令退出程序 1234567(gdb) quitA debugging session is active. Inferior 1 [process 227] will be killed.Quit anyway? (y or n) yalbert@home-pc:~$ GDB启动参数与命令列表（持续更新）GDB 众多的启动参数和命令提供了强大的调试功能，每一条都可以展开得到很多知识，这些知识的学习是一个持续的过程，短时间无法消化和吸收，所以准备总结一个系列，从最简单的命令开始总结，持续更新学习下去，文章链接不定期更新。 GDB命令 备注 参考文章 gdb、gdb -q GDB启动、查看说明 [GDB调试指北-启动GDB与查看说明] gdb pro、gdb pro 123 启动调试程序、调试正在运行的程序 [GDB调试指北-使用GDB启动调试] directory new-path 查看调试源码 GDB调试指北-查找丢失源码文件 set substitute from-path to-path 查看调试源码 GDB调试指北-查找丢失源码文件 总结 GDB 调试技巧更多的是工具本身的功能，所谓“重剑无锋，大巧不工”，熟练利用这个工具才能发挥最大的威力 知识的学习时一个持续的过程，只有不断的学习和总结才能不断进步，而不要被那些花里胡哨的外表所迷惑 有些知识学着学着就通了，前几天看到 printf 这个函数，很疑惑为什么末尾要加个 f，猜想它是格式化 format 的意思 经过查证果然如此，此时距离第一次在 C 语言中学习 printf 函数已经过去了10年 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 大漠孤烟直，长河落日圆~ 2020-7-18 20:09:58]]></content>
@@ -121,10 +133,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -165,8 +177,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -292,8 +304,8 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>reset</tag>
+        <tag>git</tag>
         <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
@@ -308,8 +320,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -322,10 +334,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -351,10 +363,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -365,10 +377,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -923,8 +935,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1252,8 +1264,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>
@@ -1271,6 +1283,6 @@
   <entry>
     <title><![CDATA[Hello World]]></title>
     <url>%2Fblog%2F2018%2F01%2F05%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy Picture Watermark1?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_18,color_FFFFFF,t_70#pic_center) Fans aticlehttps://blog.csdn.net/albertsh/article/details/100594143https://blog.csdn.net/albertsh/article/details/100540338!-- https://blog.csdn.net/albertsh/article/details/52788106 https://blog.csdn.net/albertsh/article/details/52797519 --https://blog.csdn.net/albertsh/article/details/82286999https://blog.csdn.net/albertsh/article/details/90736859 Blog Record博客记录QQ：347070901微信公众号：写代码的苏东坡===============================我的Github：AlbertGithubHome===============================刚刚起步 2013-10-05 08:39 写了第一篇转载博文 2015-11-19 11:20 收到第一条博客评论 2016-12-27 20:18 翻译第一篇英文资料 2017-03-27 09:55 访问第一次突破三万 2017-05-21 09:25 积分第一回到达一仟 2017-05-21 09:25 等级第一次满足四级 2017-09-14 21:00 版式第一次不让更改 2017-11-14 11:59 排名第一次有了数字 2018-07-16 19:39 访问第一次达二十万2018-12-08 10:41 访问第一回破三十万2019-06-22 18:30 访问第一次破四十万2019-09-24 17:04 博客嗖一下到了六级2020-01-02 15:55 访问第一回达五十万2020-02-17 20:17 粉丝第一回超过千人2020-06-20 12:09 评论第一次跨越千次2020-06-25 16:31 等级飞一般来到七级 imgroot More info: Deployment]]></content>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy Picture Watermark1?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9hbGJlcnRnaXRodWJob21lLmdpdGh1Yi5pby9ibG9nL2Fib3V0,size_18,color_FFFFFF,t_70#pic_center) Fans aticlehttps://blog.csdn.net/albertsh/article/details/100594143https://blog.csdn.net/albertsh/article/details/100540338!-- https://blog.csdn.net/albertsh/article/details/52788106 https://blog.csdn.net/albertsh/article/details/52797519 --https://blog.csdn.net/albertsh/article/details/82286999https://blog.csdn.net/albertsh/article/details/90736859 Blog Record博客记录QQ：347070901微信公众号：写代码的苏东坡===============================我的Github：AlbertGithubHome===============================刚刚起步 2013-10-05 08:39 写了第一篇转载博文 2015-11-19 11:20 收到第一条博客评论 2016-12-27 20:18 翻译第一篇英文资料 2017-03-27 09:55 访问第一次突破三万 2017-05-21 09:25 积分第一回到达一仟 2017-05-21 09:25 等级第一次满足四级 2017-09-14 21:00 版式第一次不让更改 2017-11-14 11:59 排名第一次有了数字 2018-07-16 19:39 访问第一次达二十万2018-12-08 10:41 访问第一回破三十万2019-06-22 18:30 访问第一次破四十万2019-09-24 17:04 博客嗖一下到了六级2020-01-02 15:55 访问第一回达五十万2020-02-17 20:17 粉丝第一回超过千人2020-06-20 12:09 评论第一次跨越千次2020-06-25 16:31 等级飞一般来到七级2020-07-31 11:05 点赞第一次达到千人 imgroot More info: Deployment]]></content>
   </entry>
 </search>

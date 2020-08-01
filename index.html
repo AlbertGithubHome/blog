@@ -346,6 +346,333 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/07/28/小白眼中的docker究竟是个什么东西/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/07/28/小白眼中的docker究竟是个什么东西/" itemprop="url">小白眼中的docker究竟是个什么东西</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-28T23:44:10+08:00">
+                2020-07-28
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-08-01T13:27:00+08:00">
+                2020-08-01
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/07/28/小白眼中的docker究竟是个什么东西/" class="leancloud_visitors" data-flag-title="小白眼中的docker究竟是个什么东西">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">4,745(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">18(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>Docker</code>，中文名：容器引擎，别名：小鲸鱼，生于2013年3月20日，有一个法裔美籍的母亲 <code>Solumon Hykes</code>，父亲是谁，不得而知。虽然只有7岁，但是在 <code>Hello World</code> 平行宇宙中也算进入了青壮年吧，正在飞速的发展着。</p>
+<p><code>Docker</code> 这个动物选的比较有意思，是一只蓝色的鲸鱼，作为地球上最大的动物，用它来代表容器再合适不过了。不过有谁知道为什么编程技术总是和动物挂钩啊？比如 <code>Linux</code> 的企鹅，<code>Python</code> 的大蛇，<code>Hadoop</code> 的大象等等，有知道的小伙伴还请告知一下。</p>
+<p>俗话说的好，“程序不逛动物园，肯定技术有点悬”，经常看到网上有人推荐编程学习方法，先学学基础，然后再看几本儿动物书就可以了，看来这些封面上的动物已经深入人心了。</p>
+<p>先把这些动物放到一边，来看看这个 <code>docker</code> 究竟是什么，之前我也不知道它是什么，甚至到了现在我也不能准确的说出它是什么，我只是以一个小白的身份来学习和使用，并且把一些弄懂的知识点总结起来，方便日后查找。</p>
+<h1 id="关于docker的疑问"><a href="#关于docker的疑问" class="headerlink" title="关于docker的疑问"></a>关于docker的疑问</h1><p>如果你之前看到 <code>docker</code> 时会有下面这些疑问，可以跟着文章梳理了解一下，如果你对这些问题的答案早已烂熟于胸，那么可以简单浏览下，帮我挑挑毛病，也是帮助想学习的同学们：</p>
+<ol>
+<li><code>docker</code> 最近很火啊，它到底能用来做什么？</li>
+<li><code>docker</code> 和虚拟机好像啊，难道就是轻量虚拟机吗？它们两者还有其他的区别吗？</li>
+<li><code>docker</code> 教程里有 <code>ubuntu</code> 上安装 <code>docker</code>，还有 <code>docker</code> 上安装 <code>linux</code>，什么鬼，到底谁装谁啊？</li>
+<li><code>docker</code> 真的这么牛吗？那开发项目必须得用上它啊，显得高端大气上档次！</li>
+<li><code>docker</code> 宣称构建一次，处处运行，那它应该能跨平台吧？</li>
+</ol>
+<p>作为小白我也是带着这些疑问开始慢慢了解 <code>docker</code> 的，特别是那个 <code>ubuntu</code> 上装 <code>docker</code>，<code>docker</code> 上还能装 <code>ubuntu</code>，都给我整蒙圈了，通过不断学习才渐渐弄清了其中的原因。</p>
+<h1 id="疑问探索解答"><a href="#疑问探索解答" class="headerlink" title="疑问探索解答"></a>疑问探索解答</h1><h2 id="docker-是什么"><a href="#docker-是什么" class="headerlink" title="docker 是什么"></a>docker 是什么</h2><p>关于 <code>docker</code> 我们来看下常见的介绍：</p>
+<blockquote>
+<p><code>Docker</code> 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 <code>Linux</code> 机器或 <code>Windows</code> 机器上，也可以实现虚拟化，容器是完全使用沙箱机制，相互之间不会有任何接口。</p>
+</blockquote>
+<p>从这一段话中我们可以得到以下几个知识点：</p>
+<ol>
+<li>它是一个容器引擎</li>
+<li>可以用来打包应用</li>
+<li>可以发布到 <code>linux</code> 或者 <code>windows</code> 上</li>
+<li>可以实现虚拟化</li>
+<li>采用沙箱机制，相互隔离</li>
+</ol>
+<p>结合查到的资料来了解一下 <code>docker</code>，首先它是一个容器引擎，引擎这个词经常出现，什么游戏引擎，物理引擎，发动机引擎等等，每种引擎其实就是负责一种核心工作的模块或事物，通过封装来简化工作流程，降低工作难度，而 <code>docker</code> 作为容器引擎的作用当然就是生产容器了。</p>
+<p>它的目的就是隔离应用，在隔离空间内部署自己独特的环境，需要了解的是它并不是一项新的技术，而是利用了 <code>Linux</code> 核心中的 <code>cgroups</code> 和 <code>namespace</code> 等资源分脱机制来进行隔离，这种被称为容器的进程独立于宿主和其它的隔离的进程，是很早就存在的技术，只不过经过 <code>docker</code> 封装之后使用起来更加方便了。</p>
+<p>再说打包应用，这也是 <code>docker</code> 迅速火起来的一个原因，因为环境部署是在太费时费力了，之前在服务器配置一个应用的运行环境，要安装各种软件，<code>Java/Tomcat/MySQL</code>等等。安装和配置这些东西非常麻烦，并且还存在各种版本，而当我们换另一台同样操作系统的服务器还要再配置一遍，有没有办法这些配置直接拷贝过来呢？其实这就是 <code>docker</code> 要做的事情，将应用与运行环境打包到一起，直接在 <code>docker</code> 中运行一个容器就好了，你所依赖的环境直接就装好了。</p>
+<p>前面提到 <code>docker</code> 是利用了 <code>linux</code> 内核的一些特性，那么 <code>windows</code> 可以运行吗？如果你查询早期一点的资料会得到不可以的答案，或者说即使在 <code>windows</code> 上运行 <code>docker</code>，也是在中间加了一层 <code>linux</code> 虚拟机。而如今已经 2020 年了，<code>windows</code> 上可以直接安装 <code>docker for windows</code> 来启动提供 <code>docker</code> 服务，而 <code>docker for mac</code> 也使得 <code>docker</code> 运行在 <code>mac</code> 上不再困难，<code>windows</code> 很早就和 <code>docker</code> 进行了合作，最新的 <code>win10</code> 上启动 <code>docker</code> 甚至可以切换内核为 <code>linux</code> 或者 <code>windows</code>，很神奇吧。</p>
+<p>说到这里你应该对 <code>docker</code> 有了一个简单的了解，其中有一点很重要，它和宿主机是共享内核的，这是解答上面很多疑惑的钥匙，至于虚拟化，隔离这些都很容易理解了，而这些概念在虚拟机上常常出现，所以很容易把它俩弄混。</p>
+<h2 id="容器与虚拟机"><a href="#容器与虚拟机" class="headerlink" title="容器与虚拟机"></a>容器与虚拟机</h2><p>自从 <code>docker</code> 出现，容器和虚拟机的对比就没有停过，这些对比常常从启动时间、资源占用、隔离性，操作便利性等方面来进行比较，可以用搜索引擎搜一下，大概就是下面这个样子：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Docker容器</th>
+<th>VM虚拟机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>启动速速</td>
+<td>秒级</td>
+<td>分钟级</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>接近原生</td>
+<td>明显弱于原生</td>
+</tr>
+<tr>
+<td>硬盘使用</td>
+<td>相对较小，可以自由分配</td>
+<td>创建时分配，易造成浪费</td>
+</tr>
+<tr>
+<td>系统支持量</td>
+<td>支持上千个</td>
+<td>一般几十个</td>
+</tr>
+</tbody>
+</table>
+<p>造成这种差异的原因是什么？还是前面说的 <code>docker</code> 和宿主机是共享内核，而虚拟机是自己创建了一整套系统，虽然隔离性更强，但是也造成了资源的浪费和效率的降低。</p>
+<p>一直想找一个例子来形象地对比一下虚拟机和容器，我强行编一个吧，比如你是一个财富自由的人，准备回老家养养牛种种菜，包个鱼塘钓钓鱼，顺便再养一窝小白兔，但是小白兔会吃你种的蔬菜，牛偶尔也会踩到小白兔，这时怎么办，把它们隔开呗。</p>
+<p>作为一个钱花不完的人，你准备造几个“小地球”，然后把饲养的动物和种植的植物都放到各自的“地球”中放养，每个小地球都是一个密封的环境，里面有自己的太阳、月亮、空气、河流、山川等等，这种方法当然可以，只是成本有些高，一旦建立了这个小地球，它所占有的资源就定下来了，基本上与大地球隔离，但是它还要依赖大地球，还要建立在地球上，可以类比下<strong>虚拟机</strong>。</p>
+<p>因为建造小地球太费时费力了，所以你改了策略，这次不创建完全密闭的环境了，我直接造个篱笆就可以了，阳光、空气、河流我还是使用大地球的，只是在篱笆里我进行定制，做一些鱼塘、蔬菜大棚等等。由于建造篱笆非常省事，我可以批量生产，有需要了我可以直接拿来几个，放在地上就可以使用了，并且不同动物以及植物之间都有篱笆挡着，不会出现相互影响的问题了，这就有点像<strong>容器</strong>了。</p>
+<p>虽然有些牵强，但是这个例子还是可以帮助我们了解容器和虚拟机的区别，实际上容器与虚拟机并不是对立的关系，有时为了防止容器无限制的占用物理机资源，还会现在物理机上运行虚拟机，然后在虚拟机里运行 <code>docker</code>，他们两者只是不同需求下的不同选择而已。</p>
+<h2 id="操作系统和容器到底谁安装谁"><a href="#操作系统和容器到底谁安装谁" class="headerlink" title="操作系统和容器到底谁安装谁"></a>操作系统和容器到底谁安装谁</h2><p>前面说过 <code>ubuntu</code> 上装 <code>docker</code>，<code>docker</code> 上还能装 <code>ubuntu</code> 这个问题困扰了我好久，实际上 <code>windows</code> 可以装虚拟机，而虚拟机中有可以装 <code>windows</code> 这没什么好奇怪的，这里的 <code>dokcker</code> 指的就是 <code>docker</code> 引擎，或者认为是 <code>docker</code> 服务器。</p>
+<p>它们确实可以相互安装，但情况是不同的，首先说 <code>ubuntu</code> 上装 <code>docker</code>，<code>docker</code> 说白了还是一种软件，本质上和你在电脑上装个QQ也没有多大差别，只不过这个软件有点特殊，通过它还能下载、安装别的环境，这么说它看起来有点像应用商店了，不过他虽然提供仓库，但是不仅仅是仓库，本质上它就是一种帮助你搭建环境的软件。</p>
+<p>再来看看 <code>docker</code> 上装 <code>ubuntu</code>，还记得之前说过的一个重点吗？ <code>docker</code> 上安装的环境与宿主机共享内核，这就决定了他不能安装完整的系统，不管是 <code>ubuntu</code>、<code>CentOS</code> 还是 <code>RedHat</code>，它所安装的系统仅仅包含运行库和工具链，内核还是用宿主机的，相当于在 <code>docker</code> 中给内核套了一个新的壳子而已。</p>
+<p>这下应该清楚了，<code>ubuntu</code> 上装 <code>docker</code> 就是在 <code>ubuntu</code> 上装了一个容器软件， <code>docker</code> 上装 <code>ubuntu</code> 就是在 <code>docker</code> 容器中给宿主内核套上了一个新系统的壳子，使其满足应用软件的环境，配备应用软件可使用的工具链。</p>
+<h2 id="这么厉害的容器项目中一定要用吗"><a href="#这么厉害的容器项目中一定要用吗" class="headerlink" title="这么厉害的容器项目中一定要用吗"></a>这么厉害的容器项目中一定要用吗</h2><p>相信这种问题就是不了解容器也可以回答，肯定不是都要用啊，没有什么技术是只有优点没有缺点吧，凡是技术总有其适合的领域和场景，一味的追求最新的技术不一定符合所要开发的项目。</p>
+<p><code>docker</code> 也没有传说的那么神，它也有着这样那样的问题，比如一直津津乐道的资源伸缩机制，不像虚拟机那样创建时便规定了资源大小，即使不使用也占用着，而 <code>docker</code> 可以直接使用宿主资源，避免了很多浪费。但是反过来想，虚拟机规定了资源的多少，如果不够用了只影响它自己，而 <code>docker</code> 如果一个环境出了问题，它可以把整个物理机的资源耗完，影响机器上的所有服务。</p>
+<p>另外，<code>docker</code> 建议只部署无状态的服务，它们不应该承载任何交易数据，所有数据应该保存在数据库服务器中，器随时可以停止、或者删除。当容器被删除掉，容器里的数据将会丢失，即使你要把 <code>docker</code> 数据放在主机来存储，它依然不能保证不丢数据，具体的细节我也在学习，有这方面经验的朋友可以发表一下见解。</p>
+<h2 id="docker的跨平台"><a href="#docker的跨平台" class="headerlink" title="docker的跨平台"></a>docker的跨平台</h2><p>先来看看跨平台的概念：</p>
+<blockquote>
+<p>跨平台概念是软件开发中一个重要的概念，即不依赖于操作系统，也不依赖硬件环境。一个操作系统下开发的应用，放到另一个操作系统下依然可以运行。</p>
+</blockquote>
+<p>首先要弄明白你说的跨平台指的是 <code>docker</code> 跨平台，还是它里边的应用使用 <code>docker</code> 就能跨平台了，从定义来说 <code>docker</code> 这个容器软件应该算是跨平台的，毕竟 <code>Linux</code>、 <code>Windows</code>、 <code>Mac</code> 都有了 <code>docker</code> 的安装包，那么他里面的镜像运行之后的容器能跨平台吗？这还要看具体的应用，<code>docker</code> 没有让一个非跨平台软件变成跨平台软件的能力。</p>
+<p>关于这一点你还要牢记前面说的，<code>docker</code> 中的环境与宿主机共享内核，你创建了一个自己编写的exe程序的镜像，拿到安装了 <code>docker</code> 的 <code>ubuntu</code> 机器上显然是无法成功运行的。</p>
+<h1 id="基础知识点"><a href="#基础知识点" class="headerlink" title="基础知识点"></a>基础知识点</h1><h2 id="docker的缺点"><a href="#docker的缺点" class="headerlink" title="docker的缺点"></a>docker的缺点</h2><p><code>docker</code> 的卖点是让你摆脱配置环境的困扰，但真实情况是你打包镜像的机器和系统版本，最好和你要运行的目标机器和系统版本一致，另外 <code>docker</code> 环境最好也一样，忽然感觉它没有那么神奇了，这不还是要求版本吗？</p>
+<p>试想一下，你用一个高版本的 <code>docker</code> 服务打包，其中使用了一些新特性，然后放到低版本的 <code>docker</code> 服务下怎么能保证成功运行，机器配置也是一样，之前看到过一个问题 “尝试在具有 <code>4.19</code> 或更高内核的 <code>Linux</code> 系统上运行 <code>docker official centos:6</code> 或 <code>centos:5</code> 容器，当尝试启动它时，你会发现内核和程序不兼容”。</p>
+<p>这样看来，<code>docker</code> 只适合在相同环境下批量复制，使得实现自动化测试和持续的集成很方便，但还是有些问题需要注意的：</p>
+<ol>
+<li><code>docker</code> 是基于64位系统环境的，32位环境下无法使用</li>
+<li>隔离性相比 <code>KVM</code> 之类的虚拟化方案还是有些欠缺</li>
+<li>容器随着用户进程的停止而销毁，其中的日志、打点等用户数据不便收集</li>
+<li>网络管理相对简单，主要是基于 <code>namespace</code> 隔离</li>
+<li>容器的 <code>root</code> 和宿主机 <code>root</code> 等同，这使得容器容易受到攻击</li>
+<li>…</li>
+</ol>
+<h2 id="docker-的组成"><a href="#docker-的组成" class="headerlink" title="docker 的组成"></a>docker 的组成</h2><p>前面一直在说初学 <code>docker</code> 时的疑问，接下来看看 <code>docker</code> 究竟都包括哪些内容，<code>docker</code> 这个容器引擎实际上是一个客户端/服务器应用程序，客户端负责与守护的服务进程进行对话，而服务进程负责构建、运行和分发 <code>docker</code> 容器。<br><code>docker</code> 客户端和服务进程可以在同一系统上运行，也可以进行远程访问，通过网络接口使用 <code>RESTful API</code> 进行通信。</p>
+<p>使用 <code>docker</code> 时常常要接触三个概念：镜像（Image）、容器（Container）和仓库（Repository）。简单来说镜像就是我们的想要打包的程序机加上程序运行环境，打包出来的一个文件，相当于程序安装包。当镜像运行起来我们就得到了容器，镜像与容器的关系就类似于类和对象的关系。仓库就是存放镜像的地方，与代码的仓库 <code>Github</code> 很像，<code>docker</code> 镜像也有一个常用的仓库叫 <code>Docker Hub</code>，方便人们直接下载镜像来运行。</p>
+<h2 id="运行一个镜像"><a href="#运行一个镜像" class="headerlink" title="运行一个镜像"></a>运行一个镜像</h2><p><code>Hello world</code> 常常被拿来新知识的入门和开头，今天我们用这个例子来做一下收尾吧，首先你得有 <code>docker</code> 环境，说人话就是你得装了 <code>docker</code> 软件，之前不是一直说 <code>docker</code> 就是一个软件吗，你想用它当然得安装了，这类教程很多，假设你已经安装完了，</p>
+<p>我们在一台 <code>CentOS</code> 上操作使用一下 <code>docker</code>，查询下系统版本和 <code>docker</code> 版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@remote-os ~]<span class="comment"># lsb_release -a</span></span><br><span class="line">LSB Version:    :core-4.1-amd64:core-4.1-noarch</span><br><span class="line">Distributor ID: CentOS</span><br><span class="line">Description:    CentOS Linux release 7.7.1908 (Core)</span><br><span class="line">Release:    7.7.1908</span><br><span class="line">Codename:   Core</span><br><span class="line">[root@remote-os ~]<span class="comment"># docker --version</span></span><br><span class="line">Docker version 19.03.7, build 7141c199a2</span><br><span class="line">[root@remote-os ~]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>首先下载 <code>hello world</code> 镜像，使用 <code>docker image pull hello-world</code> 命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@remote-os ~]<span class="comment"># docker image pull hello-world</span></span><br><span class="line">Using default tag: latest</span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">Digest: sha256:49a1c8800c94df04e9658809b006fd8a686cab8028d33cfba2cc049724254202</span><br><span class="line">Status: Image is up to date <span class="keyword">for</span> hello-world:latest</span><br><span class="line">docker.io/library/hello-world:latest</span><br></pre></td></tr></table></figure>
+<p>查看本地镜，使用 <code>docker image ls</code> 命令，发现 <code>hell-world</code> 镜像已经在本地了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@remote-os ~]<span class="comment"># docker image ls</span></span><br><span class="line">REPOSITORY                  TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">ubuntu                      latest              adafef2e596e        3 weeks ago         73.9MB</span><br><span class="line">registry                    latest              708bc6af7e5e        6 months ago        25.8MB</span><br><span class="line">hello-world                 latest              bf756fb1ae65        7 months ago        13.3kB</span><br><span class="line">wurstmeister/zookeeper      latest              3f43f72cb283        18 months ago       510MB</span><br><span class="line">hyper/docker-registry-web   latest              0db5683824d8        3 years ago         599MB</span><br><span class="line">[root@remote-os ~]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>下载完成之后直接使用 <code>docker container run hello-world</code> 命令运行就可以了，这个镜像运行打印完直接就退出了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@remote-os ~]<span class="comment"># docker container run hello-world</span></span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the <span class="string">"hello-world"</span> image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image <span class="built_in">which</span> runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, <span class="built_in">which</span> sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"> $ docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker ID:</span><br><span class="line"> https://hub.docker.com/</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https://docs.docker.com/get-started/</span><br></pre></td></tr></table></figure>
+<p>如果不想退出，运行的镜像应该是能提供某种服务的，比如前面一直说的 <code>ubuntu</code>，它可以在 <code>docker</code> 中运行起来，直接使用 <code>docker container run -it ubuntu bash</code> 命令就行，这里为什么我们不先下载呢？实际上如果你指定的镜像在本地没有的话会自动下载，不需要手动下载完再运行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@remote-os ~]<span class="comment"># docker container run -it ubuntu bash</span></span><br><span class="line">root@0577050677ac:/<span class="comment"># cat /etc/issue</span></span><br><span class="line">Ubuntu 20.04 LTS \n \l</span><br><span class="line"></span><br><span class="line">root@0ecfed0920aa:/<span class="comment"># ls</span></span><br><span class="line">bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var</span><br><span class="line">root@0ecfed0920aa:/<span class="comment"># ll home/</span></span><br><span class="line">total 8</span><br><span class="line">drwxr-xr-x 2 root root 4096 Apr 15 11:09 ./</span><br><span class="line">drwxr-xr-x 1 root root 4096 Jul 31 16:23 ../</span><br><span class="line">root@0ecfed0920aa:/<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>可以看到上面的操作，我们又进入了 <code>ubuntu</code> 系统，成功运行了镜像，现在得到了一个容器，可以通过 <code>docker container ls</code> 命令查看，还可以通过 <code>docker container rm [containerID]</code> 命令来删除容器。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>docker</code> 软件可以运行在<code>windows</code>、<code>linux</code> 和 <code>mac</code> 上</li>
+<li><code>docker</code> 容器与宿主机共享一个系统内核，如果依赖内核版本的应用最好保证物理机系统版本一致</li>
+<li><code>docker</code> 容器与虚拟机并不是对立的，有时候会放在一起配合使用</li>
+<li><code>docker</code> 有自己的镜像仓库，可以直接下载安装，使用起来相当方便，因为网络原因，如果想快速搭建最好提前准备好镜像文件</li>
+</ul>
+<hr>
+<h2 id="gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt"><a href="#gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt" class="headerlink" title=" ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== "></a><center><a href="https://blog.csdn.net/albertsh/article/details/107587859" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center></h2><blockquote>
+<p>海纳百川有容乃大，壁立千仞无欲则刚~</p>
+<p>2020-8-1 00:31:35</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/07/18/GDB调试指北大全/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2277,289 +2604,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/" itemprop="url">配置Beyond Compare 4作为git mergetool来解决git merge命令导致的文件冲突</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-21T23:31:49+08:00">
-                2020-05-21
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-05-23T00:48:27+08:00">
-                2020-05-23
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
-                    <span itemprop="name">Git</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/" class="leancloud_visitors" data-flag-title="配置Beyond Compare 4作为git mergetool来解决git merge命令导致的文件冲突">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,791(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">16(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>使用 <code>git merge</code> 命令合并代码的时候可能会产生文件冲突，产生这种冲突的根本原因是文件的同一处同时被多次修改，这种同时修改常体现的不同分支上，当多个分支修改了同一处代码，再合并代码的时候就会产生冲突，因为 <code>git</code> 程序也不知道我们想要保留哪一份修改，这时就需要我们手动修改产生冲突的文件。</p>
-<p>当冲突内容很少的时候我们可以打开文本编辑器，找到 <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>、<code>===========</code> 和 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 这三行字符包裹的内容就是需要解决冲突的部分，但是当冲突内容特别多时我们还是习惯于通过可视化的工具来处理，<code>Beyond Compare</code> 就是这样一款工具，可以用来比较不同的文本文件、表格文件，还可以比较文件夹内容，之前用着比较习惯，所以在处理 <code>git</code> 冲突的时候也想使用这个工具来做，通过查找技术文档发现了下面的方法。</p>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>鉴于大家都比较急，查找问题时想要直接找到答案，所以我这里直接说明配置步骤，送给不求甚解的小伙伴，也方便今后我可以直接找到，不过配置之前还是要先看一下前提。</p>
-<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><ul>
-<li>在 Windows 上安装了 <code>git</code> 客户端，可以执行 <code>git</code> 命令（废话！没装 <code>git</code> 怎么产生冲突的）</li>
-<li>安装了 <code>Beyond Compare 4</code> 这个软件，下载链接很多，自己找一个吧，实在找不到，那就放弃吧（找我要）</li>
-</ul>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>首先找到 <code>Beyond Compare</code> 的安装路径，比如我的软件安装路径是 <code>D:\mybc4\BComp.exe</code>，然后在 <code>git</code> 命令行客户端中执行下面命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<p>至此，<code>git mergetool</code> 就配置完了，当下次冲突的时候，直接使用 <code>git mergetool</code> 命令就可以调用 <code>Beyond Compare</code> 解决冲突文件了，但是你不好奇，这些设置命令都是什么意思吗？为什么执行完这些命令就能调用 <code>Beyond Compare 4</code> 这个软件了，如果你感兴趣可以接下往下看一看。</p>
-<h1 id="Beyond-Compare"><a href="#Beyond-Compare" class="headerlink" title="Beyond Compare"></a>Beyond Compare</h1><p>这是一款强大的比较工具，前面提到它可以比较文本、比较表格、比较文件夹，但是它的能力不仅限于此，它甚至可以比较MP3、比较图片、比较注册表，我们的目的是调用它的比较功能，但是前提是这款软件允许你调用，如果它不给你提供接口，你就是想调用也得绕上八百个圈才可以。</p>
-<p>这一点我们可以查询文档确定，文档是安装软件时自带的，名字为 <code>BCompare.chm</code>，如果找不到，安利你一个叫做 <code>Everything</code> 的软件，装上它以后，电脑中的一切东西都能搜索找到。</p>
-<p>这个文档应该很容易找到的，与软件的可执行文件在同一目录，其实我们使用的比较工具应该是 <code>BCompare.exe</code>，但是为什么在配置 <code>git mergetool</code> 的是后用的是 <code>BComp.exe</code> 呢？这一点文档中有写：</p>
-<blockquote>
-<p>BCompare.exe: This is the main application.  Only one copy will run at a time, regardless of how many windows you have open.  If you launch a second copy it will tell the existing copy to start a comparison and exit immediately.<br>BComp.exe: This is a Win32 GUI program.  If launched from a version control system, it should work just fine.  If launched from a console window, the console (or batch file) will not wait for it.</p>
-</blockquote>
-<p>文档是英文的，但是比较容易理解，总的来说 <code>BCompare.exe</code> 是主程序，<code>BComp.exe</code> 用在版本控制工具中更加优秀，至于文档中提到的主程序只能启动一个副本的说明，我试了一下并不是这样的，但是这不是重点，根据文档建议，我们应该调用 <code>BComp.exe</code> 程序。</p>
-<p>关于调用参数，文档中对于每种形式的比较也给出了说明，我们这里只列举两个文件和四个文件这两种参数，两个文件作为参数时常用来对比，我直接使用主程序对比文件就是这种形式，参数格式为 <code>BCompare.exe &quot;C:\Left File.ext&quot; &quot;C:\Right File.ext&quot;</code>，但是使用时我常把文件直接拖拽到软件上进行比较。四个文件作为参数时常用来处理文件冲突，参数类型为 <code>BCompare.exe C:\Left.ext C:\Right.ext C:\Center.ext C:\Output.ext</code>，参数中文件的名字表明处理时的位置和作用，看下面这个图就明白了。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_cmp.png" alt="解决文件合并冲突1"></p>
-<p>从红框圈定的位置就可以发现和文件的对应关系了，最下面是最终的输出文件，也是我们可以手动修改的文件。</p>
-<h1 id="文件冲突及处理"><a href="#文件冲突及处理" class="headerlink" title="文件冲突及处理"></a>文件冲突及处理</h1><h2 id="产生冲突"><a href="#产生冲突" class="headerlink" title="产生冲突"></a>产生冲突</h2><p>先看一下 <code>git</code> 仓库的原始情况</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is up to date with <span class="string">'origin/dev'</span>.</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br></pre></td></tr></table></figure>
-<p>在此基础上新建两个分支 <code>dev1</code> 和 <code>dev2</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git checkout -b dev1</span><br><span class="line">Switched to a new branch <span class="string">'dev1'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git checkout -b dev2</span><br><span class="line">Switched to a new branch <span class="string">'dev2'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git branch | grep dev</span><br><span class="line">  dev</span><br><span class="line">  dev1</span><br><span class="line">* dev2</span><br></pre></td></tr></table></figure>
-<p>在 <code>dev2</code> 分支上修改 <code>README.md</code> 文件后提交</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"this is dev2 test"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git add README.md</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git commit -m<span class="string">"update readme at dev2"</span></span><br><span class="line">[dev2 d8d80b7] update readme at dev2</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">this is dev2 <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
-<p>切换回 <code>dev1</code> 分支修改 <code>README.md</code> 文件后提交</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git checkout dev1</span><br><span class="line">Switched to branch <span class="string">'dev1'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"this is dev1 test"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git add README.md</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line">git com -</span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git commit -m<span class="string">"update readme at dev1"</span></span><br><span class="line">[dev1 3136341] update readme at dev1</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">this is dev1 <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
-<p>这时在 <code>dev1</code> 分支上合并 <code>dev2</code> 分支上的修改就会产生冲突</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git merge dev2</span><br><span class="line">Auto-merging README.md</span><br><span class="line">CONFLICT (content): Merge conflict <span class="keyword">in</span> README.md</span><br><span class="line">Automatic merge failed; fix conflicts and <span class="keyword">then</span> commit the result.</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br><span class="line">this is dev1 <span class="built_in">test</span></span><br><span class="line">=======</span><br><span class="line">this is dev2 <span class="built_in">test</span></span><br><span class="line">&gt;&gt;&gt;&gt;&gt;&gt;&gt; dev2</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br></pre></td></tr></table></figure>
-<p>冲突产生了，文档中同一位置被两个分支修改后合并导致的，内容里出现了 <code>&lt;&lt;&lt;</code>、<code>===</code>、<code>&gt;&gt;&gt;</code>，包裹的内容被分成了两部分，上面一部分是当前分支修改的，下面一部分是从 <code>dev2</code> 分支合并过来的，还要注意虽然产生了产生了冲突，但是目录中并没有产生其他多余的文件。</p>
-<h2 id="解决冲突"><a href="#解决冲突" class="headerlink" title="解决冲突"></a>解决冲突</h2><p>这样的冲突比较简单，我们只要使用文本工具删除不想要的内容，保存后 <code>git add README.md</code>，然后再 <code>git commit</code> 就完成了冲突的解决，但是因为配置了 <code>git mergetool</code>，我们可以用它来解决冲突，直接在命令行敲命令 <code>git mergetool</code> 就可以:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git mergetool</span><br><span class="line">Merging:</span><br><span class="line">README.md</span><br><span class="line"></span><br><span class="line">Normal merge conflict <span class="keyword">for</span> <span class="string">'README.md'</span>:</span><br><span class="line">  &#123;<span class="built_in">local</span>&#125;: modified file</span><br><span class="line">  &#123;remote&#125;: modified file</span><br></pre></td></tr></table></figure>
-<p>这时光标不会退出，一闪一闪并且打开 <code>BComp.exe</code> 工具，截图如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_save.png" alt="解决文件合并冲突2"></p>
-<p>这时如果你打开 <code>git</code> 库所在目录会发现除了 <code>README.md</code> 还多了下面4个文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">README.md</span><br><span class="line">README_BACKUP_584.md</span><br><span class="line">README_BASE_584.md</span><br><span class="line">README_LOCAL_584.md</span><br><span class="line">README_REMOTE_584.md</span><br></pre></td></tr></table></figure>
-<p>按照自己的实际情况修改最下面的文件，然后点击箭头所指的保存按钮，关闭 <code>Beyond Compare</code>，查询一下仓库状态</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev1</span><br><span class="line">All conflicts fixed but you are still merging.</span><br><span class="line">  (use <span class="string">"git commit"</span> to conclude merge)</span><br><span class="line"></span><br><span class="line">Changes to be committed:</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br></pre></td></tr></table></figure>
-<p>不但冲突文件没有了，还给我们自动执行 <code>git add README.md</code> 命令，我们只需要执行 <code>git commit</code> 就解决完了冲突。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git commit</span><br><span class="line">[dev1 b348ae6] Merge branch <span class="string">'dev2'</span> into dev1</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git adog</span><br><span class="line">*   b348ae6 (HEAD -&gt; dev1) Merge branch <span class="string">'dev2'</span> into dev1</span><br><span class="line">|\</span><br><span class="line">| * d8d80b7 (dev2) update readme at dev2</span><br><span class="line">* | 3136341 update readme at dev1</span><br><span class="line">|/</span><br><span class="line">* 5f4181e (origin/dev, dev) add comments</span><br></pre></td></tr></table></figure>
-<h1 id="工具配置的参数含义"><a href="#工具配置的参数含义" class="headerlink" title="工具配置的参数含义"></a>工具配置的参数含义</h1><p>回过头来再看看 <code>git mergetool</code> 的4句配置到底有什么用</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h2 id="git-config"><a href="#git-config" class="headerlink" title="git config"></a>git config</h2><p>首先你需要知道 <code>git config</code> 的作用，就是用来配置 <code>git</code> 的，加上了 <code>--global</code> 表示调整全局 <code>git</code> 配置，不加的话就是调整当前库的 <code>git</code> 配置。windows上的全局配置一般在 <code>C:\Users\用户名\.gitconfig</code>，如果你之前用过 <code>git</code>，一般会执行过 <code>git config --global user.name xxx</code> 对吧，这些命令都是来调整 <code>git</code> 配置的，打开这个 <code>.gitconfig</code> 你会看到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line">    name = albert</span><br><span class="line">    email = albert@163.com</span><br><span class="line">[core]</span><br><span class="line">    autocrlf = true</span><br><span class="line">[alias]</span><br><span class="line">    st = status</span><br><span class="line">    adog = &quot;log --all --decorate --oneline --graph&quot;</span><br><span class="line">[merge]</span><br><span class="line">    tool = bc4</span><br><span class="line">[mergetool &quot;bc4&quot;]</span><br><span class="line">    cmd = \&quot;D:\\mybc4\\BComp.exe\&quot; \&quot;$LOCAL\&quot; \&quot;$REMOTE\&quot; \&quot;$BASE\&quot; \&quot;$MERGED\&quot;</span><br><span class="line">    trustExitCode = true</span><br><span class="line">[mergetool]</span><br><span class="line">    keepBackup = false</span><br></pre></td></tr></table></figure>
-<p>看看最后几行就是我们添加的4项配置，只不过到文件中变成了键值对的形式，经过测试后发现，这些属性最少两级，比如 <code>user.name</code> 、<code>core.autocrlf</code>，最多三级比如 <code>mergetool.bc4.cmd</code>、 <code>mergetool.bc4.trustExitCode</code>，如果级数再多会怎么办，你可以试试 <code>git config --global a.b.c.d.e test</code>，它最终也会被拆成三级如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[a &quot;b.c.d&quot;]</span><br><span class="line">    e = test</span><br></pre></td></tr></table></figure>
-<h2 id="git-mergetool"><a href="#git-mergetool" class="headerlink" title="git mergetool"></a>git mergetool</h2><p>这个需要查一下官方文档了，<code>git mergetool --help</code> 就能打开<a href="https://git-scm.com/docs" target="_blank" rel="noopener">git官方文档</a>，文档写得真不错，排版格式看着就很舒服。</p>
-<p>文档提到添加 <code>--tool-help</code> 选项可以列举可以的合并工具，展示如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git mergetool --tool-help</span><br><span class="line"><span class="string">'git mergetool --tool=&lt;tool&gt;'</span> may be <span class="built_in">set</span> to one of the following:</span><br><span class="line">                vimdiff</span><br><span class="line">                vimdiff2</span><br><span class="line">                vimdiff3</span><br><span class="line"></span><br><span class="line">        user-defined:</span><br><span class="line">                bc4.cmd <span class="string">"D:\Program Files\Beyond Compare 4\BComp.exe"</span> <span class="string">"<span class="variable">$LOCAL</span>"</span> <span class="string">"<span class="variable">$REMOTE</span>"</span> <span class="string">"<span class="variable">$BASE</span>"</span> <span class="string">"<span class="variable">$MERGED</span>"</span></span><br><span class="line"></span><br><span class="line">The following tools are valid, but not currently available:</span><br><span class="line">                araxis</span><br><span class="line">                bc</span><br><span class="line">                bc3</span><br><span class="line">                codecompare</span><br><span class="line">                deltawalker</span><br><span class="line">                diffmerge</span><br><span class="line">                diffuse</span><br><span class="line">                ecmerge</span><br><span class="line">                emerge</span><br><span class="line">                examdiff</span><br><span class="line">                guiffy</span><br><span class="line">                gvimdiff</span><br><span class="line">                gvimdiff2</span><br><span class="line">                gvimdiff3</span><br><span class="line">                kdiff3</span><br><span class="line">                meld</span><br><span class="line">                opendiff</span><br><span class="line">                p4merge</span><br><span class="line">                smerge</span><br><span class="line">                tkdiff</span><br><span class="line">                tortoisemerge</span><br><span class="line">                winmerge</span><br><span class="line">                xxdiff</span><br><span class="line"></span><br><span class="line">Some of the tools listed above only work <span class="keyword">in</span> a windowed</span><br><span class="line">environment. If run <span class="keyword">in</span> a terminal-only session, they will fail.</span><br></pre></td></tr></table></figure>
-<p>这一查才发现，原来 <code>git mergetool</code> 支持的工具有这么多，不过下面这些我都没安装，用一下上面列举的3个，试试 <code>git mergetool --tool=vimdiff</code>，果然打开了一个界面</p>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_vimdiff.png" alt="解决文件合并冲突3"></p>
-<p>幸亏不如 <code>Beyond Compare</code> 好用，不然我不是白配置了，不过这些工具确实方便，都不需要配置，只要安装了参数中指定一下就可以用了，比如这个 <code>bc3</code>，我猜它是 <code>Beyond Compare 3</code>，只不过我安装的是 <code>Beyond Compare 4</code> 这个版本。</p>
-<p>这些内置工具使用的前提是已经安装了，并且安装软件的目录放在了环境变量 <code>Path</code> 中，如果没有放在这个变量中需要通过 <code>mergetool.&lt;tool&gt;.path</code> 参数来配置，比如我把 <code>Beyond Compare 3</code> 安装在了 <code>D</code> 盘根目录，就可以设置 <code>git config --global mergetool.bc3.path &quot;D:\\&quot;</code>。</p>
-<p>我们在可用工具中没有找到 <code>Beyond Compare 4</code> 为什么我们可以用呢？因为 <code>git mergetool</code> 命令还支持自定义合并解决冲突的工具，只要指定 <code>mergetool.&lt;tool&gt;.cmd</code> 就可以调用了，就像 <code>git mergetool --tool-help</code> 查询结果中提到的 <code>user-defined: bc4.cmd &quot;D:\Program Files\Beyond Compare 4\BComp.exe&quot; &quot;$LOCAL&quot; &quot;$REMOTE&quot; &quot;$BASE&quot; &quot;$MERGED&quot;</code>，<code>git mergetool</code> 把 <code>bc4</code> 作为了一个等同于内置合并工具的软件。</p>
-<p>再来看看这4句配置的含义：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<p>第一句 <code>git config --global merge.tool bc4</code> 是说把 <code>git mergetool</code> 的默认工具配置成 <code>bc4</code>，如果不指定默认工具在使用时就需要写成 <code>git mergetool --tool=bc4</code> 或者 <code>git mergetool -t bc4</code> 了，可是 <code>bc4</code> 是我们自己起的名字，根本就没有这个名字啊，接着往下看。</p>
-<p>第二句 <code>git config --global mergetool.bc4.cmd &quot;\&quot;D:\\mybc4\\BComp.exe\&quot; \&quot;\$LOCAL\&quot; \&quot;\$REMOTE\&quot; \&quot;\$BASE\&quot; \&quot;\$MERGED\&quot;&quot;</code> 指定了工具 <code>bc4</code> 的调用路径和参数，后面的这4个参数都是 <code>git mergetool</code> 命令提供的，依次代表本地修改，被合并分支修改，两端未修改前版本文件，最终合并导出的文本文件。</p>
-<p>第三句 <code>git config --global mergetool.bc4.trustExitCode true</code>， 设置为 <code>true</code> 表示信任软件的返回码，并依据返回码确定合并是否成功，如果设置成 <code>false</code> 就会在合并完成后问你是否解决完冲突，设置成 <code>true</code> 会方便很多。</p>
-<p>第四句 <code>git config --global mergetool.keepBackup false</code>， 是指定在合并完成后删除备份文件 <code>*.orig</code>，这个文件会在调用 <code>git mergetool</code> 是产生 <code>*.orig</code> 备份文件，成功合并后自动删除就可以了。</p>
-<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>至此终于弄明白这个 <code>git mergetool</code> 是怎么工作的了，但是想这样一个问题，这个 <code>&lt;tool&gt;.cmd</code> 一定得调用冲突解决工具吗？如果你从头看到这里应该会明白，这里只是给用户提供了一个调用自定义工具的方式，至于你调用什么它是不关心的，你完全可以在 <code>git mergetool</code> 的时候让电脑关机，这些都是可以的，在你明白了原理以后，一切都变得简单了。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li><code>Beyond Compare</code> 是一款强大的比较工具，合理的使用可以有效的提升工作效率</li>
-<li><code>git mergetool</code> 内置了很多可以使用的合并工具，并且支持调用自定义的合并工具</li>
-<li><code>git</code> 的官方文档写得真的挺详细，有时间可以多看一看，你会发现很多有意思的功能</li>
-<li>急于解决问题时可以不求甚解，解决问题后最好可以明白其中的缘由，这其实就是一种进步</li>
-</ul>
-<hr>
-<blockquote>
-<p>尽管科技很发达，但有些人一旦分开可能真的就是一生不见了</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2610,7 +2654,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">92</span>
+                <span class="site-state-item-count">93</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2621,7 +2665,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2632,7 +2676,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">222</span>
+                <span class="site-state-item-count">224</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
