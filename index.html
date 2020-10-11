@@ -346,6 +346,483 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/11/使用Spreadsheet-Compare工具对比Excel文件差异/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/10/11/使用Spreadsheet-Compare工具对比Excel文件差异/" itemprop="url">使用Spreadsheet Compare工具对比Excel文件差异</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-11T23:09:33+08:00">
+                2020-10-11
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-10-12T00:22:06+08:00">
+                2020-10-12
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Tools/" itemprop="url" rel="index">
+                    <span itemprop="name">Tools</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/10/11/使用Spreadsheet-Compare工具对比Excel文件差异/" class="leancloud_visitors" data-flag-title="使用Spreadsheet Compare工具对比Excel文件差异">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,137(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">4(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>与 <code>Spreadsheet Compare</code> 这个工具的相遇是通过 TortoiseSVN 来牵线的，在使用 SVN 管理 Excel 表格时发现，TortoiseSVN自带的比较工具不能查找Excel文件的版本差异，这对于通过日志查找问题来说非常不方便，通过搜索发现了 <code>Spreadsheet Compare</code> 这款优秀的工具，特此记录一下，方便日后查找并快速配置。</p>
+<h1 id="Spreadsheet-Compare"><a href="#Spreadsheet-Compare" class="headerlink" title="Spreadsheet Compare"></a>Spreadsheet Compare</h1><p><code>Spreadsheet Compare</code> 是 Microsoft Office 自带的一款工具软件（2013版本以后），可以用来比较不同 Excel 表格的差异，既能显示数据的不同，也可以显示出表结构的不同。这是一款带界面的工具软件，布局分为左右两部分，与 Beyond Compare 这个工具界面类似，但是功能更加强大。</p>
+<p>Beyond Compare 也可以用来对比表格差异，但是只能比较两个Excel的当前工作表，如果每个 Excel 文件中包含多个工作表时就会对比错误的情况，而 <code>Spreadsheet Compare</code> 在这一点上更加优秀，可以对比多个表格数据。</p>
+<p><code>Spreadsheet Compare</code> 使用起来也非常简单，可以操作的按钮很少，界面简洁， 启动软件后单击左上角的 <code>Compare Files</code> 按钮，选择要对比的文件即可，非常方便，数据差异、结构差异等都会用不同的颜色标记出来，还可以导出对比结果。</p>
+<h1 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h1><p>这种模式对于是提供给 TortoiseSVN 使用的前提，因为 TortoiseSVN 无法像人一样一步步操作选择待比较的 Excel 表格，而是需要一个命令脚本，将要比较的参数传给 <code>Spreadsheet Compare</code> 工具进而完成比较工作。</p>
+<h2 id="找到工具"><a href="#找到工具" class="headerlink" title="找到工具"></a>找到工具</h2><p>想要编写命令脚本，首先要找到这个比较的工具，我找到的路径是在 <code>&quot;C:\Program Files (x86)\Microsoft Office\Root\Office16\DCF\SPREADSHEETCOMPARE.EXE&quot;</code>，相信大家的路径都差不多，在 Office 工具目录下应该就能找到了，可以在开始菜单中找到工具，然后通过属性找到可执行程序所在目录，工具的可执行文件名字叫做 <code>SPREADSHEETCOMPARE.EXE</code>。</p>
+<h2 id="编写脚本"><a href="#编写脚本" class="headerlink" title="编写脚本"></a>编写脚本</h2><p>编写脚本之前有一点需要强调一下，<code>SPREADSHEETCOMPARE.EXE</code> 有点奇怪，大多数软件在比较差异的时候会将两个文件作为参数使用，但是 <code>SPREADSHEETCOMPARE.EXE</code> 在比较之前，需要将两个待比较的文件名分成两行写入一个文件，再将这个文件作为参数传给工具使用，比如要比较 ExcelA.xlsx 和 ExcelB.xlsx 两个文件，需要将两个文件写入一个临时文件 ExcelCompare.txt 中:</p>
+<blockquote>
+<p>ExcelA.xlsx<br>ExcelB.xlsx</p>
+</blockquote>
+<p>然后再把这个文件作为参数传给工具：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SPREADSHEETCOMPARE.EXE ExcelCompare.txt</span><br></pre></td></tr></table></figure>
+<h2 id="脚本内容"><a href="#脚本内容" class="headerlink" title="脚本内容"></a>脚本内容</h2><p>有了上面的说明，我们就可以写出一个较为通用的版本，比如我的脚本名字是 SC.bat，内容如下：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="built_in">chcp</span> <span class="number">65001</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> batpath=%~dp0</span><br><span class="line"><span class="built_in">echo</span> %~<span class="number">1</span>&gt; "<span class="variable">%batpath%</span>ExcelCompare.txt"</span><br><span class="line"><span class="built_in">echo</span> %~<span class="number">2</span>&gt;&gt; "<span class="variable">%batpath%</span>ExcelCompare.txt"</span><br><span class="line">"C:\\Program Files (x86)\\Microsoft Office\\Root\\Office16\\DCF\\SPREADSHEETCOMPARE.EXE" "<span class="variable">%batpath%</span>ExcelCompare.txt"</span><br></pre></td></tr></table></figure>
+<h2 id="脚本执行"><a href="#脚本执行" class="headerlink" title="脚本执行"></a>脚本执行</h2><p>直接在 cmd 命令行中输入以下命令就可以对比 ExcelA.xlsx 和 ExcelB.xlsx 两个文件了：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">D:\<span class="title">data</span>\<span class="title">bat</span>&gt;</span></span><br><span class="line"><span class="function"><span class="title">D</span>:\<span class="title">data</span>\<span class="title">bat</span>&gt;<span class="title">SC.bat</span> <span class="title">ExcelA.xlsx</span> <span class="title">ExcelB.xlsx</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="供给SVN调用"><a href="#供给SVN调用" class="headerlink" title="供给SVN调用"></a>供给SVN调用</h2><p>个人比较懒，不喜欢截图，在 TortoiseSVN 工具的设置中找到“差异查看器”选项，选择该选项然后点击界面上的高级设置，点击增加按钮，增加根据扩展名指定差异比较程序，填写 <code>.xlsx</code> 和所需命令 <code>D:\data\bat&gt;SC.bat %base %mine</code></p>
+<p>命令中的 <code>%base</code> 和 <code>%mine</code> 参数是 TortoiseSVN 提供的，代表原始文件和自己修改的文件，这次再通过 SVN 查看表格差异就可以启动 <code>Spreadsheet Compare</code> 程序啦。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>Spreadsheet Compare</code> 是一款强大的表格比较工具，在表格比较时比 Beyond Compare 还要强大</li>
+<li>脚本调用 <code>SPREADSHEETCOMPARE.EXE</code> 程序时参数是一个包含了待比较文件名的临时文件，这一点和其他的比较工具有些不同</li>
+<li>脚本中我们生成的临时文件无需手动处理，再打开待比较文件后会自动删除</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/108920923" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>急需找到一个看得见摸得着的目标为之努力，不然真的有点止步不前了，至今还未找到可以废寝忘食之事，长此以往终将碌碌无为</p>
+<p>2020-10-12 00:16:52</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/09/26/东拉西扯01世界的沧海桑田/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/09/26/东拉西扯01世界的沧海桑田/" itemprop="url">东拉西扯01世界的沧海桑田</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-26T22:47:01+08:00">
+                2020-09-26
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-09-27T00:25:30+08:00">
+                2020-09-27
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
+                    <span itemprop="name">Thinking</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/09/26/东拉西扯01世界的沧海桑田/" class="leancloud_visitors" data-flag-title="东拉西扯01世界的沧海桑田">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,303(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">5(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>此篇非技术总结，但却与技术相关，写这篇总结的起因是前两天看了一节关于虚幻四的公开课，这节课也不是讲开发技术，更多的是讲创作艺术，课程开始前看到虚幻编辑器的画面，还是有一种很熟悉的感觉，毕竟使用了3年多的时间，外观几乎没有变化，使用方式依旧是原来的步骤，但随着课程的进行，我发现它变了。</p>
+<p>其中有一段内容提到，虚幻四已经不再将自己作为一款游戏开发引擎，而是定位成一个艺术创作和开发的平台，也就是说它不仅仅可以做游戏，同时可以用来出影视剧、国漫、特定素材等等，它已经将自己的势力范围扩张，变得丰富而强大，后来又提到虚幻五带来的种种提升。</p>
+<p>什么？虚幻五已经出了，这是我之前不知道的，我知道今年 Redis 出了最新的 6.0 版本，MySQL 一跃发行了 8.0 版本，IOS 也更新到的 14.0.1 版本，似乎各种技术都在飞速的发展着，但是人的精力毕竟有限，很难把它们成长历程尽收眼底，一不留神就发现某种技术已经悄悄从你身边跨了过去。</p>
+<h1 id="技术的发展"><a href="#技术的发展" class="headerlink" title="技术的发展"></a>技术的发展</h1><p>记得我第一篇博客记录的是处理 Ubuntu 黑屏的解决方案，我去翻了翻当时记录的版本是 12.04，时间已经过去了7年，Ubuntu 20.04 已经发行，当年解决黑屏的经验或许已经毫无用处。</p>
+<p>10年接触的第一种计算机编程语言是 C 语言，当时开发环境是 Turbe C 2.0，后来使用 VC++6.0，接着就是VS系列，期间用过 Dev-C++、CodeBlocks等编辑器，但是 VS 还是用的最多的，直到目前使用的 VS2017，可是刚刚一个好学的小朋友问我 VS2019 相关的问题，我发现这款用了这么久的工具，之前一直无变化的菜单布局在 VS2019 版本上发生了改变。</p>
+<p>之前一直号称单线程内存数据库 Redis 在今年5月份发布的 6.0 版本中，加入了网络多线程，使得整体性能提升近一倍，这被认为是 Redis 最大的一次改版。</p>
+<p>MySQL 直接从 5.7 版本跳到了 8.0 版本，因为之前一直是 5.6 、5.7 这样的小版本提升，一跃跳到 8.0 一时让人好奇到底改了什么？其实 6.0 是一个过渡版本，而 7.0 是作为集群的保留版本，所以这次直接到了 8.0。其中一个亮点增加了 MySQL 文档存储，可以存储 json 格式，开始支持向 NoSQL 格式转化。</p>
+<p>差点忘了C++，这个庞然大物目前已经从最开始的 C++98，发展到现在的 C++20，我在想它如果真的存活到 2098 年，应该怎么命名它呢？新标准的内容很长，需要慢慢来消化，可以发现一些很好玩的东西，比如三向比较运算符 <code>&lt;=&gt;</code>，也叫飞船运算符，感兴趣的可以去了解下。</p>
+<p>经历的和未经历的变化还有很多，想好了再来补充。。。</p>
+<h1 id="技术公司的发展"><a href="#技术公司的发展" class="headerlink" title="技术公司的发展"></a>技术公司的发展</h1><p>当年找工作的听说过的巨头就是 BAT，而今天晚上问一个即将毕业进入工作岗位的同学，哪些是他心目中的大厂，他给出了四个名字，“阿里、腾讯、字节、美团”，很明显百度已经掉队，但是瘦死的骆驼比马大，短时间内百度的技术底蕴不会消失殆尽，这些手握资源和技术的大厂很早就给自己挖好了护城河，一般企业很难追赶的上。</p>
+<p>相比早期的 BAT，我感觉后来的字节、美团能够赶上他们实属不易，记得当年开玩笑说 TX 除了发明了一套钻石收费系统，其他的都是抄的，任何公司有了好点子，不是被他合并了就是被他抄走了，所以说能在某个它无法掌控的赛道上超越它也是非常厉害了。</p>
+<p>有些东西是其他公司无法做到的，比如疫情期间的健康宝，每天上班、去商场、去公园都要看，都要打开微信和支付宝的APP，这个日活的数据放到其他任意一款软件上都是庞大的数字，可是他们就在这两大巨头这自然的发生着。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>技术每时每刻都在发展，有时你发现它陌生了，其实只是你关注的少了</li>
+<li>好的赛道大多数已被别人占领，从夹缝中寻找到机会还需好好把握，才能做出一定的成绩</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/108691877" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>年年岁岁花相似，岁岁年年人不同</p>
+<p>2020-9-27 00:20:42</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/09/19/C-求解组合数的具体实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,8 +870,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-09-20T12:50:12+08:00">
-                2020-09-20
+              <time title="更新于" itemprop="dateModified" datetime="2020-09-22T22:38:19+08:00">
+                2020-09-22
               </time>
             
           </span>
@@ -447,7 +924,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,919(字)</span>
+            <span class="post-count">3,274(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -455,7 +932,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">12(分)</span>
+            <span class="post-count">14(分)</span>
           </span>
 
           
@@ -2062,443 +2539,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/07/18/GDB调试指北大全/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/07/18/GDB调试指北大全/" itemprop="url">GDB调试指北大全</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-18T16:34:29+08:00">
-                2020-07-18
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-07-25T21:12:28+08:00">
-                2020-07-25
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/GDB/" itemprop="url" rel="index">
-                    <span itemprop="name">GDB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/07/18/GDB调试指北大全/" class="leancloud_visitors" data-flag-title="GDB调试指北大全">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,066(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>GDB</code> 作为程序调试利器，是一个受通用公共许可证（GPL）保护的自由软件，全称是 <code>GNU Debugger</code>，又常常被称为 <code>GNU symbolic debugger</code> 或者 <code>GNU project debugger</code>，能够帮助开发者调试程序，分析应用程序运行过程。目前支持调试 <code>C</code>、 <code>C++</code>、 <code>D</code>、 <code>Go</code>、 <code>Objective-C</code>、 <code>Fortran</code>、 <code>Java</code>、 <code>OpenCL C</code>、 <code>Pascal</code>、 <code>assembly</code>、 <code>Modula-2</code>、 <code>Ada</code> 等多种编程语言。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/07/18/GDB调试指北大全/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/07/13/gdb调试解决找不到源代码的问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/07/13/gdb调试解决找不到源代码的问题/" itemprop="url">gdb调试解决找不到源代码的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-13T23:54:14+08:00">
-                2020-07-13
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-07-18T23:14:52+08:00">
-                2020-07-18
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/07/13/gdb调试解决找不到源代码的问题/" class="leancloud_visitors" data-flag-title="gdb调试解决找不到源代码的问题">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">4,466(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">20(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>通过 <code>gdb</code> 启动程序，打好断点运行，开始调试输入 <code>list</code> 命令，结果发现找不到源代码，是不是很糟心，让我们来看看怎么解决这种情况。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/07/13/gdb调试解决找不到源代码的问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/11/">11</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2544,7 +2589,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">100</span>
+                <span class="site-state-item-count">102</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2555,7 +2600,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">24</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2566,7 +2611,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">241</span>
+                <span class="site-state-item-count">245</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

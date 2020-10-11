@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言很少写关于具体算法的总结笔记，因为很难把一个算法从头到尾的叙述清晰并且完整，容易造成误解。这次想总结一下组合数的具体实现，原因是最近总是碰见组合数，所以决定来写写，免得每次从头推导公式耽误时间。排列组合经常会作为一个问题解决方案中一部分，通常是求某个问题有多少个解，达到某种状态有多少种操作方式等等。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-09-20T04:50:12.460Z">
+<meta property="og:updated_time" content="2020-09-22T14:38:19.264Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++求解组合数的具体实现">
 <meta name="twitter:description" content="前言很少写关于具体算法的总结笔记，因为很难把一个算法从头到尾的叙述清晰并且完整，容易造成误解。这次想总结一下组合数的具体实现，原因是最近总是碰见组合数，所以决定来写写，免得每次从头推导公式耽误时间。排列组合经常会作为一个问题解决方案中一部分，通常是求某个问题有多少个解，达到某种状态有多少种操作方式等等。">
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-09-20T12:50:12+08:00">
-                2020-09-20
+              <time title="更新于" itemprop="dateModified" datetime="2020-09-22T22:38:19+08:00">
+                2020-09-22
               </time>
             
           </span>
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,919(字)</span>
+            <span class="post-count">3,274(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -453,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">12(分)</span>
+            <span class="post-count">14(分)</span>
           </span>
 
           
@@ -505,7 +505,7 @@
 <h2 id="备忘递归"><a href="#备忘递归" class="headerlink" title="备忘递归"></a>备忘递归</h2><p>解决重复计算的常用方法是利用一个备忘录，将已经计算式子结果存储起来，下次再遇到重复的计算时直接取上次的结果就可以了，我们可以将中间结果简单存储到map中。</p>
 <p>假设 n 不超过10000，这比12已经大太多了，我们可以使用 <code>n * 10000 + m</code> 作为map的键，然后将结果存储到map中，每次计算一个式子前先看查询备忘录，看之前有没有计算过，如果计算过直接取结果就可以了，代码简单实现如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">C5</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> m, <span class="built_in">map</span>&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt;&amp; memo)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == m || m == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> itora = memo.find((n<span class="number">-1</span>)*<span class="number">10000</span>+m);</span><br><span class="line">    <span class="keyword">int</span> a = itora != memo.end() ? itora-&gt;second : C4(n<span class="number">-1</span>, m);</span><br><span class="line">    <span class="keyword">if</span> (itora == memo.end()) memo[(n<span class="number">-1</span>)*<span class="number">10000</span>+m] = a;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> itorb = memo.find((n<span class="number">-1</span>)*<span class="number">10000</span>+m<span class="number">-1</span>);</span><br><span class="line">    <span class="keyword">int</span> b = itorb != memo.end() ? itorb-&gt;second : C4(n<span class="number">-1</span>, m<span class="number">-1</span>);</span><br><span class="line">    <span class="keyword">if</span> (itorb == memo.end()) memo[(n<span class="number">-1</span>)*<span class="number">10000</span>+m<span class="number">-1</span>] = b;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用 map 作为备忘录可以避免重复计算，这时解决递归效率低下的常用方法，那么有了递推公式不使用递归实现可不可以呢？当然可以了，针对于这个问题，有了递推公式我们还可以使用动态规划（dp）的方式来实现。</p>
+<p>使用 map 作为备忘录可以避免重复计算，这是解决递归效率低下的常用方法，那么有了递推公式不使用递归实现可不可以呢？当然可以了，针对于这个问题，有了递推公式我们还可以使用动态规划（dp）的方式来实现。</p>
 <h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><p>动态规划常常适用于有重叠子问题和最优子结构性质的问题，试图只解决每个子问题一次，具有天然剪枝的功能。基本思想非常简单，若要解一个给定问题，我们需要解其不同子问题，再根据子问题的解以得出原问题的解。</p>
 <p>再回顾一下递推公式：</p>
 <p>$$<br>\begin{cases} {C^m_n} = 1,\qquad\qquad\qquad (m=0 或 m=n) \ {C^m<em>n} = {C^m</em>{n-1}} + {C^{m-1}_{n-1}},\qquad(n &gt; m &gt; 0) \end{cases}<br>$$</p>
@@ -670,6 +670,13 @@
 <li>使用动态规划方法时可以逐步优化空间和时间，这其实就是优化算法的过程，也是提升的过程</li>
 <li>关于组合数的求解方式，我们可以找到时间复杂度<code>O(n)</code>、空间复杂度<code>O(m)</code>的非递归解法</li>
 </ul>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>感谢 @小胡同的诗 同学的补充和提醒，让我再次感受到数学力量的深不可测，原来求解组合数还有这样一个递推公式：</p>
+<p>$$<br>\begin{cases} {C^m_n} = 1,\qquad\qquad\qquad (m=0 或 m=n) \ C_n^m=\frac{n-m+1}{m}C_n^{m-1},\qquad(n &gt; m &gt; 0) \end{cases}<br>$$</p>
+<p>这个公式厉害就厉害在它是一个线性的，不存在分叉的情况，也就是说即使递归也不会出现重复的计算，我们简单实现一下。</p>
+<h2 id="反向递归"><a href="#反向递归" class="headerlink" title="反向递归"></a>反向递归</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">C8</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> m)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == m || m == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> C8(n, m<span class="number">-1</span>) * (n-m+<span class="number">1</span>) / m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码非常紧凑，也不存在重复计算的情况，当然我们也可以使用正向计算的方式来实现。</p>
+<h2 id="正向递推"><a href="#正向递推" class="headerlink" title="正向递推"></a>正向递推</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">C9</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> m)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == m || m == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> ans = <span class="number">1</span>;</span><br><span class="line">    m = min(m, n-m);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i++) ans = ans * (n-i+<span class="number">1</span>) / i;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码将时间复杂度降到了O(m)，空间复杂度降到了O(1)，不过特定的场景还是要选择特定的实现，虽然<code>C9</code>函数在时间复杂度和空间复杂度上都优于 <code>C5</code> 函数，但是如果一个实际问题中需要用到多个组合数的时候，<code>C5</code> 这种采用缓存的方式可能会是更好的选择。</p>
 <hr>
 <center><a href="https://blog.csdn.net/albertsh/article/details/108552268" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
 
@@ -791,6 +798,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2020/09/26/东拉西扯01世界的沧海桑田/" rel="prev" title="东拉西扯01世界的沧海桑田">
+                东拉西扯01世界的沧海桑田 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -891,7 +902,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">100</span>
+                <span class="site-state-item-count">102</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -902,7 +913,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">24</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -913,7 +924,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">241</span>
+                <span class="site-state-item-count">245</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1053,7 +1064,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题起因"><span class="nav-number">2.</span> <span class="nav-text">问题起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组合公式"><span class="nav-number">3.</span> <span class="nav-text">组合公式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#公式变形"><span class="nav-number">4.</span> <span class="nav-text">公式变形</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#递推公式"><span class="nav-number">5.</span> <span class="nav-text">递推公式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#递归实现"><span class="nav-number">5.1.</span> <span class="nav-text">递归实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#备忘递归"><span class="nav-number">5.2.</span> <span class="nav-text">备忘递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态规划"><span class="nav-number">5.3.</span> <span class="nav-text">动态规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#压缩DP"><span class="nav-number">5.4.</span> <span class="nav-text">压缩DP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他优化"><span class="nav-number">5.5.</span> <span class="nav-text">其他优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题起因"><span class="nav-number">2.</span> <span class="nav-text">问题起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组合公式"><span class="nav-number">3.</span> <span class="nav-text">组合公式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#公式变形"><span class="nav-number">4.</span> <span class="nav-text">公式变形</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#递推公式"><span class="nav-number">5.</span> <span class="nav-text">递推公式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#递归实现"><span class="nav-number">5.1.</span> <span class="nav-text">递归实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#备忘递归"><span class="nav-number">5.2.</span> <span class="nav-text">备忘递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态规划"><span class="nav-number">5.3.</span> <span class="nav-text">动态规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#压缩DP"><span class="nav-number">5.4.</span> <span class="nav-text">压缩DP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他优化"><span class="nav-number">5.5.</span> <span class="nav-text">其他优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充"><span class="nav-number">7.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#反向递归"><span class="nav-number">7.1.</span> <span class="nav-text">反向递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正向递推"><span class="nav-number">7.2.</span> <span class="nav-text">正向递推</span></a></li></ol></li></ol></div>
             
 
           </div>
