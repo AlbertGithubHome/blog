@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Go语言在解决实际问题时的优点与不便]]></title>
+    <url>%2Fblog%2F2020%2F10%2F14%2FGo%E8%AF%AD%E8%A8%80%E5%9C%A8%E8%A7%A3%E5%86%B3%E5%AE%9E%E9%99%85%E9%97%AE%E9%A2%98%E6%97%B6%E7%9A%84%E4%BC%98%E7%82%B9%E4%B8%8E%E4%B8%8D%E4%BE%BF%2F</url>
+    <content type="text"><![CDATA[前言Go语言，全称golang，是Google开发的一种静态强类型、编译型、并发型并具有垃圾回收功能的编程语言。 从2007年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开发，其中的 Ken Thompson 可是和 Dennis Ritchie 一起发明了C语言的大佬。Go 语言于2009年11月正式宣布成为开放源代码项目， 并在2012年初，发布了Go 1.0稳定版本，此后便开启了稳步发展的道路。 Go 语言作为一个从2007年开始诞生的语言，在庞大的语言家族中算是一个晚辈，和C++、Python这种老牌语言相比查了将近20年，和 C 语言相比资历就更低了，但是这个新晋的语言在 Google 光环的强大加持下也在飞速发展着，由于前辈们在发展的途中趟了很多坑，所以 Go 在发明之初就避免了其他语言的很多不便，可以说是站在巨人的肩膀上发展起来的。 但是即便这样，Go 语言的特点也不能被所有人喜欢，和许多人一样，我在学习这门语言的过程中也发现一些很方便特性和一些不太方便的特点，下面简单说几个点，有不对的地方希望小伙伴能及时指出，防止我在错误的思想上越走越远（怎么有种新闻发言稿的感觉~）。 不便之处这里的不便之处只是我在使用过程中感觉不太方便，可能很多人并没有这个感觉，或许还有很多其他的解决方法和替代方案，烦请小伙伴能指点一下。 三目运算符这个三目运算符是个很常用的逻辑处理部件，也是我在逻辑中经常使用到的，在Python、Lua等语言中也不存在，但是我都找到了简单的替代方式，但是在Go 中不得不写成中规中矩的 if 条件判断，这让很多算法的解题代码看起来并不那么优雅，比如一个简单的约瑟夫环问题： N个人围成一圈，从第一个人从开始报数，报到m的人出圈，剩下的人继续从1开始报数，报到m的人出圈；如此往复，直到所有人出圈，输出最后一个出圈人最初始的编号。 这个问题的解法最简单的是模拟法，使用数组模拟一个环来按照规则运行，最后一个出圈的人的编号就可以输出到结果，还有一种思路就是找规律，可以找到出圈前后的序号对应关系，进而写出一行代码的解决方案。 1234// 索引从0开始，只要对结果加1就好了int joseph_ring(int n, int m) &#123; return n == 1 ? 0 : (joseph_ring(n - 1, m) + m) % n&#125; 但是在没有三目运算符的 Go 中要实现这个算法，就不得不多写几行了，和 C 语言相比就没有那么简洁了。 1234567func joseph_ring(n int, m int) int &#123; if n == 1 &#123; return 0 &#125; return (joseph_ring(n - 1, m) + m) % n&#125; if 单行语句也要加大括号Go 语言本身带有自己的格式化命令，可以保证编写时不同的缩进样式格式化之后得到相同的代码，if 后面的条件语句可以不加小括号，但是后面的语句块必须加大括号，这样的规定对于我经常写的代码有点不太友好，比如下面这些C++代码： 12345678if (a &gt; 0) break;if (b &lt; 0) continue;if (c == 0) return; 有时候为了看起来紧凑，可能会写成这样： 123if (a &gt; 0) break;if (b &lt; 0) continue;if (c == 0) return; 但是放到 Go 语言中，就不得不写成好几行了，并且还要加大括号，看起来代码有些松散。 1234567891011if a &gt; 0 &#123; break;&#125;if b &lt; 0 &#123; continue;&#125;if c == 0 &#123; return;&#125; 优秀特性上面提到了 Go 语言中不方便的地方，现在可以来说说 Go 语言相对于 C、C++ 更优越的特性： 多个变量同时赋值在 C++ 中交换两个变量的通常使用中间变量来完成，比如交换 a、b 两个变量的值： 123456int a = 1;int b = 6;int tmp = a;a = b;b = tmp; 针对于这种整形的变量，一些大牛们发明了特殊的算法来处理，避免使用中间变量： 123456int a = 1,;int b = 6;a = a ^ bb = b ^ aa = a ^ b 但是在 Go语言中这种情况非常好处理，直接从左到右依次赋值就好了 1234var a int = 1var b int = 6b, a = a, b defer 声明defer 可以用于在当前函数返回前执行一些清理代码，而不管此函数如何退出。defer 在函数中可以随时出现，这使得清理代码可以尽可能在需要清理的地方运行，比如我们常常要释放申请的资源，常见的需要释放的资源有文件描述符： 12345file, err := os.Open(fileName)if err != nil &#123; return&#125;defer file.Close() 有了 defer 终于不再在担心，资源没回收的问题，也不用在各个提前返回的条件分支中添加释放资源的重复代码了。 goroutine 并发goroutine 是Go并行设计的核心，说到底其实就是协程，但是它比线程更小并且在Go语言内部帮你实现了这些 goroutine 之间的内存共享。执行 goroutine 只需要极少的栈内存，可同时运行成千上万个并发任务。goroutine 一定程度上比 thread 更易用、更高效、更轻便。 使用起来也非常方便，创建 goroutine 只需在函数调用语句前添加 go 关键字，就可以创建并发执行单元。开发人员无需了解任何执行细节，调度器会自动将其安排到合适的系统线程上执行，这是解放生产力的又一创举，简单示例代码如下： 12345678910111213141516171819202122package mainimport ( "fmt" "time")func new_task() &#123; for i := 0; i &lt; 10; i++ &#123; fmt.Println("this is a newTask") time.Sleep(time.Second) //延时1s &#125;&#125;func main() &#123; for i := 0; i &lt; 3; i++ &#123; go new_task() //新建一个协程， 新建一个任务 &#125; time.Sleep(time.Second * 15) //延时15s fmt.Println("this is a main goroutine")&#125; 总结 Go 语言作为编程语言中的新晋小弟，吸收了前人的经验，现阶段发展迅猛 虽然 Go 出于一些目的规定了语言的标准，但是类似于没有三目运算符这种特点还是有些不方便 Go 这门语言还很年轻，相信随着不断发展它会越来越优秀，但没有任何语言是完美无缺的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 陪伴是最长情的告白，而守护是最沉默的陪伴。国庆中秋双节合并，放假了，陪家人待在一起真的很开心，什么都不用做，就静静的待在一起很满足，聊聊天、抬抬杠，假期嗖嗖嗖地溜掉了~]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Go</tag>
+        <tag>优点</tag>
+        <tag>缺点</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[使用Spreadsheet Compare工具对比Excel文件差异]]></title>
-    <url>%2Fblog%2F2020%2F10%2F11%2F%E4%BD%BF%E7%94%A8Spreadsheet-Compare%E5%B7%A5%E5%85%B7%E5%AF%B9%E6%AF%94Excel%E6%96%87%E4%BB%B6%E5%B7%AE%E5%BC%82%2F</url>
-    <content type="text"><![CDATA[前言与 Spreadsheet Compare 这个工具的相遇是通过 TortoiseSVN 来牵线的，在使用 SVN 管理 Excel 表格时发现，TortoiseSVN自带的比较工具不能查找Excel文件的版本差异，这对于通过日志查找问题来说非常不方便，通过搜索发现了 Spreadsheet Compare 这款优秀的工具，特此记录一下，方便日后查找并快速配置。 Spreadsheet CompareSpreadsheet Compare 是 Microsoft Office 自带的一款工具软件（2013版本以后），可以用来比较不同 Excel 表格的差异，既能显示数据的不同，也可以显示出表结构的不同。这是一款带界面的工具软件，布局分为左右两部分，与 Beyond Compare 这个工具界面类似，但是功能更加强大。 Beyond Compare 也可以用来对比表格差异，但是只能比较两个Excel的当前工作表，如果每个 Excel 文件中包含多个工作表时就会对比错误的情况，而 Spreadsheet Compare 在这一点上更加优秀，可以对比多个表格数据。 Spreadsheet Compare 使用起来也非常简单，可以操作的按钮很少，界面简洁， 启动软件后单击左上角的 Compare Files 按钮，选择要对比的文件即可，非常方便，数据差异、结构差异等都会用不同的颜色标记出来，还可以导出对比结果。 命令模式这种模式对于是提供给 TortoiseSVN 使用的前提，因为 TortoiseSVN 无法像人一样一步步操作选择待比较的 Excel 表格，而是需要一个命令脚本，将要比较的参数传给 Spreadsheet Compare 工具进而完成比较工作。 找到工具想要编写命令脚本，首先要找到这个比较的工具，我找到的路径是在 &quot;C:\Program Files (x86)\Microsoft Office\Root\Office16\DCF\SPREADSHEETCOMPARE.EXE&quot;，相信大家的路径都差不多，在 Office 工具目录下应该就能找到了，可以在开始菜单中找到工具，然后通过属性找到可执行程序所在目录，工具的可执行文件名字叫做 SPREADSHEETCOMPARE.EXE。 编写脚本编写脚本之前有一点需要强调一下，SPREADSHEETCOMPARE.EXE 有点奇怪，大多数软件在比较差异的时候会将两个文件作为参数使用，但是 SPREADSHEETCOMPARE.EXE 在比较之前，需要将两个待比较的文件名分成两行写入一个文件，再将这个文件作为参数传给工具使用，比如要比较 ExcelA.xlsx 和 ExcelB.xlsx 两个文件，需要将两个文件写入一个临时文件 ExcelCompare.txt 中: ExcelA.xlsxExcelB.xlsx 然后再把这个文件作为参数传给工具： 1SPREADSHEETCOMPARE.EXE ExcelCompare.txt 脚本内容有了上面的说明，我们就可以写出一个较为通用的版本，比如我的脚本名字是 SC.bat，内容如下： 1234567@echo offchcp 65001set batpath=%~dp0echo %~1&gt; "%batpath%ExcelCompare.txt"echo %~2&gt;&gt; "%batpath%ExcelCompare.txt""C:\\Program Files (x86)\\Microsoft Office\\Root\\Office16\\DCF\\SPREADSHEETCOMPARE.EXE" "%batpath%ExcelCompare.txt" 脚本执行直接在 cmd 命令行中输入以下命令就可以对比 ExcelA.xlsx 和 ExcelB.xlsx 两个文件了： 12D:\data\bat&gt;D:\data\bat&gt;SC.bat ExcelA.xlsx ExcelB.xlsx 供给SVN调用个人比较懒，不喜欢截图，在 TortoiseSVN 工具的设置中找到“差异查看器”选项，选择该选项然后点击界面上的高级设置，点击增加按钮，增加根据扩展名指定差异比较程序，填写 .xlsx 和所需命令 D:\data\bat&gt;SC.bat %base %mine 命令中的 %base 和 %mine 参数是 TortoiseSVN 提供的，代表原始文件和自己修改的文件，这次再通过 SVN 查看表格差异就可以启动 Spreadsheet Compare 程序啦。 总结 Spreadsheet Compare 是一款强大的表格比较工具，在表格比较时比 Beyond Compare 还要强大 脚本调用 SPREADSHEETCOMPARE.EXE 程序时参数是一个包含了待比较文件名的临时文件，这一点和其他的比较工具有些不同 脚本中我们生成的临时文件无需手动处理，再打开待比较文件后会自动删除 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 急需找到一个看得见摸得着的目标为之努力，不然真的有点止步不前了，至今还未找到可以废寝忘食之事，长此以往终将碌碌无为 2020-10-12 00:16:52]]></content>
+    <url>%2Fblog%2F2020%2F10%2F04%2F%E4%BD%BF%E7%94%A8Spreadsheet-Compare%E5%B7%A5%E5%85%B7%E5%AF%B9%E6%AF%94Excel%E6%96%87%E4%BB%B6%E5%B7%AE%E5%BC%82%2F</url>
+    <content type="text"><![CDATA[前言与 Spreadsheet Compare 这个工具的相遇是通过 TortoiseSVN 来牵线的，在使用 SVN 管理 Excel 表格时发现，TortoiseSVN自带的比较工具不能对比Excel文件的版本差异，这对于通过日志查找问题来说非常不方便，通过搜索发现了 Spreadsheet Compare 这款优秀的工具，特此记录一下，方便日后查找并快速配置。 Spreadsheet CompareSpreadsheet Compare 是 Microsoft Office 自带的一款工具软件（2013版本以后），可以用来比较不同 Excel 表格的差异，既能显示数据的不同，也可以显示出表结构的不同。这是一款带界面的工具软件，布局分为左右两部分，与 Beyond Compare 这个工具界面类似，但是功能更加强大。 Beyond Compare 也可以用来对比表格差异，但是只能比较两个Excel的当前工作表，如果每个 Excel 文件中包含多个工作表时就会对比错误的情况，而 Spreadsheet Compare 在这一点上更加优秀，可以对比多个表格数据。 Spreadsheet Compare 使用起来也非常简单，可以操作的按钮很少，界面简洁， 启动软件后单击左上角的 Compare Files 按钮，选择要对比的文件即可，非常方便，数据差异、结构差异等都会用不同的颜色标记出来，还可以导出对比结果。 命令模式这种模式对于是提供给 TortoiseSVN 使用的前提，因为 TortoiseSVN 无法像人一样一步步操作选择待比较的 Excel 表格，而是需要一个命令脚本，将要比较的参数传给 Spreadsheet Compare 工具进而完成比较工作。 找到工具想要编写命令脚本，首先要找到这个比较的工具，我找到的路径是在 &quot;C:\Program Files (x86)\Microsoft Office\Root\Office16\DCF\SPREADSHEETCOMPARE.EXE&quot;，相信大家的路径都差不多，在 Office 工具目录下应该就能找到了，可以在开始菜单中找到工具，然后通过属性找到可执行程序所在目录，工具的可执行文件名字叫做 SPREADSHEETCOMPARE.EXE。 编写脚本编写脚本之前有一点需要强调一下，SPREADSHEETCOMPARE.EXE 有点奇怪，大多数软件在比较差异的时候会将两个文件作为参数使用，但是 SPREADSHEETCOMPARE.EXE 在比较之前，需要将两个待比较的文件名分成两行写入一个文件，再将这个文件作为参数传给工具使用，比如要比较 ExcelA.xlsx 和 ExcelB.xlsx 两个文件，需要将两个文件写入一个临时文件 ExcelCompare.txt 中: ExcelA.xlsxExcelB.xlsx 然后再把这个文件作为参数传给工具： 1SPREADSHEETCOMPARE.EXE ExcelCompare.txt 脚本内容有了上面的说明，我们就可以写出一个较为通用的版本，比如我的脚本名字是 SC.bat，内容如下： 1234567@echo offchcp 65001set batpath=%~dp0echo %~1&gt; "%batpath%ExcelCompare.txt"echo %~2&gt;&gt; "%batpath%ExcelCompare.txt""C:\\Program Files (x86)\\Microsoft Office\\Root\\Office16\\DCF\\SPREADSHEETCOMPARE.EXE" "%batpath%ExcelCompare.txt" 脚本执行直接在 cmd 命令行中输入以下命令就可以对比 ExcelA.xlsx 和 ExcelB.xlsx 两个文件了： 12D:\data\bat&gt;D:\data\bat&gt;SC.bat ExcelA.xlsx ExcelB.xlsx 供给SVN调用个人比较懒，不喜欢截图，在 TortoiseSVN 工具的设置中找到“差异查看器”选项，选择该选项然后点击界面上的高级设置，点击增加按钮，增加根据扩展名指定差异比较程序，填写 .xlsx 和所需命令 D:\data\bat&gt;SC.bat %base %mine 命令中的 %base 和 %mine 参数是 TortoiseSVN 提供的，代表原始文件和自己修改的文件，这次再通过 SVN 查看表格差异就可以启动 Spreadsheet Compare 程序方便地查看两个表格的差异啦。 总结 Spreadsheet Compare 是一款强大的表格比较工具，在表格比较时比 Beyond Compare 还要优秀 脚本调用 SPREADSHEETCOMPARE.EXE 程序时参数是一个包含了待比较文件名的临时文件，这一点和其他的比较工具有些不同 脚本中我们生成的临时文件无需手动处理，再打开待比较文件后会自动删除 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 急需找到一个看得见摸得着的目标为之努力，不然真的有点止步不前了，至今还未找到可以废寝忘食之事，长此以往终将碌碌无为，继续找寻，此事可以不伟大，但应该有趣~ 2020-10-12 00:16:52]]></content>
       <categories>
         <category>Tools</category>
       </categories>
@@ -255,10 +269,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -427,8 +441,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1057,8 +1071,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
