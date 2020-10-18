@@ -346,6 +346,299 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/14/linux环境下使用sort命令完成常见排序操作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/10/14/linux环境下使用sort命令完成常见排序操作/" itemprop="url">linux环境下使用sort命令完成常见排序操作</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T23:46:28+08:00">
+                2020-10-14
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-10-18T15:58:34+08:00">
+                2020-10-18
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/10/14/linux环境下使用sort命令完成常见排序操作/" class="leancloud_visitors" data-flag-title="linux环境下使用sort命令完成常见排序操作">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,909(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">14(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 <code>sort</code>，处理文本按列排序非常方便，最近使用 <code>sort</code>命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。</p>
+<h1 id="命令作用"><a href="#命令作用" class="headerlink" title="命令作用"></a>命令作用</h1><p><code>sort</code> 命令默认会将待排序内容以空格划分为多个列，然后对内容进行按列排序，命令本身不会修改待排序内容，而是将排序结果重新输出，如果想修改待排序源文件的内容，可以通过重定向命令来实现。</p>
+<p>命令格式为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort [选项] 文件名</span><br></pre></td></tr></table></figure>
+<h1 id="常见选项"><a href="#常见选项" class="headerlink" title="常见选项"></a>常见选项</h1><p><code>sort</code> 作为一个强大的命令，参数选项还挺多的，不过我只列举一些常见的参数，方便日常使用即可。</p>
+<ul>
+<li><strong>-k：</strong> 指定排序依据的列数，可以分多次指定</li>
+<li><strong>-o：</strong> 将排序后的结果存入指定文件</li>
+<li><strong>-c：</strong> 检查指定文件是否已经排好序</li>
+<li><strong>-u：</strong> 删除所有重复行</li>
+<li><strong>-b：</strong> 忽略每行或字段前面开始出的空格字符</li>
+<li><strong>-f：</strong> 排序比较时忽略大小写</li>
+<li><strong>-n：</strong> 转化为数字，按照数值的大小排序</li>
+<li><strong>-r：</strong> 反向排序，从大到小</li>
+<li><strong>-t：</strong> 指定排序时划分列数的分隔字符</li>
+</ul>
+<h1 id="数据文件"><a href="#数据文件" class="headerlink" title="数据文件"></a>数据文件</h1><p>为了展示 <code>sort</code> 命令的作用，专门利用 <code>ls</code> 命令产生了一段数据，并保存在了 data.txt 文件中，之后会利用这个文件来展示 <code>sort</code> 的用法，文件内容展示如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ cat data.txt</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br></pre></td></tr></table></figure>
+<p>这个文件中的内容在使用 <code>sort</code> 命令排序时默认以空格分割，所以共有9列，在指定列数时从1开始，接下来我们用这些数据来测试一下排序命令的用法。</p>
+<h1 id="核心参数"><a href="#核心参数" class="headerlink" title="核心参数"></a>核心参数</h1><p>对于我来说 <code>sort</code> 命令的核心参数是 <code>-k</code>，其完整的参数列表为 <code>-k START_F[.START_C][OPTIONS][,END_F[.END_C][OPTIONS]]</code>，参数列表很长，但是不要恐惧，逐步分析就可以了。</p>
+<p><code>-k</code> 后面这已打算都是用来指定排序依据的范围的，其中 <code>START_F</code> 和 <code>END_F</code> 表示开始和结束的字段，也就是列数，<code>.START_C</code> 和 <code>.END_C</code> 表示指定字段开始和结束的字符数，<code>OPTIONS</code> 是由一个或多个单个字母排序的选项[bdfgiMhnRrV]，这些选项中常用的已经列举在前面了，写在此处的选项会覆盖全局排序选项。</p>
+<p>这样文字叙述有些枯燥，可以看下这个参数 <code>-k 6.2b,6.3b</code>，这个排序选项的含义是把内容按照第6列的第2个字符到第6列的第3个字符排序，查找字符位置的时候要去掉前面的空白。</p>
+<h1 id="用法展示"><a href="#用法展示" class="headerlink" title="用法展示"></a>用法展示</h1><p>看了以上的参数可能还是不太清楚具体怎样用，所以举了下面这些例子，可以方便的处理常用的排序工作。</p>
+<h2 id="按照指定列排序"><a href="#按照指定列排序" class="headerlink" title="按照指定列排序"></a>按照指定列排序</h2><p>这是最普通的排序要求了，也是我用的最多的情况，需要使用-k参数</p>
+<ul>
+<li>按照第3列排序</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 data.txt</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>root 已经被排到了所有albert的后面</p>
+</blockquote>
+<h2 id="将排序结果存入指定文件"><a href="#将排序结果存入指定文件" class="headerlink" title="将排序结果存入指定文件"></a>将排序结果存入指定文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 data.txt -o dst.txt</span><br><span class="line">albert@home-pc:~$ cat dst.txt</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>排序结果已经被存储到了文件 dst.txt 中，其实这个命令还可以改写成 <code>sort data.txt &gt; dst.txt</code></p>
+</blockquote>
+<h2 id="查看文件是否已经排序好"><a href="#查看文件是否已经排序好" class="headerlink" title="查看文件是否已经排序好"></a>查看文件是否已经排序好</h2><ul>
+<li>测试没排好序的文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 data.txt -c</span><br><span class="line">sort: data.txt:2: disorder: -rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试已经排序的文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 dst.txt -c</span><br><span class="line">albert@home-pc:~$</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对于已经拍好序的文件使用 -c 参数没有任何输出，如果是未排序的文件则会给出提示</p>
+</blockquote>
+<h2 id="去掉排序结果中的重复行"><a href="#去掉排序结果中的重复行" class="headerlink" title="去掉排序结果中的重复行"></a>去掉排序结果中的重复行</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 data.txt -u</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里的重复行参考是你指定排序依据的列数，也就是第3列如果重复就会认为是重复行，结果中只能出现一次</p>
+</blockquote>
+<h2 id="按照数值结果进行排序"><a href="#按照数值结果进行排序" class="headerlink" title="按照数值结果进行排序"></a>按照数值结果进行排序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k5n,5 data.txt</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里使用了 -k5n,5 作为排序选项，其中的 n 表示以数值方式排序，如果不加 n 的排序结果如下：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k5,5 data.txt</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>数据看起来很乱，其实也是按照第5列排好序的，仔细分析你会发现是把这些数字当成字符串排的序</p>
+</blockquote>
+<h2 id="反向排序"><a href="#反向排序" class="headerlink" title="反向排序"></a>反向排序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k3,3 data.txt -r</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照第3列反向排序，root就排到了所有albert的前面</p>
+</blockquote>
+<h2 id="自定义分割字符"><a href="#自定义分割字符" class="headerlink" title="自定义分割字符"></a>自定义分割字符</h2><p><code>sort</code> 命令默认是以空格作为列的分割符号的，可以使用 <code>-t</code> 选项自定义分割符，比如我们使用 <code>:</code> 作为分隔符，然后以第二列进行排序</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -t <span class="string">":"</span> -k2,2 data.txt</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>结果是以分钟数进行的排序</p>
+</blockquote>
+<h1 id="综合排序"><a href="#综合排序" class="headerlink" title="综合排序"></a>综合排序</h1><p>学习了上面这么多参数，可以做一个综合的例子，以第6列的月份从小到大排序，以第5列文件大小逆序排列，通过组合上面的参数，可以使用下面的命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:~$ sort -k6,6 -k5rn,5 data.txt</span><br><span class="line">-rwxrwxr-x 1 albert albert 20328 Jul 18 19:49 mainpro*</span><br><span class="line">-rwxrwxr-x 1 albert albert  9272 Jul 18 22:27 a.out*</span><br><span class="line">drwx------ 1 albert albert  4096 Jul 16 00:52 .config/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 16 01:10 .cache/</span><br><span class="line">drwxrwxrwx 1 albert albert  4096 Jul 19 21:19 .vscode-server/</span><br><span class="line">-rw-r--r-- 1 albert albert  3771 Jul 16 00:52 .bashrc</span><br><span class="line">-rw------- 1 root   root    2257 Jul 16 01:10 .viminfo</span><br><span class="line">-rw-r--r-- 1 albert albert   655 Jul 16 00:52 .profile</span><br><span class="line">-rw-r--r-- 1 albert albert   220 Jul 16 00:52 .bash_logout</span><br><span class="line">-rw-rw-r-- 1 albert albert   195 Jul 18 22:27 mainpro.cpp</span><br><span class="line">-rw------- 1 albert albert    35 Jul 19 14:14 .lesshst</span><br><span class="line">-rw-r--r-- 1 albert albert     0 Jul 16 00:52 .sudo_as_admin_successful</span><br><span class="line">-rw------- 1 albert albert  7064 Oct 17 22:14 .bash_history</span><br><span class="line">-rw------- 1 albert albert    61 Sep 20 09:42 .Xauthority</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>sort</code> 命令中的 <code>-k</code> 选项是最重要的参数，可以指定排序依据的列数</li>
+<li><code>sort</code> 命令中的 <code>-n</code> 选项也是常用的参数，可以进行数值比较</li>
+<li>在实际问题中常常需要综合运用这些参数，参考综合例子中的方式逐步确定参数选项就可以了。</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/109020024" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>业精于勤，荒于嬉；行成于思，毁于随。没有人能随随便便成功~</p>
+<p>2020-10-18 15:43:51</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/14/Go语言在解决实际问题时的优点与不便/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2278,222 +2571,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/08/01/GDB调试指北-启动GDB并查看说明信息/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/08/01/GDB调试指北-启动GDB并查看说明信息/" itemprop="url">GDB调试指北-启动GDB并查看说明信息</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-01T23:08:16+08:00">
-                2020-08-01
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-08-08T00:16:09+08:00">
-                2020-08-08
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/GDB/" itemprop="url" rel="index">
-                    <span itemprop="name">GDB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/08/01/GDB调试指北-启动GDB并查看说明信息/" class="leancloud_visitors" data-flag-title="GDB调试指北-启动GDB并查看说明信息">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,156(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">10(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>学习 <code>gdb</code> 使用是一个漫长的过程，先了解一下 <code>gdb</code> 的启动方式和基础信息的查看方法，能够帮助我们更全面的认知这个工具。<code>gdb</code> 是一个交互式命令行程序，在使用 <code>gdb</code> 调试的时候不断的在命令行内输入命令，然后 <code>gdb</code> 程序就会给出反馈信息，这在很大程序上可以帮助我们调试程序问题。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/08/01/GDB调试指北-启动GDB并查看说明信息/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2544,7 +2621,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">103</span>
+                <span class="site-state-item-count">104</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2566,7 +2643,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">248</span>
+                <span class="site-state-item-count">249</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
