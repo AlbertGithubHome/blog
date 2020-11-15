@@ -346,6 +346,811 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/11/14/学习cmake从成功编译一个小程序开始/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/11/14/学习cmake从成功编译一个小程序开始/" itemprop="url">学习cmake从成功编译一个小程序开始</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-14T23:59:17+08:00">
+                2020-11-14
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-11-15T23:59:20+08:00">
+                2020-11-15
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/11/14/学习cmake从成功编译一个小程序开始/" class="leancloud_visitors" data-flag-title="学习cmake从成功编译一个小程序开始">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,061(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">9(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在 Windows上开发我使用最多的IDE还是 Visual Studio，编写、编译一条龙服务，导致了不少编译流程知识的缺失，这种大型的IDE确实好用，诸多配置通过在界面上勾选一下就可以了，但是在编译细节的掌握上还是漏掉了一些知识。</p>
+<p>在 linux 开发环境下通常会使用 gcc 或者 g++ 进行编译，可是编译选项有点多，当工程非常大的时候需要写的编译参数太多了，这时可以使用make命令来帮助我们编译 C++ 程序，编译时依赖一些规则，这些规则就写在一个叫 Makefile 的文件中。</p>
+<p>后来发现写 Makefile 还是太麻烦了，这个文件也相当大。于是“懒惰”的程序员们又开发出了各种各样的工具用来生成 Makefile 文件，我使用过的目前就只有 <code>automake</code> 和 <code>cmake</code>。</p>
+<h1 id="生成Makefile"><a href="#生成Makefile" class="headerlink" title="生成Makefile"></a>生成Makefile</h1><p>之前使用的生成 Makefile 文件的工具是 <code>automake</code>，被称为是“八股文”一样的操作，每次操作都是固定的几个步骤，比如每次都要运行 <code>autoscan</code>、<code>aclocal</code>、<code>autoconf</code>、<code>automake</code>、<code>./confiugre</code>等命令，需要个人发挥的地方并不多，之前使用的时候也不是完全从0开始一点点写的，往往是写一个项目模板之后，对照着在Makefile.am文件中修改几个参数就好了。</p>
+<p>现在新的工作内容中使用 cmake 来生成 Makefile，这个 cmake 之前还确实接触过一些，大概是2012年的时候，那时在编译 OpenCV 库还有增强现实插件的时候用过几次，当时感觉安装起来太麻烦了，对那个红绿蓝的图标记忆犹新，感觉和当时的新闻联播的图标有些亲戚关系。</p>
+<p>其实当时根本分不清什么是编译器，什么是 Makefile，对于各种库文件的编译完全是按照文档来操作，现在回过头来看看 cmake 生成 Makefile 还是比较简单的，最起码要比 automake 省了很多步骤，只要编写一个 CMakeLists.txt 文件就好了。</p>
+<h1 id="编写CMakeLists-txt生成Makefile"><a href="#编写CMakeLists-txt生成Makefile" class="headerlink" title="编写CMakeLists.txt生成Makefile"></a>编写CMakeLists.txt生成Makefile</h1><p>为了练习使用编写CMakeLists.txt生成Makefile，进而编译C++项目，我们可以从头来实现一个小例子，目标是编写一个计算加法的静态库和一个计算减法静态库，然后实现一个测试工程来使用这两个函数库，整个工程使用 cmake 来生成 Makefile，然后使用 make 命令完成编译。</p>
+<h2 id="实现简单的代码文件"><a href="#实现简单的代码文件" class="headerlink" title="实现简单的代码文件"></a>实现简单的代码文件</h2><p>加法和减法都是常用的简单计算，用来举例子很容易理解，接下来展示要用到的几个文件内容，每个文件只有几行，只为了说明问题，文件内容如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//myadd.h</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//myadd.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"myadd.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//mysub.h</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sub</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//mysub.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"mysub.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sub</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//test.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"myadd.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"mysub.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"happy birthday!"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"519 + 1 = "</span> &lt;&lt; add(<span class="number">519</span>, <span class="number">1</span>) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"1320 - 6 = "</span> &lt;&lt; sub(<span class="number">1320</span>, <span class="number">6</span>) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用常规方法编译"><a href="#使用常规方法编译" class="headerlink" title="使用常规方法编译"></a>使用常规方法编译</h2><p>首先使用最简单 g++ 命令来编译这个样例程序：</p>
+<ol>
+<li>查看目录下文件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ ls</span><br><span class="line">myadd.cpp  myadd.h  mysub.cpp  mysub.h  test.cpp</span><br></pre></td></tr></table></figure>
+<ol>
+<li>将 <code>myadd.h</code> 和 <code>myadd.cpp</code> 编译成静态库 <code>libmyadd.a</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ g++ -c myadd.cpp</span><br><span class="line">albert@home-pc:testcmake$ ar crv libmyadd.a myadd.o</span><br><span class="line">a - myadd.o</span><br><span class="line">albert@home-pc:testcmake$ ls</span><br><span class="line">libmyadd.a  myadd.cpp  myadd.h  myadd.o  mysub.cpp  mysub.h  test.cpp</span><br></pre></td></tr></table></figure>
+<ol>
+<li>将 <code>mysub.h</code> 和 <code>mysub.cpp</code> 编译成静态库 <code>libmysub.so</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ g++ -c mysub.cpp</span><br><span class="line">albert@home-pc:testcmake$ g++ -shared -fPIC -o libmysub.so mysub.o</span><br><span class="line">albert@home-pc:testcmake$ ls</span><br><span class="line">libmyadd.a  libmysub.so  myadd.cpp  myadd.h  myadd.o  mysub.cpp  mysub.h  mysub.o  test.cpp</span><br></pre></td></tr></table></figure>
+<ol>
+<li>编译链接静态库 <code>libmyadd.a</code>、动态库 <code>libmysub.so</code> 和测试文件生成可执行程序 <code>test</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ g++ test.cpp libmyadd.a -L. -lmysub -o <span class="built_in">test</span> -Wl,-rpath=.</span><br><span class="line">albert@home-pc:testcmake$ ls</span><br><span class="line">libmyadd.a  libmysub.so  myadd.cpp  myadd.h  myadd.o  mysub.cpp  mysub.h  mysub.o  <span class="built_in">test</span>  test.cpp</span><br></pre></td></tr></table></figure>
+<ol>
+<li>运行查看结果，成功计算表达式的值</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ ./<span class="built_in">test</span></span><br><span class="line">happy birthday!</span><br><span class="line">519 + 1 = 520</span><br><span class="line">1320 - 6 = 1314</span><br></pre></td></tr></table></figure>
+<h2 id="使用cmake方式"><a href="#使用cmake方式" class="headerlink" title="使用cmake方式"></a>使用cmake方式</h2><p>上面展示了最原始的编译方法，每次都要敲这些命令，接下来编写一个 CMakeLists 文件，使用 cmake 生成Makefile，以后只要运行 make 命令就可以完成编译了。</p>
+<p>调整一下目录结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ tree</span><br><span class="line">.</span><br><span class="line">|-- myadd</span><br><span class="line">|   |-- myadd.cpp</span><br><span class="line">|   `-- myadd.h</span><br><span class="line">|-- mysub</span><br><span class="line">|   |-- mysub.cpp</span><br><span class="line">|   `-- mysub.h</span><br><span class="line">`-- test.cpp</span><br></pre></td></tr></table></figure>
+<ol>
+<li>进入 myadd 目录新建 CMakeLists.txt 编写内容如下：</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory(. SRC_LIST)        <span class="comment">#将此目录的源文件集合设置为变量SRC_LIST</span></span><br><span class="line">add_library(myadd STATIC <span class="variable">$&#123;SRC_LIST&#125;</span>)   <span class="comment">#库的名称，库的类型，静态库的源文件列表</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>(LIBRARY_OUTPUT_PATH <span class="variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/lib)  <span class="comment">#库的输出路径为根目录下的lib文件夹</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>进入 mysub 目录新建 CMakeLists.txt 编写内容如下：</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory(. SRC_LIST)        <span class="comment">#将此目录的源文件集合设置为变量SRC_LIST</span></span><br><span class="line">add_library(mysub SHARED <span class="variable">$&#123;SRC_LIST&#125;</span>)   <span class="comment">#库的名称，库的类型，动态库的源文件列表</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>(LIBRARY_OUTPUT_PATH <span class="variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/lib)  <span class="comment">#库的输出路径为根目录下的lib文件夹</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>在工程主目录下新建 CMakeLists.txt 编写内容如下：</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 指定cmake版本</span></span><br><span class="line">cmake_minimum_required(VERSION 3.5)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定项目的名称，一般和项目的文件夹名称对应</span></span><br><span class="line">project(testcmake)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定子目录</span></span><br><span class="line">add_subdirectory(myadd)</span><br><span class="line">add_subdirectory(mysub)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加c++ 11标准支持</span></span><br><span class="line"><span class="built_in">set</span>(CMAKE_CXX_FLAGS <span class="string">"-std=c++11"</span> )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 特殊宏，之前编译mysqlcppconn8用到过</span></span><br><span class="line">add_definitions(-DGLIBCXX_USE_CXX11_ABI)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 头文件目录</span></span><br><span class="line">include_directories(myadd mysub)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 源文件目录</span></span><br><span class="line">aux_source_directory(. DIR_SRCS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置环境变量，编译用到的源文件全部都要放到这</span></span><br><span class="line"><span class="built_in">set</span>(TEST_MATH <span class="variable">$&#123;DIR_SRCS&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 库文件目录</span></span><br><span class="line">link_directories(lib)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加要编译的可执行文件</span></span><br><span class="line">add_executable(<span class="variable">$&#123;PROJECT_NAME&#125;</span> <span class="variable">$&#123;TEST_MATH&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加可执行文件所需要的库</span></span><br><span class="line">target_link_libraries(<span class="variable">$&#123;PROJECT_NAME&#125;</span> myadd)</span><br><span class="line">target_link_libraries(<span class="variable">$&#123;PROJECT_NAME&#125;</span> mysub)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>新建build目录和lib目录，整个工程目录关系如下：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake$ tree</span><br><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- build</span><br><span class="line">|-- lib</span><br><span class="line">|-- myadd</span><br><span class="line">|   |-- CMakeLists.txt</span><br><span class="line">|   |-- myadd.cpp</span><br><span class="line">|   `-- myadd.h</span><br><span class="line">|-- mysub</span><br><span class="line">|   |-- CMakeLists.txt</span><br><span class="line">|   |-- mysub.cpp</span><br><span class="line">|   `-- mysub.h</span><br><span class="line">`-- test.cpp</span><br><span class="line"></span><br><span class="line">4 directories, 8 files</span><br></pre></td></tr></table></figure>
+<ol>
+<li>进入 build 目录下依次运行 <code>cmake ..</code> 和 <code>make</code> 命令</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:testcmake/build$ cmake ..</span><br><span class="line">-- The C compiler identification is GNU 5.4.0</span><br><span class="line">-- The CXX compiler identification is GNU 5.4.0</span><br><span class="line">-- Check <span class="keyword">for</span> working C compiler: /usr/bin/cc</span><br><span class="line">-- Check <span class="keyword">for</span> working C compiler: /usr/bin/cc -- works</span><br><span class="line">-- Detecting C compiler ABI info</span><br><span class="line">-- Detecting C compiler ABI info - <span class="keyword">done</span></span><br><span class="line">-- Detecting C compile features</span><br><span class="line">-- Detecting C compile features - <span class="keyword">done</span></span><br><span class="line">-- Check <span class="keyword">for</span> working CXX compiler: /usr/bin/c++</span><br><span class="line">-- Check <span class="keyword">for</span> working CXX compiler: /usr/bin/c++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - <span class="keyword">done</span></span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - <span class="keyword">done</span></span><br><span class="line">-- Configuring <span class="keyword">done</span></span><br><span class="line">-- Generating <span class="keyword">done</span></span><br><span class="line">-- Build files have been written to: testcmake/build</span><br><span class="line">albert@home-pc:testcmake/build$ make</span><br><span class="line">Scanning dependencies of target mysub</span><br><span class="line">[ 16%] Building CXX object mysub/CMakeFiles/mysub.dir/mysub.cpp.o</span><br><span class="line">[ 33%] Linking CXX shared library ../../lib/libmysub.so</span><br><span class="line">[ 33%] Built target mysub</span><br><span class="line">Scanning dependencies of target myadd</span><br><span class="line">[ 50%] Building CXX object myadd/CMakeFiles/myadd.dir/myadd.cpp.o</span><br><span class="line">[ 66%] Linking CXX static library ../../lib/libmyadd.a</span><br><span class="line">[ 66%] Built target myadd</span><br><span class="line">Scanning dependencies of target testcmake</span><br><span class="line">[ 83%] Building CXX object CMakeFiles/testcmake.dir/test.cpp.o</span><br><span class="line">[100%] Linking CXX executable testcmake</span><br><span class="line">[100%] Built target testcmake</span><br><span class="line">albert@home-pc:testcmake/build$ ./testcmake</span><br><span class="line">happy birthday!</span><br><span class="line">519 + 1 = 520</span><br><span class="line">1320 - 6 = 1314</span><br><span class="line">albert@home-pc:testcmake/build$</span><br></pre></td></tr></table></figure>
+<p>至此，使用cmake方式编译工程的例子就写完了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li><code>cmake</code> 和 <code>automake</code> 本身不提供编译功能，只是可以按照编写的 CMakeLists.txt 文件生成 Makefile</li>
+<li><code>make</code> 可以根据 Makefile 文件调用 gcc/g++ 命令对源代码进行编译工作</li>
+<li><code>-Wl,-rpath=.</code> 这个选项可以指定可执行文件查找动态库的路径，感觉比 <code>export LD_LIBRARY_PATH</code> 要方便一点</li>
+<li><code>-DGLIBCXX_USE_CXX11_ABI</code> 这个宏可坑了我不少时间，编译使用libmysqlcppconn8的时候，如果不禁用会报编译错误</li>
+</ol>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/109553923" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>有你，真好~</p>
+<p>2020-11-15 23:55:35</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/11/07/linux环境下sed命令的基础用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/11/07/linux环境下sed命令的基础用法/" itemprop="url">linux环境下sed命令的基础用法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-07T14:37:04+08:00">
+                2020-11-07
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-11-07T23:11:06+08:00">
+                2020-11-07
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/11/07/linux环境下sed命令的基础用法/" class="leancloud_visitors" data-flag-title="linux环境下sed命令的基础用法">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,894(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">8(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>每次看到sed这个词就想起“种子”，心里明知道是把它和seed弄混了，但是先入为主的思想怕是改不过来了，不过现在还好，虽然把第一印象的意思弄错了，但还是很快能反应过来这是一个很“厉害”的linux命令，也有一些网友评论到，每次看到这个命令就双腿发抖，我虽然没抖，但是谈到这个命令还是有些挠头，心里有些发怵。</p>
+<p>一味地逃避困难是不可取的，虽然心里感觉这是个很难的命令，但是今天还是要硬着头皮学一下，边学边记录，易于下次复习，那些打败不了我的困难终将使我更加强大。</p>
+<h1 id="sed功能"><a href="#sed功能" class="headerlink" title="sed功能"></a>sed功能</h1><p>其实sed并不是一个单词，而是 stream editor 的缩写，本意为面向字符流的编辑器，说白了sed就是用来编辑文件的命令，编辑文件是我们每天经常做的工作，但是如果每天的编辑工作都类似，我们就要考虑使用sed工具来提高工作效率了，比如说把今天新增的100个文件的第一行都加上版本信息，虽然手动编辑也能做，但是你想体验一下敲个命令瞬间搞定这件事情的快感吗，我们来学习sed命令吧？</p>
+<h2 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed [OPTION]... &#123;script-only-if-no-other-script&#125; [input-file]</span><br></pre></td></tr></table></figure>
+<p>sed 的选项不是太多，最常用的有下面两种形式：</p>
+<ul>
+<li><code>sed -e &#39;sed命令脚本&#39; input-file</code></li>
+<li><code>sed -f &#39;sed命令脚本文件&#39; input-file</code></li>
+</ul>
+<h2 id="命令选项"><a href="#命令选项" class="headerlink" title="命令选项"></a>命令选项</h2><ul>
+<li><strong>-e</strong> ：命令行模式，选项后直接跟sed编辑脚本，在只有一组脚本的情况下可以省略</li>
+<li><strong>-f</strong> ：脚本文件模式，选项后跟写有sed编辑脚本的文件名，运行后会执行脚本文件内的编辑动作</li>
+<li><strong>-i</strong> ：直接修改文件内容，如果不加这个选项是不修改源文件的，只将修改后的文件输出</li>
+<li><strong>-n</strong> ：只打印模式匹配的行，便于查看所作修改</li>
+</ul>
+<p>以上列举只是一些常见选项，还有些比如 <code>-l</code> 指定每行长度，<code>-s</code> 指定换行的分隔符等等，用到了再来分析学习。</p>
+<h2 id="寻找匹配"><a href="#寻找匹配" class="headerlink" title="寻找匹配"></a>寻找匹配</h2><p>既然是编辑文件，首先要找到需要编辑的位置，在sed命令中可以使用行号，或者字符查找等方式找到需要修改的位置，然后再执行编辑动作，常见的范围：</p>
+<ul>
+<li><strong>x</strong>：指定的行号，表示第x行</li>
+<li><strong>x,y</strong>：指定的行号范围，表示第x行到y行</li>
+<li><strong>/pattern</strong>：查询到包含指定模式的行</li>
+<li><strong>x,y!</strong>：指定的行号范围，表示不包括第x行到y行</li>
+</ul>
+<h1 id="sed操作"><a href="#sed操作" class="headerlink" title="sed操作"></a>sed操作</h1><p>sed几乎可以实现文件的所有编辑工作，接下来尝试一些常见的用法：</p>
+<h2 id="打印内容"><a href="#打印内容" class="headerlink" title="打印内容"></a>打印内容</h2><p>使用编辑命令 <code>p</code>，可以向匹配行后面插入内容。</p>
+<ul>
+<li>打印文件第2行和第3行的内容，命令为<code>sed -n &#39;2,3p&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed -n <span class="string">'2,3p'</span> data.txt</span><br><span class="line">abc</span><br><span class="line">xyz</span><br></pre></td></tr></table></figure>
+<h2 id="追加内容"><a href="#追加内容" class="headerlink" title="追加内容"></a>追加内容</h2><p>使用编辑命令 <code>a</code>，可以向匹配行后面插入内容。</p>
+<ul>
+<li>在第2行后面添加文本<code>newline</code>，命令为<code>sed &#39;2anewline&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'2anewline'</span> data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">newline</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在最后一行后面添加文本<code>endline</code>，命令为<code>sed &#39;$aendline&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'$aendline'</span> data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">endline</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$</span><br></pre></td></tr></table></figure>
+<h2 id="插入内容"><a href="#插入内容" class="headerlink" title="插入内容"></a>插入内容</h2><p>使用编辑命令 <code>i</code>，可以在匹配的那一行插入内容。</p>
+<ul>
+<li>在第1行插入文本<code>firstline</code>，命令为<code>sed &#39;1ifirstline&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'1ifirstline'</span> data.txt</span><br><span class="line">firstline</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在包含文本 “123” 的行插入文本<code>insertline</code>，命令为<code>sed &#39;/123/iinsertline&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'/123/iinsertline'</span> data.txt</span><br><span class="line">insertline</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">insertline</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<h2 id="更改行内容"><a href="#更改行内容" class="headerlink" title="更改行内容"></a>更改行内容</h2><p>使用编辑命令 <code>c</code>，可以修改匹配行的内容。</p>
+<ul>
+<li>将包含文本 “123” 的行替换为 “456”，命令为<code>sed &#39;/123/c456&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'/123/c456'</span> data.txt</span><br><span class="line">456</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">456</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将3、4、5行内容更改为newworld，命令为<code>sed &#39;3,5cneworld&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'3,5cneworld'</span> data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">neworld</span><br></pre></td></tr></table></figure>
+<h2 id="替换行内容"><a href="#替换行内容" class="headerlink" title="替换行内容"></a>替换行内容</h2><p>使用编辑命令 <code>s</code>，可以替换匹配行的内容，需要注意和 <code>c</code> 的区别，<code>c</code> 是整行的内容都改变，而 <code>s</code> 是只替换命令中指定的部分。</p>
+<ul>
+<li>将文件中的文本 “123” 替换为 “456”，命令为<code>sed &#39;s/123/456/g&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'s/123/456/g'</span> data.txt</span><br><span class="line">4564</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">456</span><br></pre></td></tr></table></figure>
+<h1 id="综合运用"><a href="#综合运用" class="headerlink" title="综合运用"></a>综合运用</h1><ul>
+<li>删除空行并给所有内容是 “123” 的文本加上小括号</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line"></span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed -e <span class="string">'s/123/(&amp;)/g'</span> -e <span class="string">'/^$/d'</span> data.txt</span><br><span class="line">(123)4</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">(123)</span><br></pre></td></tr></table></figure>
+<h2 id="删除内容"><a href="#删除内容" class="headerlink" title="删除内容"></a>删除内容</h2><p>使用编辑命令 <code>c</code>，可以删除匹配行。</p>
+<ul>
+<li>删除空行，命令为<code>sed &#39;/^$/d&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line"></span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'/^$/d'</span> data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从第一行开始，每两行删除掉一行，命令为<code>sed &#39;1~2d&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'1~2d'</span> data.txt</span><br><span class="line">abc</span><br><span class="line">1==</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除2行和3行以外的行，命令为<code>sed &#39;2,3!d&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'2,3!d'</span> data.txt</span><br><span class="line">abc</span><br><span class="line">xyz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除指定行数范围内的匹配行，命令为<code>sed &#39;1,3{/123/d}&#39; data.txt</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ cat data.txt</span><br><span class="line">1234</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br><span class="line">albert@DESKTOP-6746UC3:/mnt/d/data/shell$ sed <span class="string">'1,3&#123;/123/d&#125;'</span> data.txt</span><br><span class="line">abc</span><br><span class="line">xyz</span><br><span class="line">1==</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>sed</code> 是 stream editor 的缩写，表示为面向字符流的编辑器</li>
+<li><code>sed</code> 命令常用的几个选项，<code>-e</code>、<code>-f</code>、<code>-i</code>、<code>-n</code></li>
+<li><code>sed</code> 命令常用的几个编辑动作，也就是选项后的常用命令有 <code>p（打印）</code>、<code>a（追加）</code>、<code>i（插入）</code>、<code>c（改变）</code>、<code>s（替换）</code>、<code>d（删除）</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/109267664" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>不能打败我的困难终将使我更加强大，绊不倒我的石头最后只会被拿来踩踏，拥抱一个个困难，生活本来就是一条打怪升级之路，那有什么一帆风顺~</p>
+<p>2020-11-7 22:47:01</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/24/关于数据一致性的思考/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/10/24/关于数据一致性的思考/" itemprop="url">关于数据一致性的思考</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-24T22:11:21+08:00">
+                2020-10-24
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-10-26T00:28:58+08:00">
+                2020-10-26
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
+                    <span itemprop="name">Thinking</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/10/24/关于数据一致性的思考/" class="leancloud_visitors" data-flag-title="关于数据一致性的思考">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,497(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">5(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>也不知道是谁这么有才，居然发明了1024这个程序员的节日，其他的节日都是买买买，唯独这个节日促销活动少的可怜，连早上买菜都是占了第二天重阳节的便宜，除了程序员们自嗨，也没人来给码农们庆祝了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2020/10/24/关于数据一致性的思考/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/14/linux环境下使用sort命令完成常见排序操作/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1923,654 +2728,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/08/27/Python中时间戳、时间字符串、时间结构对象之间的相互转化/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/08/27/Python中时间戳、时间字符串、时间结构对象之间的相互转化/" itemprop="url">Python中时间戳、时间字符串、时间结构对象之间的相互转化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-27T23:32:21+08:00">
-                2020-08-27
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-09-02T23:49:01+08:00">
-                2020-09-02
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/08/27/Python中时间戳、时间字符串、时间结构对象之间的相互转化/" class="leancloud_visitors" data-flag-title="Python中时间戳、时间字符串、时间结构对象之间的相互转化">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,857(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">8(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>使用 Python 写程序的时候常常要查看中间结果，需要把一些内容记录到日志中，为了不让新产生的日志覆盖之前的日志文件，所以通常使用时间字符串来作为文件名，类似于 <code>2020827_233842.log</code> 这种格式，就是表示程序在 2020-8-27 23:38:42 启动时产生的日志文件。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/08/27/Python中时间戳、时间字符串、时间结构对象之间的相互转化/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/08/17/GDB调试指北-启动调试或者附加到进程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/08/17/GDB调试指北-启动调试或者附加到进程/" itemprop="url">GDB调试指北-启动调试或者附加到进程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-17T23:45:15+08:00">
-                2020-08-17
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-09-03T00:23:47+08:00">
-                2020-09-03
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/GDB/" itemprop="url" rel="index">
-                    <span itemprop="name">GDB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/08/17/GDB调试指北-启动调试或者附加到进程/" class="leancloud_visitors" data-flag-title="GDB调试指北-启动调试或者附加到进程">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,831(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">8(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>要想使用 <code>gdb</code> 调试程序，必须让 <code>gdb</code> 程序和被调试程序建立联系，这种联系可以通过程序的可执行文件、core文件或者正在运行的进程来建立，具体调试的时候使用的选项不同，涉及到参数的传递，选项的顺序，多进程启动前的设置等等，接下来可以看一些常见用法。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/08/17/GDB调试指北-启动调试或者附加到进程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/08/05/Redis源码-BFS方式浏览main函数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/08/05/Redis源码-BFS方式浏览main函数/" itemprop="url">Redis源码-BFS方式浏览main函数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-05T23:35:19+08:00">
-                2020-08-05
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-08-16T00:06:34+08:00">
-                2020-08-16
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Redis/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/08/05/Redis源码-BFS方式浏览main函数/" class="leancloud_visitors" data-flag-title="Redis源码-BFS方式浏览main函数">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">4,795(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">23(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>欠下的技术债慢慢还，继续为去年吹过的牛而努力。去年年末的时候意识到自己掌握的知识还不够深入，决定开始看一些开源项目的源码，因为当时 <code>Redis</code> 的兴起，所以瞄准了准备从它下手，之后确实看了一部分内容，比如跳表、网络事件库等等，后来过年就鸽了。今年开始一直熟悉新的业务，比较懒没跟进，最近间歇性踌躇满志又发作了，准备抽时间再捋顺一遍，老规矩，还是从 <code>main()</code> 函数下手。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/08/05/Redis源码-BFS方式浏览main函数/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2621,7 +2778,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">104</span>
+                <span class="site-state-item-count">107</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2643,7 +2800,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">249</span>
+                <span class="site-state-item-count">254</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
