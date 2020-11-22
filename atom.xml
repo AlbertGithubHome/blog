@@ -39,9 +39,9 @@
     
       <category term="C++" scheme="http://AlbertGithubHome.github.io/blog/tags/C/"/>
     
-      <category term="编译" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%BC%96%E8%AF%91/"/>
-    
       <category term="linux" scheme="http://AlbertGithubHome.github.io/blog/tags/linux/"/>
+    
+      <category term="编译" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%BC%96%E8%AF%91/"/>
     
       <category term="cmake" scheme="http://AlbertGithubHome.github.io/blog/tags/cmake/"/>
     
@@ -530,11 +530,11 @@
       <category term="加密与认证" scheme="http://AlbertGithubHome.github.io/blog/categories/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%AE%A4%E8%AF%81/"/>
     
     
+      <category term="HTTPS" scheme="http://AlbertGithubHome.github.io/blog/tags/HTTPS/"/>
+    
       <category term="认证" scheme="http://AlbertGithubHome.github.io/blog/tags/%E8%AE%A4%E8%AF%81/"/>
     
       <category term="非对称加密" scheme="http://AlbertGithubHome.github.io/blog/tags/%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86/"/>
-    
-      <category term="HTTPS" scheme="http://AlbertGithubHome.github.io/blog/tags/HTTPS/"/>
     
       <category term="根证书" scheme="http://AlbertGithubHome.github.io/blog/tags/%E6%A0%B9%E8%AF%81%E4%B9%A6/"/>
     

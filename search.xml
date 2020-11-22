@@ -9,8 +9,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -251,9 +251,9 @@
         <category>加密与认证</category>
       </categories>
       <tags>
+        <tag>HTTPS</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>HTTPS</tag>
         <tag>根证书</tag>
         <tag>中间人</tag>
       </tags>
@@ -293,10 +293,10 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>加密</tag>
+        <tag>HTTPS</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>HTTPS</tag>
+        <tag>加密</tag>
         <tag>证书</tag>
       </tags>
   </entry>
@@ -308,9 +308,9 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
+        <tag>加密</tag>
         <tag>公钥</tag>
         <tag>私钥</tag>
       </tags>
@@ -367,8 +367,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -1125,8 +1125,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
