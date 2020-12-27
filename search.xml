@@ -62,9 +62,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>排序</tag>
         <tag>linux</tag>
         <tag>sort</tag>
+        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -116,9 +116,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>排序</tag>
         <tag>linux</tag>
         <tag>sort</tag>
+        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -390,10 +390,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1051,8 +1051,8 @@
       <tags>
         <tag>Mysql</tag>
         <tag>查询</tag>
-        <tag>Usingfilesort</tag>
         <tag>排序</tag>
+        <tag>Usingfilesort</tag>
         <tag>调优</tag>
       </tags>
   </entry>
@@ -1192,8 +1192,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1521,8 +1521,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>
