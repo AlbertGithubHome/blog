@@ -62,9 +62,9 @@
         <category>linux</category>
       </categories>
       <tags>
+        <tag>排序</tag>
         <tag>linux</tag>
         <tag>sort</tag>
-        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -76,8 +76,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -116,9 +116,9 @@
         <category>linux</category>
       </categories>
       <tags>
+        <tag>排序</tag>
         <tag>linux</tag>
         <tag>sort</tag>
-        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -434,8 +434,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -1051,8 +1051,8 @@
       <tags>
         <tag>Mysql</tag>
         <tag>查询</tag>
-        <tag>排序</tag>
         <tag>Usingfilesort</tag>
+        <tag>排序</tag>
         <tag>调优</tag>
       </tags>
   </entry>

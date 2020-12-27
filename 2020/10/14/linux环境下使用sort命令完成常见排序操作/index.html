@@ -84,7 +84,7 @@
 <link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="linux,sort,排序," />
+  <meta name="keywords" content="排序,linux,sort," />
 
 
 
@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。 命令作用sort 命令默认会将待排序内容以空格划分为多个列，然后对内容进行按列排序，命令本身不会修改待排序">
-<meta name="keywords" content="linux,sort,排序">
+<meta name="description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。">
+<meta name="keywords" content="排序,linux,sort">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux环境下使用sort命令完成常见排序操作">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2020/10/14/linux环境下使用sort命令完成常见排序操作/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。 命令作用sort 命令默认会将待排序内容以空格划分为多个列，然后对内容进行按列排序，命令本身不会修改待排序">
+<meta property="og:description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-10-18T07:58:34.656Z">
+<meta property="og:updated_time" content="2020-12-27T12:39:23.893Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux环境下使用sort命令完成常见排序操作">
-<meta name="twitter:description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。 命令作用sort 命令默认会将待排序内容以空格划分为多个列，然后对内容进行按列排序，命令本身不会修改待排序">
+<meta name="twitter:description" content="前言linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 sort，处理文本按列排序非常方便，最近使用 sort命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。">
 
 
 
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-10-18T15:58:34+08:00">
-                2020-10-18
+              <time title="更新于" itemprop="dateModified" datetime="2020-12-27T20:39:23+08:00">
+                2020-12-27
               </time>
             
           </span>
@@ -481,6 +481,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>linux 系统下的命令常常给人一种短小精悍的感觉，使用起来就像一把把锋利的小刀，在自己专注的领域做到极致，今天要聊的就是 linux 环境下的排序命令 <code>sort</code>，处理文本按列排序非常方便，最近使用 <code>sort</code>命令来排序日志查找问题，为了防止一段时间不用又会忘记，所以记录下来便于下次查找。</p>
+<a id="more"></a>
 <h1 id="命令作用"><a href="#命令作用" class="headerlink" title="命令作用"></a>命令作用</h1><p><code>sort</code> 命令默认会将待排序内容以空格划分为多个列，然后对内容进行按列排序，命令本身不会修改待排序内容，而是将排序结果重新输出，如果想修改待排序源文件的内容，可以通过重定向命令来实现。</p>
 <p>命令格式为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort [选项] 文件名</span><br></pre></td></tr></table></figure>
@@ -646,11 +647,11 @@
       
         <div class="post-tags">
           
+            <a href="/blog/tags/排序/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
+          
             <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
           
             <a href="/blog/tags/sort/" rel="tag"><i class="fa fa-tag"></i> sort</a>
-          
-            <a href="/blog/tags/排序/" rel="tag"><i class="fa fa-tag"></i> 排序</a>
           
         </div>
       
