@@ -346,6 +346,332 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/01/05/在比较Linux和Windows命令差异时意外发现了Windows-Terminal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/01/05/在比较Linux和Windows命令差异时意外发现了Windows-Terminal/" itemprop="url">在比较Linux和Windows命令差异时意外发现了Windows Terminal</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-05T23:48:57+08:00">
+                2021-01-05
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-10T00:56:16+08:00">
+                2021-01-10
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/windows/" itemprop="url" rel="index">
+                    <span itemprop="name">windows</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/01/05/在比较Linux和Windows命令差异时意外发现了Windows-Terminal/" class="leancloud_visitors" data-flag-title="在比较Linux和Windows命令差异时意外发现了Windows Terminal">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,635(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">11(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前工作时的开发环境是 <code>Windows</code> + <code>Linux</code>，常常需要切换测试环境，比如写一个脚本既要在 Windows 使用，同时也要在 Linux 下运行，命令的使用是 Linux 的强项，它自带了很多方便的命令程序，比如过滤字符串的 <code>grep</code>，统计文件行数的 <code>wc</code>，查看目录文件的 <code>ls</code> 等等，如果要在 Windows 中运行相同逻辑的脚本，那我们需要先找到这些命令在 Windows 上的等价写法。</p>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><p>下面列举几个常见的命令，功能上基本等价，如果有更好的写法也欢迎小伙伴们留言补充呀，有些命令在命令框里执行感觉没有作用，但是放到脚本中就很方便了，比如下面第一个：</p>
+<h2 id="显示当前目录"><a href="#显示当前目录" class="headerlink" title="显示当前目录"></a>显示当前目录</h2><ul>
+<li>linux 中的 <code>pwd</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ <span class="built_in">pwd</span></span><br><span class="line">/mnt/d/app/ScreenToGif/Logs</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>cd</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;<span class="built_in">cd</span></span><br><span class="line">D:\app\ScreenToGif\Logs</span><br></pre></td></tr></table></figure>
+<p>这个显示当前目录的命令在这来看确实没什么用，因为在命令提示框里已经显示的当前所在的目录，但是用到脚本中时就可以发挥作用了，windows 中的 <code>cd</code> 命令不仅可以切换目录，当命令后面不接任何参数时就可以显示当前所在的目录位置。</p>
+<h2 id="显示目录下内容"><a href="#显示目录下内容" class="headerlink" title="显示目录下内容"></a>显示目录下内容</h2><ul>
+<li>linux 中的 <code>ls</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ ls</span><br><span class="line">20_04_06 11_09_57_942.txt  20_04_06 11_09_58_049.txt  20_04_06.txt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>dir</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;dir</span><br><span class="line"> 驱动器 D 中的卷没有标签。</span><br><span class="line"> 卷的序列号是 0E68-747E</span><br><span class="line"></span><br><span class="line"> D:\app\ScreenToGif\Logs 的目录</span><br><span class="line"></span><br><span class="line">2020/04/06  23:09    &lt;DIR&gt;          .</span><br><span class="line">2020/04/06  23:09    &lt;DIR&gt;          ..</span><br><span class="line">2020/04/06  23:09               507 20_04_06 11_09_57_942.txt</span><br><span class="line">2020/04/06  23:09               518 20_04_06 11_09_58_049.txt</span><br><span class="line">2020/04/06  23:10             2,754 20_04_06.txt</span><br><span class="line">               3 个文件          3,779 字节</span><br><span class="line">               2 个目录 56,929,013,760 可用字节</span><br></pre></td></tr></table></figure>
+<p>这两个命令都可以显示当前目录下的内容，但是windows下的 <code>dir</code> 更详细一些，当然，linux 下的 <code>ls</code> 命令也可以附加一些参数来达到显示详细信息的目的。</p>
+<h2 id="过滤文本"><a href="#过滤文本" class="headerlink" title="过滤文本"></a>过滤文本</h2><ul>
+<li>linux 中的 <code>grep</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ ls -l | grep 09_</span><br><span class="line">-rwxrwxrwx 1 albert albert  507 Apr  6  2020 20_04_06 11_09_57_942.txt</span><br><span class="line">-rwxrwxrwx 1 albert albert  518 Apr  6  2020 20_04_06 11_09_58_049.txt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>findstr</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;dir | findstr 09_</span><br><span class="line">2020/04/06  23:09               507 20_04_06 11_09_57_942.txt</span><br><span class="line">2020/04/06  23:09               518 20_04_06 11_09_58_049.txt</span><br></pre></td></tr></table></figure>
+<p>这两个命令基本上是一样的，都是按行过滤文本，当不加参数时效果基本一致</p>
+<h2 id="查看文件内容"><a href="#查看文件内容" class="headerlink" title="查看文件内容"></a>查看文件内容</h2><ul>
+<li>linux 中的 <code>cat</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ cat <span class="string">"20_04_06 11_09_57_942.txt"</span></span><br><span class="line">► Title -</span><br><span class="line">        Automatic feedback</span><br><span class="line">▬ Message -</span><br><span class="line">        Value cannot be null.</span><br><span class="line">Parameter name: path1</span><br><span class="line">○ Type -</span><br><span class="line">        System.ArgumentNullException</span><br><span class="line">♦ [Version] Date/Hour -</span><br><span class="line">        [2.14.1] 04/06/2020 23:09:57</span><br><span class="line">▲ Source -</span><br><span class="line">        mscorlib</span><br><span class="line">▼ TargetSite -</span><br><span class="line">        System.String Combine(System.String, System.String, System.String)</span><br><span class="line">♠ StackTrace -</span><br><span class="line">   at System.IO.Path.Combine(String path1, String path2, String path3)</span><br><span class="line">   at ScreenToGif.Model.ApplicationViewModel.SendFeedback()</span><br><span class="line"></span><br><span class="line">----------------------------------</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>type</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;<span class="built_in">type</span> <span class="string">"20_04_06 11_09_57_942.txt"</span></span><br><span class="line">► Title -</span><br><span class="line">        Automatic feedback</span><br><span class="line">▬ Message -</span><br><span class="line">        Value cannot be null.</span><br><span class="line">Parameter name: path1</span><br><span class="line">○ Type -</span><br><span class="line">        System.ArgumentNullException</span><br><span class="line">♦ [Version] Date/Hour -</span><br><span class="line">        [2.14.1] 04/06/2020 23:09:57</span><br><span class="line">▲ Source -</span><br><span class="line">        mscorlib</span><br><span class="line">▼ TargetSite -</span><br><span class="line">        System.String Combine(System.String, System.String, System.String)</span><br><span class="line">♠ StackTrace -</span><br><span class="line">   at System.IO.Path.Combine(String path1, String path2, String path3)</span><br><span class="line">   at ScreenToGif.Model.ApplicationViewModel.SendFeedback()</span><br><span class="line"></span><br><span class="line">----------------------------------</span><br></pre></td></tr></table></figure>
+<h2 id="统计文件行数"><a href="#统计文件行数" class="headerlink" title="统计文件行数"></a>统计文件行数</h2><ul>
+<li>linux 中的 <code>wc -l</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ cat <span class="string">"20_04_06 11_09_57_942.txt"</span> | wc -l</span><br><span class="line">19</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>find /c /v &quot;&quot;</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;<span class="built_in">type</span> <span class="string">"20_04_06 11_09_57_942.txt"</span> | find /c /v <span class="string">""</span></span><br><span class="line">19</span><br></pre></td></tr></table></figure>
+<p><code>wc</code> 这个命令没什么好说的，专门为统计字符数、字节数、行数而生的，而 windows 下的 <code>find</code> 命令通过 <code>/c</code> 显示匹配函数，<code>/v &quot;&quot;</code> 查找非空行这样的参数组合也能达到统计行数的目的。</p>
+<h2 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h2><table>
+<thead>
+<tr>
+<th style="text-align:left">功能</th>
+<th style="text-align:center">linux命令</th>
+<th style="text-align:center">windows命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">拷贝</td>
+<td style="text-align:center"><code>cp</code></td>
+<td style="text-align:center"><code>copy</code>/<code>xcopy</code></td>
+</tr>
+<tr>
+<td style="text-align:left">移动</td>
+<td style="text-align:center"><code>mv</code></td>
+<td style="text-align:center"><code>move</code>/<code>rename</code></td>
+</tr>
+<tr>
+<td style="text-align:left">删除</td>
+<td style="text-align:center"><code>rm</code></td>
+<td style="text-align:center"><code>del</code>/<code>rd</code></td>
+</tr>
+<tr>
+<td style="text-align:left">创建目录</td>
+<td style="text-align:center"><code>mkdir</code></td>
+<td style="text-align:center"><code>md</code>/<code>mkdir</code></td>
+</tr>
+</tbody>
+</table>
+<p>先整理这么多，后续用到新的等价命令再补充吧！</p>
+<h1 id="半路杀出个PowerShell"><a href="#半路杀出个PowerShell" class="headerlink" title="半路杀出个PowerShell"></a>半路杀出个PowerShell</h1><p>一开始接触 PowerShell 把它认为是 cmd 的升级版，感觉就是原来的 cmd 太寒酸了，然后又搞出个 PowerShell 稍微好看了一点，功能又增加了一些而已，但是随着使用次数的增多，我发现之前的理解不太对，PowerShell 和 cmd 它俩完全没关系啊，唯一的相同点就是都被叫做命令行而已。</p>
+<p>PowerShell 通常被描述成是面向对象的脚本语言，并且是在 .Net公共语言运行时(CLR-Common Language Runtime)和.Net Framework的基础上构建的，可以接受和返回.Net对象，引入了cmdlet的概念，是cmd的超集。</p>
+<p>看到一些说法提到“cmd命令都可以在Powershell中执行”，但事实并非如此，比如我最近发现在cmd运行的 <code>type a.txt | find /c /v &quot;&quot;</code> 统计行数的命令在 PowerShell 中就不管用了，所以我认为把 PowerShell 作为 cmd 的升级不太准确。</p>
+<p>PowerShell完全是一个新发明的东西，它里面有一些原来cmd中常用的命令，比如 <code>cd</code>、<code>dir</code>，同时它还兼容了一些 Linux 上的常用命令，比如 <code>ls</code>、<code>man</code> 等，关于这些可以简单看几个例子。</p>
+<h2 id="显示目录下内容-1"><a href="#显示目录下内容-1" class="headerlink" title="显示目录下内容"></a>显示目录下内容</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc D:\app\ScreenToGif\Logs&gt; ls</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    目录: D:\app\ScreenToGif\Logs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line">----                -------------         ------ ----</span><br><span class="line">-a----         2020/4/6     23:09            507 20_04_06 11_09_57_942.txt</span><br><span class="line">-a----         2020/4/6     23:09            518 20_04_06 11_09_58_049.txt</span><br><span class="line">-a----         2020/4/6     23:10           2754 20_04_06.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">albert@home-pc D:\app\ScreenToGif\Logs&gt; dir</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    目录: D:\app\ScreenToGif\Logs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line">----                -------------         ------ ----</span><br><span class="line">-a----         2020/4/6     23:09            507 20_04_06 11_09_57_942.txt</span><br><span class="line">-a----         2020/4/6     23:09            518 20_04_06 11_09_58_049.txt</span><br><span class="line">-a----         2020/4/6     23:10           2754 20_04_06.txt</span><br></pre></td></tr></table></figure>
+<p>我们可以看到这两个命令在 PowerShell 中执行之后结构完全一样，然后我们使用 <code>man</code> 命令来查看一下两个命令的帮助文档</p>
+<h2 id="查看帮助文档"><a href="#查看帮助文档" class="headerlink" title="查看帮助文档"></a>查看帮助文档</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc D:\app\ScreenToGif\Logs&gt; man dir</span><br><span class="line"></span><br><span class="line">名称</span><br><span class="line">    Get-ChildItem</span><br><span class="line"></span><br><span class="line">语法</span><br><span class="line">    Get-ChildItem [[-Path] &lt;string[]&gt;] [[-Filter] &lt;string&gt;]  [&lt;CommonParameters&gt;]</span><br><span class="line"></span><br><span class="line">    Get-ChildItem [[-Filter] &lt;string&gt;]  [&lt;CommonParameters&gt;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">别名</span><br><span class="line">    gci</span><br><span class="line">    ls</span><br><span class="line">    dir</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">备注</span><br><span class="line">    Get-Help 在此计算机上找不到该 cmdlet 的帮助文件。它仅显示部分帮助。</span><br><span class="line">        -- 若要下载并安装包含此 cmdlet 的模块的帮助文件，请使用 Update-Help。</span><br><span class="line">        -- 若要联机查看此 cmdlet 的帮助主题，请键入: <span class="string">"Get-Help Get-ChildItem -Online"</span> 或</span><br><span class="line">           转到 https://go.microsoft.com/fwlink/?LinkID=113308。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">albert@home-pc D:\app\ScreenToGif\Logs&gt; man ls</span><br><span class="line"></span><br><span class="line">名称</span><br><span class="line">    Get-ChildItem</span><br><span class="line"></span><br><span class="line">语法</span><br><span class="line">    Get-ChildItem [[-Path] &lt;string[]&gt;] [[-Filter] &lt;string&gt;]  [&lt;CommonParameters&gt;]</span><br><span class="line"></span><br><span class="line">    Get-ChildItem [[-Filter] &lt;string&gt;]  [&lt;CommonParameters&gt;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">别名</span><br><span class="line">    gci</span><br><span class="line">    ls</span><br><span class="line">    dir</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">备注</span><br><span class="line">    Get-Help 在此计算机上找不到该 cmdlet 的帮助文件。它仅显示部分帮助。</span><br><span class="line">        -- 若要下载并安装包含此 cmdlet 的模块的帮助文件，请使用 Update-Help。</span><br><span class="line">        -- 若要联机查看此 cmdlet 的帮助主题，请键入: <span class="string">"Get-Help Get-ChildItem -Online"</span> 或</span><br><span class="line">           转到 https://go.microsoft.com/fwlink/?LinkID=113308。</span><br></pre></td></tr></table></figure>
+<p>结果还是完全一样，原来在PowerShell中，<code>ls</code> 和 <code>dir</code> 都是命令 <code>Get-ChildItem</code> 的别名，这时我才发现，原来PowerShell自己的命令其实都是这种动宾短语的形式，原来 cmd 中的命令和一些扩展的 Linux 命令大多是以别名的形式存在的。</p>
+<p>所以从这里来看，PowerShell是一款新产品，并不是cmd的简单升级，只是这个新的产物将原来大部分的cmd命令以别名的方式进行了兼容处理而已</p>
+<h1 id="统一命令行的渴望"><a href="#统一命令行的渴望" class="headerlink" title="统一命令行的渴望"></a>统一命令行的渴望</h1><p>上面提到了 cmd、PowerShell、linux Shell 等等，每天使用这些工具时都要开很多窗口，比较麻烦，有没什么途径把它们统一一下呢？这里的统一只是想使用的更方便而已，语法上暂时没办法统一了，偶然间发现了 <code>Windows Terminal</code> 这个工具，一下子打开了新的世界。</p>
+<h1 id="Windows-Terminal"><a href="#Windows-Terminal" class="headerlink" title="Windows Terminal"></a>Windows Terminal</h1><p>Windows Terminal 是一个全新的、功能强大的命令行终端工具。包含多 Tab 支持、富文本、多语言支持、可配置、主题和样式等诸多特性，并且属于微软的亲儿子，支持的力度你懂得。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>直接在 Windows 上打开应用商店安装即可，这时我第二次打开应用商店了，上一次是安装 WSL 的时候。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/wt.png" alt="wt"></p>
+<p>官方提供的截图也很炫酷：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/wt2.png" alt="wt2"></p>
+<p>我自己也尝试着美化了一下，效果还不错</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/powershell.png" alt="powershell"></p>
+<h2 id="命令行窗口的统一"><a href="#命令行窗口的统一" class="headerlink" title="命令行窗口的统一"></a>命令行窗口的统一</h2><p>确实不想开很多个命令窗口，比如执行windows脚本命令的cmd、PowerShell，版本管理工具git bash，windows子系统WSL命令行，远程服务器命令行工具XShell等，要是把它们都放在一起就好了，使用Windows Terminal可以轻松实现这个愿望，其中cmd、PowerShell、WSL命令行都是Windows Terminal自带的，git bash 要想显示在 Windows Terminal 中需要手动配置下，运行效果如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/multiwindow.png" alt="multiwindow"></p>
+<p>配置和美化方法比较简单，网上搜索会有很多教程可以学习</p>
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p>目前使用 Windows Terminal 替代各种命令行工具只遇到了一个问题，就是它不知道 Zmodem 协议，所以无法使用 <code>sz</code>、<code>rz</code>，对于我这种需要经常上传脚本文件到服务器的人来说不太方便。</p>
+<p>好消息是在2019年的时候已经有人在 Windows Terminal 的 github 项目中提了<a href="https://github.com/microsoft/terminal/issues/1999" target="_blank" rel="noopener">issue</a>，据说会考虑这个功能，但是还得评估下，但是目前已经1年多过去了还没有反馈，焦急等待中，有了它就可以不使用XShell了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>cmd</code> 和 <code>PowerShell</code> 是两个不相同的命令行程序，有些cmd命令无法直接在PowerShell中运行</li>
+<li><code>cmd</code> 能做的 <code>PowerShell</code> 几乎都能做，但是不能直接拿过来就运行，有时需要简单的改写才可以</li>
+<li><code>PowerShell</code> 的命令采用动宾的格式，并且使用别名的形式兼容 <code>cmd</code> 命令和一些 Linux 命令</li>
+<li><code>Windows Terminal</code> 目前来看很优秀，可以将cmd、PowerShell、WSL Shell等运行在同一个窗口中</li>
+<li>由于 <code>Windows Terminal</code> 不支持 Zmodem 协议，所以暂时还不能使用 <code>sz</code>、<code>rz</code> 命令来传送文件</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/112057093" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>不过是大梦一场空，不过是孤影照惊鸿，不过是白驹之过一场梦，梦里有一些相逢……歌词写的真好！</p>
+<p>2021-1-10 00:33:11</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/12/27/2020年终总结！新的起航，新的征程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2258,222 +2584,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/10/14/Go语言在解决实际问题时的优点与不便/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/10/14/Go语言在解决实际问题时的优点与不便/" itemprop="url">Go语言在解决实际问题时的优点与不便</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T23:19:16+08:00">
-                2020-10-14
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-10-14T23:20:52+08:00">
-                2020-10-14
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
-                    <span itemprop="name">Go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/10/14/Go语言在解决实际问题时的优点与不便/" class="leancloud_visitors" data-flag-title="Go语言在解决实际问题时的优点与不便">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,871(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">7(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>Go</code>语言，全称<code>golang</code>，是Google开发的一种静态强类型、编译型、并发型并具有垃圾回收功能的编程语言。 从2007年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开发，其中的 Ken Thompson 可是和 Dennis Ritchie 一起发明了C语言的大佬。Go 语言于2009年11月正式宣布成为开放源代码项目， 并在2012年初，发布了Go 1.0稳定版本，此后便开启了稳步发展的道路。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/10/14/Go语言在解决实际问题时的优点与不便/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2524,7 +2634,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">112</span>
+                <span class="site-state-item-count">113</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2546,7 +2656,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">262</span>
+                <span class="site-state-item-count">264</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2693,7 +2803,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
