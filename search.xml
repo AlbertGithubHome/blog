@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[搬迁声明]]></title>
+    <url>%2Fblog%2F2021%2F01%2F12%2F%E6%90%AC%E8%BF%81%E5%A3%B0%E6%98%8E%2F</url>
+    <content type="text"><![CDATA[我的博客即将同步至 OSCHINA 社区，这是我的 OSCHINA ID：osc_57262839，邀请大家一同入驻：https://www.oschina.net/sharing-plan/apply]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>工作</tag>
+        <tag>学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[在比较Linux和Windows命令差异时意外发现了Windows Terminal]]></title>
     <url>%2Fblog%2F2021%2F01%2F05%2F%E5%9C%A8%E6%AF%94%E8%BE%83Linux%E5%92%8CWindows%E5%91%BD%E4%BB%A4%E5%B7%AE%E5%BC%82%E6%97%B6%E6%84%8F%E5%A4%96%E5%8F%91%E7%8E%B0%E4%BA%86Windows-Terminal%2F</url>
     <content type="text"><![CDATA[前言目前工作时的开发环境是 Windows + Linux，常常需要切换测试环境，比如写一个脚本既要在 Windows 使用，同时也要在 Linux 下运行，命令的使用是 Linux 的强项，它自带了很多方便的命令程序，比如过滤字符串的 grep，统计文件行数的 wc，查看目录文件的 ls 等等，如果要在 Windows 中运行相同逻辑的脚本，那我们需要先找到这些命令在 Windows 上的等价写法。 常用命令下面列举几个常见的命令，功能上基本等价，如果有更好的写法也欢迎小伙伴们留言补充呀，有些命令在命令框里执行感觉没有作用，但是放到脚本中就很方便了，比如下面第一个： 显示当前目录 linux 中的 pwd 12albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ pwd/mnt/d/app/ScreenToGif/Logs windows 中 cd 12D:\app\ScreenToGif\Logs&gt;cdD:\app\ScreenToGif\Logs 这个显示当前目录的命令在这来看确实没什么用，因为在命令提示框里已经显示的当前所在的目录，但是用到脚本中时就可以发挥作用了，windows 中的 cd 命令不仅可以切换目录，当命令后面不接任何参数时就可以显示当前所在的目录位置。 显示目录下内容 linux 中的 ls 12albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ ls20_04_06 11_09_57_942.txt 20_04_06 11_09_58_049.txt 20_04_06.txt windows 中 dir 12345678910111213D:\app\ScreenToGif\Logs&gt;dir 驱动器 D 中的卷没有标签。 卷的序列号是 0E68-747E D:\app\ScreenToGif\Logs 的目录2020/04/06 23:09 &lt;DIR&gt; .2020/04/06 23:09 &lt;DIR&gt; ..2020/04/06 23:09 507 20_04_06 11_09_57_942.txt2020/04/06 23:09 518 20_04_06 11_09_58_049.txt2020/04/06 23:10 2,754 20_04_06.txt 3 个文件 3,779 字节 2 个目录 56,929,013,760 可用字节 这两个命令都可以显示当前目录下的内容，但是windows下的 dir 更详细一些，当然，linux 下的 ls 命令也可以附加一些参数来达到显示详细信息的目的。 过滤文本 linux 中的 grep 123albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ ls -l | grep 09_-rwxrwxrwx 1 albert albert 507 Apr 6 2020 20_04_06 11_09_57_942.txt-rwxrwxrwx 1 albert albert 518 Apr 6 2020 20_04_06 11_09_58_049.txt windows 中 findstr 123D:\app\ScreenToGif\Logs&gt;dir | findstr 09_2020/04/06 23:09 507 20_04_06 11_09_57_942.txt2020/04/06 23:09 518 20_04_06 11_09_58_049.txt 这两个命令基本上是一样的，都是按行过滤文本，当不加参数时效果基本一致 查看文件内容 linux 中的 cat 12345678910111213141516171819albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ cat "20_04_06 11_09_57_942.txt"► Title - Automatic feedback▬ Message - Value cannot be null.Parameter name: path1○ Type - System.ArgumentNullException♦ [Version] Date/Hour - [2.14.1] 04/06/2020 23:09:57▲ Source - mscorlib▼ TargetSite - System.String Combine(System.String, System.String, System.String)♠ StackTrace - at System.IO.Path.Combine(String path1, String path2, String path3) at ScreenToGif.Model.ApplicationViewModel.SendFeedback()---------------------------------- windows 中 type 12345678910111213141516171819D:\app\ScreenToGif\Logs&gt;type "20_04_06 11_09_57_942.txt"► Title - Automatic feedback▬ Message - Value cannot be null.Parameter name: path1○ Type - System.ArgumentNullException♦ [Version] Date/Hour - [2.14.1] 04/06/2020 23:09:57▲ Source - mscorlib▼ TargetSite - System.String Combine(System.String, System.String, System.String)♠ StackTrace - at System.IO.Path.Combine(String path1, String path2, String path3) at ScreenToGif.Model.ApplicationViewModel.SendFeedback()---------------------------------- 统计文件行数 linux 中的 wc -l 12albert@home-pc:/mnt/d/app/ScreenToGif/Logs$ cat "20_04_06 11_09_57_942.txt" | wc -l19 windows 中 find /c /v &quot;&quot; 12D:\app\ScreenToGif\Logs&gt;type "20_04_06 11_09_57_942.txt" | find /c /v ""19 wc 这个命令没什么好说的，专门为统计字符数、字节数、行数而生的，而 windows 下的 find 命令通过 /c 显示匹配函数，/v &quot;&quot; 查找非空行这样的参数组合也能达到统计行数的目的。 其他命令 功能 linux命令 windows命令 拷贝 cp copy/xcopy 移动 mv move/rename 删除 rm del/rd 创建目录 mkdir md/mkdir 先整理这么多，后续用到新的等价命令再补充吧！ 半路杀出个PowerShell一开始接触 PowerShell 把它认为是 cmd 的升级版，感觉就是原来的 cmd 太寒酸了，然后又搞出个 PowerShell 稍微好看了一点，功能又增加了一些而已，但是随着使用次数的增多，我发现之前的理解不太对，PowerShell 和 cmd 它俩完全没关系啊，唯一的相同点就是都被叫做命令行而已。 PowerShell 通常被描述成是面向对象的脚本语言，并且是在 .Net公共语言运行时(CLR-Common Language Runtime)和.Net Framework的基础上构建的，可以接受和返回.Net对象，引入了cmdlet的概念，是cmd的超集。 看到一些说法提到“cmd命令都可以在Powershell中执行”，但事实并非如此，比如我最近发现在cmd运行的 type a.txt | find /c /v &quot;&quot; 统计行数的命令在 PowerShell 中就不管用了，所以我认为把 PowerShell 作为 cmd 的升级不太准确。 PowerShell完全是一个新发明的东西，它里面有一些原来cmd中常用的命令，比如 cd、dir，同时它还兼容了一些 Linux 上的常用命令，比如 ls、man 等，关于这些可以简单看几个例子。 显示目录下内容123456789101112131415161718192021222324albert@home-pc D:\app\ScreenToGif\Logs&gt; ls 目录: D:\app\ScreenToGif\LogsMode LastWriteTime Length Name---- ------------- ------ -----a---- 2020/4/6 23:09 507 20_04_06 11_09_57_942.txt-a---- 2020/4/6 23:09 518 20_04_06 11_09_58_049.txt-a---- 2020/4/6 23:10 2754 20_04_06.txtalbert@home-pc D:\app\ScreenToGif\Logs&gt; dir 目录: D:\app\ScreenToGif\LogsMode LastWriteTime Length Name---- ------------- ------ -----a---- 2020/4/6 23:09 507 20_04_06 11_09_57_942.txt-a---- 2020/4/6 23:09 518 20_04_06 11_09_58_049.txt-a---- 2020/4/6 23:10 2754 20_04_06.txt 我们可以看到这两个命令在 PowerShell 中执行之后结构完全一样，然后我们使用 man 命令来查看一下两个命令的帮助文档 查看帮助文档123456789101112131415161718192021222324252627282930313233343536373839404142434445464748albert@home-pc D:\app\ScreenToGif\Logs&gt; man dir名称 Get-ChildItem语法 Get-ChildItem [[-Path] &lt;string[]&gt;] [[-Filter] &lt;string&gt;] [&lt;CommonParameters&gt;] Get-ChildItem [[-Filter] &lt;string&gt;] [&lt;CommonParameters&gt;]别名 gci ls dir备注 Get-Help 在此计算机上找不到该 cmdlet 的帮助文件。它仅显示部分帮助。 -- 若要下载并安装包含此 cmdlet 的模块的帮助文件，请使用 Update-Help。 -- 若要联机查看此 cmdlet 的帮助主题，请键入: "Get-Help Get-ChildItem -Online" 或 转到 https://go.microsoft.com/fwlink/?LinkID=113308。albert@home-pc D:\app\ScreenToGif\Logs&gt; man ls名称 Get-ChildItem语法 Get-ChildItem [[-Path] &lt;string[]&gt;] [[-Filter] &lt;string&gt;] [&lt;CommonParameters&gt;] Get-ChildItem [[-Filter] &lt;string&gt;] [&lt;CommonParameters&gt;]别名 gci ls dir备注 Get-Help 在此计算机上找不到该 cmdlet 的帮助文件。它仅显示部分帮助。 -- 若要下载并安装包含此 cmdlet 的模块的帮助文件，请使用 Update-Help。 -- 若要联机查看此 cmdlet 的帮助主题，请键入: "Get-Help Get-ChildItem -Online" 或 转到 https://go.microsoft.com/fwlink/?LinkID=113308。 结果还是完全一样，原来在PowerShell中，ls 和 dir 都是命令 Get-ChildItem 的别名，这时我才发现，原来PowerShell自己的命令其实都是这种动宾短语的形式，原来 cmd 中的命令和一些扩展的 Linux 命令大多是以别名的形式存在的。 所以从这里来看，PowerShell是一款新产品，并不是cmd的简单升级，只是这个新的产物将原来大部分的cmd命令以别名的方式进行了兼容处理而已 统一命令行的渴望上面提到了 cmd、PowerShell、linux Shell 等等，每天使用这些工具时都要开很多窗口，比较麻烦，有没什么途径把它们统一一下呢？这里的统一只是想使用的更方便而已，语法上暂时没办法统一了，偶然间发现了 Windows Terminal 这个工具，一下子打开了新的世界。 Windows TerminalWindows Terminal 是一个全新的、功能强大的命令行终端工具。包含多 Tab 支持、富文本、多语言支持、可配置、主题和样式等诸多特性，并且属于微软的亲儿子，支持的力度你懂得。 安装直接在 Windows 上打开应用商店安装即可，这时我第二次打开应用商店了，上一次是安装 WSL 的时候。 官方提供的截图也很炫酷： 我自己也尝试着美化了一下，效果还不错 命令行窗口的统一确实不想开很多个命令窗口，比如执行windows脚本命令的cmd、PowerShell，版本管理工具git bash，windows子系统WSL命令行，远程服务器命令行工具XShell等，要是把它们都放在一起就好了，使用Windows Terminal可以轻松实现这个愿望，其中cmd、PowerShell、WSL命令行都是Windows Terminal自带的，git bash 要想显示在 Windows Terminal 中需要手动配置下，运行效果如下： 配置和美化方法比较简单，网上搜索会有很多教程可以学习 遇到的问题目前使用 Windows Terminal 替代各种命令行工具只遇到了一个问题，就是它不知道 Zmodem 协议，所以无法使用 sz、rz，对于我这种需要经常上传脚本文件到服务器的人来说不太方便。 好消息是在2019年的时候已经有人在 Windows Terminal 的 github 项目中提了issue，据说会考虑这个功能，但是还得评估下，但是目前已经1年多过去了还没有反馈，焦急等待中，有了它就可以不使用XShell了。 总结 cmd 和 PowerShell 是两个不相同的命令行程序，有些cmd命令无法直接在PowerShell中运行 cmd 能做的 PowerShell 几乎都能做，但是不能直接拿过来就运行，有时需要简单的改写才可以 PowerShell 的命令采用动宾的格式，并且使用别名的形式兼容 cmd 命令和一些 Linux 命令 Windows Terminal 目前来看很优秀，可以将cmd、PowerShell、WSL Shell等运行在同一个窗口中 由于 Windows Terminal 不支持 Zmodem 协议，所以暂时还不能使用 sz、rz 命令来传送文件 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不过是大梦一场空，不过是孤影照惊鸿，不过是白驹之过一场梦，梦里有一些相逢……歌词写的真好！ 2021-1-10 00:33:11]]></content>
@@ -22,10 +34,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -90,8 +102,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -404,10 +416,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -448,8 +460,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -605,10 +617,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -634,10 +646,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -648,10 +660,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1535,8 +1547,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>
