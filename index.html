@@ -346,6 +346,261 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/01/23/启用make多任务参数让构建过程加速完成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/01/23/启用make多任务参数让构建过程加速完成/" itemprop="url">启用make多任务参数让构建过程加速完成</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-23T14:23:05+08:00">
+                2021-01-23
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-23T19:16:55+08:00">
+                2021-01-23
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/01/23/启用make多任务参数让构建过程加速完成/" class="leancloud_visitors" data-flag-title="启用make多任务参数让构建过程加速完成">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,886(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">7(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 <code>-j</code> 选项即可指定make启动的任务数，它是 <code>--jobs[=jobs]</code> 的缩写形式，比如 <code>make -j4</code> 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。</p>
+<h1 id="寻找"><a href="#寻找" class="headerlink" title="寻找"></a>寻找</h1><p>寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个公共的头文件时，几乎要从头编译到尾，启用 <code>-j</code> 参数的过程异常顺利，没有任何报错，迅速的就构建完成，这让我想起了之前一个项目中遇到过的问题。</p>
+<p>同样是编译过程比较慢，但是老大哥告诉我启用多线程编译会报错，作为新手小白的我就默默记住了，也没有过多的探究，毕竟编译的次数不是那么多，偶尔长时间编译一次也没有什么关系，但是现在突然想知道当时为什么使用多线程编译会报错呢？</p>
+<h1 id="可能的原因"><a href="#可能的原因" class="headerlink" title="可能的原因"></a>可能的原因</h1><p>当知识渐渐丰富以后，面对这样的问题还是有些头绪的，启用 <code>make -jn</code>时被称为多任务并行构建，也有的文章会写多线程编译或者多进程编译，从表现来看至少是多进程的，因为在任务列表可以看到不同的进程id，不过这里的名字不是重点，重点是有多个任务在同时干活。</p>
+<p>当启用多任务构建时原来的串行构建逻辑就变成了并行，那么此时构建失败多是由依赖关系指定不正确导致，这种依赖关系通常有两种：</p>
+<ul>
+<li>B模块编译需要用到A模块的函数</li>
+<li>B模块构建过程中需要的临时数据由A模块构建时产生，两种共用临时数据，但是有序</li>
+</ul>
+<p>总结来说就是逻辑上需要A构建完了，才能开始构建B，如果此时先构建B任务就会导致出错，这就能解释为什么使用 <code>make</code> 可以成功，但是使用 <code>make -j4</code> 就构建失败，也能解释为什么失败之后，多次执行这个命令可能还会成功，因为多次执行以后可能会把A模块先构建完，这样后面再构建B就不会出错了。</p>
+<h1 id="加速"><a href="#加速" class="headerlink" title="加速"></a>加速</h1><p>从上面的分析可以得知，模块间的依赖关系决定了多任务构建时应有的顺序，那么是不是所有的构建任务都可以通过 <code>-j</code> 来加速呢？答案当然是否定的，如果要构建项目的所有模块的依赖关系完全是线性的，那么就没有办法并行完成，比如下面这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    A--&gt;B;</span><br><span class="line">    B--&gt;C;</span><br><span class="line">    C--&gt;D;</span><br><span class="line">    D--&gt;E;</span><br><span class="line">    E--&gt;F;</span><br></pre></td></tr></table></figure>
+<p>但是整个任务如果可以进行拆分，整个依赖图中出现分叉，那么就可以通过这种方式来加速，比如像这样的依赖关系：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    A--&gt;B;</span><br><span class="line">    A--&gt;C;</span><br><span class="line">    B--&gt;D;</span><br><span class="line">    B--&gt;E;</span><br><span class="line">    C--&gt;F;</span><br></pre></td></tr></table></figure>
+<p>上面所表示的关系中，虽然 B 和 C 都需要依赖A完成，但是当 A 完成后，B 和 C 的构建就可以并行开始，这样就可以达到加速构建的目的。</p>
+<h1 id="视网膜效应"><a href="#视网膜效应" class="headerlink" title="视网膜效应"></a>视网膜效应</h1><p>之前也没有注意到 <code>make</code> 命令这个 <code>-j</code> 的选项，自从在项目中使用了一次，我发现在很多项目说明中都看到了这个参数，比如安装 <code>global</code> 的时候，编译 <code>tendis</code> 的时候等等，之前也有这样的情况，就是当你刚接触一个事物，或者进入一个新领域的时候，发现其实周围很多人都在讨论这些事物，自己以前都没注意到，上网查了一下，原来这叫做视网膜效应。</p>
+<p>视网膜效应这个学术名词用白话文来讲就是“心眼”，每一个人的眼睛，都是跟着心走！简单地说，这种效应的意思就是一个人的身心状况会影响他的视线，当他自己拥有一件东西或一项特征时，他就会比平常人更会注意到别人是否跟他一样具备这种特征，即越关注什么就越出现什么。</p>
+<p>视网膜效应是一种狭隘视野与思维的反映，它会导致看问题不全面，甚至会出现牛走羊肠道、鼠钻牛角尖的极端现象。其实每个人的特质中，都有很多优点和缺点。当一个人只知道自己的缺点是什么，而不知发掘优点时，视网膜效应就会促使这个人发现他身边也有许多人拥有类似的缺点，进而使他的人际关系无法改善，生活也不会快乐。</p>
+<h1 id="随便聊聊"><a href="#随便聊聊" class="headerlink" title="随便聊聊"></a>随便聊聊</h1><h2 id="make"><a href="#make" class="headerlink" title="make"></a>make</h2><p>从刚接触这个命令的时候就认为它是编译的意思，其实这是一种先入为主的思想，因为之前在linux安装软件时常需要下面这三步：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">./make</span><br><span class="line">./make install</span><br></pre></td></tr></table></figure>
+<p>从源码安装软件就需要进行编译，所以一直认为这三步是配置、编译、安装的意思，其实 <code>make</code> 本身并不会编译，它只是编译命令的搬运工。</p>
+<p>它的真实含义应该是构建，这个构建可不一定是编译，可以是任何逻辑化的事物，只不过常常用 <code>make</code> 来完成编译任务，所以把它和编译绑定到了一起，构建时需要图纸的，这个图纸就是 <code>Makefile</code> 文件，只要我么画好了Makefile图纸，那么 <code>make</code> 命令就可以根据它来完成任务。</p>
+<p>所以当你运行 <code>make</code> 命令时，仿佛在说: “Here’s your drawing, go go go！”，又仿佛在说：“图纸搁这儿呢，可劲儿造吧”，以这个观点来看 <code>make</code> 的一系列命令就有意思了：</p>
+<ul>
+<li><code>make</code>：图纸搁这儿呢，可劲儿造吧</li>
+<li><code>make clean</code>：把你弄得这堆破烂儿，拾掇拾掇</li>
+<li><code>make install</code>：把你鼓捣出的那玩意，搬到旮旯去</li>
+<li><code>make dist</code>：赶紧把那玩意打包拉走</li>
+</ul>
+<h2 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h2><p>既然 <code>make</code> 是编译命令的搬运工，那么 <code>cmake</code> 又是什么意思呢？大胆猜测他就是 <code>config make</code> 的意思，它的作用是生成 Makefile 文件，换句话来说就是给 <code>make</code> 造图纸的。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>使用 <code>make -j4</code> 命令可以开启4个任务并行构建，大大加快构建速度</li>
+<li><code>make</code> 本身并不能进行编译，它只是各种编译命令的搬运工，需要Makefile图纸才能进行工作</li>
+<li><code>cmake</code> 的作用是生成 <code>make</code> 所需的图纸，有了它可以更快更方便的生成一些规范的Makefile文件</li>
+<li>视网膜效应指的是越关注什么就越出现什么的效应，是一种狭隘视野与思维的反映，会导致看问题不全面</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/112057093" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>未经他人苦，莫劝他人善，世上总有一些你无法理解，但却真是存在的生活~</p>
+<p>2021-1-23 17:24:15</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/01/16/记一次解决Intel-9462无线网卡的笔记本安装Ubuntu16-04后无法连接WIFI问题的艰难历程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2369,222 +2624,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/11/07/linux环境下sed命令的基础用法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/11/07/linux环境下sed命令的基础用法/" itemprop="url">linux环境下sed命令的基础用法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-07T14:37:04+08:00">
-                2020-11-07
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-12-27T20:39:42+08:00">
-                2020-12-27
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/11/07/linux环境下sed命令的基础用法/" class="leancloud_visitors" data-flag-title="linux环境下sed命令的基础用法">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,894(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">8(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>每次看到sed这个词就想起“种子”，心里明知道是把它和seed弄混了，但是先入为主的思想怕是改不过来了，不过现在还好，虽然把第一印象的意思弄错了，但还是很快能反应过来这是一个很“厉害”的linux命令，也有一些网友评论到，每次看到这个命令就双腿发抖，我虽然没抖，但是谈到这个命令还是有些挠头，心里有些发怵。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/11/07/linux环境下sed命令的基础用法/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2635,7 +2674,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">115</span>
+                <span class="site-state-item-count">116</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2657,7 +2696,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">267</span>
+                <span class="site-state-item-count">268</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
