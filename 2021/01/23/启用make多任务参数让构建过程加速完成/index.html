@@ -84,7 +84,7 @@
 <link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="C++,编译,linux,make," />
+  <meta name="keywords" content="C++,linux,编译,make," />
 
 
 
@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。 寻找寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个">
-<meta name="keywords" content="C++,编译,linux,make">
+<meta name="description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。">
+<meta name="keywords" content="C++,linux,编译,make">
 <meta property="og:type" content="article">
 <meta property="og:title" content="启用make多任务参数让构建过程加速完成">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/01/23/启用make多任务参数让构建过程加速完成/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。 寻找寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个">
+<meta property="og:description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-01-23T11:16:55.265Z">
+<meta property="og:updated_time" content="2021-01-24T09:01:23.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="启用make多任务参数让构建过程加速完成">
-<meta name="twitter:description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。 寻找寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个">
+<meta name="twitter:description" content="前言是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 -j 选项即可指定make启动的任务数，它是 --jobs[=jobs] 的缩写形式，比如 make -j4 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。">
 
 
 
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-01-23T19:16:55+08:00">
-                2021-01-23
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-24T17:01:23+08:00">
+                2021-01-24
               </time>
             
           </span>
@@ -481,6 +481,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 <code>-j</code> 选项即可指定make启动的任务数，它是 <code>--jobs[=jobs]</code> 的缩写形式，比如 <code>make -j4</code> 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。</p>
+<a id="more"></a>
 <h1 id="寻找"><a href="#寻找" class="headerlink" title="寻找"></a>寻找</h1><p>寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个公共的头文件时，几乎要从头编译到尾，启用 <code>-j</code> 参数的过程异常顺利，没有任何报错，迅速的就构建完成，这让我想起了之前一个项目中遇到过的问题。</p>
 <p>同样是编译过程比较慢，但是老大哥告诉我启用多线程编译会报错，作为新手小白的我就默默记住了，也没有过多的探究，毕竟编译的次数不是那么多，偶尔长时间编译一次也没有什么关系，但是现在突然想知道当时为什么使用多线程编译会报错呢？</p>
 <h1 id="可能的原因"><a href="#可能的原因" class="headerlink" title="可能的原因"></a>可能的原因</h1><p>当知识渐渐丰富以后，面对这样的问题还是有些头绪的，启用 <code>make -jn</code>时被称为多任务并行构建，也有的文章会写多线程编译或者多进程编译，从表现来看至少是多进程的，因为在任务列表可以看到不同的进程id，不过这里的名字不是重点，重点是有多个任务在同时干活。</p>
@@ -501,7 +502,7 @@
 <h1 id="随便聊聊"><a href="#随便聊聊" class="headerlink" title="随便聊聊"></a>随便聊聊</h1><h2 id="make"><a href="#make" class="headerlink" title="make"></a>make</h2><p>从刚接触这个命令的时候就认为它是编译的意思，其实这是一种先入为主的思想，因为之前在linux安装软件时常需要下面这三步：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">./make</span><br><span class="line">./make install</span><br></pre></td></tr></table></figure>
 <p>从源码安装软件就需要进行编译，所以一直认为这三步是配置、编译、安装的意思，其实 <code>make</code> 本身并不会编译，它只是编译命令的搬运工。</p>
-<p>它的真实含义应该是构建，这个构建可不一定是编译，可以是任何逻辑化的事物，只不过常常用 <code>make</code> 来完成编译任务，所以把它和编译绑定到了一起，构建时需要图纸的，这个图纸就是 <code>Makefile</code> 文件，只要我么画好了Makefile图纸，那么 <code>make</code> 命令就可以根据它来完成任务。</p>
+<p>它的真实含义应该是构建，这个构建可不一定是编译，可以是任何逻辑化的事物，只不过常常用 <code>make</code> 来完成编译任务，所以把它和编译绑定到了一起，构建时需要图纸的，这个图纸就是 <code>Makefile</code> 文件，只要我们画好了Makefile图纸，那么 <code>make</code> 命令就可以根据它来完成任务。</p>
 <p>所以当你运行 <code>make</code> 命令时，仿佛在说: “Here’s your drawing, go go go！”，又仿佛在说：“图纸搁这儿呢，可劲儿造吧”，以这个观点来看 <code>make</code> 的一系列命令就有意思了：</p>
 <ul>
 <li><code>make</code>：图纸搁这儿呢，可劲儿造吧</li>
@@ -517,7 +518,7 @@
 <li>视网膜效应指的是越关注什么就越出现什么的效应，是一种狭隘视野与思维的反映，会导致看问题不全面</li>
 </ul>
 <hr>
-<center><a href="https://blog.csdn.net/albertsh/article/details/112057093" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+<center><a href="https://blog.csdn.net/albertsh/article/details/112727308" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
 
 <hr>
 <blockquote>
@@ -610,9 +611,9 @@
           
             <a href="/blog/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
           
-            <a href="/blog/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
-          
             <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
           
             <a href="/blog/tags/make/" rel="tag"><i class="fa fa-tag"></i> make</a>
           

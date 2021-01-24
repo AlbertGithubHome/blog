@@ -393,8 +393,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-01-23T19:16:55+08:00">
-                2021-01-23
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-24T17:01:23+08:00">
+                2021-01-24
               </time>
             
           </span>
@@ -478,53 +478,14 @@
 
       
         
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 <code>-j</code> 选项即可指定make启动的任务数，它是 <code>--jobs[=jobs]</code> 的缩写形式，比如 <code>make -j4</code> 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。</p>
-<h1 id="寻找"><a href="#寻找" class="headerlink" title="寻找"></a>寻找</h1><p>寻找这样一个参数的原因还是觉得有时编译太慢了，特别是修改一个公共的头文件时，几乎要从头编译到尾，启用 <code>-j</code> 参数的过程异常顺利，没有任何报错，迅速的就构建完成，这让我想起了之前一个项目中遇到过的问题。</p>
-<p>同样是编译过程比较慢，但是老大哥告诉我启用多线程编译会报错，作为新手小白的我就默默记住了，也没有过多的探究，毕竟编译的次数不是那么多，偶尔长时间编译一次也没有什么关系，但是现在突然想知道当时为什么使用多线程编译会报错呢？</p>
-<h1 id="可能的原因"><a href="#可能的原因" class="headerlink" title="可能的原因"></a>可能的原因</h1><p>当知识渐渐丰富以后，面对这样的问题还是有些头绪的，启用 <code>make -jn</code>时被称为多任务并行构建，也有的文章会写多线程编译或者多进程编译，从表现来看至少是多进程的，因为在任务列表可以看到不同的进程id，不过这里的名字不是重点，重点是有多个任务在同时干活。</p>
-<p>当启用多任务构建时原来的串行构建逻辑就变成了并行，那么此时构建失败多是由依赖关系指定不正确导致，这种依赖关系通常有两种：</p>
-<ul>
-<li>B模块编译需要用到A模块的函数</li>
-<li>B模块构建过程中需要的临时数据由A模块构建时产生，两种共用临时数据，但是有序</li>
-</ul>
-<p>总结来说就是逻辑上需要A构建完了，才能开始构建B，如果此时先构建B任务就会导致出错，这就能解释为什么使用 <code>make</code> 可以成功，但是使用 <code>make -j4</code> 就构建失败，也能解释为什么失败之后，多次执行这个命令可能还会成功，因为多次执行以后可能会把A模块先构建完，这样后面再构建B就不会出错了。</p>
-<h1 id="加速"><a href="#加速" class="headerlink" title="加速"></a>加速</h1><p>从上面的分析可以得知，模块间的依赖关系决定了多任务构建时应有的顺序，那么是不是所有的构建任务都可以通过 <code>-j</code> 来加速呢？答案当然是否定的，如果要构建项目的所有模块的依赖关系完全是线性的，那么就没有办法并行完成，比如下面这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    A--&gt;B;</span><br><span class="line">    B--&gt;C;</span><br><span class="line">    C--&gt;D;</span><br><span class="line">    D--&gt;E;</span><br><span class="line">    E--&gt;F;</span><br></pre></td></tr></table></figure>
-<p>但是整个任务如果可以进行拆分，整个依赖图中出现分叉，那么就可以通过这种方式来加速，比如像这样的依赖关系：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    A--&gt;B;</span><br><span class="line">    A--&gt;C;</span><br><span class="line">    B--&gt;D;</span><br><span class="line">    B--&gt;E;</span><br><span class="line">    C--&gt;F;</span><br></pre></td></tr></table></figure>
-<p>上面所表示的关系中，虽然 B 和 C 都需要依赖A完成，但是当 A 完成后，B 和 C 的构建就可以并行开始，这样就可以达到加速构建的目的。</p>
-<h1 id="视网膜效应"><a href="#视网膜效应" class="headerlink" title="视网膜效应"></a>视网膜效应</h1><p>之前也没有注意到 <code>make</code> 命令这个 <code>-j</code> 的选项，自从在项目中使用了一次，我发现在很多项目说明中都看到了这个参数，比如安装 <code>global</code> 的时候，编译 <code>tendis</code> 的时候等等，之前也有这样的情况，就是当你刚接触一个事物，或者进入一个新领域的时候，发现其实周围很多人都在讨论这些事物，自己以前都没注意到，上网查了一下，原来这叫做视网膜效应。</p>
-<p>视网膜效应这个学术名词用白话文来讲就是“心眼”，每一个人的眼睛，都是跟着心走！简单地说，这种效应的意思就是一个人的身心状况会影响他的视线，当他自己拥有一件东西或一项特征时，他就会比平常人更会注意到别人是否跟他一样具备这种特征，即越关注什么就越出现什么。</p>
-<p>视网膜效应是一种狭隘视野与思维的反映，它会导致看问题不全面，甚至会出现牛走羊肠道、鼠钻牛角尖的极端现象。其实每个人的特质中，都有很多优点和缺点。当一个人只知道自己的缺点是什么，而不知发掘优点时，视网膜效应就会促使这个人发现他身边也有许多人拥有类似的缺点，进而使他的人际关系无法改善，生活也不会快乐。</p>
-<h1 id="随便聊聊"><a href="#随便聊聊" class="headerlink" title="随便聊聊"></a>随便聊聊</h1><h2 id="make"><a href="#make" class="headerlink" title="make"></a>make</h2><p>从刚接触这个命令的时候就认为它是编译的意思，其实这是一种先入为主的思想，因为之前在linux安装软件时常需要下面这三步：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">./make</span><br><span class="line">./make install</span><br></pre></td></tr></table></figure>
-<p>从源码安装软件就需要进行编译，所以一直认为这三步是配置、编译、安装的意思，其实 <code>make</code> 本身并不会编译，它只是编译命令的搬运工。</p>
-<p>它的真实含义应该是构建，这个构建可不一定是编译，可以是任何逻辑化的事物，只不过常常用 <code>make</code> 来完成编译任务，所以把它和编译绑定到了一起，构建时需要图纸的，这个图纸就是 <code>Makefile</code> 文件，只要我么画好了Makefile图纸，那么 <code>make</code> 命令就可以根据它来完成任务。</p>
-<p>所以当你运行 <code>make</code> 命令时，仿佛在说: “Here’s your drawing, go go go！”，又仿佛在说：“图纸搁这儿呢，可劲儿造吧”，以这个观点来看 <code>make</code> 的一系列命令就有意思了：</p>
-<ul>
-<li><code>make</code>：图纸搁这儿呢，可劲儿造吧</li>
-<li><code>make clean</code>：把你弄得这堆破烂儿，拾掇拾掇</li>
-<li><code>make install</code>：把你鼓捣出的那玩意，搬到旮旯去</li>
-<li><code>make dist</code>：赶紧把那玩意打包拉走</li>
-</ul>
-<h2 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h2><p>既然 <code>make</code> 是编译命令的搬运工，那么 <code>cmake</code> 又是什么意思呢？大胆猜测他就是 <code>config make</code> 的意思，它的作用是生成 Makefile 文件，换句话来说就是给 <code>make</code> 造图纸的。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>使用 <code>make -j4</code> 命令可以开启4个任务并行构建，大大加快构建速度</li>
-<li><code>make</code> 本身并不能进行编译，它只是各种编译命令的搬运工，需要Makefile图纸才能进行工作</li>
-<li><code>cmake</code> 的作用是生成 <code>make</code> 所需的图纸，有了它可以更快更方便的生成一些规范的Makefile文件</li>
-<li>视网膜效应指的是越关注什么就越出现什么的效应，是一种狭隘视野与思维的反映，会导致看问题不全面</li>
-</ul>
-<hr>
-<center><a href="https://blog.csdn.net/albertsh/article/details/112057093" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
-
-<hr>
-<blockquote>
-<p>未经他人苦，莫劝他人善，世上总有一些你无法理解，但却真是存在的生活~</p>
-<p>2021-1-23 17:24:15</p>
-</blockquote>
-
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>是不是有时候觉得使用make命令编译时太慢了，特别是紧急修改BUG的时候，恨不得钻进电脑里帮着编译器一起干活，其实make命令是可以加速的，使用 <code>-j</code> 选项即可指定make启动的任务数，它是 <code>--jobs[=jobs]</code> 的缩写形式，比如 <code>make -j4</code> 就表示同时启动4个任务并行构建，虽然达不到4倍的关系，但是要比原来快多了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/01/23/启用make多任务参数让构建过程加速完成/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -648,8 +609,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-01-16T23:10:22+08:00">
-                2021-01-16
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-23T19:21:46+08:00">
+                2021-01-23
               </time>
             
           </span>
@@ -733,129 +694,14 @@
 
       
         
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一台新申请的ThinkPad-X390笔记本需要安装Ubuntu系统，为了统一工作开发环境，选择了大家一直都在使用Ubuntu16.04版本，虽然这个系统版本旧一点，不过同一个版本出现开发环境问题也好排查，但没想到的是这里埋下了一个坑，导致成功安装系统后却不能上网，足足折腾了一整天才搞定，记录一下，没事回来看看还能乐呵乐呵。</p>
-<h1 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h1><ul>
-<li>ThinkPad-X390 笔记本</li>
-<li>Intel® Wireless-AC 9462 无线网卡</li>
-<li>Ubuntu 16.04.7 系统</li>
-</ul>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>根本原因：Ubuntu 16.04内核版本太低，无法自动识别网卡，需要手动升级内核，安装无线网卡驱动。如果你遇到的情况也是新版本无线网卡，安装老版本系统时无法连接WIFI，请参考这个无私博主的解决方法，有这一篇足够了</p>
-<p><a href="https://blog.csdn.net/dieju8330/article/details/101422743" target="_blank" rel="noopener">联想 Yoga C740：：关于Ubuntu16.04下无法识别Intel WIFI6 AX201无线网卡的解决方案，https://blog.csdn.net/dieju8330/article/details/101422743</a></p>
-<h1 id="安装过程"><a href="#安装过程" class="headerlink" title="安装过程"></a>安装过程</h1><p>下面开始碎碎念内容，虽然现在看来只要是上面那一个链接就可以解决问题，但是这却是浏览了几百个网页后，不断尝试才证明它是有效的，所以我也简单记录一下这个过程，以下的内容可能对你解决问题可能没什么帮助了，不过你要是喜欢听故事倒是可以继续瞧瞧。</p>
-<h2 id="初始环境"><a href="#初始环境" class="headerlink" title="初始环境"></a>初始环境</h2><p>一台预装了Win10系统的笔记本，连接WIFI可以正常上网，一开始是打算装双系统的，但是台式机是Win10，笔记本再保留一个Win10有些浪费空间，准备只安装一个Ubuntu算了。</p>
-<p>又要装Ubuntu了，我在CSDN的第一篇文章的就是有关Ubuntu的，<a href="https://blog.csdn.net/albertsh/article/details/12302473" target="_blank" rel="noopener">《ubuntu 12.04系统黑屏，登录界面黑屏，命令行界面可用》</a>，当时靠着几个命令把问题解决了，这次解决问题同样需要几个命令，但是这个过程就复杂多了。</p>
-<h2 id="安装Ubuntu16-04-2"><a href="#安装Ubuntu16-04-2" class="headerlink" title="安装Ubuntu16.04.2"></a>安装Ubuntu16.04.2</h2><p>本地找到了之前在虚拟机中安装使用过的 ubuntu-16.04.2-desktop-amd64.iso 镜像，使用UltraISO刻录U盘发现一直占用，遂改用rufus来刻录，发现这个软件操作也很方便，顺利完成启动盘制作，安装过程也比较顺利，网上很多大佬的教程都可以拿来参考，比如下面这几篇：</p>
-<ul>
-<li><a href="https://www.jb51.net/article/173277.htm" target="_blank" rel="noopener">《Win10 + Ubuntu 16.04双系统完美安装教程【详细】》</a></li>
-<li><a href="https://www.cnblogs.com/masbay/p/10844857.html" target="_blank" rel="noopener">《Windows10安装ubuntu16.04双系统教程》</a></li>
-<li><a href="https://blog.csdn.net/jeryjeryjery/article/details/80011447" target="_blank" rel="noopener">《卸载win10装Ubuntu笔记》</a></li>
-</ul>
-<p>注意，前两篇是装双系统的，和我们的只安装一个Ubuntu16.04的目标不太一致，但是绝大部分步骤都是一致的，网络上的知识就是这样，要想完全一样太难了，需要学会变通。</p>
-<p>比较懒我就不截图了，去大佬文章里看吧，说一说其中的几个关键点：</p>
-<ul>
-<li>安装Ubuntu需要关闭BOIS中的Secure Boot 选项</li>
-<li>注意一下安装双系统和单个系统时进行分区操作的差异，选对主分区和逻辑分区</li>
-<li>烧制U盘和安装系统时涉及到分区表GPT和MBR的选择，烧制U盘与硬件分区模式一致就好，在windows通过命令或者“管理”都很容易查到</li>
-<li>启动方式有Legacy和UEFI区别，记住UEFI是新的，能用它就用它，不行就换成Legacy，大不了重新装一次，当然你根据硬件情况能准确判断最好</li>
-<li>安装过程中有一步是勾选“为图形或无线硬件…安装第三方软件”，看到很多教程都没勾选，我也没选（伏笔1），感觉我已经入坑了</li>
-</ul>
-<p>非常自信的干掉了Win10系统（伏笔2），干干净净的只安装了Ubuntu，安装很快完成，顺利进入系统，期间跳出来几行错误，我都没看清就闪过去了，应该是不重要，进去后准备部署开发环境，发现没有WIFI列表，这就奇怪了，网卡肯定没问题，之前Win10是可以上网的，肯定是设置的不对，上网查查为什么吧。</p>
-<h2 id="硬件禁止问题"><a href="#硬件禁止问题" class="headerlink" title="硬件禁止问题"></a>硬件禁止问题</h2><p>这是我看到的第一个解决方案，需要改 <code>/etc/Network/NetworkManage.conf</code> 文件中的 <code>manage=false</code> 改成 <code>manage=true</code>, 参考下面这帖子</p>
-<p><a href="https://blog.csdn.net/ye1391/article/details/83180774" target="_blank" rel="noopener">解决Ubuntu下的WiFi列表不显示问题（硬件禁止问题）</a></p>
-<p>现在回过头来想想我根本就不是这个问题，很多特点都对不上，完全是病急乱投医的处理方式，使用 <code>rfkill list</code> 命令根本找不到我的网卡，这一点也是后来才发现的</p>
-<h2 id="激活无线网卡"><a href="#激活无线网卡" class="headerlink" title="激活无线网卡"></a>激活无线网卡</h2><p>很多文章开局就是下面这两个命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install --reinstall bcmwl-kernel-source</span><br></pre></td></tr></table></figure>
-<p>要知道使用 <code>sudo apt-get update</code> 是需要联网的，现在我连不上无线，不存在有线，所以上不去网，然后翻了N个页面之后找到了大神离线安装的方法，其实这个安装文件在镜像里就有，所以打开刚刚烧制的U盘就行了，但是直接安装会有依赖问题，解决这个问题就是一个个在镜像中找到，然后安装上。</p>
-<ul>
-<li><a href="https://blog.csdn.net/ifmvo/article/details/54023628" target="_blank" rel="noopener">《Ubuntu离线安装网卡驱动》</a></li>
-<li><a href="https://www.jianshu.com/p/8b29954ab590" target="_blank" rel="noopener">《【菜鸟向】Ubuntu无法连接wifi问题的解决》</a></li>
-</ul>
-<p>一步步操作之后完全没有作用，现在来看如果能起作用还怪了，这是bcm博通网卡的处理方法，而我的网卡是Intel的，又是做了无用功</p>
-<h2 id="更新软件列表附加驱动"><a href="#更新软件列表附加驱动" class="headerlink" title="更新软件列表附加驱动"></a>更新软件列表附加驱动</h2><p>这种解决方案网上流传的最多，其实就是依靠Ubuntu的软件仓库来解决</p>
-<ul>
-<li><a href="https://blog.csdn.net/weixin_41762173/article/details/79480609" target="_blank" rel="noopener">Ubuntu16.04无法连接Wifi解决方案 （绝对有效）</a></li>
-<li><a href="https://www.cnblogs.com/oxspirt/p/10802163.html" target="_blank" rel="noopener">ubuntu16.04中不能连接无线网络</a></li>
-</ul>
-<p>解决这个问题的关键就是先联网，仿佛陷入了死循环，我现在就是要解决无线网卡连不上网的问题，你却让我先联网更新，其实对于可以连接有线网络的电脑来说没什么问题，但是我这里连不上有线网啊！</p>
-<p>然后我就学到了一个逆天的操作，原来USB可以供网，可以通过USB线让笔记本使用手机的4G网络，瞬间打开了一扇大门，说干就干，先更新一下 Ubuntu 的软件源，可以参考下面这个文章，其实有很多源的，比如常用的清华源、阿里源等等，但是要注意版本，网上流传着一些错误版本的地址，需要自己甄别一下。</p>
-<ul>
-<li><a href="https://blog.csdn.net/Liangontheway/article/details/103509635" target="_blank" rel="noopener">Ubuntu16.04更换国内源</a></li>
-</ul>
-<p>这个软件源其实类似于应用商店的地址，换了软件源就相当于换了一个应用商店，还完源更新之后就可以从软件仓库中有哪些软件，下次再安装软件时就可以找到了，在这列举一个常用的Ubuntu16.04的软件源，替换 <code>/etc/apt/source.list</code> 文件内容就好了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial main</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial main</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-security main</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe</span><br></pre></td></tr></table></figure>
-<p>准备就绪，USB连接手机，然后共享网络，执行 <code>sudo apt-get update</code> 命令，照着教程操作一通，发现并没有在附加驱动选项卡中发现可用的驱动，失败了，同时耗费了1G流量导致手机网络报警。</p>
-<p>还是回过头来看看，很多人说这种方式解决了问题，但我没有成功，看看成功的那些截图还是博通的网卡，而我这个Intel的网卡有点难搞啊</p>
-<h2 id="更新内核1"><a href="#更新内核1" class="headerlink" title="更新内核1"></a>更新内核1</h2><p>从现在开始渐渐步入正确轨道了，因为我发现的网上各种设置网卡参数的命令在我这没有任何反应，比如执行 <code>rfkill list</code> 结果显示根本没有网卡，只有两个蓝牙，执行 <code>lshw -c network</code> 之后发现 <code>*-network UNCLAIMED</code> 内容，开始搜索相关内容，然后发现了下面的帖子：</p>
-<ul>
-<li><a href="https://askubuntu.com/questions/1052311/network-unclaimed-on-ubuntu" target="_blank" rel="noopener">Network unclaimed on Ubuntu</a></li>
-</ul>
-<p>提问者根据回答人提供的步骤一步步解决了自己的问题，而我在安装这个内核版本时提示已经最新无法继续安装，并且在回答中提到安装 <code>16.04.4</code> 版本的镜像不需要做任何设置就可以使用无线网了，想到自己安装的是 16.04.2，就怀疑是这里的问题，准备安装高版本镜像</p>
-<h2 id="安装Ubuntu16-04-7"><a href="#安装Ubuntu16-04-7" class="headerlink" title="安装Ubuntu16.04.7"></a>安装Ubuntu16.04.7</h2><p>由于Ubuntu官网下载比较慢，所以找了国内的镜像网站下载了 16.04.7版本，刻录U盘启动盘，准备安装</p>
-<ul>
-<li><a href="http://mirrors.ustc.edu.cn/ubuntu-releases/" target="_blank" rel="noopener">中科大ubuntu镜像站</a></li>
-<li><a href="https://blog.csdn.net/Miklechun/article/details/89742372" target="_blank" rel="noopener">几个ubuntu16.04镜像下载地址</a></li>
-</ul>
-<p>这次安装的熟练了一些，完成后进入系统并未有什么改变，依旧连不上网，尝试更新软件试试，于是再一次连接手机USB网络，执行下面命令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get upgrade</span><br></pre></td></tr></table></figure>
-<p>又是几百兆流量进去了，依然没有效果</p>
-<h2 id="查找网卡版本"><a href="#查找网卡版本" class="headerlink" title="查找网卡版本"></a>查找网卡版本</h2><p>至此虽然已经连不上网，但是基本确定了问题的原因，不是网卡设置的问题，而是驱动版本不对，系统无法识别网卡型号，没有办法正常工作。</p>
-<p>可是怎么才能知道网卡的型号呢？如果正常驱动的无线网卡可以使用 <code>lspci | grep Net</code> 这个命令，但是我这里不行，只显示Intel设备，无法显示设备类型和具体型号，倘若我的win10还在，直接在设备管理器中查就可以了，但是他已经被我自信的格式化了，此处捶胸顿足。</p>
-<p>那怎么办呢？问问旁边的小伙伴？关键电脑型号不一样啊！撬开电脑后盖？估计无线网卡在哪我都找不到。对了，去联想官网看看配置，应该能找到的吧！</p>
-<p>说干就干，打开联想官网居然找不到这个具体的型号，只能找到 ThinkPad-X390 系列，而我这个子系列是20SD，官网上有20SC、20SX、20Q0等等，就是没有20SD，没办法了，看看这个相似的这几个无线网卡都是什么型号吧，发现大多数都是 <code>Intel® 9560AC</code>，部分提到了 <code>Intel® Wi-Fi 6 AX200</code>，这两个网卡差的可是有点多，需求的Ubuntu内核版本差了一个大版本，他们的对应关系可以参考Intel提供的这个文档</p>
-<p><a href="https://www.intel.com/content/www/us/en/support/articles/000005511/network-and-io/wireless.html" target="_blank" rel="noopener">Linux* Support for Intel® Wireless Adapters</a></p>
-<p>联想的官网只提供Windows上的驱动下载，Linux版本只能自己去Intel上找了，现在需要确定网卡版本来下载相应的驱动，但是目前查不到这个网卡的具体型号，还能怎么办呢？去找联想客服吧！</p>
-<p>在联想的官网上找到了联想的售前，说明问题后给出的答案是大概率是 <code>Intel® 9560AC</code> 型号，然后转接技术处理，等待N久之后查了SN码说应该是 <code>Intel® 9560AC</code>，但是我认为应该是网卡型号应该是 <code>Intel® Wi-Fi 6 AX200</code>，如果是 <code>Intel® 9560AC</code> 型号的网卡，需要 Ubuntu<br>的内核是 <code>4.14+</code>，而我安装的内核版本是 <code>4.15.7</code>，系统没理由不认识这个网卡。</p>
-<p>想想还有什么办法查网卡型号呢？既然windows上可以看，那我省点事安装个WinPE进系统看一下。下载常用的微PE工具箱，烧制U盘后进了系统，点开设备管理器，一大串设备都带着问号，原来在WinPE里也没有这些设备的驱动，我又跑去联想官网下载了Windows上的网卡驱动，放到WinPE上安装，结果因缺少DLL而失败，这条路也行不通了。</p>
-<p>只能重新做个win10的系统看看了，再次对删除win10前没看网卡型号而捶胸顿足，下载了5个多G的镜像文件，刻录Win10启动盘，然后安装发现引导不进去，也是醉了，应该是文件系统格式不正确，导致系统无法引导，算了，死马当活马医吧，我直接把无线网卡当成最高的版本，按照<code>Intel® Wi-Fi 6 AX200</code>进行处理，把内核升级了应该就可以了</p>
-<h2 id="更新内核2"><a href="#更新内核2" class="headerlink" title="更新内核2"></a>更新内核2</h2><p>WinPE方式失败后决定升级内核，于是按照文章开头提供的那篇<a href="https://blog.csdn.net/dieju8330/article/details/101422743" target="_blank" rel="noopener">解决方案</a>来处理，但是内核文件安装失败了，无法升级，内心崩溃……</p>
-<p><a href="https://blog.csdn.net/CGJustDoIT/article/details/103363622" target="_blank" rel="noopener">Ubuntu应用—安装 Intel Wireless-AC 9462 无线网卡驱动（无法连接wifi，完美解决）</a></p>
-<p>这一篇也是类似的，同样无法成功更新。</p>
-<h2 id="安装Ubuntu20-04-1"><a href="#安装Ubuntu20-04-1" class="headerlink" title="安装Ubuntu20.04.1"></a>安装Ubuntu20.04.1</h2><p>既然升级内核失败了，我干脆安装个自带高内核版本的系统算了，下载了 Ubuntu20.04.1 的镜像</p>
-<p><a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/" target="_blank" rel="noopener">清华大学开源软件镜像站</a></p>
-<p>经过漫长的等待下载完成，刻录Ubuntu启动盘，安装设置一气呵成，搞定了，无线网的小雨伞出现了，简直泪流满面…</p>
-<p>然后通过 <code>lspci | grep Net</code> 来查看网卡型号，结果出现了 <code>Intel Corporation Wireless-AC 9462</code>，看到这里我都惊呆了，原来这个网卡比 <code>Intel® 9560AC</code> 版本还要低，联想客服的回答是错误的，Intel官方驱动的对应关系也不准确，真是没什么可信的了。</p>
-<h2 id="安装Ubuntu18-04-5"><a href="#安装Ubuntu18-04-5" class="headerlink" title="安装Ubuntu18.04.5"></a>安装Ubuntu18.04.5</h2><p>既然无线网卡都可以识别了，为什么还要折腾呢？因为Ubuntu20.04.1这个版本跟周围小伙伴使用的系统版本差的有点多，并且之前出现过项目编译问题，所以换个低一点的版本试试。</p>
-<p>下载镜像，刻录U盘，安装系统轻车熟路，真是越来越顺利了，安装完成后WIFI正常，果然是内核版本的事情，高版本的系统直接就可以使用，根本不需要任何设置。</p>
-<h2 id="再次安装Ubuntu16-04-7"><a href="#再次安装Ubuntu16-04-7" class="headerlink" title="再次安装Ubuntu16.04.7"></a>再次安装Ubuntu16.04.7</h2><p>因为不服输，我又折腾回来了，既然是内核版本的问题，我就再试试在这个低版本系统上升级内核，这次安装时勾选了“为图形或无线硬件…安装第三方软件”，因为我突然意识到其他教程不让勾选都是台式机，而我是笔记本，我的个乖乖啊，感觉被坑了。</p>
-<p>这次一步步操作，安装完系统就不再做任何设置，直接升级内核，访问<a href="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.16/" target="_blank" rel="noopener">内核软件网站</a>，下载下面4个包：</p>
-<ul>
-<li><a href="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.16/linux-headers-5.2.16-050216_5.2.16-050216.201909190832_all.deb" target="_blank" rel="noopener">linux-headers-5.2.16-050216_5.2.16-050216.201909190832_all.deb</a></li>
-<li><a href="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.16/linux-headers-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb" target="_blank" rel="noopener">linux-headers-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</a></li>
-<li><a href="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.16/linux-image-unsigned-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb" target="_blank" rel="noopener">linux-image-unsigned-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</a></li>
-<li><a href="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.16/linux-modules-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb" target="_blank" rel="noopener">linux-modules-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</a></li>
-</ul>
-<p>依次按照下面的命令安装，这次居然成功了</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo sudo dpkg -i linux-headers-5.2.16-050216_5.2.16-050216.201909190832_all.deb</span><br><span class="line">sudo sudo dpkg -i linux-headers-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</span><br><span class="line">sudo sudo dpkg -i linux-modules-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</span><br><span class="line">sudo sudo dpkg -i linux-image-unsigned-5.2.16-050216-generic_5.2.16-050216.201909190832_amd64.deb</span><br></pre></td></tr></table></figure>
-<p>然后从<a href="http://ftp.sjtu.edu.cn/ubuntu/pool/main/l/linux-firmware/" target="_blank" rel="noopener">网站</a>下载linux固件版本</p>
-<p><a href="http://ftp.sjtu.edu.cn/ubuntu/pool/main/l/linux-firmware/linux-firmware_1.190_all.deb" target="_blank" rel="noopener">linux-firmware_1.190_all.deb</a></p>
-<p>使用如下命令安装成功</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sudo dpkg -i linux-firmware_1.190_all.deb</span><br></pre></td></tr></table></figure>
-<p>reboot重启系统，WIFI的小雨伞终于出现了，功夫不负有心人，彻底搞定了，至于WIFI可用却连不上公司的无线网，那就是另一个悲伤的故事了，和技术无关，就不在此展开了。</p>
-<h2 id="踩过的其他坑"><a href="#踩过的其他坑" class="headerlink" title="踩过的其他坑"></a>踩过的其他坑</h2><p>其实整个过程远不止上面提到的这些，安装了10几次系统，至少翻了几百个页面，有一些处理方式尝试过但没有什么效果，也列举在这里，留个纪念</p>
-<ul>
-<li><a href="https://blog.csdn.net/qq_45252077/article/details/106541604" target="_blank" rel="noopener">Ubuntu16.04无附加驱动无法连接WiFi总结</a></li>
-<li><a href="https://blog.csdn.net/vesper305/article/details/9324567" target="_blank" rel="noopener">Ubuntu-server 10.04.4查看无线网卡型号</a></li>
-<li><a href="https://blog.csdn.net/weixin_42101286/article/details/89239105" target="_blank" rel="noopener">Ubuntu安装后未发现wifi适配器解决</a></li>
-<li><a href="https://blog.csdn.net/weixin_40955254/article/details/87992051" target="_blank" rel="noopener">ubuntu16.04+intel无线网卡无法连接WiFi解决方法，下载驱动，升级内核（亲测有效）</a></li>
-<li><a href="https://www.cnblogs.com/superxuezhazha/p/11989882.html" target="_blank" rel="noopener">ubuntu18.04 无法连接有线</a></li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>现在安装Ubuntu特别溜，刻录U盘启动盘+安装完系统也就10分钟</li>
-<li>手机通过USB连接笔记本可以直接给笔记本提供网络，这波操作有点优秀</li>
-<li>认识了一堆之前没用过的命令，特别是 <code>lspci</code> 显示设备信息和 <code>iwconfig</code> 管理无线网络</li>
-<li>出现问题时还是要找到根本原因，不能病急乱投医，一些博通网卡的处理方式用到Intel上显然不合适</li>
-</ul>
-<hr>
-<center><a href="https://blog.csdn.net/albertsh/article/details/112419216" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
-
-<hr>
-<blockquote>
-<p>当个人实力撑不起自己的野心时，需埋下头来刻苦修炼，当目前的能力无法满足自己的欲望时，需抑制一些不切实际的想法，但愿多年之后回想这些隐忍的瞬间能内心充满感恩而不是悔恨~</p>
-<p>2021-1-16 22:48:02</p>
-</blockquote>
-
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一台新申请的ThinkPad-X390笔记本需要安装Ubuntu系统，为了统一工作开发环境，选择了大家一直都在使用Ubuntu16.04版本，虽然这个系统版本旧一点，不过同一个版本出现开发环境问题也好排查，但没想到的是这里埋下了一个坑，导致成功安装系统后却不能上网，足足折腾了一整天才搞定，记录一下，没事回来看看还能乐呵乐呵。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/01/16/记一次解决Intel-9462无线网卡的笔记本安装Ubuntu16-04后无法连接WIFI问题的艰难历程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

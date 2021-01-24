@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/categories/GDB/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/categories/gdb/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/categories/GDB/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/categories/gdb/"/>
 
 
 
 
 
-  <title>分类: GDB | Albert World</title>
+  <title>分类: gdb | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>GDB<small>分类</small>
+        <h1>gdb<small>分类</small>
         </h1>
       </div>
 
@@ -349,37 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2020/08/17/GDB调试指北-启动调试或者附加到进程/" itemprop="url">
+            <a class="post-title-link" href="/blog/2019/01/11/linux环境下服务器程序的查看与gdb调试/" itemprop="url">
               
-                <span itemprop="name">GDB调试指北-启动调试或者附加到进程</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-08-17T23:45:15+08:00"
-              content="2020-08-17" >
-          08-17
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/blog/2020/08/01/GDB调试指北-启动GDB并查看说明信息/" itemprop="url">
-              
-                <span itemprop="name">GDB调试指北-启动GDB并查看说明信息</span>
+                <span itemprop="name">linux环境下服务器程序的查看与gdb调试</span>
               
             </a>
         
@@ -387,37 +359,9 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2020-08-01T23:08:16+08:00"
-              content="2020-08-01" >
-          08-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/blog/2020/07/18/GDB调试指北大全/" itemprop="url">
-              
-                <span itemprop="name">GDB调试指北大全</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-07-18T16:34:29+08:00"
-              content="2020-07-18" >
-          07-18
+              datetime="2019-01-11T10:07:32+08:00"
+              content="2019-01-11" >
+          01-11
         </time>
       </div>
 
@@ -1179,6 +1123,62 @@
                 $element.find('.leancloud-visitors-count').text(counter.get('time'));
               },
               error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+on(counter, error) {
                 console.log('Failed to save Visitor num, with error message: ' + error.message);
               }
             });
