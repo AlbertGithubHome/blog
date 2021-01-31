@@ -114,7 +114,7 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/wt2.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/powershell.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/tools/multiwindow.png">
-<meta property="og:updated_time" content="2021-01-10T12:58:46.545Z">
+<meta property="og:updated_time" content="2021-01-27T15:18:11.653Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在比较Linux和Windows命令差异时意外发现了Windows Terminal">
 <meta name="twitter:description" content="前言目前工作时的开发环境是 Windows + Linux，常常需要切换测试环境，比如写一个脚本既要在 Windows 使用，同时也要在 Linux 下运行，命令的使用是 Linux 的强项，它自带了很多方便的命令程序，比如过滤字符串的 grep，统计文件行数的 wc，查看目录文件的 ls 等等，如果要在 Windows 中运行相同逻辑的脚本，那我们需要先找到这些命令在 Windows 上的等价写">
@@ -396,8 +396,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-01-10T20:58:46+08:00">
-                2021-01-10
+              <time title="更新于" itemprop="dateModified" datetime="2021-01-27T23:18:11+08:00">
+                2021-01-27
               </time>
             
           </span>
@@ -450,7 +450,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,635(字)</span>
+            <span class="post-count">2,832(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -458,7 +458,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">11(分)</span>
+            <span class="post-count">12(分)</span>
           </span>
 
           
@@ -532,6 +532,15 @@
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D:\app\ScreenToGif\Logs&gt;<span class="built_in">type</span> <span class="string">"20_04_06 11_09_57_942.txt"</span> | find /c /v <span class="string">""</span></span><br><span class="line">19</span><br></pre></td></tr></table></figure>
 <p><code>wc</code> 这个命令没什么好说的，专门为统计字符数、字节数、行数而生的，而 windows 下的 <code>find</code> 命令通过 <code>/c</code> 显示匹配函数，<code>/v &quot;&quot;</code> 查找非空行这样的参数组合也能达到统计行数的目的。</p>
+<h2 id="计算文件摘要"><a href="#计算文件摘要" class="headerlink" title="计算文件摘要"></a>计算文件摘要</h2><ul>
+<li>linux 中的 <code>[md5sum|sha1sum|sha256] 文件名</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/d/data/cpp$ md5sum simple.cpp</span><br><span class="line">a00eba0276e396de58fabc92b325672a  simple.cpp</span><br><span class="line">albert@home-pc:/mnt/d/data/cpp$ sha1sum simple.cpp</span><br><span class="line">7acf1e59ca2608b7591ec526d48ce041cddf49d2  simple.cpp</span><br><span class="line">albert@home-pc:/mnt/d/data/cpp$ sha256sum simple.cpp</span><br><span class="line">f07bcd585fa7e49897676105797dd984c12f63411f0ba8db62a57f6ef03bbaec  simple.cpp</span><br><span class="line">albert@home-pc:/mnt/d/data/cpp$</span><br></pre></td></tr></table></figure>
+<ul>
+<li>windows 中 <code>certutil -hashfile 文件名 [MD5|SHA1|SHA256]</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">d:\data\cpp&gt;certutil -hashfile simple.cpp MD5</span><br><span class="line">MD5 的 simple.cpp 哈希:</span><br><span class="line">a00eba0276e396de58fabc92b325672a</span><br><span class="line">CertUtil: -hashfile 命令成功完成。</span><br><span class="line"></span><br><span class="line">d:\data\cpp&gt;certutil -hashfile simple.cpp SHA1</span><br><span class="line">SHA1 的 simple.cpp 哈希:</span><br><span class="line">7acf1e59ca2608b7591ec526d48ce041cddf49d2</span><br><span class="line">CertUtil: -hashfile 命令成功完成。</span><br><span class="line"></span><br><span class="line">d:\data\cpp&gt;certutil -hashfile simple.cpp SHA256</span><br><span class="line">SHA256 的 simple.cpp 哈希:</span><br><span class="line">f07bcd585fa7e49897676105797dd984c12f63411f0ba8db62a57f6ef03bbaec</span><br><span class="line">CertUtil: -hashfile 命令成功完成。</span><br></pre></td></tr></table></figure>
+<p>在 linux 上不同的摘要算法对应着不同的程序，但是在 windows 上是同一个程序有着不同的参数。</p>
 <h2 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h2><table>
 <thead>
 <tr>
@@ -818,7 +827,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">116</span>
+                <span class="site-state-item-count">117</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -840,7 +849,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">268</span>
+                <span class="site-state-item-count">270</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -980,7 +989,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用命令"><span class="nav-number">2.</span> <span class="nav-text">常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#显示当前目录"><span class="nav-number">2.1.</span> <span class="nav-text">显示当前目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示目录下内容"><span class="nav-number">2.2.</span> <span class="nav-text">显示目录下内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤文本"><span class="nav-number">2.3.</span> <span class="nav-text">过滤文本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看文件内容"><span class="nav-number">2.4.</span> <span class="nav-text">查看文件内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#统计文件行数"><span class="nav-number">2.5.</span> <span class="nav-text">统计文件行数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他命令"><span class="nav-number">2.6.</span> <span class="nav-text">其他命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#半路杀出个PowerShell"><span class="nav-number">3.</span> <span class="nav-text">半路杀出个PowerShell</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#显示目录下内容-1"><span class="nav-number">3.1.</span> <span class="nav-text">显示目录下内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看帮助文档"><span class="nav-number">3.2.</span> <span class="nav-text">查看帮助文档</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#统一命令行的渴望"><span class="nav-number">4.</span> <span class="nav-text">统一命令行的渴望</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows-Terminal"><span class="nav-number">5.</span> <span class="nav-text">Windows Terminal</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">5.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令行窗口的统一"><span class="nav-number">5.2.</span> <span class="nav-text">命令行窗口的统一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到的问题"><span class="nav-number">5.3.</span> <span class="nav-text">遇到的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用命令"><span class="nav-number">2.</span> <span class="nav-text">常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#显示当前目录"><span class="nav-number">2.1.</span> <span class="nav-text">显示当前目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示目录下内容"><span class="nav-number">2.2.</span> <span class="nav-text">显示目录下内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤文本"><span class="nav-number">2.3.</span> <span class="nav-text">过滤文本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看文件内容"><span class="nav-number">2.4.</span> <span class="nav-text">查看文件内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#统计文件行数"><span class="nav-number">2.5.</span> <span class="nav-text">统计文件行数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算文件摘要"><span class="nav-number">2.6.</span> <span class="nav-text">计算文件摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他命令"><span class="nav-number">2.7.</span> <span class="nav-text">其他命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#半路杀出个PowerShell"><span class="nav-number">3.</span> <span class="nav-text">半路杀出个PowerShell</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#显示目录下内容-1"><span class="nav-number">3.1.</span> <span class="nav-text">显示目录下内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看帮助文档"><span class="nav-number">3.2.</span> <span class="nav-text">查看帮助文档</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#统一命令行的渴望"><span class="nav-number">4.</span> <span class="nav-text">统一命令行的渴望</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows-Terminal"><span class="nav-number">5.</span> <span class="nav-text">Windows Terminal</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">5.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令行窗口的统一"><span class="nav-number">5.2.</span> <span class="nav-text">命令行窗口的统一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到的问题"><span class="nav-number">5.3.</span> <span class="nav-text">遇到的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
