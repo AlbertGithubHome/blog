@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[TCP/IP协议簇中的子网掩码有什么作用]]></title>
+    <url>%2Fblog%2F2021%2F02%2F14%2FTCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E4%B8%AD%E7%9A%84%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[前言前几天在配置数据库主从结构时查询了一些IP配置，后来编写远程执行脚本时又配置了一些IP数据，在linux上使用 ifconfig 命令查询IP配置时发现子网掩码不是常用的3个255，而是 255.255.254.0，只是简单记得这样配置扩大了子网的范围，但是具体子网掩码怎么使用还是记不清楚了，所以查询了这些还给老师的知识，在此总结一下。 IP地址分类关于IPv4的地址分类之前有专门的总结，可以参考这一篇《IP地址常见分类：A类、B类、C类、D类、E类》，其中常用到的也就是A类、B类、C类这三种，默认的子网掩码分别为 255.0.0.0、255.255.0.0、255.255.255.0，通过IP地址和子网掩码进行与运算可以得出IP地址所对应的网络地址。 子网掩码子网掩码通过它的名字来判断肯定和子网有关系，掩码又有遮遮掩掩之意，合在一起其实就是通过其作用来进行的命名，也就是对IP地址进行遮掩，然后得到子网地址的作用。 掩码的作用刚刚说通过子网掩码和IP地址可以获得网络地址，那么没有子网掩码可不可以呢？实际上如果进行某些约定就可以不使用子网掩码来获得网络地址，比如IPv4是通过4个字节来表示一个IP地址的，分为网络号和主机号两部分，A类IP地址可以使用第一字节表示网络号，B类地址使用前两个字节表示网络号，C类地址使用前3个字节表示网络号，其实这也是默认的表示方法。 加入子网掩码只是为了更灵活的配置子网，如果都按照默认的“规矩”进行划分就太死板了，难以适应复杂的需求环境，比如一个A类地址 10.0.48.36 默认的子网 10.0.0.0，可以容纳16777214台主机，这样如果一个子网的所需IP数量远远小于这个数字就会产生巨大的浪费。 再比如一个C类地址 192.168.0.1 的默认子网是 192.168.0.0，可以容纳254台主机，如果一个公司或者组织有500人，那么一个C类的子网就无法满足要求，需要分配B类地址才能解决问题，所以才有了子网掩码的出现，可以使子网的划分更加合理。 掩码表示掩码的表示比较简单，它由四个字节构成，表示成二进制形式时为前1后0，可以像IP地址一样的格式来书写，也可以写出掩码中有多少个1，举个例子，下面表示一个IP和子网： 192.168.1.1 和 255.255.254.0 也可以将掩码中1的个数写在IP地址后面表示成： 192.168.1.1/23 子网拆分增加子网掩码中1的个数可以将子网进行拆分，比如地址 192.168.1.1 和 192.168.1.130 在子网掩码是 255.255.255.0时都属于 192.168.1.0 这个子网，但是将子网掩码换成 255.255.255.128， 那么这两个IP地址就分别属于 192.168.1.0 和 192.168.1.128 这两个子网。 子网合并减少子网掩码中1的个数可以将子网进行合并，比如地址 192.168.1.1 和 192.168.0.1 在子网掩码是 255.255.255.0时分别属于 192.168.1.0 和 192.168.0.0 这两个子网，但是将子网掩码换成 255.255.254.0， 那么这两个IP地址就都属于 192.168.0.0 这个子网了。 网络包的传播网络包在子网内是以广播的形式传播，靠的是MAC地址，通过ARP协议可以获得，但是子网间的传播依赖IP地址，需通过路由或者三层交换机才能实现。 总结 通过IP地址和子网掩码进行按位与运算可以计算出IP地址所在的网络地址 通过子网掩码可以更合理的划分子网，对默认子网进行拆分与合并，一定程度上减少浪费和拥堵 子网内通信需要MAC地址，广播的形式来传递消息，这就是为什么网卡设置为混合模式可以截获到发给他人的消息 子网间通信需要借助IP地址才能实现，不过MAC地址也是需要的，通常被设置为网管的MAC地址 平时使用的 ping 命令，其实是 ICMP 协议的一部分，它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 勤劳的人总能挤出时间来坚持自己的习惯，懒惰的人总能找到借口来逃避应该做的事情，认定的目标就要大胆的开始，无论什么想法只要迈出了第一步就不算晚~ 2021-2-14 23:57:52]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>network</tag>
+        <tag>ip</tag>
+        <tag>ping</tag>
+        <tag>子网掩码</tag>
+        <tag>MAC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C/C++中string和int相互转换的常用方法]]></title>
+    <url>%2Fblog%2F2021%2F02%2F08%2FC-C-%E4%B8%ADstring%E5%92%8Cint%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%2F</url>
+    <content type="text"><![CDATA[前言字符串操作是各种算法题中的常客，很多数据常常以字符串形式给出，其中有的需要自己转化成整数，而一些整型数据有时转换成字符串处理起来更加方便，比如判断一个整数是否是回文数，所以字符串和整数的转换是一些问题处理的基础步骤，C++ 在处理这类问题时并不像 Python 那样方便，但是也有许多方法能够实现，为了今后查找方便，整理如下。 int 转 string通过 std::to_string() 函数转换12345678#include &lt;iostream&gt;int main()&#123; int num = 123; std::cout &lt;&lt; std::to_string(num); return 0;&#125; 这种方式在 C++11 中才能使用，编译时记得加上 --std=c++11 的选项 通过 ostringstream 转换1234567891011#include &lt;iostream&gt;#include &lt;sstream&gt;int main()&#123; int num = 123; std::ostringstream ss; ss &lt;&lt; num; std::cout &lt;&lt; ss.str(); return 0;&#125; 这是一种通过字符流的方式将整数转换成字符串，这种方式在C++11之前也可以使用 通过 sprintf 转换1234567891011#include &lt;stdio.h&gt;int main()&#123; int num = 123; char buffer[256]; sprintf(buffer, "%d", num); printf("%s", buffer); return 0;&#125; 这是一种C语言中的转换方式，sprintf 也可以换成更安全的 snprintf 函数 string 转 int通过 istringstream 转换1234567891011121314#include &lt;iostream&gt;#include &lt;sstream&gt;int main()&#123; std::string str = "668"; int num = 0; std::istringstream ss(str); ss &gt;&gt; num; std::cout &lt;&lt; num; return 0;&#125; 使用 istringstream 可以从字符流中读取整数，与 ostringstream 是一种相反的操作 使用 sscanf 来转化123456789101112#include &lt;iostream&gt;#include &lt;stdio.h&gt;int main()&#123; std::string str = "668"; int num = 0; sscanf(str.c_str(), "%d", &amp;num); std::cout &lt;&lt; num; return 0;&#125; 注意 sscanf 函数的第一个参数类型是 const char *，string类型的参数需要转换一下 使用 atoi 转换123456789#include &lt;iostream&gt;#include &lt;stdlib.h&gt;int main()&#123; std::string str = "668"; std::cout &lt;&lt; atoi(str.c_str()); return 0;&#125; atoi 函数的头文件是 stdlib.h，同样是一个C语言中的函数 总结 itoa 不是c语言标准函数，在跨平台的整数转字符串的代码中不要使用这个函数 atoi 是一个标准函数，需要将它和 itoa 区别开来，这一点很容易记混的 如果是在C++环境中进行转换，推荐使用 stringstream 字符流的形式和 to_string 函数 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 这个世界真的很有趣，只要活着，就会有无限可能~ 2021-2-9 00:44:34]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>string</tag>
+        <tag>int</tag>
+        <tag>相互转化</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++中一些方便的算法函数和吃不够的语法糖]]></title>
     <url>%2Fblog%2F2021%2F01%2F30%2FC-%E4%B8%AD%E4%B8%80%E4%BA%9B%E6%96%B9%E4%BE%BF%E7%9A%84%E7%AE%97%E6%B3%95%E5%87%BD%E6%95%B0%E5%92%8C%E5%90%83%E4%B8%8D%E5%A4%9F%E7%9A%84%E8%AF%AD%E6%B3%95%E7%B3%96%2F</url>
     <content type="text"><![CDATA[前言C++由于其复杂性，学习成本很高。但是作为接近底层的语言，学会之后能做的事情相当多，C++给了开发者极大的自由，只要符合规范就可以尽情的折腾，不过对于日常使用来说确实不太“方便”，特别是相比于Python、JS这类脚本语言，处理一些小问题时前奏太长，很多常用操作都需要自己造轮子，这一点在刷题时感觉很明显，C++一碰到字符串分析就“头大”，Python用一行搞定，用C++则需要N行。 变化其实很多人对C++的认识还停留在 C++98 或者 C++03 版本，然而从 C++11 版本开始C++就发生了翻天覆地的变化，近期在使用的过程中发现C++也有很多方便的函数，越高的版本越方便，语法糖也越多，今天先总结几个，后续再补充吧。 优秀函数和语法糖使用find系列实现trim函数trim函数在很多语言中都是内置函数，可以去除收尾两端的空格，在C++中是没有trim函数的，需要自己实现一下，需要用到的工具函数有下面两个： find_first_not_of：在字符串s中找到第一个不等于指定字符序列ACDE..的位置 find_last_not_of：在字符串s中找到最后一个不等于指定字符序列ACDE..的位置 find_first_not_of(&quot;hello world&quot;, &quot;he&quot;) 指的就是找到第一个不等于 h 且不等于 e 字母的字符位置，要想去除字符串首尾空格就需要找到第一个不等于空格的位置，和最后一个不等于空格的位置，保留这两个位置中的部分即可，实现如下： 123456std::string&amp; trim(std::string &amp;s) &#123; if (s.empty()) return s; s.erase(0, s.find_first_not_of(" ")); return s.erase(s.find_last_not_of(" ") + 1);&#125; 测试代码如下： 12345678910111213141516171819#include &lt;string&gt;#include &lt;iostream&gt;using namespace std;std::string&amp; trim(std::string &amp;s) &#123; if (s.empty()) return s; s.erase(0, s.find_first_not_of(" ")); return s.erase(s.find_last_not_of(" ") + 1);&#125;int main() &#123; string s(" Hello world "); cout &lt;&lt; "before trim ==&gt;" &lt;&lt; s &lt;&lt; "&lt;&lt;==" &lt;&lt; endl; cout &lt;&lt; "after trim ==&gt;" &lt;&lt; trim(s) &lt;&lt; "&lt;&lt;==" &lt;&lt; endl; return 0;&#125; 测试结果如下： 1234albert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ g++ stringtrim.cpp -o stringtrimalbert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ ./stringtrimbefore trim ==&gt; Hello world &lt;&lt;==after trim ==&gt;Hello world&lt;&lt;== 使用regex实现split函数split 也是一个常用但C++不提供的函数，在C语言和早期的C++中一般通过 strtok 函数来实现，但是从 C++11 开始可以通过 regex 来实现，可以看下面这个例子： 12345678910111213141516#include &lt;regex&gt;#include &lt;string&gt;#include &lt;iostream&gt;using namespace std;int main() &#123; string s("c++11 test split"); regex reg(" "); // "\\s+" for blank vector&lt;string&gt; v(sregex_token_iterator(s.begin(), s.end(), reg, -1), sregex_token_iterator()); for (auto str : v) cout &lt;&lt; "==&gt;" &lt;&lt; str &lt;&lt; "&lt;&lt;==" &lt;&lt; endl; return 0;&#125; 测试结构如下： 12345albert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ g++ stringsplit.cpp -o stringsplit --std=c++17albert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ ./stringsplit==&gt;c++11&lt;&lt;====&gt;test&lt;&lt;====&gt;split&lt;&lt;== 使用auto遍历map结构很早以前C++中遍历map、set等复杂结构的时候需要写很长的代码来定义迭代器，自从出现了auto之后这种遍历简单了许多，最近发现针对map的遍历还有更简单的方法，使用方法如下： 123456789101112131415#include &lt;map&gt;#include &lt;string&gt;#include &lt;iostream&gt;using namespace std;int main() &#123; map&lt;string, int&gt; m&#123;&#123;"tom", 20&#125;, &#123;"albert", 18&#125;, &#123;"bella", 19&#125;, &#123;"bily", 30&#125;&#125;; for (auto&amp; [name, age] : m) &#123; if (age &gt; 18) cout &lt;&lt; name &lt;&lt; endl; &#125; return 0;&#125; 测试结果如下： 12345albert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ g++ autonew.cpp -o autonew --std=c++17albert@home-pc:/mnt/d/data/cpp/cplusplusadvance$ ./stringsplitbellabilytom 总结 find_first_not_of、find_last_not_of、find_first_of 这系列函数功能虽简单，但是使用它们可以简化代码逻辑 正则表达式是处理字符串查找的强有力的工具，合理的使用正则表达式可以达到事半功倍的效果，C++中请使用 std::regex C++17中引入了结构化绑定声明，可以使用auto来声明多个变量，所有变量都必须用中括号括起来 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 做自己认为对的事情，剩下的交给时间~ 2021-1-31 23:04:17]]></content>
@@ -23,8 +52,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -144,8 +173,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -502,8 +531,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -630,8 +659,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -930,9 +959,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -1260,8 +1289,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1589,8 +1618,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>

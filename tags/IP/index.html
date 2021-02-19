@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/IP/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/ip/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/IP/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/ip/"/>
 
 
 
 
 
-  <title>标签: IP | Albert World</title>
+  <title>标签: ip | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>IP<small>标签</small>
+        <h1>ip<small>标签</small>
         </h1>
       </div>
 
@@ -349,37 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2019/05/05/Python利用requests模块实现代理访问网络/" itemprop="url">
+            <a class="post-title-link" href="/blog/2021/02/14/TCP-IP协议簇中的子网掩码有什么作用/" itemprop="url">
               
-                <span itemprop="name">Python利用requests模块实现代理访问网络</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-05-05T12:07:16+08:00"
-              content="2019-05-05" >
-          05-05
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/" itemprop="url">
-              
-                <span itemprop="name">IP地址常见分类：A类、B类、C类、D类、E类</span>
+                <span itemprop="name">TCP/IP协议簇中的子网掩码有什么作用</span>
               
             </a>
         
@@ -387,9 +359,9 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2019-04-03T16:50:14+08:00"
-              content="2019-04-03" >
-          04-03
+              datetime="2021-02-14T23:55:30+08:00"
+              content="2021-02-14" >
+          02-14
         </time>
       </div>
 
@@ -449,7 +421,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">117</span>
+                <span class="site-state-item-count">119</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -471,7 +443,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">270</span>
+                <span class="site-state-item-count">278</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1167,6 +1139,45 @@
             newcounter.save(null, {
               success: function(newcounter) {
                 var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+        var $element = $(document.getElementById(url));
                 $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
               },
               error: function(newcounter, error) {
