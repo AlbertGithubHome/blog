@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Go环境配置时遇到的GOPATH路径以及包管理问题]]></title>
+    <url>%2Fblog%2F2021%2F02%2F19%2FGo%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84GOPATH%E8%B7%AF%E5%BE%84%E4%BB%A5%E5%8F%8A%E5%8C%85%E7%AE%A1%E7%90%86%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[前言过了个年回到工作岗位，发现之前好好的 Go 环境无法进行调试了，于是又重新配置了一次，弄好之后的新参数与原来有一些不一样的地方，甚至还有一些矛盾的地方，真搞不清楚原来的配置参数怎么能成功调试的，也是奇了怪了。配置过程中还遇到了一些问题，特别记录一下，防止今后遇到类似问题还要苦苦寻找。 Go 的环境变量说起环境变量，写 Java 的时候倒是配置了不少，一般都需要配置 JAVA_HOME 和 CLASSPATH，后来 C/C++ 写的比较多，完全不需要这个东西，直接使用 include 把绝对路径或者相对路径引用进来就可以，或者使用VS的项目属性界面配置包含路径，也可以将包含路径写在 CMakeLists.txt 中。但是为了能找到和使用各种工具和软件，它们所在的路径一般会加到环境变量Path中。 Go 中也有两个环境变量非常重要，它们分别是 GOROOT 和 GOPATH，其中 GOROOT 比较好理解，就是 Go 软件安装的目录，可以类比一下 JAVA_HOME/bin，而 GOPATH 就是一个神奇的存在，在go1.12版本之前，Go 语言编写的项目代码和下载的包都必须在 GOPATH 目录下，想像一下，在一个 GOPATH 目录下无数个项目go文件，那感觉真是酸爽。 GOPATH 的设计GOPATH设计的出发点是好的，将代码包统一存储到一个目录下，直接引用包名就可以了，可是这样设计也缺少了自由，下载的第三方包和自己的项目文件混在一起虽然可以方便查看代码，但是结构看起来确实很乱。 什么？你说 GOPATH 可以指定多个目录，确实很多资料说 GOPATH 支持多个目录，下载的包会默认放在 GOPATH 指定的第一个目录下，需要注意的一个点是在windows下指定多个目录需要用分号分隔，而Linux下指定多个目录需要用冒号分隔，并且指定的目录需要是用绝对路径，如果指定的目录中包含相对路径，会报一个 go: GOPATH entry is relative; must be absolute path: &quot;... 错误，记得 GOPATH 变量末尾不要加 : 或者 ;。 春节前我就是配置的多个目录，本来调试用的好好的，结果过完年现在不让用了，一调试就会报错 unexpected directory layout:，具体的报错内容结构如下： 1234567unexpected directory layout: import path: _/go/src/firstgo root: /go/src dir: /go/src/firstgo expand root: /go expand dir: /go/src/firstgo separator: / 后来参考了下面两篇文章，把 GOPATH 改成单一目录就好了。 cmd/go: unexpected directory layout while building project go get 报错 unexpected directory layout 也就是在linux下的 ~/.profile 文件中把 export GOPATH=/home/albert/go:/home/albert/WorkSpace/go 改成 export GOPATH=/home/albert/go 就可以了。 GOPATH 的发展早期版本的 GOPATH 设计所有包下载到指定的目录，并且没有版本号，如果多个项目引用的同一个包的不同版本那就歇菜了，所以说这时的 Go 管理仅仅处于能用的状态，也就相当于一个下载器，达不到软件包管理器的及格水平，后来出现了一些例如 dep、Godep 的包管理工具，均属于官方推荐的第三方管理工具，都非 Go 语言自带。 Go 的包管理工具并不像 Python 的 pip，或者 JS 的 npm 那样统一，本质上还是设计不同导致的，Go 想做的包管理是一种分布式的，没有Python 或者 JS 那种中心仓库，这样又带来了一个弊端，如果包的提供者频繁提交新版本怎么办，所以在包管理的工作中，版本号是必须要存在的。 关于之前GO项目为什么非要放在 GOPATH 下，以及 GO的包管理发展历程可以参考下面文章： GO问答之为什么项目要在 GOPATH/src 目录下 Go 包管理的前世今生 直到 go mod 出现以后，在Go 中引入第三方模块算是方便了不少，参考《拜拜了，GOPATH君！新版本Golang的包管理入门教程》 go mod使用 go mod 怎么导入本地其它项目的包？ 谈谈go.sum Go 的常用命令Go 作为一种语言，同时也代表了一系列工具和生态环境，它的命令有不少，下面列举一些常见的： go env: 打印go的环境信息 go fmt: 运行gofmt对go代码进行格式化 go build: 编译包和依赖 go run: 编译并运行go程序 go version: 显示go程序的版本 go help: 打印命令的帮助信息 go get: 下载并安装包和依赖（-v 显示操作流程的日志及信息；-u 下载丢失的包，但不会更新已经存在的包） 其中 go help 不仅仅打印了这些命令的基本信息，还可以打印出一些概念的帮助信息， 例如 go help gopath，内容比较多，下面只列举一小部分: 1234567891011121314151617181920...Here's an example directory layout: GOPATH=/home/user/go /home/user/go/ src/ foo/ bar/ (go code in package bar) x.go quux/ (go code in package main) y.go bin/ quux (installed command) pkg/ linux_amd64/ foo/ bar.a (installed package object)...... 运行 go env 展示一下当前使用的环境，方便以后做个对照： 123456789101112131415161718192021222324252627282930313233343536$ go envGO111MODULE=""GOARCH="amd64"GOBIN=""GOCACHE="/home/albert/.cache/go-build"GOENV="/home/albert/.config/go/env"GOEXE=""GOFLAGS=""GOHOSTARCH="amd64"GOHOSTOS="linux"GOINSECURE=""GOMODCACHE="/home/albert/WorkSpace/go1/pkg/mod"GONOPROXY=""GONOSUMDB=""GOOS="linux"GOPATH="/home/albert/WorkSpace/go1"GOPRIVATE=""GOPROXY="https://proxy.golang.org,direct"GOROOT="/usr/local/go"GOSUMDB="sum.golang.org"GOTMPDIR=""GOTOOLDIR="/usr/local/go/pkg/tool/linux_amd64"GCCGO="gccgo"AR="ar"CC="gcc"CXX="g++"CGO_ENABLED="1"GOMOD=""CGO_CFLAGS="-g -O2"CGO_CPPFLAGS=""CGO_CXXFLAGS="-g -O2"CGO_FFLAGS="-g -O2"CGO_LDFLAGS="-g -O2"PKG_CONFIG="pkg-config"GOGCCFLAGS="-fPIC -m64 -pthread -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build602227063=/tmp/go-build -gno-record-gcc-switches" VSCode Remote 时修改的环境变量不生效这个问题也是在这次配置 Go 调试环境时遇到的，我是在 ~/.profile 文件中修改的 GOPATH的内容，但是在VSCode中调试时就是报错，其表现就跟修改的变量未生效一致，后来查资料发现，原来出现这种情况和配置文件的加载顺序有关，具体参考下列文章： VSCode Remote环境变量加载——续 remote-ssh: .profile not sourced for bash shells, only .bashrc? #83 What is the difference between interactive shells, login shells, non-login shell and their use cases? 其实在linux中的shell有 interactive shell、 non-interactive shell、 login shell、 non-login shell 的区分，每种情况下调用的初始化脚本不同，涉及到 /etc/profile、~/.bash_profile ~/.bash_login / ~/.profile等等，而在VSCode远程连接Linux时还会继承之前的环境，多次尝试之后还是不起效果，此时不得不高呼“重启大法好”，重启能解决80%的问题，剩下的20%只能靠重做系统来解决了。 在我这修改脚本内容不生效，脚本间调用还搞出了死循环的问题，不知道是不是因为我使用 zsh 这个 shell作为默认环境出的问题，但重启大法依然奏效，电脑重启后环境变量成功修改了。 C++ 的包管理器捣鼓这么久 Go，突然想到一个问题，C++ 有没有包管理器呢？答案是有的，并且有很多，但是都存在着这样或那样的问题，可以重点看一下 conan，具体使用可以搜索官网，或者看看下面这些总结。 从零开始的C++包管理器CONAN上手指南 conan使用(一)–安装和应用 conan 是一款使用 python 开发的包管理工具，所以需要依赖 Python 环境，CentOS 平台上安装 Python 环境可以参考 Centos安装python3.6和pip步骤记录，虽然CentOS即将被放弃，但是目前在各种云服务器上依旧是主流系统，安装 Python 环境时需要注意一步步跟着做，最好不要投机取巧，我就是因为少安装了一个依赖，导致我使用 pip install conan命令安装 conan 是报错 ModuleNotFoundError: No module named &#39;_ctypes&#39;，此时可以安装依赖，重新编译安装 ·conan· 就可以了，也就是运行 yum install libffi-devel -y，重新 make clean &amp;&amp; make &amp;&amp; make install 就可以了。 总结 Go 的项目在 1.12 版本之后不必放到 GOPATH 路径中了，灵活度大大提高 C++ 也是有包管理器的，其中 conan 排名比较靠前，它是由 Python 语言编写的 go get 是安装依赖包常常要用到的 Go 命令， go help 会提供 Go 相关的许多知识 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 有时正确的选择比刻苦努力更加重要，用战术上的勤奋来掩盖战略上的懒惰，其结果只是感动了自己，而不会带我们达到目标。将者，智信仁勇严也~ 2021-2-21 01:19:01]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>GOPATH</tag>
+        <tag>mod</tag>
+        <tag>包管理</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[TCP/IP协议簇中的子网掩码有什么作用]]></title>
     <url>%2Fblog%2F2021%2F02%2F14%2FTCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E4%B8%AD%E7%9A%84%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%2F</url>
     <content type="text"><![CDATA[前言前几天在配置数据库主从结构时查询了一些IP配置，后来编写远程执行脚本时又配置了一些IP数据，在linux上使用 ifconfig 命令查询IP配置时发现子网掩码不是常用的3个255，而是 255.255.254.0，只是简单记得这样配置扩大了子网的范围，但是具体子网掩码怎么使用还是记不清楚了，所以查询了这些还给老师的知识，在此总结一下。 IP地址分类关于IPv4的地址分类之前有专门的总结，可以参考这一篇《IP地址常见分类：A类、B类、C类、D类、E类》，其中常用到的也就是A类、B类、C类这三种，默认的子网掩码分别为 255.0.0.0、255.255.0.0、255.255.255.0，通过IP地址和子网掩码进行与运算可以得出IP地址所对应的网络地址。 子网掩码子网掩码通过它的名字来判断肯定和子网有关系，掩码又有遮遮掩掩之意，合在一起其实就是通过其作用来进行的命名，也就是对IP地址进行遮掩，然后得到子网地址的作用。 掩码的作用刚刚说通过子网掩码和IP地址可以获得网络地址，那么没有子网掩码可不可以呢？实际上如果进行某些约定就可以不使用子网掩码来获得网络地址，比如IPv4是通过4个字节来表示一个IP地址的，分为网络号和主机号两部分，A类IP地址可以使用第一字节表示网络号，B类地址使用前两个字节表示网络号，C类地址使用前3个字节表示网络号，其实这也是默认的表示方法。 加入子网掩码只是为了更灵活的配置子网，如果都按照默认的“规矩”进行划分就太死板了，难以适应复杂的需求环境，比如一个A类地址 10.0.48.36 默认的子网 10.0.0.0，可以容纳16777214台主机，这样如果一个子网的所需IP数量远远小于这个数字就会产生巨大的浪费。 再比如一个C类地址 192.168.0.1 的默认子网是 192.168.0.0，可以容纳254台主机，如果一个公司或者组织有500人，那么一个C类的子网就无法满足要求，需要分配B类地址才能解决问题，所以才有了子网掩码的出现，可以使子网的划分更加合理。 掩码表示掩码的表示比较简单，它由四个字节构成，表示成二进制形式时为前1后0，可以像IP地址一样的格式来书写，也可以写出掩码中有多少个1，举个例子，下面表示一个IP和子网： 192.168.1.1 和 255.255.254.0 也可以将掩码中1的个数写在IP地址后面表示成： 192.168.1.1/23 子网拆分增加子网掩码中1的个数可以将子网进行拆分，比如地址 192.168.1.1 和 192.168.1.130 在子网掩码是 255.255.255.0时都属于 192.168.1.0 这个子网，但是将子网掩码换成 255.255.255.128， 那么这两个IP地址就分别属于 192.168.1.0 和 192.168.1.128 这两个子网。 子网合并减少子网掩码中1的个数可以将子网进行合并，比如地址 192.168.1.1 和 192.168.0.1 在子网掩码是 255.255.255.0时分别属于 192.168.1.0 和 192.168.0.0 这两个子网，但是将子网掩码换成 255.255.254.0， 那么这两个IP地址就都属于 192.168.0.0 这个子网了。 网络包的传播网络包在子网内是以广播的形式传播，靠的是MAC地址，通过ARP协议可以获得，但是子网间的传播依赖IP地址，需通过路由或者三层交换机才能实现。 总结 通过IP地址和子网掩码进行按位与运算可以计算出IP地址所在的网络地址 通过子网掩码可以更合理的划分子网，对默认子网进行拆分与合并，一定程度上减少浪费和拥堵 子网内通信需要MAC地址，广播的形式来传递消息，这就是为什么网卡设置为混合模式可以截获到发给他人的消息 子网间通信需要借助IP地址才能实现，不过MAC地址也是需要的，通常被设置为网管的MAC地址 平时使用的 ping 命令，其实是 ICMP 协议的一部分，它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 勤劳的人总能挤出时间来坚持自己的习惯，懒惰的人总能找到借口来逃避应该做的事情，认定的目标就要大胆的开始，无论什么想法只要迈出了第一步就不算晚~ 2021-2-14 23:57:52]]></content>
@@ -52,8 +66,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -105,10 +119,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -173,8 +187,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -531,8 +545,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -659,8 +673,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>reset</tag>
         <tag>checkout</tag>
+        <tag>reset</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -688,10 +702,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -717,10 +731,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -731,10 +745,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -959,9 +973,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -1289,8 +1303,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1618,8 +1632,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>实用工具</tag>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
