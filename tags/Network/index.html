@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/network/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/Network/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/network/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/Network/"/>
 
 
 
 
 
-  <title>标签: network | Albert World</title>
+  <title>标签: Network | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>network<small>标签</small>
+        <h1>Network<small>标签</small>
         </h1>
       </div>
 
@@ -349,9 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2021/02/14/TCP-IP协议簇中的子网掩码有什么作用/" itemprop="url">
+            <a class="post-title-link" href="/blog/2019/07/18/OSI七层模型中各层协议及作用/" itemprop="url">
               
-                <span itemprop="name">TCP/IP协议簇中的子网掩码有什么作用</span>
+                <span itemprop="name">OSI七层模型中各层协议及作用</span>
               
             </a>
         
@@ -359,9 +359,93 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2021-02-14T23:55:30+08:00"
-              content="2021-02-14" >
-          02-14
+              datetime="2019-07-18T19:57:14+08:00"
+              content="2019-07-18" >
+          07-18
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+      
+        
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/blog/2019/04/03/IP地址常见分类：A类、B类、C类、D类、E类/" itemprop="url">
+              
+                <span itemprop="name">IP地址常见分类：A类、B类、C类、D类、E类</span>
+              
+            </a>
+        
+      </h2>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2019-04-03T16:50:14+08:00"
+              content="2019-04-03" >
+          04-03
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+      
+        
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/blog/2018/07/11/简述TCP三次握手和四次挥手流程/" itemprop="url">
+              
+                <span itemprop="name">简述TCP三次握手和四次挥手流程</span>
+              
+            </a>
+        
+      </h2>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2018-07-11T12:25:47+08:00"
+              content="2018-07-11" >
+          07-11
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+      
+        
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/blog/2018/07/10/结构体sockaddr、sockaddr-in、sockaddr-in6之间的区别和联系/" itemprop="url">
+              
+                <span itemprop="name">结构体sockaddr、sockaddr_in、sockaddr_in6之间的区别和联系</span>
+              
+            </a>
+        
+      </h2>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2018-07-10T16:03:44+08:00"
+              content="2018-07-10" >
+          07-10
         </time>
       </div>
 
@@ -1100,84 +1184,6 @@
         })
         .fail(function (object, error) {
           console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-</body>
-</html>
-"Error: " + error.code + " " + error.message);
         });
     }
 

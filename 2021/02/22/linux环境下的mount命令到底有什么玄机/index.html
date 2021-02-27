@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。 而 linux 系统下，无论是申请的开发机，还是购买的服务器，硬盘都是挂载好的，至今没">
+<meta name="description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。">
 <meta name="keywords" content="linux,mount,unmount,挂载">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux环境下的mount命令到底有什么玄机">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。 而 linux 系统下，无论是申请的开发机，还是购买的服务器，硬盘都是挂载好的，至今没">
+<meta property="og:description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-02-27T15:44:20.429Z">
+<meta property="og:updated_time" content="2021-02-27T16:18:06.940Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux环境下的mount命令到底有什么玄机">
-<meta name="twitter:description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。 而 linux 系统下，无论是申请的开发机，还是购买的服务器，硬盘都是挂载好的，至今没">
+<meta name="twitter:description" content="前言linux 环境下的 mount 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。">
 
 
 
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-02-27T23:44:20+08:00">
-                2021-02-27
+              <time title="更新于" itemprop="dateModified" datetime="2021-02-28T00:18:06+08:00">
+                2021-02-28
               </time>
             
           </span>
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,529(字)</span>
+            <span class="post-count">3,536(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -481,6 +481,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>linux 环境下的 <code>mount</code> 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。</p>
+<a id="more"></a>
 <p>而 linux 系统下，无论是申请的开发机，还是购买的服务器，硬盘都是挂载好的，至今没有遇到需要手动挂载的情况，所以对这个命令并不是很熟悉，今天决定抽时间学一下，总结一下设备相关的知识，特别是磁盘相关的操作。</p>
 <h1 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h1><p>“Everything is a file”（一切皆文件）是 linux 中的特点，所以在学习磁盘、设备之前先来看看文件类型，在 linux 并不通过后缀名来判断文件类型的，可以利用 <code>ll</code> （或 <code>ls -l</code>）命令可以列举指定目录下的内容，通过每一行的首个字母就可以判断出文件的大类型：</p>
 <ul>
@@ -524,7 +525,7 @@
 <h2 id="挂载光驱"><a href="#挂载光驱" class="headerlink" title="挂载光驱"></a>挂载光驱</h2><p>挂载光驱的方式与挂载硬盘是一样的，只不过光驱是单独的设备，对应着不同的文件</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># mount /dev/cdrom /media/cdrom</span></span><br></pre></td></tr></table></figure>
 <h2 id="挂载-windows-共享文件"><a href="#挂载-windows-共享文件" class="headerlink" title="挂载 windows 共享文件"></a>挂载 windows 共享文件</h2><p>挂载 windows 共享文件时需要用到 windows 计算机的IP、用户名和密码</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># mkdir -p /mnt/share</span></span><br><span class="line">[root@VM-0-3-centos ~]<span class="comment"># mount -t cifs -o username=administrator,password=94741 //10.2.49.172/share /mnt/share</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># mkdir -p /mnt/share</span></span><br><span class="line">[root@VM-0-3-centos ~]<span class="comment"># mount -t cifs -o username=admin,password=94741 //10.2.49.172/share /mnt/share</span></span><br></pre></td></tr></table></figure>
 <h2 id="挂载-ios-文件"><a href="#挂载-ios-文件" class="headerlink" title="挂载 ios 文件"></a>挂载 ios 文件</h2><p>直接挂载 iso 文件就不需要光驱了，使用起来更加方便，先模拟创建一个 iso 文件</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># genisoimage -o test.iso tendis/</span></span><br><span class="line">I: -input-charset not specified, using utf-8 (detected <span class="keyword">in</span> locale settings)</span><br><span class="line">Using TENDI000.;1 <span class="keyword">for</span>  tendis/bin/tendisplus (tendisplus_static)</span><br><span class="line">  2.77% <span class="keyword">done</span>, estimate finish Sat Feb 27 23:03:08 2021</span><br><span class="line">  5.53% <span class="keyword">done</span>, estimate finish Sat Feb 27 23:03:08 2021</span><br><span class="line">  8.30% <span class="keyword">done</span>, estimate finish Sat Feb 27 23:03:08 2021</span><br><span class="line">...</span><br><span class="line"> 49.78% <span class="keyword">done</span>, estimate finish Sat Feb 27 23:03:10 2021</span><br><span class="line">...</span><br><span class="line"> 99.55% <span class="keyword">done</span>, estimate finish Sat Feb 27 23:03:11 2021</span><br><span class="line">Total translation table size: 0</span><br><span class="line">Total rockridge attributes bytes: 0</span><br><span class="line">Total directory bytes: 6144</span><br><span class="line">Path table size(bytes): 50</span><br><span class="line">Max brk space used 1a000</span><br><span class="line">180825 extents written (353 MB)</span><br></pre></td></tr></table></figure>
 <p>把 iso 直接挂载到目录就可以了，之后就可以通过 <code>/mnt/iso</code> 目录访问 test.iso 文件中的内容了</p>
@@ -553,6 +554,7 @@
 <hr>
 <blockquote>
 <p>万里山河都踏过 天下又入谁手 分分合合 不过几十载春秋~</p>
+<p>“你在教我做事啊”</p>
 <p>2021-2-27 23:41:34</p>
 </blockquote>
 <!--
