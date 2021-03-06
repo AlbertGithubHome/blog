@@ -346,6 +346,442 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/" itemprop="url">Python中int、str、bytes相互转化，还有2进制、16进制表示，你想要的都在这里了</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-05T00:04:47+08:00">
+                2021-03-05
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-03-06T20:37:21+08:00">
+                2021-03-06
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/" class="leancloud_visitors" data-flag-title="Python中int、str、bytes相互转化，还有2进制、16进制表示，你想要的都在这里了">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,420(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">11(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据类型转换是个很基础的操作，很多语言中都要做这些转换，例如前一段时间刚刚总结了<a href="https://blog.csdn.net/albertsh/article/details/113765130" target="_blank" rel="noopener">《C/C++中string和int相互转换的常用方法》</a>，python 自从分离出 python3 版本之后，<code>str</code> 和 <code>bytes</code> 两个类型弄蒙了一大票人，在这两种类型的转换上我可是花了不少时间，记住一点，别随随便便使用 <code>str()</code> 函数，很多数据使用 <code>str()</code> 变成字符串之后再想恢复可就难了。</p>
+<p>本文所有示例均在 <code>Python 3.7.5</code> 上测试，<code>Python2</code> 已经被我抛弃了，我来试着把常见的转换都放到一起，把踩过的坑拿来开心一下，如果有些常用的类型转换这里没有的话，也欢迎小伙伴们提出来，我将持续补充，好了，可以开始了。</p>
+<h1 id="数据类型转化"><a href="#数据类型转化" class="headerlink" title="数据类型转化"></a>数据类型转化</h1><p>数字中除了整数，还有浮点数、复数等，但是 <code>int</code> 是最常见的类型，所有转换中的数字只涉及 <code>int</code> 数字类型。</p>
+<h2 id="int-gt-str"><a href="#int-gt-str" class="headerlink" title="int -&gt; str"></a>int -&gt; str</h2><h3 id="使用-str-函数"><a href="#使用-str-函数" class="headerlink" title="使用 str() 函数"></a>使用 str() 函数</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">10</span></span><br><span class="line">val = str(<span class="number">10</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'str'&gt; 10</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-format-函数"><a href="#使用-format-函数" class="headerlink" title="使用 format() 函数"></a>使用 format() 函数</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">10</span></span><br><span class="line">val = <span class="string">'&#123;0&#125;'</span>.format(num)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'str'&gt; 10</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-hex-转换成16进制形式"><a href="#使用-hex-转换成16进制形式" class="headerlink" title="使用 hex() 转换成16进制形式"></a>使用 hex() 转换成16进制形式</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">10</span></span><br><span class="line">val = hex(num)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'str'&gt; 0xa</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-bin-转换成2进制形式"><a href="#使用-bin-转换成2进制形式" class="headerlink" title="使用 bin() 转换成2进制形式"></a>使用 bin() 转换成2进制形式</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">10</span></span><br><span class="line">val = bin(num).replace(<span class="string">'0b'</span>,<span class="string">''</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'str'&gt; 1010</span></span><br></pre></td></tr></table></figure>
+<h2 id="str-gt-int"><a href="#str-gt-int" class="headerlink" title="str -&gt; int"></a>str -&gt; int</h2><p>这个转换比较专一，只使用 <code>int()</code> 函数就可以了，这个函数实际上有两个参数，第二个参数表示进制，默认是10进制，你可以改成2进制或者16进制，甚至是3进制、5进制等等</p>
+<h3 id="使用-int-进行各进制数字转换"><a href="#使用-int-进行各进制数字转换" class="headerlink" title="使用 int() 进行各进制数字转换"></a>使用 int() 进行各进制数字转换</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">val = int(<span class="string">'10'</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line">val = int(<span class="string">'0xa'</span>, <span class="number">16</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line">val = int(<span class="string">'a'</span>, <span class="number">16</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line">val = int(<span class="string">'0b1010'</span>, <span class="number">2</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line">val = int(<span class="string">'1010'</span>, <span class="number">2</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line">val = int(<span class="string">'101'</span>, <span class="number">3</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line">val = int(<span class="string">'60'</span>, <span class="number">5</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果均为 &lt;class 'int'&gt; 10</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>int()</code> 函数的时候要主要注意一点，如果提供的字符串不能转换成指定进制的数字，那么会报异常，就像下面这样，所以在使用这个函数的时候最好放到 <code>try</code> 语句中。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val = int(<span class="string">'128'</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">Traceback (most recent call last):</span></span><br><span class="line"><span class="string">  File "D:\python\convert\convert.py", line 41, in &lt;module&gt;</span></span><br><span class="line"><span class="string">    val = int('128', 2)</span></span><br><span class="line"><span class="string">ValueError: invalid literal for int() with base 2: '128'</span></span><br><span class="line"><span class="string">[Finished in 0.1s with exit code 1]</span></span><br><span class="line"><span class="string">'''</span></span><br></pre></td></tr></table></figure>
+<h2 id="什么是bytes"><a href="#什么是bytes" class="headerlink" title="什么是bytes"></a>什么是bytes</h2><p>在列举 bytes 相关的转化前，我们来先认识一下这个类型，在 Python3 中 <code>int</code>、<code>str</code>、<code>bytes</code> 类型的变量实际上都是一个 “类” 的对象，而 <code>bytes</code> 相比 <code>str</code> 而言更接近底层数据，也更接近存储的形式，它其实是一个字节的数组，类似于 <code>C</code> 语言中的 <code>char []</code>，每个字节是一个范围在 0-255 的数字。</p>
+<p><code>bytes</code> 其实就是这样一连串的数字，计算机世界所有的信息都可以用这样一串数字表示，一幅画，一首歌，一部电影等等，如果对编码感兴趣可以看看这篇<a href="https://blog.csdn.net/albertsh/article/details/110357193" target="_blank" rel="noopener">《简单聊聊01世界中编码和解码这对磨人的小妖儿》</a>，现在清楚bytes是什么了，我们可以看看和它相关的转化了。</p>
+<h2 id="int-gt-bytes"><a href="#int-gt-bytes" class="headerlink" title="int -&gt; bytes"></a>int -&gt; bytes</h2><h3 id="使用-to-bytes-转换成定长bytes"><a href="#使用-to-bytes-转换成定长bytes" class="headerlink" title="使用 to_bytes() 转换成定长bytes"></a>使用 to_bytes() 转换成定长bytes</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">4665</span></span><br><span class="line">val = num.to_bytes(length=<span class="number">4</span>, byteorder=<span class="string">'little'</span>, signed=<span class="keyword">False</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'bytes'&gt; b'9\x12\x00\x00'</span></span><br></pre></td></tr></table></figure>
+<p>这段代码就是把数字 4665 转化成定长的4个字节，字节序为小端，我们来简单看一下是怎么转换的：</p>
+<p>上面我们提到 <code>bytes</code> 类型一串 0-255 范围的数字，4665 肯定超出了这个范围，可以先转化成256进制，就变成了 <18><57>，也就是 4665 = 18 * 256 + 57，我们发现两个字节就能存储这个数字，一个18，一个57，要想组成4个字节的数组需要补充两个空位，也就是补充两个0，这时就涉及到一个排列顺序，是 [0,0,18,57] 还是 [57, 18, 0, 0] 呢，这就是函数参数中的字节序 <code>byteorder</code>，little 表示小端，big 表示大端，这里选择的小端 [57, 18, 0, 0] 的排列。</57></18></p>
+<p>看到这里可能会迷糊，好像和结果不一样啊，其实这只是一个表示问题，57 的 ASCII 码对应这个字符 ‘9’，18 表示成16进制就是 ‘0x12’，这里写成 b’9\x12\x00\x00’ 只是便于识别而已，实际上内存存储的就是 [57, 18, 0, 0] 这一串数字对应的二进制编码 ‘00111001 00010010 00000000 00000000’。</p>
+<h3 id="使用-bytes-函数把int数组转成bytes"><a href="#使用-bytes-函数把int数组转成bytes" class="headerlink" title="使用 bytes() 函数把int数组转成bytes"></a>使用 bytes() 函数把int数组转成bytes</h3><p>参考上面的生成的数组，可以通过数组生成相同的结果</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num_array = [<span class="number">57</span>, <span class="number">18</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">val = bytes(num_array)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'bytes'&gt; b'9\x12\x00\x00'</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-struct-pack-函数把数字转化成bytes"><a href="#使用-struct-pack-函数把数字转化成bytes" class="headerlink" title="使用 struct.pack() 函数把数字转化成bytes"></a>使用 struct.pack() 函数把数字转化成bytes</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">4665</span></span><br><span class="line">val = struct.pack(<span class="string">"&lt;I"</span>, num)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'bytes'&gt; b'9\x12\x00\x00'</span></span><br></pre></td></tr></table></figure>
+<p>这里的 <code>&quot;&lt;I&quot;</code> 表示将一个整数转化成小端字节序的4字节数组，其他的类型还有：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">参数</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">&gt;</td>
+<td style="text-align:center">大端序</td>
+</tr>
+<tr>
+<td style="text-align:left">&lt;</td>
+<td style="text-align:center">小端序</td>
+</tr>
+<tr>
+<td style="text-align:left">B</td>
+<td style="text-align:center">uint8类型</td>
+</tr>
+<tr>
+<td style="text-align:left">b</td>
+<td style="text-align:center">int8类型</td>
+</tr>
+<tr>
+<td style="text-align:left">H</td>
+<td style="text-align:center">uint16类型</td>
+</tr>
+<tr>
+<td style="text-align:left">h</td>
+<td style="text-align:center">int16类型</td>
+</tr>
+<tr>
+<td style="text-align:left">I</td>
+<td style="text-align:center">uint32类型</td>
+</tr>
+<tr>
+<td style="text-align:left">i</td>
+<td style="text-align:center">int32类型</td>
+</tr>
+<tr>
+<td style="text-align:left">L</td>
+<td style="text-align:center">uint64类型</td>
+</tr>
+<tr>
+<td style="text-align:left">l</td>
+<td style="text-align:center">int64类型</td>
+</tr>
+<tr>
+<td style="text-align:left">s</td>
+<td style="text-align:center">ascii码，s前带数字表示个数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bytes-gt-int"><a href="#bytes-gt-int" class="headerlink" title="bytes -&gt; int"></a>bytes -&gt; int</h2><p>明白了上面的转化过程，从 bytes 转化到 int 只需要反着来就行了</p>
+<h3 id="使用-from-bytes-把-bytes-转化成int"><a href="#使用-from-bytes-把-bytes-转化成int" class="headerlink" title="使用 from_bytes() 把 bytes 转化成int"></a>使用 from_bytes() 把 bytes 转化成int</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bys = <span class="string">b'9\x12\x00\x00'</span></span><br><span class="line">val = int.from_bytes(bys, byteorder=<span class="string">'little'</span>, signed=<span class="keyword">False</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'int'&gt; 4665</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-struct-unpack-把-bytes-转化成int"><a href="#使用-struct-unpack-把-bytes-转化成int" class="headerlink" title="使用 struct.unpack() 把 bytes 转化成int"></a>使用 struct.unpack() 把 bytes 转化成int</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bys = <span class="string">b'9\x12\x00\x00'</span></span><br><span class="line">val = struct.unpack(<span class="string">"&lt;I"</span>, bys)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment">#&lt;class 'tuple'&gt; (4665,)</span></span><br></pre></td></tr></table></figure>
+<h2 id="str-和-bytes"><a href="#str-和-bytes" class="headerlink" title="str 和 bytes"></a>str 和 bytes</h2><p>前面的这些转化还算清晰，到了字符串str 和字节串 bytes，就开始进入了混沌的状态，这里会出现各种编码，各种乱码，各种报错，牢记一点 str 到 bytes 是编码过程，需要使用 <code>encode()</code> 函数， bytes 到 str 是解码过程，需要使用 <code>decode()</code> 函数，请勿使用 <code>str</code> 函数，否则后果自负。</p>
+<h3 id="使用-encode-函数完成-str-gt-bytes"><a href="#使用-encode-函数完成-str-gt-bytes" class="headerlink" title="使用 encode() 函数完成  str -&gt; bytes"></a>使用 encode() 函数完成  str -&gt; bytes</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'大漠孤烟直qaq'</span></span><br><span class="line">val = s.encode(<span class="string">'utf-8'</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &lt;class 'bytes'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用-decode-函数完成-bytes-gt-str"><a href="#使用-decode-函数完成-bytes-gt-str" class="headerlink" title="使用 decode() 函数完成  bytes -&gt; str"></a>使用 decode() 函数完成  bytes -&gt; str</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bys = <span class="string">b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'</span></span><br><span class="line">val = bys.decode(<span class="string">'utf-8'</span>)</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &lt;class 'str'&gt; 大漠孤烟直qaq</span></span><br></pre></td></tr></table></figure>
+<h2 id="假如使用了-str-函数"><a href="#假如使用了-str-函数" class="headerlink" title="假如使用了 str() 函数"></a>假如使用了 str() 函数</h2><p>从上面来看字符串和字节串的转化蛮简单的，甚至比整数的转化都要简单，但是你如果把一个 bytes 变量用 str() 转化成字符串，你就得手动来处理了，这个函数写过n次了，暂时还没找到好的处理办法。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">bys = <span class="string">b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'</span></span><br><span class="line">s = str(bys)</span><br><span class="line">print(type(s), s)</span><br><span class="line"><span class="comment">#&lt;class 'str'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">str2bytes</span><span class="params">(str_content)</span>:</span></span><br><span class="line">    result_list = [];</span><br><span class="line">    pos = <span class="number">0</span></span><br><span class="line">    str_content = str_content.replace(<span class="string">"\\n"</span>, <span class="string">"\n"</span>).replace(<span class="string">"\\t"</span>, <span class="string">"\t"</span>).replace(<span class="string">"\\r"</span>, <span class="string">"\r"</span>)</span><br><span class="line">    content_len = len(str_content)</span><br><span class="line">    <span class="keyword">while</span> pos &lt; content_len:</span><br><span class="line">        <span class="keyword">if</span> str_content[pos] == <span class="string">'\\'</span> <span class="keyword">and</span> pos + <span class="number">3</span> &lt; content_len <span class="keyword">and</span> str_content[pos + <span class="number">1</span>] == <span class="string">'x'</span>:</span><br><span class="line">            sub_str = str_content[pos + <span class="number">2</span>: pos + <span class="number">4</span>]</span><br><span class="line">            result_list.append(int(sub_str, <span class="number">16</span>))</span><br><span class="line">            pos = pos + <span class="number">4</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result_list.append(ord(str_content[pos]))</span><br><span class="line">            pos = pos + <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> bytes(result_list)</span><br><span class="line"></span><br><span class="line">val = str2bytes(s[<span class="number">2</span>:<span class="number">-1</span>])</span><br><span class="line">print(type(val), val)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &lt;class 'bytes'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'</span></span><br></pre></td></tr></table></figure>
+<p>什么时候会遇到这种情况，就是有些数据是以 bytes 的形式给的，但是经过中间人复制转发变成了字节流形式的字符串，格式还不统一，有些已经翻译成了字符，有些还保留了0x或者\x形式，这时就要手工处理了。</p>
+<h1 id="转化表格"><a href="#转化表格" class="headerlink" title="转化表格"></a>转化表格</h1><p>上面的转化方式和解释穿插在一起有些乱，这里总结一个表格，便于今后拿来就用</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">源类型</th>
+<th style="text-align:center">目标类型</th>
+<th style="text-align:center">方式</th>
+<th style="text-align:center">结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:center">str</td>
+<td style="text-align:center"><code>str(10)</code>、<code>&#39;{0}&#39;.format(10)</code></td>
+<td style="text-align:center"><code>10</code> =&gt; <code>&#39;10&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:center">str（16进制）</td>
+<td style="text-align:center"><code>hex(10)</code></td>
+<td style="text-align:center"><code>10</code> =&gt; <code>&#39;0xa&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:center">str（2进制）</td>
+<td style="text-align:center"><code>bin(10).replace(&#39;0b&#39;,&#39;&#39;)</code></td>
+<td style="text-align:center"><code>10</code> =&gt; <code>&#39;1010&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str</td>
+<td style="text-align:center">int</td>
+<td style="text-align:center"><code>int(&#39;10&#39;)</code></td>
+<td style="text-align:center"><code>&#39;10&#39;</code> =&gt; <code>10</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str（16进制）</td>
+<td style="text-align:center">int</td>
+<td style="text-align:center"><code>int(&#39;0xa&#39;, 16)</code></td>
+<td style="text-align:center"><code>&#39;0xa&#39;</code> =&gt; <code>10</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str（2进制）</td>
+<td style="text-align:center">int</td>
+<td style="text-align:center"><code>int(&#39;1010&#39;, 2)</code></td>
+<td style="text-align:center"><code>&#39;1010&#39;</code> =&gt; <code>10</code></td>
+</tr>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>num.to_bytes(length=4, byteorder=&#39;little&#39;, signed=False)</code></td>
+<td style="text-align:center"><code>4665</code> =&gt; <code>b&#39;9\x12\x00\x00&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>struct.pack(&quot;&lt;I&quot;, 4665)</code></td>
+<td style="text-align:center"><code>4665</code> =&gt; <code>b&#39;9\x12\x00\x00&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">int</td>
+<td style="text-align:center"><code>int.from_bytes(b&#39;9\x12\x00\x00&#39;, byteorder=&#39;little&#39;, signed=False)</code></td>
+<td style="text-align:center"><code>b&#39;9\x12\x00\x00&#39;</code> =&gt; <code>4665</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">int</td>
+<td style="text-align:center"><code>struct.unpack(&quot;&lt;I&quot;, b&#39;9\x12\x00\x00&#39;)</code></td>
+<td style="text-align:center"><code>b&#39;9\x12\x00\x00&#39;</code> =&gt; <code>4665</code></td>
+</tr>
+<tr>
+<td style="text-align:left">int[]</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>bytes([57, 18, 0, 0])</code></td>
+<td style="text-align:center"><code>[57, 18, 0, 0]</code> =&gt; <code>b&#39;9\x12\x00\x00&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">int[]</td>
+<td style="text-align:center"><code>[x for x in b&#39;9\x12\x00\x00&#39;]</code></td>
+<td style="text-align:center"><code>b&#39;9\x12\x00\x00&#39;</code> =&gt; <code>[57, 18, 0, 0]</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>&#39;美好&#39;.encode(&#39;utf-8&#39;)</code></td>
+<td style="text-align:center"><code>&#39;美好&#39;</code> =&gt; <code>b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>bytes(&#39;美好&#39;, &#39;utf-8&#39;)</code></td>
+<td style="text-align:center"><code>&#39;美好&#39;</code> =&gt; <code>b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">str</td>
+<td style="text-align:center"><code>b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39;.decode(&#39;utf-8&#39;)</code></td>
+<td style="text-align:center"><code>b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39;</code> =&gt; <code>&#39;美好&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">bytes（无\x）</td>
+<td style="text-align:center"><code>binascii.b2a_hex(b&#39;\xe7\xbe\x8eqaq&#39;)</code></td>
+<td style="text-align:center"><code>b&#39;\xe7\xbe\x8eqaq&#39;</code> =&gt; <code>b&#39;e7be8e716171&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">bytes（有\x）</td>
+<td style="text-align:center"><code>binascii.a2b_hex(b&#39;e7be8e716171&#39;)</code></td>
+<td style="text-align:center"><code>b&#39;e7be8e716171&#39;</code> =&gt; <code>b&#39;\xe7\xbe\x8eqaq&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">bytes</td>
+<td style="text-align:center">str（hex）</td>
+<td style="text-align:center"><code>b&#39;\xe7\xbe\x8eqaq&#39;.hex()</code></td>
+<td style="text-align:center"><code>b&#39;\xe7\xbe\x8eqaq&#39;</code> =&gt; <code>&#39;e7be8e716171&#39;</code></td>
+</tr>
+<tr>
+<td style="text-align:left">str（hex）</td>
+<td style="text-align:center">bytes</td>
+<td style="text-align:center"><code>bytes.fromhex(&#39;e7be8e716171&#39;)</code></td>
+<td style="text-align:center"><code>&#39;e7be8e716171&#39;</code> =&gt; <code>b&#39;\xe7\xbe\x8eqaq&#39;</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>Python3 对字符串和二进制数据流做了明确的区分，不会以任意隐式的方式混用 <code>str</code> 和 <code>bytes</code></li>
+<li><code>bytes</code> 类型是一种比特流，它的存在形式是 01010001110 的形式，需要解码成字符才容易被人理解</li>
+<li>struct 模块中的 <code>pack()</code> 和 <code>unpack()</code> 可以实现任意类型和 <code>bytes</code> 之间的转换</li>
+<li><code>binascii.b2a_hex</code> 和 <code>binascii.a2b_hex</code> 可以实现16进制 bytes 的不同形式转换，不过转换前后长度发生了变化</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/114199056" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>初识不知曲中意，再闻已是曲中人</p>
+<p>2021-3-6 20:36:10</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2273,225 +2709,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/12/27/2020年终总结！新的起航，新的征程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/12/27/2020年终总结！新的起航，新的征程/" itemprop="url">2020年终总结！新的起航，新的征程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-27T20:25:12+08:00">
-                2020-12-27
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-12-31T22:57:04+08:00">
-                2020-12-31
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/12/27/2020年终总结！新的起航，新的征程/" class="leancloud_visitors" data-flag-title="2020年终总结！新的起航，新的征程">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,204(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">11(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>奇变偶不变，符号看象限，真正的知识就是这么朴实无华~</p>
-</blockquote>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>从2019年开始意识到年终总结的意义，通过反思自己的得失进而确定今后的方向，既然去年开了头，今年也不能中断，依旧写写每天的流水账，细数最近一年发生的故事。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/12/27/2020年终总结！新的起航，新的征程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2542,7 +2759,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">121</span>
+                <span class="site-state-item-count">122</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2564,7 +2781,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">284</span>
+                <span class="site-state-item-count">286</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
