@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[解决git命令会将结果输出到单独窗口必须按q才能退出的问题]]></title>
+    <url>%2Fblog%2F2021%2F03%2F14%2F%E8%A7%A3%E5%86%B3git%E5%91%BD%E4%BB%A4%E4%BC%9A%E5%B0%86%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA%E5%88%B0%E5%8D%95%E7%8B%AC%E7%AA%97%E5%8F%A3%E5%BF%85%E9%A1%BB%E6%8C%89q%E6%89%8D%E8%83%BD%E9%80%80%E5%87%BA%E7%9A%84%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。 如果是使用 git log 查询日志后想进行合并或者回退等操作时，因为日志信息已经退出没有显示在当前窗口，这种情况会比较麻烦，有时候还需要额外再查询一次，还有就是 git branch 命显示内容常常较少，单独打开一个窗口也没有必要，所以想单独设置这种情况，后来查询资料发现，这与 git 的 pager 设置有关，特此记录一下。 什么是 pagerpager 其实就是分页器，也就是对一大段内容进行分页显示的工具，git 在一些版本中默认使用的是 less 工具，不同的版本默认设置会有差异，这也就是造成我在 windows 下没有自动分页，而在 linux 下会打开新窗口进行分页的原因。 git 的分页器可以通过 core.pager 来进行设置，他会被 git 命令行解释，影响分页器的变量有多个，他们起作用的顺序依次是 $GIT_PAGER 环境变量，core.pager git配置，$PAGER 环境变量，如果这些都没有设置，默认会选择编译时的选项（通常为less），具体细节可以参考官方文档 git core.pager。 设置 core.pager了解了上面的原理，我们就知道只要单独修改 git 配置就可以了，默认的分页器是 less，我们只要设置了 core.pager 就可以影响结果，所以在 git Bash 中执行下面的语句即可。 1git config --global core.pager '' 其实就是将分页器清空就行了，这样再执行 git branch 的时候就不会出现分页的情况了。 更精细的设置设置 core.pager 这项配置后对 less 分页器进行了全局屏蔽，虽然 git branch 这种显示内容少的命令比较方便了，但是执行 git show 的时候不分页反而会显得混乱，有没有单独设置每个 git 命令的配置呢？ 答案当然是肯定的，比如上面提到的这种情况，我们只想屏蔽 git branch 命令的分页，而想保留git show 和 git log 的分页显示，就可以单独执行下面的命令。 1git config --global pager.branch false 这样就可以达到只屏蔽 git branch 命令的分页结果了。 less and more临时插播个知识点，less 和 more 都是 linux 的文本显示工具，那么它们谁更厉害一点呢？从名字上来看应该是 more 更厉害，但实际上是 less 更厉害，less 在 more 的基础上加上了后退功能，支持上下翻页，并且速度更快一点，所以在 linux 的世界一直流传着 “less is more” 这句话。另外 more 退出后会在 shell 上留下刚显示的内容，而 less 不会。 总结 使用 git config --global core.pager &#39;&#39; 命令可以屏蔽 git 默认的分页器 less 使用 git config --global pager.branch false 命令可以只关闭 git branch 命令的分页显示 less 命令比 more 命令更加强大，拥有后退功能，并且支持上下键翻页，退出后不会在 shell 显示刚才的内容 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== ~ 2021-3-14 17:14:55]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>branch</tag>
+        <tag>log</tag>
+        <tag>pager</tag>
+        <tag>config</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python中int、str、bytes相互转化，还有2进制、16进制表示，你想要的都在这里了]]></title>
     <url>%2Fblog%2F2021%2F03%2F05%2FPython%E4%B8%ADint%E3%80%81str%E3%80%81byte%E7%9B%B8%E4%BA%92%E8%BD%AC%E5%8C%96%EF%BC%8C%E8%BF%98%E6%9C%892%E8%BF%9B%E5%88%B6%E3%80%8116%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%EF%BC%8C%E4%BD%A0%E6%83%B3%E8%A6%81%E7%9A%84%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%E4%BA%86%2F</url>
     <content type="text"><![CDATA[前言数据类型转换是个很基础的操作，很多语言中都要做这些转换，例如前一段时间刚刚总结了《C/C++中string和int相互转换的常用方法》，python 自从分离出 python3 版本之后，str 和 bytes 两个类型弄蒙了一大票人，在这两种类型的转换上我可是花了不少时间，记住一点，别随随便便使用 str() 函数，很多数据使用 str() 变成字符串之后再想恢复可就难了。 本文所有示例均在 Python 3.7.5 上测试，Python2 已经被我抛弃了，我来试着把常见的转换都放到一起，把踩过的坑拿来开心一下，如果有些常用的类型转换这里没有的话，也欢迎小伙伴们提出来，我将持续补充，好了，可以开始了。 数据类型转化数字中除了整数，还有浮点数、复数等，但是 int 是最常见的类型，所有转换中的数字只涉及 int 数字类型。 int -&gt; str使用 str() 函数12345num = 10val = str(10)print(type(val), val)#&lt;class 'str'&gt; 10 使用 format() 函数12345num = 10val = '&#123;0&#125;'.format(num)print(type(val), val)#&lt;class 'str'&gt; 10 使用 hex() 转换成16进制形式12345num = 10val = hex(num)print(type(val), val)#&lt;class 'str'&gt; 0xa 使用 bin() 转换成2进制形式12345num = 10val = bin(num).replace('0b','')print(type(val), val)#&lt;class 'str'&gt; 1010 str -&gt; int这个转换比较专一，只使用 int() 函数就可以了，这个函数实际上有两个参数，第二个参数表示进制，默认是10进制，你可以改成2进制或者16进制，甚至是3进制、5进制等等 使用 int() 进行各进制数字转换1234567891011121314151617181920val = int('10')print(type(val), val)val = int('0xa', 16)print(type(val), val)val = int('a', 16)print(type(val), val)val = int('0b1010', 2)print(type(val), val)val = int('1010', 2)print(type(val), val)val = int('101', 3)print(type(val), val)val = int('60', 5)print(type(val), val)# 结果均为 &lt;class 'int'&gt; 10 使用 int() 函数的时候要主要注意一点，如果提供的字符串不能转换成指定进制的数字，那么会报异常，就像下面这样，所以在使用这个函数的时候最好放到 try 语句中。 123456789val = int('128', 2)'''Traceback (most recent call last): File "D:\python\convert\convert.py", line 41, in &lt;module&gt; val = int('128', 2)ValueError: invalid literal for int() with base 2: '128'[Finished in 0.1s with exit code 1]''' 什么是bytes在列举 bytes 相关的转化前，我们来先认识一下这个类型，在 Python3 中 int、str、bytes 类型的变量实际上都是一个 “类” 的对象，而 bytes 相比 str 而言更接近底层数据，也更接近存储的形式，它其实是一个字节的数组，类似于 C 语言中的 char []，每个字节是一个范围在 0-255 的数字。 bytes 其实就是这样一连串的数字，计算机世界所有的信息都可以用这样一串数字表示，一幅画，一首歌，一部电影等等，如果对编码感兴趣可以看看这篇《简单聊聊01世界中编码和解码这对磨人的小妖儿》，现在清楚bytes是什么了，我们可以看看和它相关的转化了。 int -&gt; bytes使用 to_bytes() 转换成定长bytes12345num = 4665val = num.to_bytes(length=4, byteorder='little', signed=False)print(type(val), val)#&lt;class 'bytes'&gt; b'9\x12\x00\x00' 这段代码就是把数字 4665 转化成定长的4个字节，字节序为小端，我们来简单看一下是怎么转换的： 上面我们提到 bytes 类型一串 0-255 范围的数字，4665 肯定超出了这个范围，可以先转化成256进制，就变成了 ，也就是 4665 = 18 * 256 + 57，我们发现两个字节就能存储这个数字，一个18，一个57，要想组成4个字节的数组需要补充两个空位，也就是补充两个0，这时就涉及到一个排列顺序，是 [0,0,18,57] 还是 [57, 18, 0, 0] 呢，这就是函数参数中的字节序 byteorder，little 表示小端，big 表示大端，这里选择的小端 [57, 18, 0, 0] 的排列。 看到这里可能会迷糊，好像和结果不一样啊，其实这只是一个表示问题，57 的 ASCII 码对应这个字符 ‘9’，18 表示成16进制就是 ‘0x12’，这里写成 b’9\x12\x00\x00’ 只是便于识别而已，实际上内存存储的就是 [57, 18, 0, 0] 这一串数字对应的二进制编码 ‘00111001 00010010 00000000 00000000’。 使用 bytes() 函数把int数组转成bytes参考上面的生成的数组，可以通过数组生成相同的结果 12345num_array = [57, 18, 0, 0]val = bytes(num_array)print(type(val), val)#&lt;class 'bytes'&gt; b'9\x12\x00\x00' 使用 struct.pack() 函数把数字转化成bytes12345num = 4665val = struct.pack("&lt;I", num)print(type(val), val)#&lt;class 'bytes'&gt; b'9\x12\x00\x00' 这里的 &quot;&lt;I&quot; 表示将一个整数转化成小端字节序的4字节数组，其他的类型还有： 参数 含义 &gt; 大端序 &lt; 小端序 B uint8类型 b int8类型 H uint16类型 h int16类型 I uint32类型 i int32类型 L uint64类型 l int64类型 s ascii码，s前带数字表示个数 bytes -&gt; int明白了上面的转化过程，从 bytes 转化到 int 只需要反着来就行了 使用 from_bytes() 把 bytes 转化成int12345bys = b'9\x12\x00\x00'val = int.from_bytes(bys, byteorder='little', signed=False)print(type(val), val)#&lt;class 'int'&gt; 4665 使用 struct.unpack() 把 bytes 转化成int12345bys = b'9\x12\x00\x00'val = struct.unpack("&lt;I", bys)print(type(val), val)#&lt;class 'tuple'&gt; (4665,) str 和 bytes前面的这些转化还算清晰，到了字符串str 和字节串 bytes，就开始进入了混沌的状态，这里会出现各种编码，各种乱码，各种报错，牢记一点 str 到 bytes 是编码过程，需要使用 encode() 函数， bytes 到 str 是解码过程，需要使用 decode() 函数，请勿使用 str 函数，否则后果自负。 使用 encode() 函数完成 str -&gt; bytes12345s = '大漠孤烟直qaq'val = s.encode('utf-8')print(type(val), val)# &lt;class 'bytes'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq' 使用 decode() 函数完成 bytes -&gt; str12345bys = b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'val = bys.decode('utf-8')print(type(val), val)# &lt;class 'str'&gt; 大漠孤烟直qaq 假如使用了 str() 函数从上面来看字符串和字节串的转化蛮简单的，甚至比整数的转化都要简单，但是你如果把一个 bytes 变量用 str() 转化成字符串，你就得手动来处理了，这个函数写过n次了，暂时还没找到好的处理办法。 123456789101112131415161718192021222324bys = b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq's = str(bys)print(type(s), s)#&lt;class 'str'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq'def str2bytes(str_content): result_list = []; pos = 0 str_content = str_content.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r") content_len = len(str_content) while pos &lt; content_len: if str_content[pos] == '\\' and pos + 3 &lt; content_len and str_content[pos + 1] == 'x': sub_str = str_content[pos + 2: pos + 4] result_list.append(int(sub_str, 16)) pos = pos + 4 else: result_list.append(ord(str_content[pos])) pos = pos + 1 return bytes(result_list)val = str2bytes(s[2:-1])print(type(val), val)# &lt;class 'bytes'&gt; b'\xe5\xa4\xa7\xe6\xbc\xa0\xe5\xad\xa4\xe7\x83\x9f\xe7\x9b\xb4qaq' 什么时候会遇到这种情况，就是有些数据是以 bytes 的形式给的，但是经过中间人复制转发变成了字节流形式的字符串，格式还不统一，有些已经翻译成了字符，有些还保留了0x或者\x形式，这时就要手工处理了。 转化表格上面的转化方式和解释穿插在一起有些乱，这里总结一个表格，便于今后拿来就用 源类型 目标类型 方式 结果 int str str(10)、&#39;{0}&#39;.format(10) 10 =&gt; &#39;10&#39; int str（16进制） hex(10) 10 =&gt; &#39;0xa&#39; int str（2进制） bin(10).replace(&#39;0b&#39;,&#39;&#39;) 10 =&gt; &#39;1010&#39; str int int(&#39;10&#39;) &#39;10&#39; =&gt; 10 str（16进制） int int(&#39;0xa&#39;, 16) &#39;0xa&#39; =&gt; 10 str（2进制） int int(&#39;1010&#39;, 2) &#39;1010&#39; =&gt; 10 int bytes num.to_bytes(length=4, byteorder=&#39;little&#39;, signed=False) 4665 =&gt; b&#39;9\x12\x00\x00&#39; int bytes struct.pack(&quot;&lt;I&quot;, 4665) 4665 =&gt; b&#39;9\x12\x00\x00&#39; bytes int int.from_bytes(b&#39;9\x12\x00\x00&#39;, byteorder=&#39;little&#39;, signed=False) b&#39;9\x12\x00\x00&#39; =&gt; 4665 bytes int struct.unpack(&quot;&lt;I&quot;, b&#39;9\x12\x00\x00&#39;) b&#39;9\x12\x00\x00&#39; =&gt; 4665 int[] bytes bytes([57, 18, 0, 0]) [57, 18, 0, 0] =&gt; b&#39;9\x12\x00\x00&#39; bytes int[] [x for x in b&#39;9\x12\x00\x00&#39;] b&#39;9\x12\x00\x00&#39; =&gt; [57, 18, 0, 0] str bytes &#39;美好&#39;.encode(&#39;utf-8&#39;) &#39;美好&#39; =&gt; b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39; str bytes bytes(&#39;美好&#39;, &#39;utf-8&#39;) &#39;美好&#39; =&gt; b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39; bytes str b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39;.decode(&#39;utf-8&#39;) b&#39;\xe7\xbe\x8e\xe5\xa5\xbd&#39; =&gt; &#39;美好&#39; bytes bytes（无\x） binascii.b2a_hex(b&#39;\xe7\xbe\x8eqaq&#39;) b&#39;\xe7\xbe\x8eqaq&#39; =&gt; b&#39;e7be8e716171&#39; bytes bytes（有\x） binascii.a2b_hex(b&#39;e7be8e716171&#39;) b&#39;e7be8e716171&#39; =&gt; b&#39;\xe7\xbe\x8eqaq&#39; bytes str（hex） b&#39;\xe7\xbe\x8eqaq&#39;.hex() b&#39;\xe7\xbe\x8eqaq&#39; =&gt; &#39;e7be8e716171&#39; str（hex） bytes bytes.fromhex(&#39;e7be8e716171&#39;) &#39;e7be8e716171&#39; =&gt; b&#39;\xe7\xbe\x8eqaq&#39; 总结 Python3 对字符串和二进制数据流做了明确的区分，不会以任意隐式的方式混用 str 和 bytes bytes 类型是一种比特流，它的存在形式是 01010001110 的形式，需要解码成字符才容易被人理解 struct 模块中的 pack() 和 unpack() 可以实现任意类型和 bytes 之间的转换 binascii.b2a_hex 和 binascii.a2b_hex 可以实现16进制 bytes 的不同形式转换，不过转换前后长度发生了变化 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 初识不知曲中意，再闻已是曲中人 2021-3-6 20:36:10]]></content>
@@ -95,8 +110,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -148,10 +163,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -216,8 +231,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -530,10 +545,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -574,8 +589,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -731,10 +746,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -760,10 +775,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -774,10 +789,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1332,8 +1347,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1661,8 +1676,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>
