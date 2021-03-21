@@ -84,7 +84,7 @@
 <link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="git,branch,log,pager,config," />
+  <meta name="keywords" content="git,log,branch,pager,config," />
 
 
 
@@ -103,14 +103,14 @@
 
 
 <meta name="description" content="前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。">
-<meta name="keywords" content="git,branch,log,pager,config">
+<meta name="keywords" content="git,log,branch,pager,config">
 <meta property="og:type" content="article">
 <meta property="og:title" content="解决git命令会将结果输出到单独窗口必须按q才能退出的问题">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/03/14/解决git命令会将结果输出到单独窗口必须按q才能退出的问题/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-03-14T09:19:16.723Z">
+<meta property="og:updated_time" content="2021-03-14T14:26:22.534Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解决git命令会将结果输出到单独窗口必须按q才能退出的问题">
 <meta name="twitter:description" content="前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。">
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-03-14T17:19:16+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2021-03-14T22:26:22+08:00">
                 2021-03-14
               </time>
             
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">920(字)</span>
+            <span class="post-count">964(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -453,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">3(分)</span>
+            <span class="post-count">4(分)</span>
           </span>
 
           
@@ -492,18 +492,18 @@
 <p>答案当然是肯定的，比如上面提到的这种情况，我们只想屏蔽 <code>git branch</code> 命令的分页，而想保留<code>git show</code> 和 <code>git log</code> 的分页显示，就可以单独执行下面的命令。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global pager.branch <span class="literal">false</span></span><br></pre></td></tr></table></figure>
 <p>这样就可以达到只屏蔽 <code>git branch</code> 命令的分页结果了。</p>
-<h1 id="less-and-more"><a href="#less-and-more" class="headerlink" title="less and more"></a>less and more</h1><p>临时插播个知识点，less 和 more 都是 linux 的文本显示工具，那么它们谁更厉害一点呢？从名字上来看应该是 more 更厉害，但实际上是 less 更厉害，less 在 more 的基础上加上了后退功能，支持上下翻页，并且速度更快一点，所以在 linux 的世界一直流传着 “less is more” 这句话。另外 more 退出后会在 shell 上留下刚显示的内容，而 less 不会。</p>
+<h1 id="less-and-more"><a href="#less-and-more" class="headerlink" title="less and more"></a>less and more</h1><p>临时插播个知识点，less 和 more 都是 linux 的文本显示工具，那么它们谁更厉害一点呢？从名字上来看应该是 more 更厉害，但实际上是 less 更厉害，less 在 more 的基础上加上了后退功能（据说最初版本more不能后退，现在的常见版本已经支持后退功能了），支持上下键翻页，并且速度更快一点，所以在 linux 的世界一直流传着 “less is more” 这句话。另外 more 退出后会在 shell 上留下刚显示的内容，而 less 不会。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
 <li>使用 <code>git config --global core.pager &#39;&#39;</code> 命令可以屏蔽 git 默认的分页器 less</li>
 <li>使用 <code>git config --global pager.branch false</code> 命令可以只关闭 <code>git branch</code> 命令的分页显示</li>
-<li>less 命令比 more 命令更加强大，拥有后退功能，并且支持上下键翻页，退出后不会在 shell 显示刚才的内容</li>
+<li>less 命令比 more 命令更加强大，支持上下键翻页，退出后不会在 shell 显示刚才的内容</li>
 </ul>
 <hr>
 <center><a href="https://blog.csdn.net/albertsh/article/details/114465098" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
 
 <hr>
 <blockquote>
-<p>~</p>
+<p>学而不思则罔，思而不学则殆。动而不思则徒，思而不动则颓。</p>
 <p>2021-3-14 17:14:55</p>
 </blockquote>
 
@@ -592,9 +592,9 @@
           
             <a href="/blog/tags/git/" rel="tag"><i class="fa fa-tag"></i> git</a>
           
-            <a href="/blog/tags/branch/" rel="tag"><i class="fa fa-tag"></i> branch</a>
-          
             <a href="/blog/tags/log/" rel="tag"><i class="fa fa-tag"></i> log</a>
+          
+            <a href="/blog/tags/branch/" rel="tag"><i class="fa fa-tag"></i> branch</a>
           
             <a href="/blog/tags/pager/" rel="tag"><i class="fa fa-tag"></i> pager</a>
           
@@ -620,6 +620,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2021/03/21/C-中反向遍历map时怎样删除元素/" rel="prev" title="C++中反向遍历map时怎样删除元素">
+                C++中反向遍历map时怎样删除元素 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -721,7 +725,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">123</span>
+                <span class="site-state-item-count">124</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -743,7 +747,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">288</span>
+                <span class="site-state-item-count">291</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[C++中反向遍历map时怎样删除元素]]></title>
+    <url>%2Fblog%2F2021%2F03%2F21%2FC-%E4%B8%AD%E5%8F%8D%E5%90%91%E9%81%8D%E5%8E%86map%E6%97%B6%E6%80%8E%E6%A0%B7%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0%2F</url>
+    <content type="text"><![CDATA[前言今天在解决一个问题 《5710. 积压订单中的订单总数》 时用到了map的反向遍历，看到问题时首先想到了优先队列，但是需要维护一个大根堆和一个小根堆，感觉操作起来比较麻烦，突发奇想使用map就能够解决。map本身就是有序的，正向遍历可以得到从小到大的序列，而反向遍历就可以得到从大到小的序列，这个思路本身没有错，但是解题时卡在了反向遍历时如何删除元素的知识点上，特此记录一下。 map的正向遍历map的正向遍历是一个基础知识点了，先简单回顾复习一下，不管是用 for 还是 while，只要控制迭代器持续前进就可以了。 12345678910111213map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (map&lt;int, string&gt;::iterator it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容1 A2 E3 I4 O6 U*/ 引入 auto 关键字以后，定义表示式的时候会更加方便一点 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125; 引入冒号以后表达式更加简短，要注意的是这里的额 it 已经不是指针了，而是 value_type 类型，所以需要是用 . 来访问 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it : mp) &#123; cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;&#125; 引入了结构化绑定声明之后，遍历方式还可以写成下面这样 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto&amp; [a, b] : mp) &#123; cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; endl;&#125; map 遍历时删除元素map 遍历时删除需要注意迭代器失效问题，常用的有下面两种写法 1it = mp.erase(it); 或者1mp.erase(it++); 遍历删除时的例子： 1234567891011121314151617map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end();) &#123; if (it-&gt;second == "I") mp.erase(it++); else it++;&#125;for (auto it : mp) cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;/* 输出内容1 A2 E4 O6 U*/ map 的反向遍历map 反向遍历时可以使用 reverse_iterator 迭代器，配合 rbegin() 和 rend() 方法就可以完成反向遍历 123456789101112map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend(); it++) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容6 U4 O3 I2 E1 A*/ map 反向遍历时删除元素一开始也是用 erase 函数来删除元素，但是会报下面的编译错误 123error: no matching function for call to ‘std::map&lt;int, std::__cxx11::basic_string&lt;char&gt; &gt;::erase( std::reverse_iterator&lt;std::_Rb_tree_iterator&lt;std::pair&lt;const int, std::__cxx11::basic_string&lt;char&gt; &gt; &gt; &gt;)’ mp.erase(it++); 查询文档发现，erase 函数重载只有下面几种实现: 12345678void erase( iterator pos ); (until C++11)iterator erase( const_iterator pos ); (since C++11)iterator erase( iterator pos ); (since C++17)void erase( iterator first, iterator last ); (until C++11)iterator erase( const_iterator first, const_iterator last ); (since C++11)size_type erase( const key_type&amp; key ); 参数是迭代器的函数并不支持 reverse_iterator，需要将 reverse_iterator 转化成 iterator 才可以，这时就需要用到 base 函数，对 reverse_iterator 类型的迭代器使用 base 函数得到的是上一个元素原始指针，这一点比较有意思，具体的解释可以参考 《std::reverse_iterator::base》，这种操作决定了我们遍历删除的写法，应该是先自增再调用 base 函数，代码如下； 12345678910111213141516map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend(); it++) &#123; if (it-&gt;second == "I") mp.erase((++it).base()); else it++;&#125;for (auto it = mp.rbegin(); it != mp.rend(); it++) cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;/* 输出内容6 U4 O2 E1 A*/ 总结 map 默认会按照 key 排序，是一个常用的有序容器 配合使用 rbegin() 和 rend() 函数可以完成 map 的反向遍历 对 reverse_iterator 类型迭代器使用 base() 函数，可以转化成 iterator 相关类型，然后进行删除操作 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 搬起砖，我抱不了你，放下砖 … 我尽力！ 2021-3-21 19:44:27]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>iterator</tag>
+        <tag>reverse_iterator</tag>
+        <tag>base</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[解决git命令会将结果输出到单独窗口必须按q才能退出的问题]]></title>
     <url>%2Fblog%2F2021%2F03%2F14%2F%E8%A7%A3%E5%86%B3git%E5%91%BD%E4%BB%A4%E4%BC%9A%E5%B0%86%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA%E5%88%B0%E5%8D%95%E7%8B%AC%E7%AA%97%E5%8F%A3%E5%BF%85%E9%A1%BB%E6%8C%89q%E6%89%8D%E8%83%BD%E9%80%80%E5%87%BA%E7%9A%84%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。 如果是使用 git log 查询日志后想进行合并或者回退等操作时，因为日志信息已经退出没有显示在当前窗口，这种情况会比较麻烦，有时候还需要额外再查询一次，还有就是 git branch 命显示内容常常较少，单独打开一个窗口也没有必要，所以想单独设置这种情况，后来查询资料发现，这与 git 的 pager 设置有关，特此记录一下。 什么是 pagerpager 其实就是分页器，也就是对一大段内容进行分页显示的工具，git 在一些版本中默认使用的是 less 工具，不同的版本默认设置会有差异，这也就是造成我在 windows 下没有自动分页，而在 linux 下会打开新窗口进行分页的原因。 git 的分页器可以通过 core.pager 来进行设置，他会被 git 命令行解释，影响分页器的变量有多个，他们起作用的顺序依次是 $GIT_PAGER 环境变量，core.pager git配置，$PAGER 环境变量，如果这些都没有设置，默认会选择编译时的选项（通常为less），具体细节可以参考官方文档 git core.pager。 设置 core.pager了解了上面的原理，我们就知道只要单独修改 git 配置就可以了，默认的分页器是 less，我们只要设置了 core.pager 就可以影响结果，所以在 git Bash 中执行下面的语句即可。 1git config --global core.pager '' 其实就是将分页器清空就行了，这样再执行 git branch 的时候就不会出现分页的情况了。 更精细的设置设置 core.pager 这项配置后对 less 分页器进行了全局屏蔽，虽然 git branch 这种显示内容少的命令比较方便了，但是执行 git show 的时候不分页反而会显得混乱，有没有单独设置每个 git 命令的配置呢？ 答案当然是肯定的，比如上面提到的这种情况，我们只想屏蔽 git branch 命令的分页，而想保留git show 和 git log 的分页显示，就可以单独执行下面的命令。 1git config --global pager.branch false 这样就可以达到只屏蔽 git branch 命令的分页结果了。 less and more临时插播个知识点，less 和 more 都是 linux 的文本显示工具，那么它们谁更厉害一点呢？从名字上来看应该是 more 更厉害，但实际上是 less 更厉害，less 在 more 的基础上加上了后退功能，支持上下翻页，并且速度更快一点，所以在 linux 的世界一直流传着 “less is more” 这句话。另外 more 退出后会在 shell 上留下刚显示的内容，而 less 不会。 总结 使用 git config --global core.pager &#39;&#39; 命令可以屏蔽 git 默认的分页器 less 使用 git config --global pager.branch false 命令可以只关闭 git branch 命令的分页显示 less 命令比 more 命令更加强大，拥有后退功能，并且支持上下键翻页，退出后不会在 shell 显示刚才的内容 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== ~ 2021-3-14 17:14:55]]></content>
+    <content type="text"><![CDATA[前言平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 git Bash 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 git branch、git log、git show 等等。 如果是使用 git log 查询日志后想进行合并或者回退等操作时，因为日志信息已经退出没有显示在当前窗口，这种情况会比较麻烦，有时候还需要额外再查询一次，还有就是 git branch 命显示内容常常较少，单独打开一个窗口也没有必要，所以想单独设置这种情况，后来查询资料发现，这与 git 的 pager 设置有关，特此记录一下。 什么是 pagerpager 其实就是分页器，也就是对一大段内容进行分页显示的工具，git 在一些版本中默认使用的是 less 工具，不同的版本默认设置会有差异，这也就是造成我在 windows 下没有自动分页，而在 linux 下会打开新窗口进行分页的原因。 git 的分页器可以通过 core.pager 来进行设置，他会被 git 命令行解释，影响分页器的变量有多个，他们起作用的顺序依次是 $GIT_PAGER 环境变量，core.pager git配置，$PAGER 环境变量，如果这些都没有设置，默认会选择编译时的选项（通常为less），具体细节可以参考官方文档 git core.pager。 设置 core.pager了解了上面的原理，我们就知道只要单独修改 git 配置就可以了，默认的分页器是 less，我们只要设置了 core.pager 就可以影响结果，所以在 git Bash 中执行下面的语句即可。 1git config --global core.pager '' 其实就是将分页器清空就行了，这样再执行 git branch 的时候就不会出现分页的情况了。 更精细的设置设置 core.pager 这项配置后对 less 分页器进行了全局屏蔽，虽然 git branch 这种显示内容少的命令比较方便了，但是执行 git show 的时候不分页反而会显得混乱，有没有单独设置每个 git 命令的配置呢？ 答案当然是肯定的，比如上面提到的这种情况，我们只想屏蔽 git branch 命令的分页，而想保留git show 和 git log 的分页显示，就可以单独执行下面的命令。 1git config --global pager.branch false 这样就可以达到只屏蔽 git branch 命令的分页结果了。 less and more临时插播个知识点，less 和 more 都是 linux 的文本显示工具，那么它们谁更厉害一点呢？从名字上来看应该是 more 更厉害，但实际上是 less 更厉害，less 在 more 的基础上加上了后退功能（据说最初版本more不能后退，现在的常见版本已经支持后退功能了），支持上下键翻页，并且速度更快一点，所以在 linux 的世界一直流传着 “less is more” 这句话。另外 more 退出后会在 shell 上留下刚显示的内容，而 less 不会。 总结 使用 git config --global core.pager &#39;&#39; 命令可以屏蔽 git 默认的分页器 less 使用 git config --global pager.branch false 命令可以只关闭 git branch 命令的分页显示 less 命令比 more 命令更加强大，支持上下键翻页，退出后不会在 shell 显示刚才的内容 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 学而不思则罔，思而不学则殆。动而不思则徒，思而不动则颓。 2021-3-14 17:14:55]]></content>
       <categories>
         <category>Git</category>
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>log</tag>
+        <tag>branch</tag>
         <tag>pager</tag>
         <tag>config</tag>
       </tags>
@@ -110,8 +124,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -231,8 +245,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -445,9 +459,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>source</tag>
         <tag>linux</tag>
         <tag>gdb</tag>
+        <tag>source</tag>
         <tag>dir</tag>
         <tag>path</tag>
       </tags>
@@ -589,8 +603,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -1017,9 +1031,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -1347,8 +1361,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -1676,8 +1690,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>实用工具</tag>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
