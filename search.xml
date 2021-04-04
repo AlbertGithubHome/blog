@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[写给自己的KMP——C++版本]]></title>
+    <url>%2Fblog%2F2021%2F04%2F04%2F%E5%86%99%E7%BB%99%E8%87%AA%E5%B7%B1%E7%9A%84KMP%E2%80%94%E2%80%94C-%E7%89%88%E6%9C%AC%2F</url>
+    <content type="text"><![CDATA[一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。 不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 KMP，还是去搜索其他资料吧，相关的内容有很多，有些文章写的很详细的。 今天的示例代码用C++来写，上一版的自己写的KMP我查了一下是C语言版本的，初看起来已经有点费劲了，随着时间的推移，我决定根据理解再写一次，写完才发现，和之前的风格判若两人。 二、暴力搜索在原字符串中搜索模式串，最容易想到的就是暴力搜索，匹配则向后移动，不匹配则原串回溯，模式串归0，代码很容易实现，列举如下： 123456789101112131415161718192021222324252627#include &lt;iostream&gt;#include &lt;string&gt;using namespace std;int violence_find(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; while (i &lt; m &amp;&amp; j &lt; n) &#123; if (s[i] == p[j]) &#123; // match character ++i; ++j; &#125; else &#123; // mismatch i -= j - 1; j = 0; &#125; &#125; return j == n ? i - j : -1;&#125;int main() &#123; string s("abdfdjfdkekfdaa5gsdsf"); string p("fdkekfd"); cout &lt;&lt; violence_find(s, p) &lt;&lt; endl; return 0;&#125; 典型的 O(MN) 解法，这种解法慢就慢在原字符串的回溯上，也就是语句 i -= j - 1; 的效果，当出现失配时，原字符串之前的匹配几乎“白费”，每次最多移动一个字符，而 KMP 算法决定利用之前的“努力成果”。 三、KMP算法在 KMP 算法中先利用模式串构建一个 next 数组，当出现失配情况时根据模式串前缀和后缀情况，最大程序利用已经匹配的部分来达到加速查找的目的，只需要求一个 next 数组，其他部分和暴力匹配的代码很像： 1234567891011121314151617181920int kmp_tmp(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; vector&lt;int&gt; next = std::move(gen_next(p)); while (i &lt; m &amp;&amp; j &lt; n) &#123; if (s[i] == p[j]) &#123; ++i; ++j; &#125; else &#123; // mismatch j = next[j]; if (j == -1) &#123; ++i; j = 0; &#125; &#125; &#125; return j == n ? i - j : -1;&#125; 和暴力搜索的代码对照下，只有 else 中语句块不太一样，这个 i 只前进不后退了，其实这个里的 j == -1 语句可以合并到判定相等的 if 语句块中，完成 KMP 代码如下： 123456789101112131415161718192021222324252627282930313233343536373839404142#include &lt;iostream&gt;#include &lt;string&gt;#include &lt;vector&gt;using namespace std;vector&lt;int&gt; gen_next(string p) &#123; int n = p.size(), i = 0, j = -1; vector&lt;int&gt; next(n, -1); while (i &lt; n - 1) &#123; if (j == -1 || p[i] == p[j]) &#123; ++i; ++j; next[i] = j; &#125; else j = next[j]; // mismatch, move j &#125; return next;&#125;int kmp(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; vector&lt;int&gt; next = std::move(gen_next(p)); while (i &lt; m &amp;&amp; j &lt; n) &#123; if (j == -1 || s[i] == p[j]) &#123; ++i; ++j; &#125; else j = next[j]; // mismatch, move j &#125; return j == n ? i - j : -1;&#125;int main() &#123; string s("abdfdjfdkekfdaa5gsdsf"); string p("fdkekfd"); cout &lt;&lt; kmp(s, p) &lt;&lt; endl; return 0;&#125; 四、关键点记录 next[i] 中记录的实际上是 p[0,i-1] 这个字符串中所有前缀和所有后缀交集中最长字符串的长度，比如&#39;fdkekfd&#39; 这个字符串所有前缀和所有后缀交集中最长字符串是 &#39;fd&#39;，其长度是2。 字符串的前缀和后缀不包括字符串本身。 next[0] 初始化成-1仅仅是一个编程技巧，你可以初始化成任意值，只要你分辨出是失配的情况即可，这里初始成 -1 正好可以和 s[i] == p[j] 这种情况合并，所以初始化成 -1 会常用一点。 在 KMP 算法中原串索引 i 比较傲娇，它只前进不会回溯，这也是 KMP 速度快的一个主要原因。 当出现失配时，模式子串的前缀和后缀有重合，可以直接移动模式串的前缀到刚刚匹配的后缀部分，但要记住如果没有重合的前缀和后缀，失配时移动模式串的速度会更快，这里容易弄反。 五、总结 KMP 算法的关键是求解 next 数组，是一个被称为部分匹配表(Partial Match Table)的数组 KMP 算法相比暴力匹配时间复杂度提升到了O(N+M)，但是并不是最优秀的字符串匹配算法 想要更快或者选择更合适的算法可以了解下从模式串的尾部开始匹配的 BM算法，以及从模式串的头部开始匹配的 Sunday算法 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 想要看到更高的风景，除了让自己跳的更高以外，还可以选一个更高的平台站上去。找到一个2米高的平台并努力爬上去，远比你原地起跳2米要容易的多~ 2021-4-5 00:22:35]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>find</tag>
+        <tag>算法</tag>
+        <tag>KMP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C++中常见的字符判断与处理方法]]></title>
+    <url>%2Fblog%2F2021%2F03%2F28%2FC-%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84%E5%AD%97%E7%AC%A6%E5%88%A4%E6%96%AD%E4%B8%8E%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95%2F</url>
+    <content type="text"><![CDATA[前言字符串处理是编程世界中一项基础技能，特别是对于C/C++的程序员们，远没有那么多华丽的工具可以使用，大多数时候都需要一个个字符来判断和处理，甚至对于C语言来说都没有字符串类型，字符数组是其常见的等价结构，所以稳扎稳打的基本功尤其重要。 对于C++而言，确实有string这个字符串类型，在使用的时候有一些技巧和函数可以使用，比C语言要方便许多了，只是有些时候我们并不知道可以这样用，有时一些很朴素的写法会让程序更加简洁，而一些技巧的表达当明白之后也会感叹自己曾经的无知。 ASCII 码作为字符编码的基础，ASCII码是需要先弄明白的，即使不能把所有的ASCII码对应的字符都记住，也要把常见的字母、数字、特殊字符记住，这样在处理字符问题时可以得心应手，常见的ASCII码对照表如下： 其中需要注意的知识点： 前32个为非打印控制字符，后面的字符为打印字符 数字字符 &#39;0&#39;-&#39;9&#39; 对应的ASCII码范围是48-57 大写字母 &#39;A&#39;-&#39;Z&#39; 对应的ASCII码范围是65-90 小写字母 &#39;a&#39;-&#39;z&#39; 对应的ASCII码范围是97-122 NULL 对应ASCII码0，回车的ASCII码是13，换行的ASCII码是10 仔细观察这个ASCII表你会发现很多“秘密”，比如 windows 中的文件放到 linux 上打开时常常显示许多的 ^M，其实这就是\r 的表现，因为在 windows 上用 \r\n 表示换行，而 linux 上使用 \n 换行，那么多余的 \r 在 linux 上就会显示成 ^M。 再比如小写字母 a 和大写字母 A 中间差了32，为什么不是26呢？为什么要在中间插入几个别的字符，搞成连续的不好吗？之前没想过这个问题，但是前两天看了一个高手的代码后，我大概明白了，这个32的差距应该是一种“炫技”的表现，它可以使得许多代码逻辑变得简单。 判断字符范围的函数C 语言C语言中判断的字符范围的函数都在头文件 &lt;ctype.h&gt; 中，常见的有下面这些 int isalnum(int c)：检查所传的字符是否是字母和数字 int isalpha(int c)：检查所传的字符是否是字母 int isdigit(int c)：检查所传的字符是否是十进制数字 int islower(int c)：检查所传的字符是否是小写字母 int isupper(int c)：检查所传的字符是否是大写字母 int ispunct(int c)：检查所传的字符是否是标点符号字符 C++C++ 中其实大部分还是引用C语言里的这些函数，但是头文件的名字为 &lt;cctype&gt;，在C++11中加了一个 int isblank(int c) 函数。 字符判断技巧判断两个字符互为大小写看到这个问题第一直觉是什么？很简单的问题有木有？因为知道一个字母的大小写差了32，所以会写出下面的代码： 1234int isOk(char x, char y) &#123; return x - y == 32 || y - x == 32;&#125; 不过我前两天看到一段代码，它是这样写的： 1(x ^ 32) == y; 看到这里你还以为 A 和 a 之间差32而不是26感到迷惑吗？简单的字符编排透露着巨大的智慧。 哨兵的使用比如取出一个字符串 string s 中所有的数字，问题很简单，但是结尾字符的处理往往体现了编程的功底，加上一个哨兵字符可以使得编程逻辑简单许多，无须再对结尾字符特殊判断。 1234567891011void find(string s) &#123; s = s + 'A'; string ans; for (auto c : s) &#123; if (isdigit(c)) ans += c; else &#123; cout &lt;&lt; ans &lt;&lt; endl; ans = ""; &#125; &#125;&#125; 总结 &#39;0&#39; 的ASCII码是48，&#39;A&#39; 的ASCII码是65，&#39;a&#39; 的ASCII码是97 isdigit 可以判断字符是否是数字，isalpha 可以判断字符是否为字母 一个字母的大小写对应的ASCII码正好差32，判断互为大小写时可以使用异或符号 (x ^ 32) == y 字符串结尾加哨兵字符可以使得处理逻辑更加简单统一，这种编程技巧在其他结构中也常常出现 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 今天看到一个一直作为榜样的知识输出者宣布财富自由，满心羡慕，是真的羡慕！关键人家比我年轻，比我工作时间还短，已经依靠短短4、5年的努力达到了自由状态，不过了解他的经历会发现他确实付出了很多，而我们大多数作为普通人太安于现状了，有时候选择比努力重要，如果选择对了又付出了加倍的努力，那…… 2021-3-28 23:27:32]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>string</tag>
+        <tag>char</tag>
+        <tag>判断</tag>
+        <tag>查询</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++中反向遍历map时怎样删除元素]]></title>
     <url>%2Fblog%2F2021%2F03%2F21%2FC-%E4%B8%AD%E5%8F%8D%E5%90%91%E9%81%8D%E5%8E%86map%E6%97%B6%E6%80%8E%E6%A0%B7%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0%2F</url>
-    <content type="text"><![CDATA[前言今天在解决一个问题 《5710. 积压订单中的订单总数》 时用到了map的反向遍历，看到问题时首先想到了优先队列，但是需要维护一个大根堆和一个小根堆，感觉操作起来比较麻烦，突发奇想使用map就能够解决。map本身就是有序的，正向遍历可以得到从小到大的序列，而反向遍历就可以得到从大到小的序列，这个思路本身没有错，但是解题时卡在了反向遍历时如何删除元素的知识点上，特此记录一下。 map的正向遍历map的正向遍历是一个基础知识点了，先简单回顾复习一下，不管是用 for 还是 while，只要控制迭代器持续前进就可以了。 12345678910111213map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (map&lt;int, string&gt;::iterator it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容1 A2 E3 I4 O6 U*/ 引入 auto 关键字以后，定义表示式的时候会更加方便一点 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125; 引入冒号以后表达式更加简短，要注意的是这里的额 it 已经不是指针了，而是 value_type 类型，所以需要是用 . 来访问 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it : mp) &#123; cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;&#125; 引入了结构化绑定声明之后，遍历方式还可以写成下面这样 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto&amp; [a, b] : mp) &#123; cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; endl;&#125; map 遍历时删除元素map 遍历时删除需要注意迭代器失效问题，常用的有下面两种写法 1it = mp.erase(it); 或者1mp.erase(it++); 遍历删除时的例子： 1234567891011121314151617map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end();) &#123; if (it-&gt;second == "I") mp.erase(it++); else it++;&#125;for (auto it : mp) cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;/* 输出内容1 A2 E4 O6 U*/ map 的反向遍历map 反向遍历时可以使用 reverse_iterator 迭代器，配合 rbegin() 和 rend() 方法就可以完成反向遍历 123456789101112map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend(); it++) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容6 U4 O3 I2 E1 A*/ map 反向遍历时删除元素一开始也是用 erase 函数来删除元素，但是会报下面的编译错误 123error: no matching function for call to ‘std::map&lt;int, std::__cxx11::basic_string&lt;char&gt; &gt;::erase( std::reverse_iterator&lt;std::_Rb_tree_iterator&lt;std::pair&lt;const int, std::__cxx11::basic_string&lt;char&gt; &gt; &gt; &gt;)’ mp.erase(it++); 查询文档发现，erase 函数重载只有下面几种实现: 12345678void erase( iterator pos ); (until C++11)iterator erase( const_iterator pos ); (since C++11)iterator erase( iterator pos ); (since C++17)void erase( iterator first, iterator last ); (until C++11)iterator erase( const_iterator first, const_iterator last ); (since C++11)size_type erase( const key_type&amp; key ); 参数是迭代器的函数并不支持 reverse_iterator，需要将 reverse_iterator 转化成 iterator 才可以，这时就需要用到 base 函数，对 reverse_iterator 类型的迭代器使用 base 函数得到的是上一个元素原始指针，这一点比较有意思，具体的解释可以参考 《std::reverse_iterator::base》，这种操作决定了我们遍历删除的写法，应该是先自增再调用 base 函数，代码如下； 12345678910111213141516map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend(); it++) &#123; if (it-&gt;second == "I") mp.erase((++it).base()); else it++;&#125;for (auto it = mp.rbegin(); it != mp.rend(); it++) cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;/* 输出内容6 U4 O2 E1 A*/ 总结 map 默认会按照 key 排序，是一个常用的有序容器 配合使用 rbegin() 和 rend() 函数可以完成 map 的反向遍历 对 reverse_iterator 类型迭代器使用 base() 函数，可以转化成 iterator 相关类型，然后进行删除操作 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 搬起砖，我抱不了你，放下砖 … 我尽力！ 2021-3-21 19:44:27]]></content>
+    <content type="text"><![CDATA[前言今天在解决一个问题 《5710. 积压订单中的订单总数》 时用到了map的反向遍历，看到问题时首先想到了优先队列，但是需要维护一个大根堆和一个小根堆，感觉操作起来比较麻烦，突发奇想使用map就能够解决。map本身就是有序的，正向遍历可以得到从小到大的序列，而反向遍历就可以得到从大到小的序列，这个思路本身没有错，但是解题时卡在了反向遍历时如何删除元素的知识点上，特此记录一下。 map的正向遍历map的正向遍历是一个基础知识点了，先简单复习一下，不管是用 for 还是 while，只要控制迭代器持续前进就可以了。 12345678910111213map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (map&lt;int, string&gt;::iterator it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容1 A2 E3 I4 O6 U*/ 引入 auto 关键字以后，定义表示式的时候会更加方便一点 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end(); ++it) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125; 引入冒号以后表达式更加简短，要注意的是这里的 it 已经不是指针了，而是 value_type 类型，所以需要是用 . 来访问 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it : mp) &#123; cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;&#125; 引入了结构化绑定声明之后，遍历方式还可以写成下面这样 12345map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto&amp; [a, b] : mp) &#123; cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; endl;&#125; map 遍历时删除元素map 遍历时删除需要注意迭代器失效问题，常用的有下面两种写法 1it = mp.erase(it); 或者1mp.erase(it++); 遍历删除时的例子： 1234567891011121314151617map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.begin(); it != mp.end();) &#123; if (it-&gt;second == "I") mp.erase(it++); else it++;&#125;for (auto it : mp) cout &lt;&lt; it.first &lt;&lt; " " &lt;&lt; it.second &lt;&lt; endl;/* 输出内容1 A2 E4 O6 U*/ map 的反向遍历map 反向遍历时可以使用 reverse_iterator 迭代器，配合 rbegin() 和 rend() 方法就可以完成反向遍历 123456789101112map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend(); it++) &#123; cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;&#125;/* 输出内容6 U4 O3 I2 E1 A*/ map 反向遍历时删除元素一开始也是用 erase 函数来删除元素，但是会报下面的编译错误 123error: no matching function for call to ‘std::map&lt;int, std::__cxx11::basic_string&lt;char&gt; &gt;::erase( std::reverse_iterator&lt;std::_Rb_tree_iterator&lt;std::pair&lt;const int, std::__cxx11::basic_string&lt;char&gt; &gt; &gt; &gt;)’ mp.erase(it++); 查询文档发现，erase 函数重载只有下面几种实现: 12345678void erase( iterator pos ); (until C++11)iterator erase( const_iterator pos ); (since C++11)iterator erase( iterator pos ); (since C++17)void erase( iterator first, iterator last ); (until C++11)iterator erase( const_iterator first, const_iterator last ); (since C++11)size_type erase( const key_type&amp; key ); 参数是迭代器的函数并不支持 reverse_iterator，需要将 reverse_iterator 转化成 iterator 才可以，这时就需要用到 base 函数，对 reverse_iterator 类型的迭代器使用 base 函数得到的是上一个元素“原始指针”，这一点比较有意思，具体的解释可以参考 《std::reverse_iterator::base》，这种操作决定了我们遍历删除的写法，应该是先自增再调用 base 函数，代码如下； 12345678910111213141516map&lt;int, string&gt; mp&#123;&#123;1, "A"&#125;, &#123;2, "E"&#125;, &#123;3, "I"&#125;, &#123;4, "O"&#125;, &#123;6, "U"&#125;&#125;;for (auto it = mp.rbegin(); it != mp.rend();) &#123; if (it-&gt;second == "I") mp.erase((++it).base()); else it++;&#125;for (auto it = mp.rbegin(); it != mp.rend(); it++) cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; endl;/* 输出内容6 U4 O2 E1 A*/ 总结 map 默认会按照 key 排序，是一个常用的有序容器 配合使用 rbegin() 和 rend() 函数可以完成 map 的反向遍历 对 reverse_iterator 类型迭代器使用 base() 函数，可以转化成 iterator 相关类型，然后进行删除操作 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 搬起砖，我抱不了你，放下砖 … 我尽力！ 2021-3-21 19:44:27]]></content>
       <categories>
         <category>C/C++</category>
       </categories>
@@ -39,9 +68,9 @@
       <tags>
         <tag>int</tag>
         <tag>Python</tag>
+        <tag>hex</tag>
         <tag>str</tag>
         <tag>bytes</tag>
-        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -177,10 +206,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -459,9 +488,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>source</tag>
         <tag>linux</tag>
         <tag>gdb</tag>
-        <tag>source</tag>
         <tag>dir</tag>
         <tag>path</tag>
       </tags>
@@ -760,10 +789,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -789,10 +818,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -803,10 +832,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -890,8 +919,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>hex</tag>
         <tag>Blob substring</tag>
+        <tag>hex</tag>
         <tag>concat</tag>
       </tags>
   </entry>
@@ -1031,9 +1060,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -1073,8 +1102,8 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
         <tag>char</tag>
+        <tag>Mysql</tag>
         <tag>varchar</tag>
         <tag>length</tag>
         <tag>char_length</tag>
@@ -1145,8 +1174,8 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
         <tag>char</tag>
+        <tag>Mysql</tag>
         <tag>varchar</tag>
         <tag>blob</tag>
         <tag>varbinary</tag>
@@ -1218,8 +1247,8 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
         <tag>查询</tag>
+        <tag>Mysql</tag>
         <tag>Usingfilesort</tag>
         <tag>排序</tag>
         <tag>调优</tag>
@@ -1262,8 +1291,8 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
         <tag>查询</tag>
+        <tag>Mysql</tag>
         <tag>EXPLAIN</tag>
         <tag>Extra</tag>
       </tags>
@@ -1304,8 +1333,8 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
         <tag>查询</tag>
+        <tag>Mysql</tag>
         <tag>表连接</tag>
         <tag>内连接</tag>
         <tag>外连接</tag>
