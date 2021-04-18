@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[protobuf中SerializeToString和SerializePartialToString的区别]]></title>
+    <url>%2Fblog%2F2021%2F04%2F18%2Fprotobuf%E4%B8%ADSerializeToString%E5%92%8CSerializePartialToString%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
+    <content type="text"><![CDATA[前言protobuf是Google提出的序列化方案，此方案独立于语言和平台，目前提供了如c++、go、python等多种语言的实现，使用比较广泛，具有性能开销小，压缩率高等优点，是值得学习的优秀开源库。 protobuf有 v2 和 v3 两个主要的并且差异很大的版本，有一些关于protobuf的文章中并没有说明版本，有些描述的内容给人造成了疑惑，所以在使用protobuf前要明确自己使用的版本，查找对应的特性。 proto2这个版本在编写 .proto 文件时的字段有三种限定符，分别是required、optional 和 repeated。 required: 必须设置该字段，如果是在debug模式下编译 libprotobuf，则序列化一个未初始化的 message 将将导致断言失败。在release模式的构建中，将跳过检查并始终写入消息。但解析未初始化的消息将返回false表示失败。 optional: 可以设置也可以不设置该字段。如果未设置可选字段值，则使用默认值，也可以用[default = value]进行设置。 repeated: 该字段可以重复任意次数（包括零次），可以将 repeated 字段视为动态大小的数组。 message定义定义一个简单的 message 结构如下： 123456message Person &#123; required string name = 1; optional string email = 2; optional int age = 3 [default = 18]; repeated bytes phones = 4;&#125; 观察 message 定义可以看到每个字段后面都有 = 1、= 2 的标记，这些被称为 Tags，在 protobuf 中同一个 message 中的每个字段都需要有独一无二的tag，tag 为 1-15 的是单字节编码，16-2047 使用2字节编码，所以1-15给频繁使用的字段。 关于tag的范围，还有一种范围是[1,536870911]的说法，同时 19000 到 19999 范围内的数字也不能使用，因为它们是 protobuf 的实现中保留的，也就是 FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber 指定的范围，如果使用其中的数字，导出 .proto 文件时会报错，此处存疑，需要验证一下。 message扩展在使用的了 protobuf 的项目发布以后，绝对会遇到扩展原有 message 结构的需求，这一点不可避免，除非发布后的项目不再升级维护了，要想扩展就需要兼容之前的代码逻辑，这里有一些必须遵守的规则，否则就达不到兼容的目的。 不能更改任何现有字段的 tag 不能添加或删除任何 required 字段 可以删除 optional 或 repeated 的字段 可以添加新的 optional 或 repeated 字段，但必须使用新的tag，曾经使用过又删除的 tag 也不能再使用了 注意事项proto2 中对 required 的使用永远都应该非常小心。如果想在某个时刻停止写入或发送 required 字段，直接将字段更改为可选字段将会有问题。一些工程师得出的经验是，使用 required 弊大于利，他们更喜欢只使用 optional 和 repeated。 proto3proto3 比 proto2 支持更多语言但更简洁，去掉了一些复杂的语法和特性。 在第一行非空白非注释行，必须写：syntax = &quot;proto3&quot;; 直接从语法层面上移除了 required 规则，取消了 required 限定词 增加了对 Go、Ruby、JavaNano 等语言的支持 移除了 default 选项，字段的默认值只能根据字段类型由系统决定 序列化将 message 结构对象序列化的函数有多个，即使是序列化成字符串也有多个函数可以使用，比如 SerializeToString、SerializePartialToString、SerializeAsString、SerializePartialAsString 等等。 SerializeToString和SerializeAsString区别这两个还是很好区分的，从源码角度一眼就能够分辨出来： 1234567891011121314std::string MessageLite::SerializeAsString() const &#123; // If the compiler implements the (Named) Return Value Optimization, // the local variable 'output' will not actually reside on the stack // of this function, but will be overlaid with the object that the // caller supplied for the return value to be constructed in. std::string output; if (!AppendToString(&amp;output)) output.clear(); return output;&#125;bool MessageLite::SerializeToString(std::string* output) const &#123; output-&gt;clear(); return AppendToString(output);&#125; 从源代码可以看出，两者仅仅是参数和返回值的类型不同，其内部调用的函数都是一样的，SerializePartialToString 和 SerializePartialAsString 两个函数也是这种区别，可以根据外部逻辑所需来调用合适的函数。 12345678910bool MessageLite::SerializePartialToString(std::string* output) const &#123; output-&gt;clear(); return AppendPartialToString(output);&#125;std::string MessageLite::SerializePartialAsString() const &#123; std::string output; if (!AppendPartialToString(&amp;output)) output.clear(); return output;&#125; SerializeToString和SerializePartialToString区别这两个函数的区别在于内部调用的函数不同，一个调用 AppendToString，另一个调用 AppendPartialToString，两者源代码如下： 12345678910111213bool MessageLite::AppendToString(std::string* output) const &#123; GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage("serialize", *this); return AppendPartialToString(output);&#125;bool MessageLite::AppendPartialToString(std::string* output) const &#123; size_t old_size = output-&gt;size(); size_t byte_size = ByteSizeLong(); if (byte_size &gt; INT_MAX) &#123; GOOGLE_LOG(ERROR) &lt;&lt; GetTypeName() &lt;&lt; " exceeded maximum protobuf size of 2GB: " &lt;&lt; byte_size; return false;&#125; 原来 AppendToString 函数调用了 AppendPartialToString, 只是在调用之前先执行了一句 GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage(&quot;serialize&quot;, *this); 这句话什么意思呢？ 其实就是一个调试状态下的检查，类似于 assert 这个断言函数吧，检查的内容是这个 message 是否初始化，之前提到 required 修饰的字段必须要设置一个值，否者就是未初始化的状态，那么现在两个函数的区别就知道了，带有 “Partial” 函数其实是忽略 required 字段检查的，另外还有没有别的不同需要再进一步研究下源码了。 总结 protobuf有 v2 和 v3 两个主要的并且差异较大的版本，使用前请注意版本号 proto3 直接从语法层面上移除了 required 规则，移除了 default 选项，字段的默认值只能根据字段类型由系统决定 SerializeToString和SerializeAsString区别在于参数和返回值的不同，内部调用的函数是相同的 SerializeToString和SerializePartialToString区别在于SerializePartialToString会忽略 required 字段必须赋值的要求 在应用过程中尽可能重用 message 结构，这样protobuf内部实现中内存的重用 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 初识不知曲中意，再闻已是曲中人 2021-4-18 21:31:34]]></content>
+      <categories>
+        <category>protobuf</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>protobuf</tag>
+        <tag>序列化</tag>
+        <tag>required</tag>
+        <tag>message</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C++中一些可以在偷懒时直接使用的函数]]></title>
+    <url>%2Fblog%2F2021%2F04%2F11%2FC-%E4%B8%AD%E4%B8%80%E4%BA%9B%E5%8F%AF%E4%BB%A5%E5%9C%A8%E5%81%B7%E6%87%92%E6%97%B6%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[前言在解决一些算法题时，会遇到一些“嵌套”问题，也就是一个题目中包含多个小的算法知识点，比如计算一个整数的二进制表示中1的个数，或者计算两个数的最大公约数，如果这些小问题本身就是题目，那么就只能“手撕”了。 但是如果这些内容只是解决题目中的一小部分，我们其实是可以偷个懒的，有很多函数已经被纳入函数库，可以直接拿过来使用，接下来我们可以简单看几个。 求解最大公约数自定义实现求最大公约数的一种常用方法叫做辗转相除法，又名欧几里德算法(Euclidean algorithm)，算法本身并不复杂，可以写成如下逻辑实现： 12345678int my_gcd(int x, int y) &#123; while (y != 0) &#123; int z = x % y; x = y; y = z; &#125; return x;&#125; 或者简单写成递归的实现： 123int my_gcd(int x, int y) &#123; return y ? my_gcd(y, x%y) : x;&#125; 因为计算机处理加减法的性能要远高于计算乘除法，所以辗转相除法有很多变形实现，比如辗转相减、用移位运算代替除法计算等。 库函数其实在C++17中，最大公约数计算已经被加到了函数库中，头文件为 &lt;numeric&gt;，直接调用 std::gcd() 就可以了，本身是一个模板函数，定义如下： 12template&lt; class M, class N&gt;constexpr std::common_type_t&lt;M, N&gt; gcd(M m, N n); 计算一个整数的二进制表示中有多少个1自定义实现这也是一道经典的算法题了，常见的实现如下： 12345678int count1(int n) &#123; int cnt = 0; while (n &gt; 0) &#123; cnt++; n &amp;= (n-1); &#125; return cnt;&#125; 这种实现方法不能说最优解法，但是也算的上是一个优秀的实现思路了。 内建函数关于二进制的形式的各种操作，GCC提供了一系列的builtin函数，可以实现一些简单快捷的功能来方便程序编写，并且可用来优化编译结果。 __builtin_popcount12// 返回n的二进制表示形式中1的个数int __builtin_popcount(unsigned int n) __builtin_ffs12// 返回n的二进制表示形式中最后一位1的是从后向前第几位int __builtin_ffs(unsigned int n) __builtin_clz12// 返回n的二进制表示形式中前导0的个数int __builtin_clz(unsigned int n) __builtin_ctz12// 返回n的二进制表示形式中结尾0个个数int __builtin_ctz(unsigned int n) __builtin_parity12// 返回n的奇偶校验位，即n的二进制表示形式中的1的个数模2的结果int __builtin_parity(unsigned int n) 上述列举的这些函数参数都是 unsigned int 类型，如果参数为 usigned long 或者 usigned long long，只需要在函数名后面加上 l 或 ll 就可以了，比如 __builtin_popcountl。 遗憾的是，这些builtin函数一般没有可移植性，使用时要注意。 库函数但值得庆幸的是，这些优秀的函数在C++20中得以转正，成为了C++的标准函数，比如 std::popcount，定义在头文件 &lt;bit&gt; 中，函数定义如下： 12template&lt;class T&gt;constexpr int popcount(T x) noexcept; 更快速的源码计算一个整数的二进制表示中包含1的个数，除了前面提到的 n &amp;= (n-1) 外，还有下面这种变形的二分法实现： 123456789unsigned popcount (unsigned int u)&#123; u = (u &amp; 0x55555555) + ((u &gt;&gt; 1) &amp; 0x55555555); u = (u &amp; 0x33333333) + ((u &gt;&gt; 2) &amp; 0x33333333); u = (u &amp; 0x0F0F0F0F) + ((u &gt;&gt; 4) &amp; 0x0F0F0F0F); u = (u &amp; 0x00FF00FF) + ((u &gt;&gt; 8) &amp; 0x00FF00FF); u = (u &amp; 0x0000FFFF) + ((u &gt;&gt; 16) &amp; 0x0000FFFF); return u;&#125; 采用这种二分法的实现，基本上可以媲美单字节打表的速度了，上述二分法是利用变量u来分组统计1的个数，两两合并到一起进而得到最后结果的。 总结 计算两个数的最大公约数可以在C++17环境下使用 std::gcd() 函数 计算一个整数二进制表示中1的个数可以在C++20环境下使用 std::popcount() 函数 __builtin 开头的函数是GCC提供的方便程序编写的函数，并且可用来优化编译结，但是使用时要注意不可移植性 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 在繁华中自律在落魄中自愈谋生的路上不抛弃良知谋爱的路上不抛弃尊严 2021-4-11 21:27:25]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>函数</tag>
+        <tag>语法糖</tag>
+        <tag>函数库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[写给自己的KMP——C++版本]]></title>
     <url>%2Fblog%2F2021%2F04%2F04%2F%E5%86%99%E7%BB%99%E8%87%AA%E5%B7%B1%E7%9A%84KMP%E2%80%94%E2%80%94C-%E7%89%88%E6%9C%AC%2F</url>
     <content type="text"><![CDATA[一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。 不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 KMP，还是去搜索其他资料吧，相关的内容有很多，有些文章写的很详细的。 今天的示例代码用C++来写，上一版的自己写的KMP我查了一下是C语言版本的，初看起来已经有点费劲了，随着时间的推移，我决定根据理解再写一次，写完才发现，和之前的风格判若两人。 二、暴力搜索在原字符串中搜索模式串，最容易想到的就是暴力搜索，匹配则向后移动，不匹配则原串回溯，模式串归0，代码很容易实现，列举如下： 123456789101112131415161718192021222324252627#include &lt;iostream&gt;#include &lt;string&gt;using namespace std;int violence_find(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; while (i &lt; m &amp;&amp; j &lt; n) &#123; if (s[i] == p[j]) &#123; // match character ++i; ++j; &#125; else &#123; // mismatch i -= j - 1; j = 0; &#125; &#125; return j == n ? i - j : -1;&#125;int main() &#123; string s("abdfdjfdkekfdaa5gsdsf"); string p("fdkekfd"); cout &lt;&lt; violence_find(s, p) &lt;&lt; endl; return 0;&#125; 典型的 O(MN) 解法，这种解法慢就慢在原字符串的回溯上，也就是语句 i -= j - 1; 的效果，当出现失配时，原字符串之前的匹配几乎“白费”，每次最多移动一个字符，而 KMP 算法决定利用之前的“努力成果”。 三、KMP算法在 KMP 算法中先利用模式串构建一个 next 数组，当出现失配情况时根据模式串前缀和后缀情况，最大程序利用已经匹配的部分来达到加速查找的目的，只需要求一个 next 数组，其他部分和暴力匹配的代码很像： 1234567891011121314151617181920int kmp_tmp(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; vector&lt;int&gt; next = std::move(gen_next(p)); while (i &lt; m &amp;&amp; j &lt; n) &#123; if (s[i] == p[j]) &#123; ++i; ++j; &#125; else &#123; // mismatch j = next[j]; if (j == -1) &#123; ++i; j = 0; &#125; &#125; &#125; return j == n ? i - j : -1;&#125; 和暴力搜索的代码对照下，只有 else 中语句块不太一样，这个 i 只前进不后退了，其实这个里的 j == -1 语句可以合并到判定相等的 if 语句块中，完成 KMP 代码如下： 123456789101112131415161718192021222324252627282930313233343536373839404142#include &lt;iostream&gt;#include &lt;string&gt;#include &lt;vector&gt;using namespace std;vector&lt;int&gt; gen_next(string p) &#123; int n = p.size(), i = 0, j = -1; vector&lt;int&gt; next(n, -1); while (i &lt; n - 1) &#123; if (j == -1 || p[i] == p[j]) &#123; ++i; ++j; next[i] = j; &#125; else j = next[j]; // mismatch, move j &#125; return next;&#125;int kmp(string s, string p) &#123; int m = s.size(), n = p.size(), i = 0, j = 0; vector&lt;int&gt; next = std::move(gen_next(p)); while (i &lt; m &amp;&amp; j &lt; n) &#123; if (j == -1 || s[i] == p[j]) &#123; ++i; ++j; &#125; else j = next[j]; // mismatch, move j &#125; return j == n ? i - j : -1;&#125;int main() &#123; string s("abdfdjfdkekfdaa5gsdsf"); string p("fdkekfd"); cout &lt;&lt; kmp(s, p) &lt;&lt; endl; return 0;&#125; 四、关键点记录 next[i] 中记录的实际上是 p[0,i-1] 这个字符串中所有前缀和所有后缀交集中最长字符串的长度，比如&#39;fdkekfd&#39; 这个字符串所有前缀和所有后缀交集中最长字符串是 &#39;fd&#39;，其长度是2。 字符串的前缀和后缀不包括字符串本身。 next[0] 初始化成-1仅仅是一个编程技巧，你可以初始化成任意值，只要你分辨出是失配的情况即可，这里初始成 -1 正好可以和 s[i] == p[j] 这种情况合并，所以初始化成 -1 会常用一点。 在 KMP 算法中原串索引 i 比较傲娇，它只前进不会回溯，这也是 KMP 速度快的一个主要原因。 当出现失配时，模式子串的前缀和后缀有重合，可以直接移动模式串的前缀到刚刚匹配的后缀部分，但要记住如果没有重合的前缀和后缀，失配时移动模式串的速度会更快，这里容易弄反。 五、总结 KMP 算法的关键是求解 next 数组，是一个被称为部分匹配表(Partial Match Table)的数组 KMP 算法相比暴力匹配时间复杂度提升到了O(N+M)，但是并不是最优秀的字符串匹配算法 想要更快或者选择更合适的算法可以了解下从模式串的尾部开始匹配的 BM算法，以及从模式串的头部开始匹配的 Sunday算法 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 想要看到更高的风景，除了让自己跳的更高以外，还可以选一个更高的平台站上去。找到一个2米高的平台并努力爬上去，远比你原地起跳2米要容易的多~ 2021-4-5 00:22:35]]></content>
@@ -68,9 +97,9 @@
       <tags>
         <tag>int</tag>
         <tag>Python</tag>
-        <tag>hex</tag>
         <tag>str</tag>
         <tag>bytes</tag>
+        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -139,9 +168,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
-        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -919,8 +948,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>Blob substring</tag>
         <tag>hex</tag>
+        <tag>Blob substring</tag>
         <tag>concat</tag>
       </tags>
   </entry>
@@ -1019,8 +1048,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>函数</tag>
+        <tag>linux</tag>
         <tag>堆栈</tag>
       </tags>
   </entry>

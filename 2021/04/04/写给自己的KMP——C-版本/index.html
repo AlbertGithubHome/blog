@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。 不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 KMP">
+<meta name="description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。">
 <meta name="keywords" content="C&#x2F;C++,find,算法,KMP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="写给自己的KMP——C++版本">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/04/04/写给自己的KMP——C-版本/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。 不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 KMP">
+<meta property="og:description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-04T16:36:26.329Z">
+<meta property="og:updated_time" content="2021-04-05T08:21:26.046Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="写给自己的KMP——C++版本">
-<meta name="twitter:description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。 不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 KMP">
+<meta name="twitter:description" content="一、前言又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。">
 
 
 
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-04-05T00:36:26+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2021-04-05T16:21:26+08:00">
                 2021-04-05
               </time>
             
@@ -481,6 +481,7 @@
 
       
         <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>又翻到了这个算法，一个常用的子串（子数组）匹配算法，看一遍学一遍，学一遍忘一遍，反反复复，不过每次回忆起来所用的时间越来少了，其本质上就是在暴力搜索的基础上加上 next 数组加速匹配，算法的关键在于 next 数组的理解和求解方法。</p>
+<a id="more"></a>
 <p>不想画图，缺少图解的算法很难给初学者讲清楚，所以本文也仅仅是个人的笔记而已，用于记录算法中关键点、帮助回忆或者理解其中的一些关键因素，如果想从头学习 <code>KMP</code>，还是去搜索其他资料吧，相关的内容有很多，有些文章写的很详细的。</p>
 <p>今天的示例代码用C++来写，上一版的自己写的KMP我查了一下是C语言版本的，初看起来已经有点费劲了，随着时间的推移，我决定根据理解再写一次，写完才发现，和之前的风格判若两人。</p>
 <h1 id="二、暴力搜索"><a href="#二、暴力搜索" class="headerlink" title="二、暴力搜索"></a>二、暴力搜索</h1><p>在原字符串中搜索模式串，最容易想到的就是暴力搜索，匹配则向后移动，不匹配则原串回溯，模式串归0，代码很容易实现，列举如下：</p>
@@ -628,6 +629,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2021/04/11/C-中一些可以在偷懒时直接使用的函数/" rel="prev" title="C++中一些可以在偷懒时直接使用的函数">
+                C++中一些可以在偷懒时直接使用的函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -728,7 +733,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-count">128</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -739,7 +744,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-count">26</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -750,7 +755,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">293</span>
+                <span class="site-state-item-count">298</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
