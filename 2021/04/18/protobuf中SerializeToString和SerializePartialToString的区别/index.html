@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言protobuf是Google提出的序列化方案，此方案独立于语言和平台，目前提供了如c++、go、python等多种语言的实现，使用比较广泛，具有性能开销小，压缩率高等优点，是值得学习的优秀开源库。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-18T13:32:53.648Z">
+<meta property="og:updated_time" content="2021-04-18T15:00:50.810Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="protobuf中SerializeToString和SerializePartialToString的区别">
 <meta name="twitter:description" content="前言protobuf是Google提出的序列化方案，此方案独立于语言和平台，目前提供了如c++、go、python等多种语言的实现，使用比较广泛，具有性能开销小，压缩率高等优点，是值得学习的优秀开源库。">
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-04-18T21:32:53+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2021-04-18T23:00:50+08:00">
                 2021-04-18
               </time>
             
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,575(字)</span>
+            <span class="post-count">1,628(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -485,14 +485,14 @@
 <p>protobuf有 v2 和 v3 两个主要的并且差异很大的版本，有一些关于protobuf的文章中并没有说明版本，有些描述的内容给人造成了疑惑，所以在使用protobuf前要明确自己使用的版本，查找对应的特性。</p>
 <h1 id="proto2"><a href="#proto2" class="headerlink" title="proto2"></a>proto2</h1><p>这个版本在编写 <code>.proto</code> 文件时的字段有三种限定符，分别是<code>required</code>、<code>optional</code> 和 <code>repeated</code>。</p>
 <ul>
-<li>required: 必须设置该字段，如果是在debug模式下编译 libprotobuf，则序列化一个未初始化的 message 将将导致断言失败。在release模式的构建中，将跳过检查并始终写入消息。但解析未初始化的消息将返回false表示失败。</li>
-<li>optional: 可以设置也可以不设置该字段。如果未设置可选字段值，则使用默认值，也可以用[default = value]进行设置。</li>
-<li>repeated: 该字段可以重复任意次数（包括零次），可以将 repeated 字段视为动态大小的数组。</li>
+<li>required：必须设置该字段，如果是在debug模式下编译 libprotobuf，则序列化一个未初始化（未对required字段赋值）的 message 将导致断言失败。在release模式的构建中，将跳过检查并始终写入消息，但解析未初始化的消息将返回false表示失败。</li>
+<li>optional：可以设置也可以不设置该字段。如果未设置可选字段值，则使用默认值，也可以用[default = value]进行设置。</li>
+<li>repeated：该字段可以重复任意次数（包括零次），可以将 repeated 字段视为动态大小的数组。</li>
 </ul>
 <h2 id="message定义"><a href="#message定义" class="headerlink" title="message定义"></a>message定义</h2><p>定义一个简单的 message 结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">message Person &#123;</span><br><span class="line">  required string name = 1;</span><br><span class="line">  optional string email = 2;</span><br><span class="line">  optional int age = 3 [default = 18];</span><br><span class="line">  repeated bytes phones = 4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>观察 message 定义可以看到每个字段后面都有 <code>= 1</code>、<code>= 2</code> 的标记，这些被称为 Tags，在 protobuf 中同一个 message 中的每个字段都需要有独一无二的tag，tag 为 1-15 的是单字节编码，16-2047 使用2字节编码，所以1-15给频繁使用的字段。</p>
-<p>关于tag的范围，还有一种范围是[1,536870911]的说法，同时 19000 到 19999 范围内的数字也不能使用，因为它们是 protobuf 的实现中保留的，也就是 <code>FieldDescriptor::kFirstReservedNumber</code> 到 <code>FieldDescriptor::kLastReservedNumber</code> 指定的范围，如果使用其中的数字，导出 .proto 文件时会报错，此处存疑，需要验证一下。</p>
+<p>观察 message 定义可以看到每个字段后面都有 <code>= 1</code>、<code>= 2</code> 的标记，这些被称为 Tags，在 protobuf 中同一个 message 中的每个字段都需要有独一无二的tag，tag 为 1-15 的是单字节编码，16-2047 使用2字节编码，所以1-15应该给频繁使用的字段。</p>
+<p>关于tag的取值，还有一种范围是[1,536870911]的说法，同时 19000 到 19999 之间的数字也不能使用，因为它们是 protobuf 的实现中保留的，也就是 <code>FieldDescriptor::kFirstReservedNumber</code> 到 <code>FieldDescriptor::kLastReservedNumber</code> 指定的范围，如果使用其中的数字，导出 .proto 文件时会报错，此处存疑，需要验证一下。</p>
 <h2 id="message扩展"><a href="#message扩展" class="headerlink" title="message扩展"></a>message扩展</h2><p>在使用的了 protobuf 的项目发布以后，绝对会遇到扩展原有 message 结构的需求，这一点不可避免，除非发布后的项目不再升级维护了，要想扩展就需要兼容之前的代码逻辑，这里有一些必须遵守的规则，否则就达不到兼容的目的。</p>
 <ul>
 <li>不能更改任何现有字段的 tag</li>
@@ -508,15 +508,15 @@
 <li>增加了对 Go、Ruby、JavaNano 等语言的支持</li>
 <li>移除了 default 选项，字段的默认值只能根据字段类型由系统决定</li>
 </ul>
-<h1 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h1><p>将 message 结构对象序列化的函数有多个，即使是序列化成字符串也有多个函数可以使用，比如 <code>SerializeToString</code>、<code>SerializePartialToString</code>、<code>SerializeAsString</code>、<code>SerializePartialAsString</code> 等等。</p>
+<h1 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h1><p>将 message 结构对象序列化的函数有很多，即使是序列化成字符串也有多个函数可以使用，比如 <code>SerializeToString</code>、<code>SerializePartialToString</code>、<code>SerializeAsString</code>、<code>SerializePartialAsString</code> 等等。</p>
 <h2 id="SerializeToString和SerializeAsString区别"><a href="#SerializeToString和SerializeAsString区别" class="headerlink" title="SerializeToString和SerializeAsString区别"></a>SerializeToString和SerializeAsString区别</h2><p>这两个还是很好区分的，从源码角度一眼就能够分辨出来：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> MessageLite::SerializeAsString() <span class="keyword">const</span> &#123;</span><br><span class="line">  <span class="comment">// If the compiler implements the (Named) Return Value Optimization,</span></span><br><span class="line">  <span class="comment">// the local variable 'output' will not actually reside on the stack</span></span><br><span class="line">  <span class="comment">// of this function, but will be overlaid with the object that the</span></span><br><span class="line">  <span class="comment">// caller supplied for the return value to be constructed in.</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> output;</span><br><span class="line">  <span class="keyword">if</span> (!AppendToString(&amp;output)) output.clear();</span><br><span class="line">  <span class="keyword">return</span> output;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> MessageLite::SerializeToString(<span class="built_in">std</span>::<span class="built_in">string</span>* output) <span class="keyword">const</span> &#123;</span><br><span class="line">  output-&gt;clear();</span><br><span class="line">  <span class="keyword">return</span> AppendToString(output);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从源代码可以看出，两者仅仅是参数和返回值的类型不同，其内部调用的函数都是一样的，<code>SerializePartialToString</code> 和 <code>SerializePartialAsString</code> 两个函数也是这种区别，可以根据外部逻辑所需来调用合适的函数。</p>
+<p>从源代码可以很容易看出，两者仅仅是参数和返回值的类型不同，其内部调用的函数都是一样的，<code>SerializePartialToString</code> 和 <code>SerializePartialAsString</code> 两个函数也是这种区别，可以根据外部逻辑所需来调用合适的函数。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> MessageLite::SerializePartialToString(<span class="built_in">std</span>::<span class="built_in">string</span>* output) <span class="keyword">const</span> &#123;</span><br><span class="line">  output-&gt;clear();</span><br><span class="line">  <span class="keyword">return</span> AppendPartialToString(output);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> MessageLite::SerializePartialAsString() <span class="keyword">const</span> &#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> output;</span><br><span class="line">  <span class="keyword">if</span> (!AppendPartialToString(&amp;output)) output.clear();</span><br><span class="line">  <span class="keyword">return</span> output;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="SerializeToString和SerializePartialToString区别"><a href="#SerializeToString和SerializePartialToString区别" class="headerlink" title="SerializeToString和SerializePartialToString区别"></a>SerializeToString和SerializePartialToString区别</h2><p>这两个函数的区别在于内部调用的函数不同，一个调用 <code>AppendToString</code>，另一个调用 <code>AppendPartialToString</code>，两者源代码如下：</p>
+<h2 id="SerializeToString和SerializePartialToString区别"><a href="#SerializeToString和SerializePartialToString区别" class="headerlink" title="SerializeToString和SerializePartialToString区别"></a>SerializeToString和SerializePartialToString区别</h2><p>这两个函数的区别在于内部调用的函数不同，一个调用 <code>AppendToString</code>，另一个调用 <code>AppendPartialToString</code>，两个被调用函数的源代码如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> MessageLite::AppendToString(<span class="built_in">std</span>::<span class="built_in">string</span>* output) <span class="keyword">const</span> &#123;</span><br><span class="line">  GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage(<span class="string">"serialize"</span>, *<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">return</span> AppendPartialToString(output);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> MessageLite::AppendPartialToString(<span class="built_in">std</span>::<span class="built_in">string</span>* output) <span class="keyword">const</span> &#123;</span><br><span class="line">  <span class="keyword">size_t</span> old_size = output-&gt;size();</span><br><span class="line">  <span class="keyword">size_t</span> byte_size = ByteSizeLong();</span><br><span class="line">  <span class="keyword">if</span> (byte_size &gt; INT_MAX) &#123;</span><br><span class="line">    GOOGLE_LOG(ERROR) &lt;&lt; GetTypeName()</span><br><span class="line">               &lt;&lt; <span class="string">" exceeded maximum protobuf size of 2GB: "</span> &lt;&lt; byte_size;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>原来 <code>AppendToString</code> 函数调用了 <code>AppendPartialToString</code>, 只是在调用之前先执行了一句 <code>GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage(&quot;serialize&quot;, *this);</code> 这句话什么意思呢？</p>
-<p>其实就是一个调试状态下的检查，类似于 assert 这个断言函数吧，检查的内容是这个 message 是否初始化，之前提到 <code>required</code> 修饰的字段必须要设置一个值，否者就是未初始化的状态，那么现在两个函数的区别就知道了，带有 “Partial” 函数其实是忽略 <code>required</code> 字段检查的，另外还有没有别的不同需要再进一步研究下源码了。</p>
+<p>其实就是一个调试状态下的检查，类似于 assert 这个断言函数吧，检查的内容是判断这个 message 是否初始化，之前提到 <code>required</code> 修饰的字段必须要设置一个值，否者就是未初始化的状态，那么现在两个函数的区别就知道了，带有 “Partial” 函数其实是忽略 <code>required</code> 字段检查的，另外还有没有别的不同需要再进一步研究下源码了。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
 <li>protobuf有 v2 和 v3 两个主要的并且差异较大的版本，使用前请注意版本号</li>
 <li>proto3 直接从语法层面上移除了 required 规则，移除了 default 选项，字段的默认值只能根据字段类型由系统决定</li>
@@ -529,7 +529,7 @@
 
 <hr>
 <blockquote>
-<p>初识不知曲中意，再闻已是曲中人</p>
+<p>没有什么捷径，继续努力就好了<br>短期内不会看到什么成果，甚至说一辈子都可能看不到，但只有努力了才有可能看得到</p>
 <p>2021-4-18 21:31:34</p>
 </blockquote>
 
@@ -647,6 +647,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2021/04/30/linux文件权限简单备忘知识点/" rel="prev" title="linux文件权限简单备忘知识点">
+                linux文件权限简单备忘知识点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -747,7 +751,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">128</span>
+                <span class="site-state-item-count">129</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -769,7 +773,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">298</span>
+                <span class="site-state-item-count">300</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

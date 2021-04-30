@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[linux文件权限简单备忘知识点]]></title>
+    <url>%2Fblog%2F2021%2F04%2F30%2Flinux%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E7%AE%80%E5%8D%95%E5%A4%87%E5%BF%98%E7%9F%A5%E8%AF%86%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[前言已经拖更好几天了，有些坚持的事情一旦中断便很难再捡起来了，所以还是尽可能的坚持下去，今天就简单记录一下文件权限相关的操作。 这里先扔出一张图，这么懒的我居然画了一张图！不过前几天感冒状态不太好，这张图画了好几晚上才完成，就凑活看吧。 基本上看注释就能明白各列的含义，关于“文件硬链接数”这一列还有点疑问，在CentOS上测试，确实如注释所言，普通文件显示的硬链接数，目录文件显示的是第一级子目录的个数，但是在WSL上却不符合这个说法，暂时还没有找到原因，接下来还是列举下文件权限相关的操作吧。 基础概念在linux系统中的每个用户必须属于一个组，不能独立于组外。而每个文件的权限区分所有者、所在组、其它人，就像图片中展示的那样 所有者：指创建文件的人，拥有第一组权限 所在组：指的是和所有者在同组的人，拥有第二组权限 其他人：指排除掉前两类的其他人，拥有第三组权限 每组权限都分为读、写、执行三种具体权限，对应数字分别是4、2、1，字母表示为r、w、x，没有权限可以用-表示，也就是0，因为有这些表示方法，修改文件的命令形式也有很多种。 一个文件的访问权限是可以进行修改的，用户可以使用 chmod 命令来重新设定不同的访问权限，可以使用 chown 命令来更改某个文件或目录的所有者，也可以利用 chgrp 命令来更改某个文件或目录的用户组。 chmod 命令上面说到文件的权限分为所有者、同组人、其他人三组，每组权限又有r、w、x三种权限，分别用数字4、2、1表示，举几个对照的例子如下 123rwx r-x r–x 755rw- r–- –-- 640rw- rw- r–- 664 因为表示的多样性，该命令有通常有字母表达式和数字表达式两种用法，格式如下: 1chmod ［who］ ［+ | – | =］ ［mode］ filename 命令中各选项的含义为： 命令中的 who 可是下述字母中的任一个或者它们的组合： u 表示所有者user g 表示同组用户group o 表示其他人other a 表示所有用户all，是系统默认值 权限改变的符号可以是： + 添加某个权限 – 取消某个权限 = 赋予给定权限并取消其他所有权限（如果有的话） 命令中的 mode 所表示的权限可用下述字母的任意组合： r 可读权限 w 可写权限 x 可执行权限 X 只有目标文件对某些用户是可执行的或该目标文件是目录时才追加 x 属性 u 与文件属主拥有一样的权限 g 与和文件属主同组的用户拥有一样的权限 o 与其他用户拥有一样的权限 常见写法如下： 123$ chmod a+x happy.txt$ chmod ug+w file.xml$ chmod 755 a.out chgrp 命令该命令能改变文件或目录所属的组，语法如下： 1chgrp ［option］ group filename option参数可选： -f,–quiet,–silent: 不显示错误信息 -R,–recursive: 递归处理，将指定目录下的所有文件及子目录一并处理 -v,–verbose: 显示指令执行过程 命令中group可以是用户组ID，也可以是/etc/group文件中用户组的组名。文件名是以空格分开的要改变属组的文件列表，支持通配符。如果用户不是该文件的属主或超级用户，则不能改变该文件的组的。 1$chgrp -R mysql /opt/local/my.ini chown 命令该命令可以更改某个文件或目录的属主，也就是所有者。语法如下： 1chown ［option］ groupname|username filename chown可以将指定文件的拥有者改为指定的用户或组。用户可以是用户名或用户ID。组可以是组名或组ID。与 chgrp命令一样，参数文件也是以空格分开的要改变权限的文件列表，支持通配符。 option参数可选： -f: 若该文件拥有者无法被更改也不要显示错误讯息 -h: 只对于连结(link)进行变更，而非该 link 真正指向的文件 -v: 显示拥有者变更的详细资料 -R: 对目前目录下的所有档案与子目录进行相同的拥有者变更(即以递回的方式逐个变更) 修改文件所有者的例子如下： 1$ chown redis /ect/redis/redis.config 总结 ls -l 命令执行后的第5列，表示文件的硬连接路 chmod a+x happy.txt 可以修改文件的权限信息 chgrp a+x fruit.txt 可以修改文件的所有组信息 chown redis /ect/redis/redis.config 可以修改文件的所有者信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 鲁迅先生说“我向来是不惮以最坏的恶意，来推测中国人的，然而我还不料，也不信竟会下劣凶残到这地步。” 黑暗中透露着光明 2021-5-1 01:26:36]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>chmod</tag>
+        <tag>文件</tag>
+        <tag>权限</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[protobuf中SerializeToString和SerializePartialToString的区别]]></title>
     <url>%2Fblog%2F2021%2F04%2F18%2Fprotobuf%E4%B8%ADSerializeToString%E5%92%8CSerializePartialToString%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
-    <content type="text"><![CDATA[前言protobuf是Google提出的序列化方案，此方案独立于语言和平台，目前提供了如c++、go、python等多种语言的实现，使用比较广泛，具有性能开销小，压缩率高等优点，是值得学习的优秀开源库。 protobuf有 v2 和 v3 两个主要的并且差异很大的版本，有一些关于protobuf的文章中并没有说明版本，有些描述的内容给人造成了疑惑，所以在使用protobuf前要明确自己使用的版本，查找对应的特性。 proto2这个版本在编写 .proto 文件时的字段有三种限定符，分别是required、optional 和 repeated。 required: 必须设置该字段，如果是在debug模式下编译 libprotobuf，则序列化一个未初始化的 message 将将导致断言失败。在release模式的构建中，将跳过检查并始终写入消息。但解析未初始化的消息将返回false表示失败。 optional: 可以设置也可以不设置该字段。如果未设置可选字段值，则使用默认值，也可以用[default = value]进行设置。 repeated: 该字段可以重复任意次数（包括零次），可以将 repeated 字段视为动态大小的数组。 message定义定义一个简单的 message 结构如下： 123456message Person &#123; required string name = 1; optional string email = 2; optional int age = 3 [default = 18]; repeated bytes phones = 4;&#125; 观察 message 定义可以看到每个字段后面都有 = 1、= 2 的标记，这些被称为 Tags，在 protobuf 中同一个 message 中的每个字段都需要有独一无二的tag，tag 为 1-15 的是单字节编码，16-2047 使用2字节编码，所以1-15给频繁使用的字段。 关于tag的范围，还有一种范围是[1,536870911]的说法，同时 19000 到 19999 范围内的数字也不能使用，因为它们是 protobuf 的实现中保留的，也就是 FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber 指定的范围，如果使用其中的数字，导出 .proto 文件时会报错，此处存疑，需要验证一下。 message扩展在使用的了 protobuf 的项目发布以后，绝对会遇到扩展原有 message 结构的需求，这一点不可避免，除非发布后的项目不再升级维护了，要想扩展就需要兼容之前的代码逻辑，这里有一些必须遵守的规则，否则就达不到兼容的目的。 不能更改任何现有字段的 tag 不能添加或删除任何 required 字段 可以删除 optional 或 repeated 的字段 可以添加新的 optional 或 repeated 字段，但必须使用新的tag，曾经使用过又删除的 tag 也不能再使用了 注意事项proto2 中对 required 的使用永远都应该非常小心。如果想在某个时刻停止写入或发送 required 字段，直接将字段更改为可选字段将会有问题。一些工程师得出的经验是，使用 required 弊大于利，他们更喜欢只使用 optional 和 repeated。 proto3proto3 比 proto2 支持更多语言但更简洁，去掉了一些复杂的语法和特性。 在第一行非空白非注释行，必须写：syntax = &quot;proto3&quot;; 直接从语法层面上移除了 required 规则，取消了 required 限定词 增加了对 Go、Ruby、JavaNano 等语言的支持 移除了 default 选项，字段的默认值只能根据字段类型由系统决定 序列化将 message 结构对象序列化的函数有多个，即使是序列化成字符串也有多个函数可以使用，比如 SerializeToString、SerializePartialToString、SerializeAsString、SerializePartialAsString 等等。 SerializeToString和SerializeAsString区别这两个还是很好区分的，从源码角度一眼就能够分辨出来： 1234567891011121314std::string MessageLite::SerializeAsString() const &#123; // If the compiler implements the (Named) Return Value Optimization, // the local variable 'output' will not actually reside on the stack // of this function, but will be overlaid with the object that the // caller supplied for the return value to be constructed in. std::string output; if (!AppendToString(&amp;output)) output.clear(); return output;&#125;bool MessageLite::SerializeToString(std::string* output) const &#123; output-&gt;clear(); return AppendToString(output);&#125; 从源代码可以看出，两者仅仅是参数和返回值的类型不同，其内部调用的函数都是一样的，SerializePartialToString 和 SerializePartialAsString 两个函数也是这种区别，可以根据外部逻辑所需来调用合适的函数。 12345678910bool MessageLite::SerializePartialToString(std::string* output) const &#123; output-&gt;clear(); return AppendPartialToString(output);&#125;std::string MessageLite::SerializePartialAsString() const &#123; std::string output; if (!AppendPartialToString(&amp;output)) output.clear(); return output;&#125; SerializeToString和SerializePartialToString区别这两个函数的区别在于内部调用的函数不同，一个调用 AppendToString，另一个调用 AppendPartialToString，两者源代码如下： 12345678910111213bool MessageLite::AppendToString(std::string* output) const &#123; GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage("serialize", *this); return AppendPartialToString(output);&#125;bool MessageLite::AppendPartialToString(std::string* output) const &#123; size_t old_size = output-&gt;size(); size_t byte_size = ByteSizeLong(); if (byte_size &gt; INT_MAX) &#123; GOOGLE_LOG(ERROR) &lt;&lt; GetTypeName() &lt;&lt; " exceeded maximum protobuf size of 2GB: " &lt;&lt; byte_size; return false;&#125; 原来 AppendToString 函数调用了 AppendPartialToString, 只是在调用之前先执行了一句 GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage(&quot;serialize&quot;, *this); 这句话什么意思呢？ 其实就是一个调试状态下的检查，类似于 assert 这个断言函数吧，检查的内容是这个 message 是否初始化，之前提到 required 修饰的字段必须要设置一个值，否者就是未初始化的状态，那么现在两个函数的区别就知道了，带有 “Partial” 函数其实是忽略 required 字段检查的，另外还有没有别的不同需要再进一步研究下源码了。 总结 protobuf有 v2 和 v3 两个主要的并且差异较大的版本，使用前请注意版本号 proto3 直接从语法层面上移除了 required 规则，移除了 default 选项，字段的默认值只能根据字段类型由系统决定 SerializeToString和SerializeAsString区别在于参数和返回值的不同，内部调用的函数是相同的 SerializeToString和SerializePartialToString区别在于SerializePartialToString会忽略 required 字段必须赋值的要求 在应用过程中尽可能重用 message 结构，这样protobuf内部实现中内存的重用 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 初识不知曲中意，再闻已是曲中人 2021-4-18 21:31:34]]></content>
+    <content type="text"><![CDATA[前言protobuf是Google提出的序列化方案，此方案独立于语言和平台，目前提供了如c++、go、python等多种语言的实现，使用比较广泛，具有性能开销小，压缩率高等优点，是值得学习的优秀开源库。 protobuf有 v2 和 v3 两个主要的并且差异很大的版本，有一些关于protobuf的文章中并没有说明版本，有些描述的内容给人造成了疑惑，所以在使用protobuf前要明确自己使用的版本，查找对应的特性。 proto2这个版本在编写 .proto 文件时的字段有三种限定符，分别是required、optional 和 repeated。 required：必须设置该字段，如果是在debug模式下编译 libprotobuf，则序列化一个未初始化（未对required字段赋值）的 message 将导致断言失败。在release模式的构建中，将跳过检查并始终写入消息，但解析未初始化的消息将返回false表示失败。 optional：可以设置也可以不设置该字段。如果未设置可选字段值，则使用默认值，也可以用[default = value]进行设置。 repeated：该字段可以重复任意次数（包括零次），可以将 repeated 字段视为动态大小的数组。 message定义定义一个简单的 message 结构如下： 123456message Person &#123; required string name = 1; optional string email = 2; optional int age = 3 [default = 18]; repeated bytes phones = 4;&#125; 观察 message 定义可以看到每个字段后面都有 = 1、= 2 的标记，这些被称为 Tags，在 protobuf 中同一个 message 中的每个字段都需要有独一无二的tag，tag 为 1-15 的是单字节编码，16-2047 使用2字节编码，所以1-15应该给频繁使用的字段。 关于tag的取值，还有一种范围是[1,536870911]的说法，同时 19000 到 19999 之间的数字也不能使用，因为它们是 protobuf 的实现中保留的，也就是 FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber 指定的范围，如果使用其中的数字，导出 .proto 文件时会报错，此处存疑，需要验证一下。 message扩展在使用的了 protobuf 的项目发布以后，绝对会遇到扩展原有 message 结构的需求，这一点不可避免，除非发布后的项目不再升级维护了，要想扩展就需要兼容之前的代码逻辑，这里有一些必须遵守的规则，否则就达不到兼容的目的。 不能更改任何现有字段的 tag 不能添加或删除任何 required 字段 可以删除 optional 或 repeated 的字段 可以添加新的 optional 或 repeated 字段，但必须使用新的tag，曾经使用过又删除的 tag 也不能再使用了 注意事项proto2 中对 required 的使用永远都应该非常小心。如果想在某个时刻停止写入或发送 required 字段，直接将字段更改为可选字段将会有问题。一些工程师得出的经验是，使用 required 弊大于利，他们更喜欢只使用 optional 和 repeated。 proto3proto3 比 proto2 支持更多语言但更简洁，去掉了一些复杂的语法和特性。 在第一行非空白非注释行，必须写：syntax = &quot;proto3&quot;; 直接从语法层面上移除了 required 规则，取消了 required 限定词 增加了对 Go、Ruby、JavaNano 等语言的支持 移除了 default 选项，字段的默认值只能根据字段类型由系统决定 序列化将 message 结构对象序列化的函数有很多，即使是序列化成字符串也有多个函数可以使用，比如 SerializeToString、SerializePartialToString、SerializeAsString、SerializePartialAsString 等等。 SerializeToString和SerializeAsString区别这两个还是很好区分的，从源码角度一眼就能够分辨出来： 1234567891011121314std::string MessageLite::SerializeAsString() const &#123; // If the compiler implements the (Named) Return Value Optimization, // the local variable 'output' will not actually reside on the stack // of this function, but will be overlaid with the object that the // caller supplied for the return value to be constructed in. std::string output; if (!AppendToString(&amp;output)) output.clear(); return output;&#125;bool MessageLite::SerializeToString(std::string* output) const &#123; output-&gt;clear(); return AppendToString(output);&#125; 从源代码可以很容易看出，两者仅仅是参数和返回值的类型不同，其内部调用的函数都是一样的，SerializePartialToString 和 SerializePartialAsString 两个函数也是这种区别，可以根据外部逻辑所需来调用合适的函数。 12345678910bool MessageLite::SerializePartialToString(std::string* output) const &#123; output-&gt;clear(); return AppendPartialToString(output);&#125;std::string MessageLite::SerializePartialAsString() const &#123; std::string output; if (!AppendPartialToString(&amp;output)) output.clear(); return output;&#125; SerializeToString和SerializePartialToString区别这两个函数的区别在于内部调用的函数不同，一个调用 AppendToString，另一个调用 AppendPartialToString，两个被调用函数的源代码如下： 12345678910111213bool MessageLite::AppendToString(std::string* output) const &#123; GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage("serialize", *this); return AppendPartialToString(output);&#125;bool MessageLite::AppendPartialToString(std::string* output) const &#123; size_t old_size = output-&gt;size(); size_t byte_size = ByteSizeLong(); if (byte_size &gt; INT_MAX) &#123; GOOGLE_LOG(ERROR) &lt;&lt; GetTypeName() &lt;&lt; " exceeded maximum protobuf size of 2GB: " &lt;&lt; byte_size; return false;&#125; 原来 AppendToString 函数调用了 AppendPartialToString, 只是在调用之前先执行了一句 GOOGLE_DCHECK(IsInitialized()) &lt;&lt; InitializationErrorMessage(&quot;serialize&quot;, *this); 这句话什么意思呢？ 其实就是一个调试状态下的检查，类似于 assert 这个断言函数吧，检查的内容是判断这个 message 是否初始化，之前提到 required 修饰的字段必须要设置一个值，否者就是未初始化的状态，那么现在两个函数的区别就知道了，带有 “Partial” 函数其实是忽略 required 字段检查的，另外还有没有别的不同需要再进一步研究下源码了。 总结 protobuf有 v2 和 v3 两个主要的并且差异较大的版本，使用前请注意版本号 proto3 直接从语法层面上移除了 required 规则，移除了 default 选项，字段的默认值只能根据字段类型由系统决定 SerializeToString和SerializeAsString区别在于参数和返回值的不同，内部调用的函数是相同的 SerializeToString和SerializePartialToString区别在于SerializePartialToString会忽略 required 字段必须赋值的要求 在应用过程中尽可能重用 message 结构，这样protobuf内部实现中内存的重用 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 没有什么捷径，继续努力就好了短期内不会看到什么成果，甚至说一辈子都可能看不到，但只有努力了才有可能看得到 2021-4-18 21:31:34]]></content>
       <categories>
         <category>protobuf</category>
       </categories>
@@ -235,10 +249,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -317,8 +331,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -517,9 +531,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>source</tag>
         <tag>linux</tag>
         <tag>gdb</tag>
+        <tag>source</tag>
         <tag>dir</tag>
         <tag>path</tag>
       </tags>
@@ -818,10 +832,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -847,10 +861,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -861,10 +875,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
