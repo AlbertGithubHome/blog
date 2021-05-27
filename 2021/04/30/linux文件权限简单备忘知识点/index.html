@@ -111,7 +111,7 @@
 <meta property="og:description" content="前言已经拖更好几天了，有些坚持的事情一旦中断便很难再捡起来了，所以还是尽可能的坚持下去，今天就简单记录一下文件权限相关的操作。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2021050101315534.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NoaWhlbmd6aGVuMTAx,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2021-04-30T17:32:34.458Z">
+<meta property="og:updated_time" content="2021-05-05T14:17:24.015Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux文件权限简单备忘知识点">
 <meta name="twitter:description" content="前言已经拖更好几天了，有些坚持的事情一旦中断便很难再捡起来了，所以还是尽可能的坚持下去，今天就简单记录一下文件权限相关的操作。">
@@ -393,8 +393,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-05-01T01:32:34+08:00">
-                2021-05-01
+              <time title="更新于" itemprop="dateModified" datetime="2021-05-05T22:17:24+08:00">
+                2021-05-05
               </time>
             
           </span>
@@ -447,7 +447,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,389(字)</span>
+            <span class="post-count">1,394(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -536,21 +536,25 @@
 <h1 id="chown-命令"><a href="#chown-命令" class="headerlink" title="chown 命令"></a>chown 命令</h1><p>该命令可以更改某个文件或目录的属主，也就是所有者。语法如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown ［option］ groupname|username filename</span><br></pre></td></tr></table></figure>
 <p>chown可以将指定文件的拥有者改为指定的用户或组。用户可以是用户名或用户ID。组可以是组名或组ID。与 chgrp命令一样，参数文件也是以空格分开的要改变权限的文件列表，支持通配符。</p>
-<p>option参数可选：<br>    -f: 若该文件拥有者无法被更改也不要显示错误讯息<br>    -h: 只对于连结(link)进行变更，而非该 link 真正指向的文件<br>    -v: 显示拥有者变更的详细资料<br>    -R: 对目前目录下的所有档案与子目录进行相同的拥有者变更(即以递回的方式逐个变更)</p>
-<p>修改文件所有者的例子如下：</p>
+<p>option参数可选：</p>
+<pre><code>-f: 若该文件拥有者无法被更改也不要显示错误讯息
+-h: 只对于连结(link)进行变更，而非该 link 真正指向的文件
+-v: 显示拥有者变更的详细资料
+-R: 对目前目录下的所有档案与子目录进行相同的拥有者变更(即以递回的方式逐个变更)
+</code></pre><p>修改文件所有者的例子如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chown redis /ect/redis/redis.config</span><br></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li><code>ls -l</code> 命令执行后的第5列，表示文件的硬连接路<ul>
+<li><code>ls -l</code> 命令执行后的第5列，表示文件的硬连接数</li>
 <li><code>chmod a+x happy.txt</code> 可以修改文件的权限信息</li>
 <li><code>chgrp a+x fruit.txt</code> 可以修改文件的所有组信息</li>
 <li><code>chown redis /ect/redis/redis.config</code> 可以修改文件的所有者信息</li>
 </ul>
-</li>
-</ul>
 <hr>
-<h2 id="gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt"><a href="#gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt" class="headerlink" title=" ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== "></a><center><a href="https://blog.csdn.net/albertsh/article/details/115842171" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center></h2><blockquote>
-<p>鲁迅先生说“我向来是不惮以最坏的恶意，来推测中国人的，然而我还不料，也不信竟会下劣凶残到这地步。”</p>
-<p>黑暗中透露着光明</p>
+<center><a href="https://blog.csdn.net/albertsh/article/details/115842171" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>鲁迅先生说“我向来是不惮以最坏的恶意，来推测中国人的，然而我还不料，也不信竟会下劣凶残到这地步。”<br>其实黑暗中往往也透露着光明~</p>
 <p>2021-5-1 01:26:36</p>
 </blockquote>
 
@@ -666,6 +670,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/" rel="prev" title="使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题">
+                使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -766,7 +774,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">129</span>
+                <span class="site-state-item-count">131</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -788,7 +796,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">300</span>
+                <span class="site-state-item-count">305</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -928,7 +936,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础概念"><span class="nav-number">2.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chmod-命令"><span class="nav-number">3.</span> <span class="nav-text">chmod 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chgrp-命令"><span class="nav-number">4.</span> <span class="nav-text">chgrp 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chown-命令"><span class="nav-number">5.</span> <span class="nav-text">chown 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt"><span class="nav-number">6.1.</span> <span class="nav-text"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础概念"><span class="nav-number">2.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chmod-命令"><span class="nav-number">3.</span> <span class="nav-text">chmod 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chgrp-命令"><span class="nav-number">4.</span> <span class="nav-text">chgrp 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chown-命令"><span class="nav-number">5.</span> <span class="nav-text">chown 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

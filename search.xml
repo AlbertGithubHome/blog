@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[C++对我来说简直就是星辰大海，为了避免翻船，我选择从小河沟出发]]></title>
+    <url>%2Fblog%2F2021%2F05%2F24%2FC-%E5%AF%B9%E6%88%91%E6%9D%A5%E8%AF%B4%E7%AE%80%E7%9B%B4%E5%B0%B1%E6%98%AF%E6%98%9F%E8%BE%B0%E5%A4%A7%E6%B5%B7%2F</url>
+    <content type="text"><![CDATA[你学的越多，不懂的东西反而越多~ 前言以前觉得 C++ 并没有什么复杂的，不就是 C 语言加上类定义、模板、容器、算法函数这些就可以了吗，只要我不用，它就难不倒我，用到了查查文档也就搞定了，真的是年少轻狂啊。 随着学习的深入渐渐发现，即使抛开那些算法函数、那些冗长的模板，单单是 C++ 核心的概念和类型就够喝上好几壶的，随便罗列几个，像 std::furnitrue、std::memory_order、std::packaged_task 等等这些，之前都没听说过，特别是C++20的协程，到现在还是一头雾水。 C++ 缺少了 C 语言的纯粹，总是喜欢在编译时加点料，但是这个协程加的料超多，一时间还有点接受不了。 不过第一次听说协程这个词是在 Lua 中，全称被叫做协同程序，记得没错是在 《Lua程序设计》这本书中看到的，里面专门有一章是讲coroutine的，并且在 Lua 中定义和使用协程很方便，所以决定先复习一下 Lua 中的协程，然后对比着 C++的协程来进行拓展学习。 进程 vs 线程 vs 协程这三者常常被拿来比较，而引入多进程、多线程、多协程有一个简单而纯粹的目的，那就是榨干CPU，不过这三者侧重还有所不同。 进程是资源分配最小单位，每个进程都有独立的地址空间，来维护代码段、堆栈段和数据段，但是创建和切换进程的开销较大，可以在多台物理机和多核CPU上提高效率，依靠管道（pipe）、命名管道（named pipe/FIFO）、信号量（semophore）、消息队列（message queue）、信号（sinal）、共享内存（shared memory）、套接字（socket）、全双工管道等途径来进行通信。 线程是任务调度和执行的最小单位，没有独立的地址空间，但有独立的运行栈和程序计数器（PC），创建和切换线程的开销相比进程来说要小得多，线程之间通信更加方便，除了可以使用进程间通信的方式，还可以简单地通过共享全局变量，静态变量等进行通信，但是需要锁机制、信号量机制、信号机制来控制线程间互斥。 协程这个概念就比较迷了，其实它不像多进程和多线程那样可以在多核机器上提供并行的能力，而是侧重于相互协作共同完成某个任务，同一个线程中可以启动多个协程，但这些协程同一时刻只能有一个在运行。 协程其实可以看成是一个可以被随时停止和唤醒的函数，使用协程是为了在用户层面来控制调用逻辑，对比于多线程程序的线程调度完全看操作系统的心情的处境，多协程的程序就比较自主了，可以由开发者来控制函数执行顺序。 还有一个特性很重要，就是使用协程可以实现用“同步”的方式来写“异步”的代码，这一点不理解没关系，以后会慢慢明白的。说到这，不得不说一下关于同步和异步、阻塞和非阻塞这几个概念，它们常常被大家混在一起来说，实际上只是从不同维度来描述了一件事情，下面简单叙述下。 同步 vs 异步同步和异步指的是消息通信的机制，或者说得到结果的方式。 同步：调用函数后就能返回想要的结果，有点像去食堂买饭，自己去食堂付完钱（调用），饭（结果）就可以被拿回来了，这就是同步调用的方式，与返回结果的时间长短无关，得到结果之后直接执行后面的逻辑（吃饭）就可以了，所以同步的逻辑是最好写的。 异步：调用函数后并不能直接得到想要的结果，需要通过回调或者其他消息来通知，这就有点像定外卖了，打开APP选好饭菜输入地址（注册回调），开始付钱（调用），此时并不能直接得到饭（结果），而是一段时间之后，有外卖小哥将饭（结果）给你送来，这时才能执行后面的逻辑（吃饭）。 总结来说，需要自己取结果的就是同步，依靠别人送结果的就是异步。 阻塞 vs 非阻塞阻塞和非阻塞指的是程序在等待调用结果时的状态，强调在获得结果之前的表现。 阻塞：调用函数后由于不满足某种条件（比如读socket但是没有数据）被挂起，当条件满足（socket来数据了）时被唤醒，并将结果返回。 非阻塞：调用函数后如果不满足指定条件（比如读socket但是没有数据）不挂起，而是返回一个表示没有取到结果的值，你可以按照某种间隔再次调用函数，直到取到结果为止，当然你也可以调用一次就结束了。 总结来说，不满足条件时调用方被挂起就是阻塞调用，否则就是非阻塞调用。 协程学习C++的协程是暂时学不明白了，为了不翻车，我还是从熟悉的 Lua 入手，来举例说明什么是协程？有什么用？为什么这样用？弄明白以后再慢慢用 C++ 来实现相同的目的，毕竟 C++ 这一块需要实现的内容也有点多。 消费者-生产者提到 Lua 的协程就会想到 “消费者-生产者”的例子，网上关于这个的实现有特别多的版本，整体上来说大同小异，基本上都是 《C++程序设计》这本书中的内容，但是这一部分我看了很多遍，感觉这个例子并不太好。 123456789101112131415161718192021222324252627282930313233343536373839404142function receive(prod) -- 激活协同程序 local status,value = coroutine.resume(prod) return valueendfunction send(x) -- 挂起协同程序 coroutine.yield(x)endfunction producer() -- 生产者 return coroutine.create( -- 创建协同程序 function() while true do local x = io.read() -- 产生新值 send(x) end end )endfunction filter(prod) -- 过滤器 return coroutine.create( -- 创建协同程序 function() for line = 1, math.huge do local x = receive(prod) -- 激活协同程序来获取新值 x = string.format("%5d %s",line , x ) -- 过滤规则 send(x) -- 挂起激活程序 end end )endfunction consumer(prod) while true do local x = receive(prod) -- 获取新值 io.write(x, "\n") -- 消费新值 endendp= producer() -- 初始化生产者f = filter(p) -- 初始化过滤器consumer(f) -- 初始化消费者并启动程序 这就是一个消费者驱动的模型，首先由启动消费者，然后调用生产者来生产资源，接着消费者消耗掉新的资源，再控制生产者生产新的资源，以此方式循环往复，其实就是下面代码的复杂化： 12345678function consumer_producer() while true do local x = io.read() -- 产生新值 io.write(x, "\n") -- 消费新值 endendconsumer_producer() -- 启动生产者消费者 这个例子以我现在的菜鸟水平来看没啥用，但是有一点比较好，就是展示了可以用协程来控制程序执行顺序的强大功能，只是这个消费者和生产者强耦合的设计实在是看不明白。 自己想个例子既然他们的例子我都不喜欢，那我就自己想一个，叮铃铃！下面我收到了一个新的需求： 计算1+2+3+4+5+6+7+8+9+10的和，然后等待5秒钟后，将结果显示在控制台上。 乍一听，这个需求太简单了吧，没有一点难度，其实不然，其中蕴含着大量玄机，简直就是一个万能句式： 做一件事情A，然后等待某件事发生，再做一件事情B（可能与A相关） 仔细想想，这样的“句式”在开发中，生活中是不是经常出现？ 下载电影，下载完成后，播放电影 开始加载场景，加载完成后，隐藏加载进度条 发送一个请求，收到回复时，将回复结果显示出来 … 看了吧，现实中有很多这类需求，我们接下来尝试着实现一下 常规写法123456789101112131415161718192021222324252627-- lua 没有 sleep 函数，使用while循环模拟function sleep(n) local t = os.clock() while os.clock() - t &lt;= n do endendfunction task_method_1() print(string.format("program start at %s", os.date("%H:%M:%S"))) -- 求和 local sum = 0; for i=1,10 do sum = sum + i; end -- 等待 sleep(5); -- 展示 print(string.format("program end at %s and sum = %d", os.date("%H:%M:%S"), sum))endfunction main1() task_method_1()endmain1() 代码很简单，为了看起来更连贯这里就不分段展示了，首先模拟一个 sleep 函数，然后实现 task_method_1 函数来完成原始需求——求和、等待、展示，最后通过主函数来调用就可以了。 运行结果如下: program start at 01:30:27program end at 01:30:32 and sum = 55 进阶写法看了上面的代码有没有发现什么问题？这是一种同步的实现方式，整个程序在中间等待的5秒钟什么都不能做，必须等倒计时结束才能做后面的事情，这要是购物APP点了5秒没反应就直接X掉了，这可是赤果果的金钱损失啊，绝不能让这种事情发生。 怎么办呢？我确实需要5秒钟的处理时间，但是又不能让用户卡在那，我可以显示一个进度条，进度一直再变化，用户就不会以为程序卡死了，如果进度走的比较慢，他可能以为手机老旧该换了，没准还促进了手机的销量呢！ 顺着这个思路写出了下面这种实现，这是一种异步的实现方式，通过回调函数来通知最终要显示的结果。 123456789101112131415161718192021222324252627282930313233343536373839404142434445function task_method_2() print(string.format("program start at %s", os.date("%H:%M:%S"))) -- 求和 local sum = 0; for i=1,10 do sum = sum + i; end -- 注册回调函数，进行等待 add_callback(5, call_back_print, sum)endfunction call_back_print(data) --展示结果 print(string.format("program end at %s and sum = %d", os.date("%H:%M:%S"), data))endfunction add_callback(inteval, func, data) interval_time = inteval call_back = func msg_data = dataendfunction main2() local t0 = os.clock(); local t = t0; task_method_2() while true do local now = os.clock() if now - t &gt;= 1 then print(string.format("program run %f seconds", now - t0)) t = now; if interval_time and call_back and now - t0 &gt;= interval_time then call_back(msg_data) break; end end endendmain2() 在函数 task_method_2 中计算完求和的结果，并没有等待，而是通过 add_callback 函数注册了等待时间、回调函数、以及回调展示的结果，然后直接返回了调用方，调用主函数 main2 中计算这时间差并展示进度，等倒计时一结束就执行回调函数，进而展示出结果。 运行结果如下，通过打印信息展示处理进度条: program start at 01:44:56program run 1.000000 secondsprogram run 2.001000 secondsprogram run 3.001000 secondsprogram run 4.001000 secondsprogram run 5.001000 secondsprogram end at 01:45:01 and sum = 55 协程写法卡顿的问题解决了，但是添加了一大堆额外的注册和回调函数，有些麻烦啊，怎么把它们去掉呢？ 终于等到协程出场了，同步调用很卡、异步回调很烦，那么协程可以实现用“同步”的方式来写“异步”的代码，既不卡也不烦，下面来看一下实现。 123456789101112131415161718192021222324252627282930313233343536373839function task_method_3() print(string.format("program start at %s", os.date("%H:%M:%S"))) -- 求和 local sum = 0; for i=1,10 do sum = sum + i; end -- 等待 coroutine.yield(5); -- 展示 print(string.format("program end at %s and sum = %d", os.date("%H:%M:%S"), sum))endfunction main3() local t0 = os.clock(); local t = t0; local co = coroutine.create(task_method_3) local status, interval = coroutine.resume(co) while true do local now = os.clock() if now - t &gt;= 1 then print(string.format("program run %f seconds", now - t0)) t = now; if now - t0 &gt;= interval then coroutine.resume(co) break; end end endendmain3() 对比 task_method_3 和 task_method_1 函数，只是将 sleep 函数换成了 coroutine.yield(5)，整个需求函数很紧凑。 程序运行逻辑是这样的，先将 task_method_3 函数包装成协程 co，然后启动 co 执行求和逻辑，执行到 coroutine.yield(5); 这句，协程被暂停并将5返回，主函数 main3 中收到返回值5后开始计时并展示进度值，直到5秒等待期结束再次唤醒协程 co，coroutine.yield(5); 后面的代码继续执行，完成最后的展示需求。 运行结果如下： program start at 01:50:59program run 1.000000 secondsprogram run 2.000000 secondsprogram run 3.000000 secondsprogram run 4.000000 secondsprogram run 5.000000 secondsprogram end at 01:51:04 and sum = 55 总结 多进程/多线程的引入并不是总能降低任务消耗的时间，还要考虑到进程/线程切换的消耗问题，参考Redis实现 多协程的引入本质上是为了更好的控制程序运行的逻辑，虽然它往往也能带来效率上的提升 coroutine.yield 是协程的中核心函数，主动让出CPU，如果协程不自己挂起，外部无法干预 知识的迁移是一项重要的技能，下一步要用C++协程来实现这个需求啦，边学边写喽 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 拨开那一片云，是你未曾实现的梦想，岁月流转，梦想在变，有些事不得不放弃坚守（固执），珍惜眼前的一切，迎接明天的朝阳~ 2021-5-28 00:27:18]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>C++20</tag>
+        <tag>coruntine</tag>
+        <tag>recursion</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题]]></title>
+    <url>%2Fblog%2F2021%2F05%2F15%2F%E4%BD%BF%E7%94%A8AddressSanitizer%E6%90%AD%E9%85%8Daddr2line%E6%9F%A5%E6%89%BEC-C-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[前言指针是C/C++程序中的利器，同时也引入了风险，现代C++中增加了智能指针来降低使用“裸”指针带来的风险，但是智能指针不是一颗银弹，它不能解决所有的指针问题，内存泄漏在C/C++程序开发中依旧是值得注意的，学会合理、合适的方法来查找内存泄漏问题也是一项有用的技能。 通常内存泄漏问题会在开发到一定程度时集中检查，一些检测方法长时间不去使用难免会忘记，所以本文记录一种自己常用的检测方法，方便日后查阅。 AddressSanitizerAddressSanitizer 是什么东西呢？从名字上直接翻译叫“地址消毒剂”，其实就是用来检查地址问题的。 它是一款地址问题检测工具，简称 ASAN，开源项目主地址为 google/sanitizers，是众多检测工具AddressSanitizer, MemorySanitizer, ThreadSanitizer, LeakSanitizer 中的一款，功能非常强大，可以检测出栈上缓冲区溢出、堆上缓冲区溢出、引用已释放内存、内存泄漏等多种地址问题。 今天想记录的是使用 AddressSanitizer 检测内存泄漏的步骤，其实检测内存泄漏的功能目前已经被基本独立成了 LeakSanitizer，不过仍可以通过在 AddressSanitizer 工具中通过参数来开启和关闭使用。 检测步骤其实使用 ASAN 检测内存泄漏还是比较简单的，g++4.8 以上的版本自带了 ASAN 工具，只要编译时指定好参数，编译完成后正常启动运行程序就可以了，只不过有些情况下只从检测报告中无法准确定位问题，需要借助一些工具进一步缩小检测范围。 泄漏发生在可执行程序本身这种情况检测起来比较容易，编写如下测试代码： 12345678910111213141516//test.cpp#include &lt;iostream&gt;void func()&#123; int* p = new int(); // 内存泄漏的位置 p = nullptr;&#125;int main()&#123; func(); std::cout &lt;&lt; "test leak" &lt;&lt; std::endl; return 0;&#125; 使用g++进行编译，编译时添加参数 -fsanitize=leak 就可以了，启动后可以清晰的展示出内存泄漏的位置 test.cpp:5，也就是 test.cpp 文件的第5行。 123456789101112131415albert@home-pc:/mnt/d/data/cpp/testleak$ g++ test.cpp -g -o test --std=c++11 -fsanitize=leakalbert@home-pc:/mnt/d/data/cpp/testleak$ ./testtest leak===================================================================344==ERROR: LeakSanitizer: detected memory leaksDirect leak of 4 byte(s) in 1 object(s) allocated from: #0 0x7fc7d796d815 in operator new(unsigned long) (/usr/lib/x86_64-linux-gnu/liblsan.so.0+0xd815) #1 0x400967 in func() /mnt/d/data/cpp/testleak/test.cpp:5 #2 0x400985 in main /mnt/d/data/cpp/testleak/test.cpp:11 #3 0x7fc7d722083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: LeakSanitizer: 4 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ 这里有个小意外，将 int* p = new int(); 这句代码改成 int* p = new int[10]; 可以检测出内存泄漏如下： 123456789101112131415albert@home-pc:/mnt/d/data/cpp/testleak$ g++ test.cpp -fsanitize=leak -g -o test --std=c++11albert@home-pc:/mnt/d/data/cpp/testleak$ ./testtest leak===================================================================416==ERROR: LeakSanitizer: detected memory leaksDirect leak of 400 byte(s) in 1 object(s) allocated from: #0 0x7fdc0c16d975 in operator new[](unsigned long) (/usr/lib/x86_64-linux-gnu/liblsan.so.0+0xd975) #1 0x400967 in func() /mnt/d/data/cpp/testleak/test.cpp:5 #2 0x40097f in main /mnt/d/data/cpp/testleak/test.cpp:11 #3 0x7fdc0ba2083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: LeakSanitizer: 400 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ 但是将 int* p = new int(); 这句代码改成 int* p = new int[1024]; 就无法检测是内存泄漏了，只能修改编译选项为 -fsanitize=address 才能检测出泄漏，目前还不知道真正的原因是什么。 123456789101112131415albert@home-pc:/mnt/d/data/cpp/testleak$ g++ test.cpp -fsanitize=address -g -o test --std=c++11albert@home-pc:/mnt/d/data/cpp/testleak$ ./testtest leak===================================================================432==ERROR: LeakSanitizer: detected memory leaksDirect leak of 4096 byte(s) in 1 object(s) allocated from: #0 0x7f1d42b296b2 in operator new[](unsigned long) (/usr/lib/x86_64-linux-gnu/libasan.so.2+0x996b2) #1 0x400b27 in func() /mnt/d/data/cpp/testleak/test.cpp:5 #2 0x400b3f in main /mnt/d/data/cpp/testleak/test.cpp:11 #3 0x7f1d4235083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: AddressSanitizer: 4096 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ 泄漏发生在编译所需动态库中如果内存泄漏发生在编译时使用的动态库中，那么这和上一种情况基本一致，可以直接编译后运行就能发现，测试代码如下 123// myadd.hint add(int a, int b); 123456789// myadd.cpp#include "myadd.h"int add(int a, int b)&#123; int* p = new int(); // 内存泄漏的位置 return a + b;&#125; 12345678910// test.cpp#include "myadd.h"#include &lt;iostream&gt;int main()&#123; std::cout &lt;&lt; "519 + 1 = " &lt;&lt; add(519, 1) &lt;&lt; std::endl; return 0;&#125; 添加编译选项 -fsanitize=leak 编译后运行，也可以直接显示出内存泄漏的位置，内存泄漏在 libmyadd.so 动态库中的 add 函数中。 12345678910111213141516albert@home-pc:/mnt/d/data/cpp/testleak$ g++ -shared -fPIC -o libmyadd.so myadd.cppalbert@home-pc:/mnt/d/data/cpp/testleak$ g++ test3.cpp -L. -lmyadd -o test -Wl,-rpath=. -fsanitize=leakalbert@home-pc:/mnt/d/data/cpp/testleak$ ./test519 + 1 = 520===================================================================493==ERROR: LeakSanitizer: detected memory leaksDirect leak of 4 byte(s) in 1 object(s) allocated from: #0 0x7ff1aff6d815 in operator new(unsigned long) (/usr/lib/x86_64-linux-gnu/liblsan.so.0+0xd815) #1 0x7ff1afd506b7 in add(int, int) (libmyadd.so+0x6b7) #2 0x4009cd in main (/mnt/d/data/cpp/testleak/test+0x4009cd) #3 0x7ff1af61083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: LeakSanitizer: 4 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ 泄漏发生在自定义加载的动态库中这种情况要想精确定位问题就麻烦一些了，下面是用来测试的代码 123// myadd.hextern "C" int add(int a, int b); 123456789// myadd.cpp#include "myadd.h"extern "C" int add(int a, int b)&#123; int* p = new int(); // 内存泄漏的位置 return a + b;&#125; 12345678910111213141516171819// test.cpp#include "myadd.h"#include &lt;dlfcn.h&gt;#include &lt;iostream&gt;typedef int (*FUNC)(int a,int b);int main() &#123; void* handle = dlopen("./libmyadd.so", RTLD_LAZY); FUNC myadd = (FUNC)dlsym(handle,"add"); int nVal = 0; std::cin &gt;&gt; nVal; std::cout &lt;&lt; "519 + 1 = " &lt;&lt; myadd(519, 1) &lt;&lt; ", input:" &lt;&lt; nVal &lt;&lt; std::endl; dlclose(handle); return 0;&#125; 添加编译选项 -fsanitize=leak 编译后运行，输入数字618，程序运行结束，显示内存泄漏出现在 0x7fc88f0f06b7 (&lt;unknown module&gt;) 1234567891011121314151617albert@home-pc:/mnt/d/data/cpp/testleak$ g++ -shared -fPIC -o libmyadd.so myadd.cpp -galbert@home-pc:/mnt/d/data/cpp/testleak$ g++ test.cpp -ldl -o test -Wl,-rpath=. -g -fsanitize=leakalbert@home-pc:/mnt/d/data/cpp/testleak$ ./test618519 + 1 = 520, input:618===================================================================817==ERROR: LeakSanitizer: detected memory leaksDirect leak of 4 byte(s) in 1 object(s) allocated from: #0 0x7fc89076d815 in operator new(unsigned long) (/usr/lib/x86_64-linux-gnu/liblsan.so.0+0xd815) #1 0x7fc88f0f06b7 (&lt;unknown module&gt;) #2 0x400bc2 in main (/mnt/d/data/cpp/testleak/test+0x400bc2) #3 0x7fc88fe1083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: LeakSanitizer: 4 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ unknown module当使用 dlopen 的方式加载的动态库时，产生的内存泄漏常显示为 (&lt;unknown module&gt;)，那是因为内存检测工具在程序退出时分析泄漏情况，而这时自定义加载的动态库往往已经手动调用 dlclose 关闭了，这时就会显示成 0x7fc88f0f06b7 (&lt;unknown module&gt;) 的显示。 maps针对于出现 (&lt;unknown module&gt;) 的这种情况，可以通过查询 /proc/pid/maps 来辅助查询，maps 文件显示进程映射后的内存区域和访问权限，是程序正在运行时的信息，数据格式如下： 12345678910111213141516171819207f8c7adb6000-7f8c7adba000 rw-p 00000000 00:00 07f8c7adc0000-7f8c7af32000 r-xp 00000000 00:00 189413 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.217f8c7af32000-7f8c7af3f000 ---p 00172000 00:00 189413 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.217f8c7af3f000-7f8c7b132000 ---p 0017f000 00:00 189413 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.217f8c7b132000-7f8c7b13c000 r--p 00172000 00:00 189413 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.217f8c7b13c000-7f8c7b13e000 rw-p 0017c000 00:00 189413 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.217f8c7b13e000-7f8c7b142000 rw-p 00000000 00:00 07f8c7b150000-7f8c7b153000 r-xp 00000000 00:00 243909 /lib/x86_64-linux-gnu/libdl-2.23.so7f8c7b153000-7f8c7b154000 ---p 00003000 00:00 243909 /lib/x86_64-linux-gnu/libdl-2.23.so7f8c7b154000-7f8c7b352000 ---p 00004000 00:00 243909 /lib/x86_64-linux-gnu/libdl-2.23.so7f8c7b352000-7f8c7b353000 r--p 00002000 00:00 243909 /lib/x86_64-linux-gnu/libdl-2.23.so7f8c7b353000-7f8c7b354000 rw-p 00003000 00:00 243909 /lib/x86_64-linux-gnu/libdl-2.23.so7f8c7b360000-7f8c7b39f000 r-xp 00000000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.07f8c7b39f000-7f8c7b3a2000 ---p 0003f000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.07f8c7b3a2000-7f8c7b59e000 ---p 00042000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.07f8c7b59e000-7f8c7b5a0000 r--p 0003e000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.07f8c7b5a0000-7f8c7b5a1000 rw-p 00040000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.07f8c7b5a1000-7f8c7c1f4000 rw-p 00000000 00:00 07f8c7c200000-7f8c7c225000 r-xp 00000000 00:00 243945 /lib/x86_64-linux-gnu/ld-2.23.so7f8c7c225000-7f8c7c226000 r-xp 00025000 00:00 243945 /lib/x86_64-linux-gnu/ld-2.23.so 第一列：7f8c7b360000-7f8c7b39f000，表示本段内存映射的虚拟地址空间范围。 第二列：r-xp，表示此段虚拟地址空间的属性。r表示可读，w表示可写，x表示可执行，p和s共用一个字段，互斥关系，p表示私有段，s表示共享段，-表示没有权限。 第三列：00000000，表示映射偏移。对有名映射，表示此段虚拟内存起始地址在文件中以页为单位的偏移。对匿名映射，它等于0或者vm_start/PAGE_SIZE。 第四列：00:00，表示映射文件所属设备号。对有名映射来说，是映射的文件所在设备的设备号，对匿名映射来说，因为没有文件在磁盘上，所以没有设备号，始终为00:00。 第五列：247365，表示映射文件所属节点号。对有名映射来说，是映射的文件的节点号。对匿名映射来说，因为没有文件在磁盘上，所以没有节点号，始终为0。第六列：/usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0，表示映射文件名或堆、栈。对匿名映射来说，是此段虚拟内存在进程中的角色。[stack]表示在进程中作为栈使用，[heap]表示堆。对有名来说，是映射的文件名。其余情况则无显示。 7f8c7b360000-7f8c7b39f000 r-xp 00000000 00:00 247365 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0 这一行就展示了 liblsan.so 这个动态库映射的内存中位置和权限情况，liblsan.so 也就是 ASAN 工具用来检测内存泄漏的工具所依赖的动态库。 具体操作 启动一个终端，然后运行 test 程序，因为程序中要求从控制台读取一个变量，所以运行后程序会一直停留在控制台等待输入 1albert@home-pc:/mnt/d/data/cpp/testleak$ ./test 重新打开一个终端，查询 test 程序的进程id，然后拷贝对应的 maps 文件 1234albert@home-pc:/mnt/d/data/cpp/testleak$ ps -ef | grep testalbert 986 889 0 21:42 pts/0 00:00:00 ./testalbert 988 953 0 21:42 pts/1 00:00:00 grep --color=auto testalbert@home-pc:/mnt/d/data/cpp/testleak$ cp /proc/986/maps testmaps 在第一个终端中输入数字，程序运行结束，显示出内存泄漏信息 123456789101112131415161718albert@home-pc:/mnt/d/data/cpp/testleak$ ./test# 以下为新的信息，输入了515515519 + 1 = 520, input:515===================================================================986==ERROR: LeakSanitizer: detected memory leaksDirect leak of 4 byte(s) in 1 object(s) allocated from: #0 0x7f8c7b36d815 in operator new(unsigned long) (/usr/lib/x86_64-linux-gnu/liblsan.so.0+0xd815) #1 0x7f8c79cf06b7 (&lt;unknown module&gt;) #2 0x400bc2 in main (/mnt/d/data/cpp/testleak/test+0x400bc2) #3 0x7f8c7aa1083f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)SUMMARY: LeakSanitizer: 4 byte(s) leaked in 1 allocation(s).albert@home-pc:/mnt/d/data/cpp/testleak$ 从检测报告中看到 0x7f8c79cf06b7 (&lt;unknown module&gt;)，在备份的 testmaps 文件中查找范围，发现处于下面一段之中 1234567640000000000-640000003000 rw-p 00000000 00:00 07f8c79cf0000-7f8c79cf1000 r-xp 00000000 00:00 282 /mnt/d/data/cpp/testleak/libmyadd.so7f8c79cf1000-7f8c79cf2000 ---p 00001000 00:00 282 /mnt/d/data/cpp/testleak/libmyadd.so7f8c79cf2000-7f8c79ef0000 ---p 00002000 00:00 282 /mnt/d/data/cpp/testleak/libmyadd.so7f8c79ef0000-7f8c79ef1000 r--p 00000000 00:00 282 /mnt/d/data/cpp/testleak/libmyadd.so7f8c79ef1000-7f8c79ef2000 rw-p 00001000 00:00 282 /mnt/d/data/cpp/testleak/libmyadd.so7f8c79f00000-7f8c7a000000 rw-p 00000000 00:00 0 至此发现问题出现在 libmyadd.so 这个动态库中，再用 0x7f8c79cf06b7 减去动态链接库基地址 7f8c79cf0000，得到偏移量为 0x6b7，此时使用 addr2line 工具进行转化。 123albert@home-pc:/mnt/d/data/cpp/testleak$ addr2line -C -f -e /mnt/d/data/cpp/testleak/libmyadd.so 0x6b7add/mnt/d/data/cpp/testleak/myadd.cpp:4 至此就找到了内存泄漏的确切位置，在/mnt/d/data/cpp/testleak/myadd.cpp文件第4行的 add 函数之中。 总结 在 C++11 之后尽可能使用智能指针来管理在堆上申请的内存，shared_ptr、weak_ptr、unique_ptr 能帮我们减少许多麻烦 想要检测程序内存用用问题， AddressSanitizer 是一个不错的选择，其中有关内存泄漏的检测已经被整合到 LeakSanitizer 工具中 当程序中的内存泄漏发生在 dlopen 加载的动态库中时，常常出现 (&lt;unknown module&gt;) 的情况，这时需要借助 proc/pid/maps 文件和 addr2line 工具来完成精确定位。 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 祝融落地。一百年了，还没有什么事情是做不到的，我们需要的是时间，我等着看你们在真正的力量面前瑟瑟发抖~ 2021-5-16 00:08:24]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>linux</tag>
+        <tag>AddressSanitizer</tag>
+        <tag>addr2line</tag>
+        <tag>内存泄漏</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[linux文件权限简单备忘知识点]]></title>
     <url>%2Fblog%2F2021%2F04%2F30%2Flinux%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E7%AE%80%E5%8D%95%E5%A4%87%E5%BF%98%E7%9F%A5%E8%AF%86%E7%82%B9%2F</url>
-    <content type="text"><![CDATA[前言已经拖更好几天了，有些坚持的事情一旦中断便很难再捡起来了，所以还是尽可能的坚持下去，今天就简单记录一下文件权限相关的操作。 这里先扔出一张图，这么懒的我居然画了一张图！不过前几天感冒状态不太好，这张图画了好几晚上才完成，就凑活看吧。 基本上看注释就能明白各列的含义，关于“文件硬链接数”这一列还有点疑问，在CentOS上测试，确实如注释所言，普通文件显示的硬链接数，目录文件显示的是第一级子目录的个数，但是在WSL上却不符合这个说法，暂时还没有找到原因，接下来还是列举下文件权限相关的操作吧。 基础概念在linux系统中的每个用户必须属于一个组，不能独立于组外。而每个文件的权限区分所有者、所在组、其它人，就像图片中展示的那样 所有者：指创建文件的人，拥有第一组权限 所在组：指的是和所有者在同组的人，拥有第二组权限 其他人：指排除掉前两类的其他人，拥有第三组权限 每组权限都分为读、写、执行三种具体权限，对应数字分别是4、2、1，字母表示为r、w、x，没有权限可以用-表示，也就是0，因为有这些表示方法，修改文件的命令形式也有很多种。 一个文件的访问权限是可以进行修改的，用户可以使用 chmod 命令来重新设定不同的访问权限，可以使用 chown 命令来更改某个文件或目录的所有者，也可以利用 chgrp 命令来更改某个文件或目录的用户组。 chmod 命令上面说到文件的权限分为所有者、同组人、其他人三组，每组权限又有r、w、x三种权限，分别用数字4、2、1表示，举几个对照的例子如下 123rwx r-x r–x 755rw- r–- –-- 640rw- rw- r–- 664 因为表示的多样性，该命令有通常有字母表达式和数字表达式两种用法，格式如下: 1chmod ［who］ ［+ | – | =］ ［mode］ filename 命令中各选项的含义为： 命令中的 who 可是下述字母中的任一个或者它们的组合： u 表示所有者user g 表示同组用户group o 表示其他人other a 表示所有用户all，是系统默认值 权限改变的符号可以是： + 添加某个权限 – 取消某个权限 = 赋予给定权限并取消其他所有权限（如果有的话） 命令中的 mode 所表示的权限可用下述字母的任意组合： r 可读权限 w 可写权限 x 可执行权限 X 只有目标文件对某些用户是可执行的或该目标文件是目录时才追加 x 属性 u 与文件属主拥有一样的权限 g 与和文件属主同组的用户拥有一样的权限 o 与其他用户拥有一样的权限 常见写法如下： 123$ chmod a+x happy.txt$ chmod ug+w file.xml$ chmod 755 a.out chgrp 命令该命令能改变文件或目录所属的组，语法如下： 1chgrp ［option］ group filename option参数可选： -f,–quiet,–silent: 不显示错误信息 -R,–recursive: 递归处理，将指定目录下的所有文件及子目录一并处理 -v,–verbose: 显示指令执行过程 命令中group可以是用户组ID，也可以是/etc/group文件中用户组的组名。文件名是以空格分开的要改变属组的文件列表，支持通配符。如果用户不是该文件的属主或超级用户，则不能改变该文件的组的。 1$chgrp -R mysql /opt/local/my.ini chown 命令该命令可以更改某个文件或目录的属主，也就是所有者。语法如下： 1chown ［option］ groupname|username filename chown可以将指定文件的拥有者改为指定的用户或组。用户可以是用户名或用户ID。组可以是组名或组ID。与 chgrp命令一样，参数文件也是以空格分开的要改变权限的文件列表，支持通配符。 option参数可选： -f: 若该文件拥有者无法被更改也不要显示错误讯息 -h: 只对于连结(link)进行变更，而非该 link 真正指向的文件 -v: 显示拥有者变更的详细资料 -R: 对目前目录下的所有档案与子目录进行相同的拥有者变更(即以递回的方式逐个变更) 修改文件所有者的例子如下： 1$ chown redis /ect/redis/redis.config 总结 ls -l 命令执行后的第5列，表示文件的硬连接路 chmod a+x happy.txt 可以修改文件的权限信息 chgrp a+x fruit.txt 可以修改文件的所有组信息 chown redis /ect/redis/redis.config 可以修改文件的所有者信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 鲁迅先生说“我向来是不惮以最坏的恶意，来推测中国人的，然而我还不料，也不信竟会下劣凶残到这地步。” 黑暗中透露着光明 2021-5-1 01:26:36]]></content>
+    <content type="text"><![CDATA[前言已经拖更好几天了，有些坚持的事情一旦中断便很难再捡起来了，所以还是尽可能的坚持下去，今天就简单记录一下文件权限相关的操作。 这里先扔出一张图，这么懒的我居然画了一张图！不过前几天感冒状态不太好，这张图画了好几晚上才完成，就凑活看吧。 基本上看注释就能明白各列的含义，关于“文件硬链接数”这一列还有点疑问，在CentOS上测试，确实如注释所言，普通文件显示的硬链接数，目录文件显示的是第一级子目录的个数，但是在WSL上却不符合这个说法，暂时还没有找到原因，接下来还是列举下文件权限相关的操作吧。 基础概念在linux系统中的每个用户必须属于一个组，不能独立于组外。而每个文件的权限区分所有者、所在组、其它人，就像图片中展示的那样 所有者：指创建文件的人，拥有第一组权限 所在组：指的是和所有者在同组的人，拥有第二组权限 其他人：指排除掉前两类的其他人，拥有第三组权限 每组权限都分为读、写、执行三种具体权限，对应数字分别是4、2、1，字母表示为r、w、x，没有权限可以用-表示，也就是0，因为有这些表示方法，修改文件的命令形式也有很多种。 一个文件的访问权限是可以进行修改的，用户可以使用 chmod 命令来重新设定不同的访问权限，可以使用 chown 命令来更改某个文件或目录的所有者，也可以利用 chgrp 命令来更改某个文件或目录的用户组。 chmod 命令上面说到文件的权限分为所有者、同组人、其他人三组，每组权限又有r、w、x三种权限，分别用数字4、2、1表示，举几个对照的例子如下 123rwx r-x r–x 755rw- r–- –-- 640rw- rw- r–- 664 因为表示的多样性，该命令有通常有字母表达式和数字表达式两种用法，格式如下: 1chmod ［who］ ［+ | – | =］ ［mode］ filename 命令中各选项的含义为： 命令中的 who 可是下述字母中的任一个或者它们的组合： u 表示所有者user g 表示同组用户group o 表示其他人other a 表示所有用户all，是系统默认值 权限改变的符号可以是： + 添加某个权限 – 取消某个权限 = 赋予给定权限并取消其他所有权限（如果有的话） 命令中的 mode 所表示的权限可用下述字母的任意组合： r 可读权限 w 可写权限 x 可执行权限 X 只有目标文件对某些用户是可执行的或该目标文件是目录时才追加 x 属性 u 与文件属主拥有一样的权限 g 与和文件属主同组的用户拥有一样的权限 o 与其他用户拥有一样的权限 常见写法如下： 123$ chmod a+x happy.txt$ chmod ug+w file.xml$ chmod 755 a.out chgrp 命令该命令能改变文件或目录所属的组，语法如下： 1chgrp ［option］ group filename option参数可选： -f,–quiet,–silent: 不显示错误信息 -R,–recursive: 递归处理，将指定目录下的所有文件及子目录一并处理 -v,–verbose: 显示指令执行过程 命令中group可以是用户组ID，也可以是/etc/group文件中用户组的组名。文件名是以空格分开的要改变属组的文件列表，支持通配符。如果用户不是该文件的属主或超级用户，则不能改变该文件的组的。 1$chgrp -R mysql /opt/local/my.ini chown 命令该命令可以更改某个文件或目录的属主，也就是所有者。语法如下： 1chown ［option］ groupname|username filename chown可以将指定文件的拥有者改为指定的用户或组。用户可以是用户名或用户ID。组可以是组名或组ID。与 chgrp命令一样，参数文件也是以空格分开的要改变权限的文件列表，支持通配符。 option参数可选： -f: 若该文件拥有者无法被更改也不要显示错误讯息 -h: 只对于连结(link)进行变更，而非该 link 真正指向的文件 -v: 显示拥有者变更的详细资料 -R: 对目前目录下的所有档案与子目录进行相同的拥有者变更(即以递回的方式逐个变更) 修改文件所有者的例子如下： 1$ chown redis /ect/redis/redis.config 总结 ls -l 命令执行后的第5列，表示文件的硬连接数 chmod a+x happy.txt 可以修改文件的权限信息 chgrp a+x fruit.txt 可以修改文件的所有组信息 chown redis /ect/redis/redis.config 可以修改文件的所有者信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 鲁迅先生说“我向来是不惮以最坏的恶意，来推测中国人的，然而我还不料，也不信竟会下劣凶残到这地步。”其实黑暗中往往也透露着光明~ 2021-5-1 01:26:36]]></content>
       <categories>
         <category>linux</category>
       </categories>
@@ -95,8 +124,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>log</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>pager</tag>
         <tag>config</tag>
       </tags>
@@ -110,10 +139,10 @@
       </categories>
       <tags>
         <tag>int</tag>
+        <tag>hex</tag>
         <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
-        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -196,8 +225,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -317,8 +346,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -410,9 +439,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -531,9 +560,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>source</tag>
         <tag>linux</tag>
         <tag>gdb</tag>
-        <tag>source</tag>
         <tag>dir</tag>
         <tag>path</tag>
       </tags>
@@ -631,10 +660,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -675,8 +704,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
         <tag>asm</tag>
       </tags>
@@ -962,8 +991,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>hex</tag>
         <tag>Blob substring</tag>
+        <tag>hex</tag>
         <tag>concat</tag>
       </tags>
   </entry>
