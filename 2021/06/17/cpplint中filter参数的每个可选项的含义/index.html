@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C/C++,Python,cpplint,filter," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言cpplint 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 pip install cpplint 命令就可以安装了，非常的方便。">
+<meta name="keywords" content="C&#x2F;C++,Python,cpplint,filter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpplint中filter参数的每个可选项的含义">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言cpplint 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 pip install cpplint 命令就可以安装了，非常的方便。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-20T13:58:00.322Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpplint中filter参数的每个可选项的含义">
+<meta name="twitter:description" content="前言cpplint 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 pip install cpplint 命令就可以安装了，非常的方便。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/"/>
+
+
+
+
+
+  <title>cpplint中filter参数的每个可选项的含义 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cpplint中filter参数的每个可选项的含义</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-17T00:31:29+08:00">
+                2021-06-17
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-06-20T21:58:00+08:00">
+                2021-06-20
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/" class="leancloud_visitors" data-flag-title="cpplint中filter参数的每个可选项的含义">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,666(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">12(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>cpplint</code> 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 <code>pip install cpplint</code> 命令就可以安装了，非常的方便。</p>
+<a id="more"></a>
+<p>具体的使用方法可以通过 <code>cpplint --help</code> 查询，语法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Syntax: cpplint.py [--verbose=<span class="comment">#] [--output=emacs|eclipse|vs7|junit|sed|gsed]</span></span><br><span class="line">                   [--filter=-x,+y,...]</span><br><span class="line">                   [--counting=total|toplevel|detailed] [--root=subdir]</span><br><span class="line">                   [--repository=path]</span><br><span class="line">                   [--linelength=digits] [--headers=x,y,...]</span><br><span class="line">                   [--recursive]</span><br><span class="line">                   [--exclude=path]</span><br><span class="line">                   [--extensions=hpp,cpp,...]</span><br><span class="line">                   [--includeorder=default|standardcfirst]</span><br><span class="line">                   [--quiet]</span><br><span class="line">                   [--version]</span><br><span class="line">        &lt;file&gt; [file] ...</span><br><span class="line"></span><br><span class="line">  Style checker <span class="keyword">for</span> C/C++ <span class="built_in">source</span> files.</span><br><span class="line">  This is a fork of the Google style checker with minor extensions.</span><br></pre></td></tr></table></figure>
+<p>其中有一句 <code>[--filter=-x,+y,...]</code> 就是本文总结的重点。</p>
+<h1 id="filter是什么"><a href="#filter是什么" class="headerlink" title="filter是什么"></a>filter是什么</h1><p>这个filter究竟是什么呢？我将它强行解释成代码的“过滤器”，cpplint 是一款检查C++源代码风格的工具，遵循的是Google的编码风格，但是这些规则并不是对于所有人都合适，我们应该有目的进行选择，这个filter参数就是用来屏蔽或者启用一些规则的，我们还是从帮助文档里来看，其中有一段</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">filter=-x,+y,...</span><br><span class="line">  Specify a comma-separated list of category-filters to apply: only</span><br><span class="line">  error messages whose category names pass the filters will be printed.</span><br><span class="line">  (Category names are printed with the message and look like</span><br><span class="line">  <span class="string">"[whitespace/indent]"</span>.)  Filters are evaluated left to right.</span><br><span class="line">  <span class="string">"-FOO"</span> means <span class="string">"do not print categories that start with FOO"</span>.</span><br><span class="line">  <span class="string">"+FOO"</span> means <span class="string">"do print categories that start with FOO"</span>.</span><br><span class="line"></span><br><span class="line">  Examples: --filter=-whitespace,+whitespace/braces</span><br><span class="line">            --filter=-whitespace,-runtime/<span class="built_in">printf</span>,+runtime/printf_format</span><br><span class="line">            --filter=-,+build/include_what_you_use</span><br><span class="line"></span><br><span class="line">  To see a list of all the categories used <span class="keyword">in</span> cpplint, pass no arg:</span><br><span class="line">     --filter=</span><br></pre></td></tr></table></figure>
+<p>这一段说明了filter参数的用法，就是以<code>+</code>或者 <code>-</code> 开头接着写规则名，就表示启用或者屏蔽这些规则，使用 <code>--filter=</code> 参数会列举出所有规则，我们来看一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Albert&gt;cpplint --filter=</span><br><span class="line">  build/class</span><br><span class="line">  build/c++11</span><br><span class="line">  build/c++14</span><br><span class="line">  build/c++tr1</span><br><span class="line">  build/deprecated</span><br><span class="line">  build/endif_comment</span><br><span class="line">  build/explicit_make_pair</span><br><span class="line">  build/forward_decl</span><br><span class="line">  build/header_guard</span><br><span class="line">  build/include</span><br><span class="line">  build/include_subdir</span><br><span class="line">  build/include_alpha</span><br><span class="line">  build/include_order</span><br><span class="line">  build/include_what_you_use</span><br><span class="line">  build/namespaces_headers</span><br><span class="line">  build/namespaces_literals</span><br><span class="line">  build/namespaces</span><br><span class="line">  build/printf_format</span><br><span class="line">  build/storage_class</span><br><span class="line">  legal/copyright</span><br><span class="line">  readability/alt_tokens</span><br><span class="line">  readability/braces</span><br><span class="line">  readability/casting</span><br><span class="line">  readability/check</span><br><span class="line">  readability/constructors</span><br><span class="line">  readability/fn_size</span><br><span class="line">  readability/inheritance</span><br><span class="line">  readability/multiline_comment</span><br><span class="line">  readability/multiline_string</span><br><span class="line">  readability/namespace</span><br><span class="line">  readability/nolint</span><br><span class="line">  readability/nul</span><br><span class="line">  readability/strings</span><br><span class="line">  readability/todo</span><br><span class="line">  readability/utf8</span><br><span class="line">  runtime/arrays</span><br><span class="line">  runtime/casting</span><br><span class="line">  runtime/explicit</span><br><span class="line">  runtime/int</span><br><span class="line">  runtime/init</span><br><span class="line">  runtime/invalid_increment</span><br><span class="line">  runtime/member_string_references</span><br><span class="line">  runtime/memset</span><br><span class="line">  runtime/indentation_namespace</span><br><span class="line">  runtime/operator</span><br><span class="line">  runtime/<span class="built_in">printf</span></span><br><span class="line">  runtime/printf_format</span><br><span class="line">  runtime/references</span><br><span class="line">  runtime/string</span><br><span class="line">  runtime/threadsafe_fn</span><br><span class="line">  runtime/vlog</span><br><span class="line">  whitespace/blank_line</span><br><span class="line">  whitespace/braces</span><br><span class="line">  whitespace/comma</span><br><span class="line">  whitespace/comments</span><br><span class="line">  whitespace/empty_conditional_body</span><br><span class="line">  whitespace/empty_if_body</span><br><span class="line">  whitespace/empty_loop_body</span><br><span class="line">  whitespace/end_of_line</span><br><span class="line">  whitespace/ending_newline</span><br><span class="line">  whitespace/forcolon</span><br><span class="line">  whitespace/indent</span><br><span class="line">  whitespace/line_length</span><br><span class="line">  whitespace/newline</span><br><span class="line">  whitespace/operators</span><br><span class="line">  whitespace/parens</span><br><span class="line">  whitespace/semicolon</span><br><span class="line">  whitespace/tab</span><br><span class="line">  whitespace/todo</span><br></pre></td></tr></table></figure>
+<p>这些选项还挺多的，一共有69项，但是现在有一个问题，我就一直没找到这些选项都代表什么含义，有些从名字可以推断出来，比如 <code>whitespace/line_length</code> 应该是指每行的长度限制，但是 <code>whitespace/comma</code> 单单从名字你知道他们是什么意思吗？所以我想简单总结一下。</p>
+<h1 id="一个小实验"><a href="#一个小实验" class="headerlink" title="一个小实验"></a>一个小实验</h1><p>都说cpplint非常好用，那么接下来我们看看这个工具要怎么用，先新建一个文件<code>teststyle</code>，在里面随便写一些C++代码，如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;map&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Style</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">		<span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"This is style class"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">showName</span><span class="params">(<span class="built_in">string</span>&amp; extraMsg)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">string</span> className;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Style s;</span><br><span class="line">    <span class="built_in">string</span> msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj=<span class="string">"class_name:"</span>;</span><br><span class="line">    s.showName( msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(s.className == <span class="string">""</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"class name for s is empty."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段临时“发挥”的代码可以正常编译运行，然后用<code>cpplint</code>工具检测一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&gt; cpplint .\teststyle.cpp</span><br><span class="line">.\teststyle.cpp:0:  No copyright message found.  You should have a line: &quot;Copyright [year] &lt;Copyright Owner&gt;&quot;  [legal/copyright] [5]</span><br><span class="line">.\teststyle.cpp:3:  Do not use namespace using-directives.  Use using-declarations instead.  [build/namespaces] [5]</span><br><span class="line">.\teststyle.cpp:6:  &#123; should almost always be at the end of the previous line  [whitespace/braces] [4]</span><br><span class="line">.\teststyle.cpp:7:  public: should be indented +1 space inside class Style  [whitespace/indent] [3]</span><br><span class="line">.\teststyle.cpp:8:  Tab found; better to use spaces  [whitespace/tab] [1]</span><br><span class="line">.\teststyle.cpp:12:  Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg  [runtime/references] [2]</span><br><span class="line">.\teststyle.cpp:13:  &#123; should almost always be at the end of the previous line  [whitespace/braces] [4]</span><br><span class="line">.\teststyle.cpp:16:  public: should be indented +1 space inside class Style  [whitespace/indent] [3]</span><br><span class="line">.\teststyle.cpp:21:  &#123; should almost always be at the end of the previous line  [whitespace/braces] [4]</span><br><span class="line">.\teststyle.cpp:23:  Lines should be &lt;= 80 characters long  [whitespace/line_length] [2]</span><br><span class="line">.\teststyle.cpp:23:  Missing spaces around =  [whitespace/operators] [4]</span><br><span class="line">.\teststyle.cpp:24:  Lines should be &lt;= 80 characters long  [whitespace/line_length] [2]</span><br><span class="line">.\teststyle.cpp:24:  Extra space after ( in function call  [whitespace/parens] [4]</span><br><span class="line">.\teststyle.cpp:24:  Extra space before )  [whitespace/parens] [2]</span><br><span class="line">.\teststyle.cpp:26:  Missing space before ( in if(  [whitespace/parens] [5]</span><br><span class="line">.\teststyle.cpp:27:  &#123; should almost always be at the end of the previous line  [whitespace/braces] [4]</span><br><span class="line">.\teststyle.cpp:32:  Could not find a newline character at the end of the file.  [whitespace/ending_newline] [5]</span><br><span class="line">Done processing .\teststyle.cpp</span><br><span class="line">Total errors found: 17</span><br></pre></td></tr></table></figure>
+<p>这么一小段代码居然报出了17个错误，厉不厉害？刺不刺激？下面来逐个解释一下：</p>
+<blockquote>
+<p>.\teststyle.cpp:0:  No copyright message found.  You should have a line: “Copyright [year] <copyright owner="">“  [legal/copyright] [5]</copyright></p>
+</blockquote>
+<p><code>[legal/copyright]</code> 表示文件中应该有形如 <code>Copyright [year] &lt;Copyright Owner&gt;</code> 版权信息</p>
+<blockquote>
+<p>\teststyle.cpp:3:  Do not use namespace using-directives.  Use using-declarations instead.  [build/namespaces] [5]</p>
+</blockquote>
+<p><code>[legal/copyright]</code> 表示第3行 <code>using namespace std;</code> 应该使用 <code>using-declarations</code> 而不要使用 <code>using-directives</code>，这个规则可以简单的理解为使用命名空间，每次只引用其中的成员，而不要把整个命名空间都引入。</p>
+<blockquote>
+<p>.\teststyle.cpp:6:  { should almost always be at the end of the previous line  [whitespace/braces] [4]</p>
+</blockquote>
+<p><code>[whitespace/braces]</code> 表示第6行的大括号应该放在上一行末尾</p>
+<blockquote>
+<p>.\teststyle.cpp:7:  public: should be indented +1 space inside class Style  [whitespace/indent] [3]</p>
+</blockquote>
+<p><code>[whitespace/indent]</code> 表示第7行 <code>public:</code> 应该在行首只保留一个空格</p>
+<blockquote>
+<p>.\teststyle.cpp:8:  Tab found; better to use spaces  [whitespace/tab] [1]</p>
+</blockquote>
+<p><code>[whitespace/tab]</code> 表示代码中第8行出现了Tab字符，应该使用空格代替</p>
+<blockquote>
+<p>.\teststyle.cpp:12:  Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg  [runtime/references] [2]</p>
+</blockquote>
+<p><code>[runtime/references]</code> 表示代码第12行建议使用常引用</p>
+<blockquote>
+<p>.\teststyle.cpp:23:  Lines should be &lt;= 80 characters long  [whitespace/line_length] [2]</p>
+</blockquote>
+<p><code>[whitespace/line_length]</code> 表示代码第23行长度超过了80个字符</p>
+<blockquote>
+<p>.\teststyle.cpp:23:  Missing spaces around =  [whitespace/operators] [4]</p>
+</blockquote>
+<p><code>[whitespace/operators]</code> 表示代码第23行在赋值符号 <code>=</code> 前后应该有一个空格</p>
+<blockquote>
+<p>.\teststyle.cpp:24:  Extra space after ( in function call  [whitespace/parens] [4]</p>
+</blockquote>
+<p><code>[whitespace/parens]</code> 表示代码第24行在小括号后面出现了多余的空格</p>
+<blockquote>
+<p>.\teststyle.cpp:26:  Missing space before ( in if(  [whitespace/parens] [5]</p>
+</blockquote>
+<p><code>[whitespace/parens]</code> 表示代码第26行if后面缺少空格</p>
+<blockquote>
+<p>.\teststyle.cpp:32:  Could not find a newline character at the end of the file.  [whitespace/ending_newline] [5]</p>
+</blockquote>
+<p><code>[whitespace/ending_newline]</code> 表示32行，文件末尾应该是一个空行</p>
+<p>按照上面<code>cpplint</code>提示修改代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Copyright [2021] &lt;Copyright albert&gt;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;map&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Style</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        out &lt;&lt; <span class="string">"This is style class"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">showName</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; extraMsg)</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">string</span> className;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Style s;</span><br><span class="line">    <span class="built_in">string</span> msg = <span class="string">"class_name:"</span>;</span><br><span class="line">    s.showName(msg);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (s.className == <span class="string">""</span>) &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"class name for s is empty."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="自己指定筛选规则"><a href="#自己指定筛选规则" class="headerlink" title="自己指定筛选规则"></a>自己指定筛选规则</h1><p>有些人按照上面默认的规则修改代码之后感觉清爽了不少，而有些人却更加郁闷了，因为这些规则是google内部自己根据需要制定的，并不能满足所有人的需求，所以自己需要有目的的做出选择，比如我就决定项目中不写版权信息，那么再使用<code>cpplint</code> 时可以把检测版权信息的规则过滤掉：<code>cpplint --filter=&quot;-legal/copyright&quot; .\teststyle.cpp</code>。</p>
+<h1 id="对照表格"><a href="#对照表格" class="headerlink" title="对照表格"></a>对照表格</h1><p>总体来说规则还是很多的，想要在一段代码中展示出所有的情况不太容易，所以整理了下面的表格，对一些规则做了解释，因为有些情况我也没有遇到，所以先空着，后面再慢慢补充，这也是做这篇总结的目的，当有一种规则需求时先来查一下，越来越完整。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">filter</th>
+<th style="text-align:left">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">build/class</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/c++11</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/c++14</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/c++tr1</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/deprecated</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/endif_comment</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/explicit_make_pair</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/forward_decl</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/header_guard</td>
+<td style="text-align:left">①头文件需要添加只被包含一次的宏，<code>#ifndef</code>、<code>#define</code></td>
+</tr>
+<tr>
+<td style="text-align:left">build/include</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/include_subdir</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/include_alpha</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/include_order</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/include_what_you_use</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/namespaces_headers</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/namespaces_literals</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/namespaces</td>
+<td style="text-align:left">①不要引入整个命名空间，仅引入需要使用的成员</td>
+</tr>
+<tr>
+<td style="text-align:left">build/printf_format</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">build/storage_class</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">legal/copyright</td>
+<td style="text-align:left">①文件中缺少版权信息</td>
+</tr>
+<tr>
+<td style="text-align:left">readability/alt_tokens</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/braces</td>
+<td style="text-align:left">①如果if一个分支包含大括号，那么其他分支也应该包括大括号</td>
+</tr>
+<tr>
+<td style="text-align:left">readability/casting</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/check</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/constructors</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/fn_size</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/inheritance</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/multiline_comment</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/multiline_string</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/namespace</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/nolint</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/nul</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/strings</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readability/todo</td>
+<td style="text-align:left">①TODO注释中应包括用户名</td>
+</tr>
+<tr>
+<td style="text-align:left">readability/utf8</td>
+<td style="text-align:left">①文件应该使用utf8编码</td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/arrays</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/casting</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/explicit</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/int</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/init</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/invalid_increment</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/member_string_references</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/memset</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/indentation_namespace</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/operator</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/printf</td>
+<td style="text-align:left">①使用sprintf替换strcpy、strcat</td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/printf_format</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/references</td>
+<td style="text-align:left">①确认是否要使用常引用</td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/string</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/threadsafe_fn</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">runtime/vlog</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/blank_line</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/braces</td>
+<td style="text-align:left">①左大括号应该放在上一行末尾</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/comma</td>
+<td style="text-align:left">①逗号后面应该有空格</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/comments</td>
+<td style="text-align:left">①//后应该紧跟着一个空格</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/empty_conditional_body</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/empty_if_body</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/empty_loop_body</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/end_of_line</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/ending_newline</td>
+<td style="text-align:left">①文件末尾需要空行</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/forcolon</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/indent</td>
+<td style="text-align:left">①public、protected、private前需要1个空格</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/line_length</td>
+<td style="text-align:left">①代码行长度有限制</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/newline</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/operators</td>
+<td style="text-align:left">①操作符前后需要有空格</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/parens</td>
+<td style="text-align:left">①if、while、for、switch后的小括号前需要有空格。②小括号中的首个参数前和最后参数尾不应有空格</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/semicolon</td>
+<td style="text-align:left">①分号后缺少空格，比如<code>{ return 1;}</code></td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/tab</td>
+<td style="text-align:left">①使用空格代替tab</td>
+</tr>
+<tr>
+<td style="text-align:left">whitespace/todo</td>
+<td style="text-align:left">①TODO注释前空格太多。②TODO注释中用户名后应该有一个空格</td>
+</tr>
+</tbody>
+</table>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>cpplint</code> 是一个检查c++代码风格的小工具</li>
+<li><code>cpplint.py</code> 其实是一个Python脚本文件，使用前可以先安装Python环境</li>
+<li>使用 <code>cpplint</code> 时默认遵循的是<a href="https://google.github.io/styleguide/cppguide.html" target="_blank" rel="noopener">Google的代码风格</a></li>
+<li>为了让代码检测符合自己的习惯，需要使用<code>--filter=</code>参数选项，有多种规则可以选择或者忽略</li>
+<li><code>--filter=</code>中的规则是一个大类，比如 <code>whitespace/parens</code> 既检查小括号前缺少空格的情况，也会检查小括号中多空格的情况</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/117393224" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>生活中会有一些感悟的瞬间，娃娃哭闹时大人们总是按照自己的经验来出处理，碰上倔脾气小孩往往毫无作用。其实孩子是最单纯的，想要什么不想要什么都摆在脸上，愿望一旦被满足立马就不哭了，而大人才世界是难处理的，长大的人类善于隐藏和伪装，想要的不一定说出来，说出来不一定是想要的，所以很多人才会羡慕小孩子的天真和无邪~</p>
+<p>努力吧！哪管什么真理无穷，进一步有进一步的欢喜</p>
+<p>2021-6-20 18:46:45</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/" title="cpplint中filter参数的每个可选项的含义">http://AlbertGithubHome.github.io/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
+          
+            <a href="/blog/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
+          
+            <a href="/blog/tags/cpplint/" rel="tag"><i class="fa fa-tag"></i> cpplint</a>
+          
+            <a href="/blog/tags/filter/" rel="tag"><i class="fa fa-tag"></i> filter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2021/05/24/C-对我来说简直就是星辰大海/" rel="next" title="C++对我来说简直就是星辰大海，为了避免翻船，我选择从小河沟出发">
+                <i class="fa fa-chevron-left"></i> C++对我来说简直就是星辰大海，为了避免翻船，我选择从小河沟出发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">132</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">307</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#filter是什么"><span class="nav-number">2.</span> <span class="nav-text">filter是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一个小实验"><span class="nav-number">3.</span> <span class="nav-text">一个小实验</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自己指定筛选规则"><span class="nav-number">4.</span> <span class="nav-text">自己指定筛选规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对照表格"><span class="nav-number">5.</span> <span class="nav-text">对照表格</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
