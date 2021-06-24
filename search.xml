@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[cpplint中filter参数的每个可选项的含义]]></title>
     <url>%2Fblog%2F2021%2F06%2F17%2Fcpplint%E4%B8%ADfilter%E5%8F%82%E6%95%B0%E7%9A%84%E6%AF%8F%E4%B8%AA%E5%8F%AF%E9%80%89%E9%A1%B9%E7%9A%84%E5%90%AB%E4%B9%89%2F</url>
-    <content type="text"><![CDATA[前言cpplint 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 pip install cpplint 命令就可以安装了，非常的方便。 具体的使用方法可以通过 cpplint --help 查询，语法如下： 123456789101112131415Syntax: cpplint.py [--verbose=#] [--output=emacs|eclipse|vs7|junit|sed|gsed] [--filter=-x,+y,...] [--counting=total|toplevel|detailed] [--root=subdir] [--repository=path] [--linelength=digits] [--headers=x,y,...] [--recursive] [--exclude=path] [--extensions=hpp,cpp,...] [--includeorder=default|standardcfirst] [--quiet] [--version] &lt;file&gt; [file] ... Style checker for C/C++ source files. This is a fork of the Google style checker with minor extensions. 其中有一句 [--filter=-x,+y,...] 就是本文总结的重点。 filter是什么这个filter究竟是什么呢？我将它强行解释成代码的“过滤器”，cpplint 是一款检查C++源代码风格的工具，遵循的是Google的编码风格，但是这些规则并不是对于所有人都合适，我们应该有目的进行选择，这个filter参数就是用来屏蔽或者启用一些规则的，我们还是从帮助文档里来看，其中有一段 1234567891011121314filter=-x,+y,... Specify a comma-separated list of category-filters to apply: only error messages whose category names pass the filters will be printed. (Category names are printed with the message and look like "[whitespace/indent]".) Filters are evaluated left to right. "-FOO" means "do not print categories that start with FOO". "+FOO" means "do print categories that start with FOO". Examples: --filter=-whitespace,+whitespace/braces --filter=-whitespace,-runtime/printf,+runtime/printf_format --filter=-,+build/include_what_you_use To see a list of all the categories used in cpplint, pass no arg: --filter= 这一段说明了filter参数的用法，就是以+或者 - 开头接着写规则名，就表示启用或者屏蔽这些规则，使用 --filter= 参数会列举出所有规则，我们来看一下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970C:\Users\Albert&gt;cpplint --filter= build/class build/c++11 build/c++14 build/c++tr1 build/deprecated build/endif_comment build/explicit_make_pair build/forward_decl build/header_guard build/include build/include_subdir build/include_alpha build/include_order build/include_what_you_use build/namespaces_headers build/namespaces_literals build/namespaces build/printf_format build/storage_class legal/copyright readability/alt_tokens readability/braces readability/casting readability/check readability/constructors readability/fn_size readability/inheritance readability/multiline_comment readability/multiline_string readability/namespace readability/nolint readability/nul readability/strings readability/todo readability/utf8 runtime/arrays runtime/casting runtime/explicit runtime/int runtime/init runtime/invalid_increment runtime/member_string_references runtime/memset runtime/indentation_namespace runtime/operator runtime/printf runtime/printf_format runtime/references runtime/string runtime/threadsafe_fn runtime/vlog whitespace/blank_line whitespace/braces whitespace/comma whitespace/comments whitespace/empty_conditional_body whitespace/empty_if_body whitespace/empty_loop_body whitespace/end_of_line whitespace/ending_newline whitespace/forcolon whitespace/indent whitespace/line_length whitespace/newline whitespace/operators whitespace/parens whitespace/semicolon whitespace/tab whitespace/todo 这些选项还挺多的，一共有69项，但是现在有一个问题，我就一直没找到这些选项都代表什么含义，有些从名字可以推断出来，比如 whitespace/line_length 应该是指每行的长度限制，但是 whitespace/comma 单单从名字你知道他们是什么意思吗？所以我想简单总结一下。 一个小实验都说cpplint非常好用，那么接下来我们看看这个工具要怎么用，先新建一个文件teststyle，在里面随便写一些C++代码，如下： 1234567891011121314151617181920212223242526272829303132#include &lt;iostream&gt;#include &lt;map&gt;using namespace std;class Style&#123; public: void test() &#123; cout &lt;&lt; "This is style class" &lt;&lt; endl; &#125; void showName(string&amp; extraMsg) &#123; cout &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; endl; &#125;public: string className;&#125;;int main()&#123; Style s; string msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj="class_name:"; s.showName( msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj ); if(s.className == "") &#123; cout &lt;&lt; "class name for s is empty." &lt;&lt; endl; &#125; return 0;&#125; 这段临时“发挥”的代码可以正常编译运行，然后用cpplint工具检测一下： 1234567891011121314151617181920&gt; cpplint .\teststyle.cpp.\teststyle.cpp:0: No copyright message found. You should have a line: &quot;Copyright [year] &lt;Copyright Owner&gt;&quot; [legal/copyright] [5].\teststyle.cpp:3: Do not use namespace using-directives. Use using-declarations instead. [build/namespaces] [5].\teststyle.cpp:6: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:7: public: should be indented +1 space inside class Style [whitespace/indent] [3].\teststyle.cpp:8: Tab found; better to use spaces [whitespace/tab] [1].\teststyle.cpp:12: Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg [runtime/references] [2].\teststyle.cpp:13: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:16: public: should be indented +1 space inside class Style [whitespace/indent] [3].\teststyle.cpp:21: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:23: Lines should be &lt;= 80 characters long [whitespace/line_length] [2].\teststyle.cpp:23: Missing spaces around = [whitespace/operators] [4].\teststyle.cpp:24: Lines should be &lt;= 80 characters long [whitespace/line_length] [2].\teststyle.cpp:24: Extra space after ( in function call [whitespace/parens] [4].\teststyle.cpp:24: Extra space before ) [whitespace/parens] [2].\teststyle.cpp:26: Missing space before ( in if( [whitespace/parens] [5].\teststyle.cpp:27: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:32: Could not find a newline character at the end of the file. [whitespace/ending_newline] [5]Done processing .\teststyle.cppTotal errors found: 17 这么一小段代码居然报出了17个错误，厉不厉害？刺不刺激？下面来逐个解释一下： .\teststyle.cpp:0: No copyright message found. You should have a line: “Copyright [year] “ [legal/copyright] [5] [legal/copyright] 表示文件中应该有形如 Copyright [year] &lt;Copyright Owner&gt; 版权信息 \teststyle.cpp:3: Do not use namespace using-directives. Use using-declarations instead. [build/namespaces] [5] [legal/copyright] 表示第3行 using namespace std; 应该使用 using-declarations 而不要使用 using-directives，这个规则可以简单的理解为使用命名空间，每次只引用其中的成员，而不要把整个命名空间都引入。 .\teststyle.cpp:6: { should almost always be at the end of the previous line [whitespace/braces] [4] [whitespace/braces] 表示第6行的大括号应该放在上一行末尾 .\teststyle.cpp:7: public: should be indented +1 space inside class Style [whitespace/indent] [3] [whitespace/indent] 表示第7行 public: 应该在行首只保留一个空格 .\teststyle.cpp:8: Tab found; better to use spaces [whitespace/tab] [1] [whitespace/tab] 表示代码中第8行出现了Tab字符，应该使用空格代替 .\teststyle.cpp:12: Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg [runtime/references] [2] [runtime/references] 表示代码第12行建议使用常引用 .\teststyle.cpp:23: Lines should be &lt;= 80 characters long [whitespace/line_length] [2] [whitespace/line_length] 表示代码第23行长度超过了80个字符 .\teststyle.cpp:23: Missing spaces around = [whitespace/operators] [4] [whitespace/operators] 表示代码第23行在赋值符号 = 前后应该有一个空格 .\teststyle.cpp:24: Extra space after ( in function call [whitespace/parens] [4] [whitespace/parens] 表示代码第24行在小括号后面出现了多余的空格 .\teststyle.cpp:26: Missing space before ( in if( [whitespace/parens] [5] [whitespace/parens] 表示代码第26行if后面缺少空格 .\teststyle.cpp:32: Could not find a newline character at the end of the file. [whitespace/ending_newline] [5] [whitespace/ending_newline] 表示32行，文件末尾应该是一个空行 按照上面cpplint提示修改代码如下： 123456789101112131415161718192021222324252627282930// Copyright [2021] &lt;Copyright albert&gt;#include &lt;iostream&gt;#include &lt;map&gt;using std::cout;using std::endl;class Style &#123; public: void test() &#123; out &lt;&lt; "This is style class" &lt;&lt; endl; &#125; void showName(const string&amp; extraMsg) &#123; cout &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; endl; &#125; public: string className;&#125;;int main() &#123; Style s; string msg = "class_name:"; s.showName(msg); if (s.className == "") &#123; cout &lt;&lt; "class name for s is empty." &lt;&lt; endl; &#125; return 0;&#125; 自己指定筛选规则有些人按照上面默认的规则修改代码之后感觉清爽了不少，而有些人却更加郁闷了，因为这些规则是google内部自己根据需要制定的，并不能满足所有人的需求，所以自己需要有目的的做出选择，比如我就决定项目中不写版权信息，那么再使用cpplint 时可以把检测版权信息的规则过滤掉：cpplint --filter=&quot;-legal/copyright&quot; .\teststyle.cpp。 对照表格总体来说规则还是很多的，想要在一段代码中展示出所有的情况不太容易，所以整理了下面的表格，对一些规则做了解释，因为有些情况我也没有遇到，所以先空着，后面再慢慢补充，这也是做这篇总结的目的，当有一种规则需求时先来查一下，越来越完整。 filter 解释 build/class build/c++11 build/c++14 build/c++tr1 build/deprecated build/endif_comment build/explicit_make_pair build/forward_decl build/header_guard ①头文件需要添加只被包含一次的宏，#ifndef、#define build/include build/include_subdir build/include_alpha build/include_order build/include_what_you_use build/namespaces_headers build/namespaces_literals build/namespaces ①不要引入整个命名空间，仅引入需要使用的成员 build/printf_format build/storage_class legal/copyright ①文件中缺少版权信息 readability/alt_tokens readability/braces ①如果if一个分支包含大括号，那么其他分支也应该包括大括号 readability/casting readability/check readability/constructors readability/fn_size readability/inheritance readability/multiline_comment readability/multiline_string readability/namespace readability/nolint readability/nul readability/strings readability/todo ①TODO注释中应包括用户名 readability/utf8 ①文件应该使用utf8编码 runtime/arrays runtime/casting runtime/explicit runtime/int runtime/init runtime/invalid_increment runtime/member_string_references runtime/memset runtime/indentation_namespace runtime/operator runtime/printf ①使用sprintf替换strcpy、strcat runtime/printf_format runtime/references ①确认是否要使用常引用 runtime/string runtime/threadsafe_fn runtime/vlog whitespace/blank_line whitespace/braces ①左大括号应该放在上一行末尾 whitespace/comma ①逗号后面应该有空格 whitespace/comments ①//后应该紧跟着一个空格 whitespace/empty_conditional_body whitespace/empty_if_body whitespace/empty_loop_body whitespace/end_of_line whitespace/ending_newline ①文件末尾需要空行 whitespace/forcolon whitespace/indent ①public、protected、private前需要1个空格 whitespace/line_length ①代码行长度有限制 whitespace/newline whitespace/operators ①操作符前后需要有空格 whitespace/parens ①if、while、for、switch后的小括号前需要有空格。②小括号中的首个参数前和最后参数尾不应有空格 whitespace/semicolon ①分号后缺少空格，比如{ return 1;} whitespace/tab ①使用空格代替tab whitespace/todo ①TODO注释前空格太多。②TODO注释中用户名后应该有一个空格 总结 cpplint 是一个检查c++代码风格的小工具 cpplint.py 其实是一个Python脚本文件，使用前可以先安装Python环境 使用 cpplint 时默认遵循的是Google的代码风格 为了让代码检测符合自己的习惯，需要使用--filter=参数选项，有多种规则可以选择或者忽略 --filter=中的规则是一个大类，比如 whitespace/parens 既检查小括号前缺少空格的情况，也会检查小括号中多空格的情况 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 生活中会有一些感悟的瞬间，娃娃哭闹时大人们总是按照自己的经验来出处理，碰上倔脾气小孩往往毫无作用。其实孩子是最单纯的，想要什么不想要什么都摆在脸上，愿望一旦被满足立马就不哭了，而大人才世界是难处理的，长大的人类善于隐藏和伪装，想要的不一定说出来，说出来不一定是想要的，所以很多人才会羡慕小孩子的天真和无邪~ 努力吧！哪管什么真理无穷，进一步有进一步的欢喜 2021-6-20 18:46:45]]></content>
+    <content type="text"><![CDATA[前言cpplint 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 pip install cpplint 命令就可以安装了，非常的方便。 具体的使用方法可以通过 cpplint --help 查询，语法如下： 123456789101112131415Syntax: cpplint.py [--verbose=#] [--output=emacs|eclipse|vs7|junit|sed|gsed] [--filter=-x,+y,...] [--counting=total|toplevel|detailed] [--root=subdir] [--repository=path] [--linelength=digits] [--headers=x,y,...] [--recursive] [--exclude=path] [--extensions=hpp,cpp,...] [--includeorder=default|standardcfirst] [--quiet] [--version] &lt;file&gt; [file] ... Style checker for C/C++ source files. This is a fork of the Google style checker with minor extensions. 其中有一句 [--filter=-x,+y,...] 就是本文总结的重点。 filter是什么这个filter究竟是什么呢？我将它强行解释成代码的“过滤器”，cpplint 是一款检查C++源代码风格的工具，遵循的是Google的编码风格，但是这些规则并不是对于所有人都合适，我们应该有目的进行选择，这个filter参数就是用来屏蔽或者启用一些规则的，我们还是从帮助文档里来看，其中有一段 1234567891011121314filter=-x,+y,... Specify a comma-separated list of category-filters to apply: only error messages whose category names pass the filters will be printed. (Category names are printed with the message and look like "[whitespace/indent]".) Filters are evaluated left to right. "-FOO" means "do not print categories that start with FOO". "+FOO" means "do print categories that start with FOO". Examples: --filter=-whitespace,+whitespace/braces --filter=-whitespace,-runtime/printf,+runtime/printf_format --filter=-,+build/include_what_you_use To see a list of all the categories used in cpplint, pass no arg: --filter= 这一段说明了filter参数的用法，就是以+或者 - 开头接着写规则名，就表示启用或者屏蔽这些规则，使用 --filter= 参数会列举出所有规则，我们来看一下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970C:\Users\Albert&gt;cpplint --filter= build/class build/c++11 build/c++14 build/c++tr1 build/deprecated build/endif_comment build/explicit_make_pair build/forward_decl build/header_guard build/include build/include_subdir build/include_alpha build/include_order build/include_what_you_use build/namespaces_headers build/namespaces_literals build/namespaces build/printf_format build/storage_class legal/copyright readability/alt_tokens readability/braces readability/casting readability/check readability/constructors readability/fn_size readability/inheritance readability/multiline_comment readability/multiline_string readability/namespace readability/nolint readability/nul readability/strings readability/todo readability/utf8 runtime/arrays runtime/casting runtime/explicit runtime/int runtime/init runtime/invalid_increment runtime/member_string_references runtime/memset runtime/indentation_namespace runtime/operator runtime/printf runtime/printf_format runtime/references runtime/string runtime/threadsafe_fn runtime/vlog whitespace/blank_line whitespace/braces whitespace/comma whitespace/comments whitespace/empty_conditional_body whitespace/empty_if_body whitespace/empty_loop_body whitespace/end_of_line whitespace/ending_newline whitespace/forcolon whitespace/indent whitespace/line_length whitespace/newline whitespace/operators whitespace/parens whitespace/semicolon whitespace/tab whitespace/todo 这些选项还挺多的，一共有69项，但是现在有一个问题，我就一直没找到这些选项都代表什么含义，有些从名字可以推断出来，比如 whitespace/line_length 应该是指每行的长度限制，但是 whitespace/comma 单单从名字你知道他们是什么意思吗？所以我想简单总结一下。 一个小实验都说cpplint非常好用，那么接下来我们看看这个工具要怎么用，先新建一个文件teststyle，在里面随便写一些C++代码，如下： 1234567891011121314151617181920212223242526272829303132#include &lt;iostream&gt;#include &lt;map&gt;using namespace std;class Style&#123; public: void test() &#123; cout &lt;&lt; "This is style class" &lt;&lt; endl; &#125; void showName(string&amp; extraMsg) &#123; cout &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; endl; &#125;public: string className;&#125;;int main()&#123; Style s; string msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj="class_name:"; s.showName( msg_fjakdjfkadjfkadjffjadfkasdjffajsdfkadvljakdjfakdfjkadfjkasdjfkasdfj ); if(s.className == "") &#123; cout &lt;&lt; "class name for s is empty." &lt;&lt; endl; &#125; return 0;&#125; 这段临时“发挥”的代码可以正常编译运行，然后用cpplint工具检测一下： 1234567891011121314151617181920&gt; cpplint .\teststyle.cpp.\teststyle.cpp:0: No copyright message found. You should have a line: &quot;Copyright [year] &lt;Copyright Owner&gt;&quot; [legal/copyright] [5].\teststyle.cpp:3: Do not use namespace using-directives. Use using-declarations instead. [build/namespaces] [5].\teststyle.cpp:6: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:7: public: should be indented +1 space inside class Style [whitespace/indent] [3].\teststyle.cpp:8: Tab found; better to use spaces [whitespace/tab] [1].\teststyle.cpp:12: Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg [runtime/references] [2].\teststyle.cpp:13: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:16: public: should be indented +1 space inside class Style [whitespace/indent] [3].\teststyle.cpp:21: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:23: Lines should be &lt;= 80 characters long [whitespace/line_length] [2].\teststyle.cpp:23: Missing spaces around = [whitespace/operators] [4].\teststyle.cpp:24: Lines should be &lt;= 80 characters long [whitespace/line_length] [2].\teststyle.cpp:24: Extra space after ( in function call [whitespace/parens] [4].\teststyle.cpp:24: Extra space before ) [whitespace/parens] [2].\teststyle.cpp:26: Missing space before ( in if( [whitespace/parens] [5].\teststyle.cpp:27: &#123; should almost always be at the end of the previous line [whitespace/braces] [4].\teststyle.cpp:32: Could not find a newline character at the end of the file. [whitespace/ending_newline] [5]Done processing .\teststyle.cppTotal errors found: 17 这么一小段代码居然报出了17个错误，厉不厉害？刺不刺激？下面来逐个解释一下： .\teststyle.cpp:0: No copyright message found. You should have a line: “Copyright [year] “ [legal/copyright] [5] [legal/copyright] 表示文件中应该有形如 Copyright [year] &lt;Copyright Owner&gt; 版权信息 \teststyle.cpp:3: Do not use namespace using-directives. Use using-declarations instead. [build/namespaces] [5] [legal/copyright] 表示第3行 using namespace std; 应该使用 using-declarations 而不要使用 using-directives，这个规则可以简单的理解为使用命名空间，每次只引用其中的成员，而不要把整个命名空间都引入。 .\teststyle.cpp:6: { should almost always be at the end of the previous line [whitespace/braces] [4] [whitespace/braces] 表示第6行的大括号应该放在上一行末尾 .\teststyle.cpp:7: public: should be indented +1 space inside class Style [whitespace/indent] [3] [whitespace/indent] 表示第7行 public: 应该在行首只保留一个空格 .\teststyle.cpp:8: Tab found; better to use spaces [whitespace/tab] [1] [whitespace/tab] 表示代码中第8行出现了Tab字符，应该使用空格代替 .\teststyle.cpp:12: Is this a non-const reference? If so, make const or use a pointer: string&amp; extraMsg [runtime/references] [2] [runtime/references] 表示代码第12行建议使用常引用 .\teststyle.cpp:23: Lines should be &lt;= 80 characters long [whitespace/line_length] [2] [whitespace/line_length] 表示代码第23行长度超过了80个字符 .\teststyle.cpp:23: Missing spaces around = [whitespace/operators] [4] [whitespace/operators] 表示代码第23行在赋值符号 = 前后应该有一个空格 .\teststyle.cpp:24: Extra space after ( in function call [whitespace/parens] [4] [whitespace/parens] 表示代码第24行在小括号后面出现了多余的空格 .\teststyle.cpp:26: Missing space before ( in if( [whitespace/parens] [5] [whitespace/parens] 表示代码第26行if后面缺少空格 .\teststyle.cpp:32: Could not find a newline character at the end of the file. [whitespace/ending_newline] [5] [whitespace/ending_newline] 表示32行，文件末尾应该是一个空行 按照上面cpplint提示修改代码如下： 12345678910111213141516171819202122232425262728293031// Copyright [2021] &lt;Copyright albert&gt;#include &lt;iostream&gt;#include &lt;map&gt;using std::cout;using std::endl;using std::string;class Style &#123; public: void test() &#123; cout &lt;&lt; "This is style class" &lt;&lt; endl; &#125; void showName(const string&amp; extraMsg) &#123; cout &lt;&lt; extraMsg &lt;&lt; className &lt;&lt; endl; &#125; public: string className;&#125;;int main() &#123; Style s; string msg = "class_name:"; s.showName(msg); if (s.className == "") &#123; cout &lt;&lt; "class name for s is empty." &lt;&lt; endl; &#125; return 0;&#125; 自己指定筛选规则有些人按照上面默认的规则修改代码之后感觉清爽了不少，而有些人却更加郁闷了，因为这些规则是google内部自己根据需要制定的，并不能满足所有人的需求，所以自己需要有目的的做出选择，比如我就决定项目中不写版权信息，那么再使用cpplint 时可以把检测版权信息的规则过滤掉：cpplint --filter=&quot;-legal/copyright&quot; .\teststyle.cpp。 对照表格总体来说规则还是很多的，想要在一段代码中展示出所有的情况不太容易，所以整理了下面的表格，对一些规则做了解释，因为有些情况我也没有遇到，所以先空着，后面再慢慢补充，这也是做这篇总结的目的，当有一种规则需求时先来查一下，越来越完整。 filter 解释 build/class build/c++11 build/c++14 build/c++tr1 build/deprecated build/endif_comment build/explicit_make_pair build/forward_decl build/header_guard ①头文件需要添加只被包含一次的宏，#ifndef、#define build/include build/include_subdir build/include_alpha build/include_order build/include_what_you_use build/namespaces_headers build/namespaces_literals build/namespaces ①不要引入整个命名空间，仅引入需要使用的成员 build/printf_format build/storage_class legal/copyright ①文件中缺少版权信息 readability/alt_tokens readability/braces ①如果if一个分支包含大括号，那么其他分支也应该包括大括号 readability/casting readability/check readability/constructors readability/fn_size readability/inheritance readability/multiline_comment readability/multiline_string readability/namespace readability/nolint readability/nul readability/strings readability/todo ①TODO注释中应包括用户名 readability/utf8 ①文件应该使用utf8编码 runtime/arrays runtime/casting runtime/explicit runtime/int runtime/init runtime/invalid_increment runtime/member_string_references runtime/memset runtime/indentation_namespace runtime/operator runtime/printf ①使用sprintf替换strcpy、strcat runtime/printf_format runtime/references ①确认是否要使用常引用 runtime/string runtime/threadsafe_fn runtime/vlog whitespace/blank_line whitespace/braces ①左大括号应该放在上一行末尾 whitespace/comma ①逗号后面应该有空格 whitespace/comments ①//后应该紧跟着一个空格 whitespace/empty_conditional_body whitespace/empty_if_body whitespace/empty_loop_body whitespace/end_of_line whitespace/ending_newline ①文件末尾需要空行 whitespace/forcolon whitespace/indent ①public、protected、private前需要1个空格 whitespace/line_length ①代码行长度有限制 whitespace/newline whitespace/operators ①操作符前后需要有空格 whitespace/parens ①if、while、for、switch后的小括号前需要有空格。②小括号中的首个参数前和最后参数尾不应有空格 whitespace/semicolon ①分号后缺少空格，比如{ return 1;} whitespace/tab ①使用空格代替tab whitespace/todo ①TODO注释前空格太多。②TODO注释中用户名后应该有一个空格 总结 cpplint 是一个检查c++代码风格的小工具 cpplint.py 其实是一个Python脚本文件，使用前可以先安装Python环境 使用 cpplint 时默认遵循的是Google的代码风格 为了让代码检测符合自己的习惯，需要使用--filter=参数选项，有多种规则可以选择或者忽略 --filter=中的规则是一个大类，比如 whitespace/parens 既检查小括号前缺少空格的情况，也会检查小括号中多空格的情况 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 生活中会有一些感悟的瞬间，娃娃哭闹时大人们总是按照自己的经验来出处理，碰上倔脾气小孩往往毫无作用。其实孩子是最单纯的，想要什么不想要什么都摆在脸上，愿望一旦被满足立马就不哭了，而大人才世界是难处理的，长大的人类善于隐藏和伪装，想要的不一定说出来，说出来不一定是想要的，所以很多人才会羡慕小孩子的天真和无邪~ 努力吧！哪管什么真理无穷，进一步有进一步的欢喜 2021-6-20 18:46:45]]></content>
       <categories>
         <category>C/C++</category>
       </categories>
@@ -23,9 +23,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -292,10 +292,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -453,9 +453,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -674,10 +674,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -846,8 +846,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -861,8 +861,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -875,10 +875,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -904,10 +904,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -918,10 +918,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1146,9 +1146,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
