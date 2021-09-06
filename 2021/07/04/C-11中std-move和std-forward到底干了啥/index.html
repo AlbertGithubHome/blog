@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言C++11中的右值引用的出现，在特定情况下减少了对象的拷贝，提升了C++程序的效率，伴随而来的 std::move 和 std::forward 也大量出现在程序代码中，但是这两个函数究竟干了啥呢？其实他们的本质都是转换函数，也就是完成左值和右值之间的转换，需要注意的是左值可以转换成右值，但是右值无法转换成左值。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-07-18T13:28:18.637Z">
+<meta property="og:updated_time" content="2021-07-21T15:37:58.987Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++11中std::move和std::forward到底干了啥">
 <meta name="twitter:description" content="前言C++11中的右值引用的出现，在特定情况下减少了对象的拷贝，提升了C++程序的效率，伴随而来的 std::move 和 std::forward 也大量出现在程序代码中，但是这两个函数究竟干了啥呢？其实他们的本质都是转换函数，也就是完成左值和右值之间的转换，需要注意的是左值可以转换成右值，但是右值无法转换成左值。">
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-07-18T21:28:18+08:00">
-                2021-07-18
+              <time title="更新于" itemprop="dateModified" datetime="2021-07-21T23:37:58+08:00">
+                2021-07-21
               </time>
             
           </span>
@@ -492,9 +492,9 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(A&amp; obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">A obj;</span><br><span class="line">test(obj);</span><br></pre></td></tr></table></figure>
 <p>而右值引用是在左值引用的基础上多加一个<code>&amp;</code>，形式变为 <code>T&amp;&amp; t</code>，使用方式如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(A&amp;&amp; obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(A());</span><br></pre></td></tr></table></figure>
-<p>这种通过 <code>&amp;</code> 的个数区分左值引用和右值引用的方法，在大多数的普通函数中没有问题，但是放到模板参数或者 <code>auto</code> 关键字之后的位置就不太灵了，因为这些地方会推导实际的类型，正式有了参数推导，才使得模板中出现了“万能引用”的说法，也就是下面这样：</p>
+<p>这种通过 <code>&amp;</code> 的个数区分左值引用和右值引用的方法，在大多数的普通函数中没有问题，但是放到模板参数或者 <code>auto</code> 关键字之后的位置就不太灵了，因为这些地方会推导实际的类型，正是有了参数推导，才使得模板中出现了“万能引用”的说法，也就是下面这样：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(T&amp;&amp; val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; val &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> year = <span class="number">2020</span>;</span><br><span class="line">    func(year);</span><br><span class="line">    func(<span class="number">2020</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数 <code>func</code> 即能接受变量 <code>year</code> 这样的左值作为参数，也能接受 <code>2020</code> 这样的常数作为右值，简直太完美。那么这里是怎样推导的呢？这就要请出一个引用的这得规则了，描述如下：</p>
+<p>函数 <code>func</code> 即能接受变量 <code>year</code> 这样的左值作为参数，也能接受 <code>2020</code> 这样的常数作为右值，简直太完美。那么这里是怎样推导的呢？这就要请出一个引用的“折叠”规则了，描述如下：</p>
 <blockquote>
 <p>A&amp; &amp; 折叠成 A&amp;<br>  A&amp; &amp;&amp; 折叠成 A&amp;<br>  A&amp;&amp; &amp; 折叠成 A&amp;<br>  A&amp;&amp; &amp;&amp; 折叠成 A&amp;&amp;</p>
 </blockquote>
@@ -509,7 +509,7 @@
 <p>运行结果</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">true</span><br><span class="line">false</span><br><span class="line">false</span><br><span class="line">true</span><br><span class="line">true</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
 <p>从这个例子可以清晰的看出 <code>std::remove_reference</code> 就是返回去掉引用的原始类型。</p>
-<h2 id="static-cast"><a href="#static-cast" class="headerlink" title="static_cast"></a>static_cast</h2><p>明白了上面 <code>std::remove_reference</code> 的作用，整个 <code>std::move</code> 函数就剩下一个 <code>static_cast</code> 函数了，其实到这里也就清晰了，<code>std::move</code> 函数的作用就先通过 <code>std::remove_reference</code> 函数得到传入参数的原始类型 <code>X</code>，然后再把参数强转成 <code>T&amp;&amp;</code> 返回即可，参数的 <code>_Tp</code> 的推导参考引用折叠规则。</p>
+<h2 id="static-cast"><a href="#static-cast" class="headerlink" title="static_cast"></a>static_cast</h2><p>明白了上面 <code>std::remove_reference</code> 的作用，整个 <code>std::move</code> 函数就剩下一个 <code>static_cast</code> 函数了，其实到这里也就清晰了，<code>std::move</code> 函数的作用就先通过 <code>std::remove_reference</code> 函数得到传入参数的原始类型 <code>X</code>，然后再把参数强转成 <code>X&amp;&amp;</code> 返回即可，参数的 <code>_Tp</code> 的推导参考引用折叠规则。</p>
 <h2 id="std-move-到底干了啥"><a href="#std-move-到底干了啥" class="headerlink" title="std::move 到底干了啥"></a>std::move 到底干了啥</h2><p>通过前面的一通分析我们发现，<code>std::move</code> 的内部只做了一个强制类型转换，除此之外啥也没干，其实就是对传入的参数重新解释了一下，并没有实质性的动作。</p>
 <p>那么为什么要使用 <code>std::move</code> 这个名字呢？这个名字更多的是起到提醒的作用，告诉使用者这里可能进行了到右值的转化，相关的对象后续可能发生移动，“被掏空”了，如果你继续使用这个对象，行为是未定义的，后果自负。</p>
 <h1 id="std-forward"><a href="#std-forward" class="headerlink" title="std::forward"></a>std::forward</h1><p><code>std::forward</code> 被称为完美转发，听起来和 “万能引用”一样厉害，使用的头文件为 <code>&lt;utility&gt;</code>，在 <code>/usr/include/c++/5/bits/move.h</code> 文件中的定义如下：</p>
@@ -771,7 +771,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">136</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -782,7 +782,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -793,7 +793,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">316</span>
+                <span class="site-state-item-count">328</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
