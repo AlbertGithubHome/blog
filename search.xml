@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[C++11中的std::atomic保证的原子性是什么]]></title>
+    <url>%2Fblog%2F2021%2F10%2F13%2FC-11%E4%B8%AD%E7%9A%84std-atomic%E4%BF%9D%E8%AF%81%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7%E6%98%AF%E4%BB%80%E4%B9%88%2F</url>
+    <content type="text"><![CDATA[前言提到atomic这个词，你首先想到的是什么呢？作为一个长时间混迹于编程世界的菜鸟，我首先想到的一个词是“原子性”，接着飞入脑海的是 “ACID” 这个缩写词组，既然提到了 ACID 我们就来简单的复习一下。 ACID 是指事务管理的4个特性，常见于数据库操作管理中，它们分别是：原子性，一致性，隔离性和持久性。 原子性（Atomicity）是指事务是一个不可分割的工作单位，事务中的操作要么都执行，要么都不执行。 一致性（Consistency）是指事务前后数据的完整性必须保持一致，完全符合逻辑原运算。 隔离性（Isolation）是指在多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离，无需感知其他事务的存在。 持久性（Durability）是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对数据造成损坏。 C++中的atomic原子（atom）是在化学反应中不可分割基本微粒，而编程世界中的原子性也是取自这里的不可分割的含义，不可分割与事务管理中的原子性含义一致，指的是一个操作或者一系列操作只能全都执行或者都不执行，不会只执行其中一部分，那么C++11中引入atomic有什么用？不使用atomic能不能保证原子性呢？ 其实C++11中引入atomic主要还是降低了编程的复杂度，如果不使用atomic同样可以使用锁机制来保证原子性，接下来我们来看看为什么需要原子性。 一个简单的自增运算i++ 是个再简单不过的语句了，我们可以使用它来做一个计数器，每次自增加1，假设我们有一个工程项目有两条商品生产的流水线，每个流水线生产出一件商品则需要计数器加1，这时我们用两个线程来模拟两条流水线，每个线程函数来调用自增的计数器，来看看有什么问题？ 12345678910111213141516171819202122#include &lt;iostream&gt;#include &lt;thread&gt;int i = 0;void func(int n)&#123; for (int k = 0; k &lt; n; k++) i++;&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl;&#125; 测试代码如上所示，执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10 命令编译并运行得到结果 i=20，貌似很正常，一共两个线程，每个线程执行10次自增操作，结果就应该是20啊，先别太早下结论，增大自增范围试试。 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 100000 得到结果 i=112831，多次执行发现每次运行结果都不太一样，但是数据范围在 100000~200000，这就有些奇怪了，每个线程执行循环执行一条语句，那么程序结果应该等于 2n 才对，为什么结果总是小于 2n 呢，难道有些循环没有执行？ 其实不是这样的，i++从C++语言的层面来看确实是一条语句，但是真正再和机器打交道时一般会解释成类似于下面这样3条汇编指令： 1234// x86 msvc v19.latestmov eax, DWORD PTR _i$[ebp]add eax, 1mov DWORD PTR _i$[ebp], eax 3条指令的含义可以理解为读取、自增，设置共三步，既然不是真正的一条语句，那么在多线的环境下就会生语句的交叉执行，比如第一个线程执行读取变量i的值之后，第二个线程也读取了变量i的值，这样两个线程都进行后续的自增和设置指令后，会发现比预期的值少了一个，这种情况在循环次数较多时尤为明显。 通过加锁把自增变为原子操作既然每个自增操作可能会被分解成3条指令，那么我们可以加锁来将3条指令捆绑，当一个线程执行自增操作时加锁来防止其他进程“捣乱”，具体修改如下，可以在自增操作前直接加锁： 12345678910111213141516171819202122232425262728293031323334353637#include &lt;iostream&gt;#include &lt;thread&gt;#include &lt;chrono&gt;#include &lt;mutex&gt;int i = 0;std::mutex mt;void inc()&#123; std::lock_guard&lt;std::mutex&gt; l(mt); i++;&#125;void func(int n)&#123; for (int k = 0; k &lt; n; k++) inc();&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now(); std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl; std::chrono::duration&lt;double&gt; duration_cost = std::chrono::duration_cast&lt; std::chrono::duration&lt;double&gt; &gt;(std::chrono::steady_clock::now() - start); std::cout &lt;&lt; "total cost " &lt;&lt; duration_cost.count() &lt;&lt; " seconds." &lt;&lt; std::endl; return 0;&#125; 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10000000 命令后运行结果如下： 12i=20000000total cost 2.39123 seconds. 通过加锁，我们已经保证了结果的正确性，但是我们知道加锁的额外消耗还是很大的，有没有其他的方式来实现原子操作呢？ 使用atomic来保证自增的原子性其实在C++11之前可以通过嵌入汇编指令来实现，不过自从C++11引入atomic之后，类似的需求变得简单了许多，可以直接使用autmic这个模板类来实现，代码几乎不需要修改，只需将变量 i 改为 atomic&lt;int&gt; 类型，再把锁去掉就可以了，修改后的代码如下： 1234567891011121314151617181920212223242526272829303132333435363738#include &lt;iostream&gt;#include &lt;thread&gt;#include &lt;chrono&gt;#include &lt;mutex&gt;#include &lt;atomic&gt;std::atomic&lt;int&gt; i = 0; // int -&gt; atomic&lt;int&gt;std::mutex mt;void inc()&#123; //std::lock_guard&lt;std::mutex&gt; l(mt); //remove lock i++;&#125;void func(int n)&#123; for (int k = 0; k &lt; n; k++) inc();&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now(); std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl; std::chrono::duration&lt;double&gt; duration_cost = std::chrono::duration_cast&lt; std::chrono::duration&lt;double&gt; &gt;(std::chrono::steady_clock::now() - start); std::cout &lt;&lt; "total cost " &lt;&lt; duration_cost.count() &lt;&lt; " seconds." &lt;&lt; std::endl; return 0;&#125; 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10000000 命令后运行结果如下： 12i=20000000total cost 1.6554 seconds. 通过对比可以发现，使用 std::atomic 模板类之后，在保证了结果正确的同时，相比于加锁实现原子性速度上有了明显的提升。 总结 ACID 是指事务管理中的原子性，一致性，隔离性和持久性4个特性。 加锁（写锁）的目的通常是将可能同时发生的操作串行化，以此来避免对资源的竞争出现问题 操作的并行加快了任务的处理速度，而“加锁”使部分操作回归到串行，两者相互配合是为了在更短的时间内得到正确的结果 std::atomic 降低了原子性操作编程的难度，同时相比于加锁实现原子性还有了性能的提升 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 时光时光慢些吧，不要再让你变老了，我愿用我一切，换你岁月长留~ 时间对于每个人来说，都是公平的，真的是这样吗？我觉得未必吧！ 2021-10-6 00:32:33–]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>C++11</tag>
+        <tag>atomic</tag>
+        <tag>原子性</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Dijkstra——通过不断松弛来解决单源最短路径问题的算法]]></title>
     <url>%2Fblog%2F2021%2F09%2F11%2FDijkstra%E2%80%94%E2%80%94%E9%80%9A%E8%BF%87%E4%B8%8D%E6%96%AD%E6%9D%BE%E5%BC%9B%E6%9D%A5%E8%A7%A3%E5%86%B3%E5%8D%95%E6%BA%90%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E9%97%AE%E9%A2%98%E7%9A%84%E7%AE%97%E6%B3%95%2F</url>
     <content type="text"><![CDATA[前言Dijkstra算法又称迪杰斯特拉算法，它采用的是一种贪心的策略，使用广度优先搜索的方式解决带权有向图或者无向图的单源最短路径问题，需要注意的是它不能处理带负边权的情况，核心思想就是“守住现有阵地不断攻占底盘”，这一点可以在后面代码实现中慢慢体会，接下来梳理一下算法思路。 Dijkstra思路Dijkstra 算法的思路是维护一个点集合 S 和一个用来保存起点 m 到各个顶点到各个顶点最短距离的数组 dis，用邻接数组来表示带权图信息。 初始情况时，集合 S 中只包括起点m，通过图信息来初始化 dis 数组，将起点 m 可以直接到达的点设置为边的权值，不能到达的点设置为无穷大，比如点 m 到点 n 的距离是d，则 dis[n] = d。 然后从带权图中选择不在集合S 中的到点 m 距离最近的点，假设为 n，把它加到集合 S 中，然后尝试通过点 n “松弛” 那些不在集合 S 中的点到点 m的距离，更新 dis 数组信息，具体操作就是使用点 n 作为中转，如果距离如果点 m 到任意点 x 通过点 n 中转距离变短了，那么就更新 dis[x] 的值。 之后不断重复上面的“松弛”操作，直到集合 S 中包含了所有得到顶点，至此就通过Dijkstra算法求解出了从点 m 到图中任意点的最短距离。 图解实例 看了上面的关于Dijkstra算法的文字描述可能还是有点蒙，这时候需要画个图来解释一下，对于算法问题，特别是图论方面的算法题，有时候真的是一图胜千言，奈何我真的是不想画图，一方面因为“懒”，另一方面就是图片的搬运比较麻烦，所以对于大部分问题我都是文字描述，但是为了解释这个Dijkstra我还是决定画一画，假如求解从点a 到各个顶点的最短距离，初始图信息如下： 第一步，我们把点 a 添加到集合 S 中变为 S = {a}，然后初始化dis数组为 dis = {0, 1, 12, ∞, ∞, ∞}，加入集合的点用红色表示，操作之后更新如下： 第二步，找到距离点 a 最近的且不在 S 中的点，根据 dis 数组计算应该是点 b，将点 b 添加到集合 S 中，通过点 b 中转更新 dis 数组，dis[c]变为8，dis[d]变为4，更新后集合为 S = {a, b}， 距离数组为 dis = {0, 1, 8, 4, ∞, ∞}, 图信息如下： 第三步，找到距离点 a 最近的且不在 S 中的点，根据 dis 数组计算应该是点 d，将点 d 添加到集合 S 中，通过点 d 中转更新 dis 数组，dis[e]变为14，dis[f]变为17，更新后集合为 S = {a, b, d}， 距离数组为 dis = {0, 1, 8, 4, 14, 17}, 图信息如下： 第四步，找到距离点 a 最近的且不在 S 中的点，根据 dis 数组计算应该是点 c，将点 c 添加到集合 S 中，通过点 c 中转更新 dis 数组，dis[e]变为13，更新后集合为 S = {a, b, d, c}， 距离数组为 dis = {0, 1, 8, 4, 13, 17}, 图信息如下： 第五步，找到距离点 a 最近的且不在 S 中的点，根据 dis 数组计算应该是点 e，将点 e 添加到集合 S 中，通过点 e 中转更新 dis 数组，通过距离判断发现此次不需要更新dis数组，更新后集合为 S = {a, b, d, c, e}， 距离数组为 dis = {0, 1, 8, 4, 13, 17}, 图信息如下： 第六步，找到距离点 a 最近的且不在 S 中的点，根据 dis 数组计算应该是点 f，将点 f 添加到集合 S 中，至此集合 S 中包含了所有的顶点，Dijkstra算法执行结束，集合信息为 S = {a, b, d, c, e, f}， 距离数组为 dis = {0, 1, 8, 4, 13, 17}, 图信息如下： 代码实现通过上面的图解实例对于Dijkstra的实现应该有了一些思路，那么接下来我们把它转化成代码： 1234567891011121314151617void Dijkstra(vector&lt;vector&lt;int&gt;&gt;&amp; graph)&#123; vector&lt;int&gt; dis = graph[0]; set&lt;int&gt; S; const int n = dis.size(); for (int i = 0, x = 0; i &lt; n; i++, x = 0) &#123; // find minimum weight for (int j = 0; j &lt; n; j++) if (!S.count(j) &amp;&amp; (x == 0 || dis[j] &lt; dis[x])) x = j; S.insert(x); // relax for (int j = 0; j &lt; n; j++) if (!S.count(j) &amp;&amp; dis[x] + graph[x][j] &lt; dis[j]) dis[j] = dis[x] + graph[x][j]; &#125;&#125; 运行上述代码之后我们便得到了节点0到任意点的最短路径长度数组 dis。 从上面的分析我们可以知道从点 a 到点 f 的最短路径长度是 17，那么最短路径怎样求呢？ 其实只要在做松弛操作时记录每个节点是从哪个节点松弛得到的就可以了，比如可以使用一个pre数组来记录这个信息，当计算 dis 结束时通过pre数组反推就可以得到最短路径，简单实现如下： 12345678910111213141516171819202122232425262728293031void Dijkstra(vector&lt;vector&lt;int&gt;&gt;&amp; graph)&#123; vector&lt;int&gt; dis = graph[0]; set&lt;int&gt; S; const int n = dis.size(); vector&lt;int&gt; pre(n, 0); // save previous point index for (int i = 0, x = 0; i &lt; n; i++, x = 0) &#123; // find minimum weight for (int j = 0; j &lt; n; j++) if (!S.count(j) &amp;&amp; (x == 0 || dis[j] &lt; dis[x])) x = j; S.insert(x); // relax for (int j = 0; j &lt; n; j++) if (!S.count(j) &amp;&amp; dis[x] + graph[x][j] &lt; dis[j]) &#123; dis[j] = dis[x] + graph[x][j]; pre[j] = x; &#125; &#125; // output path info vector&lt;int&gt; path&#123;5&#125;; while(path.back() != 0) &#123; path.push_back(pre[path.back()]); &#125; for (auto it = path.rbegin(); it != path.rend(); it++) cout &lt;&lt; *it &lt;&lt; " ";&#125; 总结 Dijkstra算法的时间复杂度为O(N^2)，空间复杂度为 O(N)，如果对时间复杂度有更高要求可以使用堆结构进行优化 Dijkstra是一种求解单源最短路径的算法，在时间复杂度这一项要优于之前所说的 Floyd 算法 Dijkstra不能处理带负边权的情况，不过实际生活中类似于行车路线、管道铺设等问题都不会有负边权，应用还是比较广泛的 该算法仔细分析之后还是比较好理解的，不过还是有一些变型和编程技巧，需要在实际问题中灵活变通 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 历史总是惊人的相似，却不会简单的重复。在柯立芝实行了以放任自流的经济政策之后，紧接着便迎来了1929年的大萧条；而在克林顿到小布什任期内采取的经济自由化的政策，引发了之后2008年的国际金融危机；如今我们抬头看看大洋彼岸那疯狂运转的印钞机，这次的泡泡或许很快就能迎来炸裂的时刻~ 2021-9-12 23:29:46]]></content>
@@ -9,9 +23,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -23,9 +37,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -151,9 +165,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -180,8 +194,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>chmod</tag>
         <tag>文件</tag>
+        <tag>chmod</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -502,8 +516,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>sed</tag>
+        <tag>文件</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -581,9 +595,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -974,8 +988,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -989,8 +1003,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
