@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[linux环境下从路径字符串中截取目录和文件名信息]]></title>
+    <url>%2Fblog%2F2021%2F10%2F24%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BB%8E%E8%B7%AF%E5%BE%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E6%88%AA%E5%8F%96%E7%9B%AE%E5%BD%95%E5%92%8C%E6%96%87%E4%BB%B6%E5%90%8D%E4%BF%A1%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[前言之前在文章《.bat批处理（十）：从路径字符串中截取盘符、文件名、后缀名等信息》中总结了在批处理文件中，也就是Windows环境下怎样从路径字符串中截取文件名、盘符等信息，利用的是Windows的扩展变量，而这种截取路径的需求在linux脚本中也很常见，实现方法相比批处理脚本而言要简单一些，下面列举一下常见的方法。 使用系统命令完成路径截取针对于路径的操作很基础，所以在linux环境下提供了专门的命令来完成路径字符串的截取工作，分别是 basename 和 dirname，从名字就可以很容易知道他们的作用，具体的使用方法如下： 使用 basename 命令获取文件名获取文件名时直接在命令后面添加待截取的路径即可，表现如下： 12albert@home-pc:/mnt/d/data/shell$ basename /mnt/d/data/shell/test.txttest.txt 在shell脚本的写法通常是这样： 12mypath=/mnt/d/data/shell/test.txtecho $(basename $mypath) 运行之后得到的带有后缀的文件名，如果想去掉后缀使用 -s 参数指定要去掉的后缀即可： 12albert@home-pc:/mnt/d/data/shell$ basename -s .txt /mnt/d/data/shell/test.txttest -s 选项也可省略，将后缀名直接放到完整路径后面也可以： 12albert@home-pc:/mnt/d/data/shell$ basename /mnt/d/data/shell/test.txt .txttest 其实 -s 参数后面不一定非得加后缀名，它就是在结果的末尾去掉匹配的字符串，所以可以指定任何结尾字符： 12albert@home-pc:/mnt/d/data/shell$ basename /mnt/d/data/shell/test.txt xttest.t 使用 dirname 命令获取目录名顾名思义 dirname 就是获取目录名的命令，直接在命令后面跟上待截取的路径即可： 12albert@home-pc:/mnt/d/data/shell$ dirname /mnt/d/data/shell/test.txt/mnt/d/data/shell 这个命令不仅可以获取文件所在目录，还可以获取目录的上一级目录，实际上它处理的仅仅是字符串，截取的目标字符也是 /，并不要求目录是有效的 12albert@home-pc:/mnt/d/data/shell$ dirname /mnt/d/data//mnt/d 利用变量提取操作完成截取通过对 ${var} 表达式进行变形可以完成对原变量的部分提取和替换，下面先列举一些主要的截取操作： 表达式 含义 示例 结果 ${var} var字符串原始值 ${var} ^Can you can a can as a canner can can a can$ ${\#var} var字符串的长度 ${\#var} ^43$ ${var:pos} 在字符串var中从位置pos提取子串 ${var:30} ^can can a can$ ${var:pos:len} 在var中从位置pos提取长度为len的子串 ${var:30:5} ^can c$ ${var#substr} 在var左侧删除最短匹配$substr的子串 ${var#*can a} ^ can as a canner can can a can$ ${var##substr} 在var左侧删除最长匹配$substr的子串 ${var##*can a} ^ can$ ${var%substr} 在var右侧删除最短匹配$substr的子串 ${var%can a*} ^Can you can a can as a canner can $ ${var%%substr} 在var右侧删除最长匹配$substr的子串 ${var%%can a*} ^Can you $ 好了，知道了这些规则我们就可以利用这些截取规则，来完成截取目录的需求了，下面假设 var 的值为 ./d/data/shell/test.txt 开始具体操作。 截取根目录要想截取根目录就是要把第一个 / 后面的内容删除就可以了，使用 ${var%%/*} 在var右侧删除最长匹配/*的子串，结果就只剩下 . 了: 123albert@home-pc:/mnt/d/data/shell$ var="./d/data/shell/test.txt"albert@home-pc:/mnt/d/data/shell$ echo $&#123;var%%/*&#125;. 截取文件名截取文件名需要把最后一个 /前面的内容删除，使用 ${var##*/} 在var左侧删除最长匹配 */ 的子串，结果为包含后缀的文件名： 123albert@home-pc:/mnt/d/data/shell$ var="./d/data/shell/test.txt"albert@home-pc:/mnt/d/data/shell$ echo $&#123;var##*/&#125;test.txt 截取文件后缀截取文件名后缀与截取文件名类似，需要包最后一个 . 前面的内容删除，使用 ${var##*.} 在var左侧删除最长匹配 *. 的子串，只保留后缀内容： 123albert@home-pc:/mnt/d/data/shell$ var="./d/data/shell/test.txt"albert@home-pc:/mnt/d/data/shell$ echo $&#123;var##*.&#125;txt 截取文件所在的目录截取文件坐在目录就是只删除文件名，把文件名前面的 / 包括之前的内容进行保留，使用 ${var%/*} 在var右侧删除最短匹配 /* 的子串： 123albert@home-pc:/mnt/d/data/shell$ var="./d/data/shell/test.txt"albert@home-pc:/mnt/d/data/shell$ echo $&#123;var%/*&#125;./d/data/shell 样例假设 var 的值为 ./d/data/shell/test.txt，具体实现的表格总结如下： 需求 表达式 结果 根目录 ${var%%/*} . 文件名 ${var##*/} test.txt 文件后缀 ${var##*.} txt 文件所在目录 ${var%/*} ./d/data/shell 总结 basename 和 dirname 是linux环境下专门截取文件名和目录名的命令工具 处理文件路径截取的通常使用 ${var} 形式的变量提取方法，这种方法很方便，但不仅限于相关目录的处理 常用截取表达式：文件名 ${var##*/}、文件后缀 ${var##*.}、文件所在目录 ${var%/*} ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 今年的1024和去年一样又是周末，凌晨登陆冰封了4、5年的对战平台账号，看着全部灰色的dota好友列表，再想凑齐所有人一起开黑几乎不可能了。打了半宿输多赢少，还是那个手残的我。出了新的英雄，添了新的装备，面对这个曾经挚爱的游戏感觉有些陌生，历史的车轮不会因为你不关注就会停止，相反，这些“平行世界”总是在向前奔跑着，唯一不变的就是变化~ 2021-10-24 19:46:47]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>dirname</tag>
+        <tag>basename</tag>
+        <tag>路径截取</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[.bat批处理（十）：从路径字符串中截取盘符、文件名、后缀名等信息]]></title>
+    <url>%2Fblog%2F2021%2F10%2F16%2F%E6%89%B9%E5%A4%84%E7%90%86%E4%BB%8E%E8%B7%AF%E5%BE%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E6%88%AA%E5%8F%96%E7%9B%98%E7%AC%A6%E3%80%81%E6%96%87%E4%BB%B6%E5%90%8D%E3%80%81%E5%90%8E%E7%BC%80%E5%90%8D%E7%AD%89%E4%BF%A1%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[前言又是实际开发中的问题，想要截取一个文件路径中的盘符、文件名等信息，第一反应是正则表达式？或者是 split 函数？这些往往都是“高级”语言中才会有的实现方法，对于批处理来说有点“带不动”啊，那么在bat批处理中要怎样处理类似的请求呢？最近找到了两种方法，接下来会逐一展示一下，不过在展示具体的写法前，我们先来看一下 %~dp0的含义。 %~dp0的含义关于 %~dp0 的作用在之前的总结中 《.bat批处理（四）：路径相关%cd%和%~dp0的区别》 有提到过，它表示当前运行的批处理文件所在的目录，那么它是一个特殊的变量吗？ 可以说算是吧，这个变量特殊在它是从参数变量 %0 扩展而来的，提到 %0 很多人都会想到它是批处理脚本的第一个参数，表示当前运行的脚本全路径，可以写个脚本试一下： 1234567891011# Albert at home-pc in D:\data\bat [0:03:25]% Get-Content showparams.bat@echo offecho %0echo %1# Albert at home-pc in D:\data\bat [0:03:31]% ./showparams.bat good"D:\data\bat\showparams.bat"good 类似的变量还有 1%、2%、3%…. 一直到9%，都依次表示运行批处理脚本时传入的参数，这些变量还有一个本领，那就是支持扩展，写起来花里胡哨的。 扩展字符串扩展字符串是批处理自带的功能，可以实现对表示文件路径的字符串进行特殊的处理，以%0 参数为例，具体功能列举如下： %~0 - 删除路径中的引号 %~f0 - 将 %0 扩展到一个完全合格的路径名 %~d0 - 将 %0 扩展到一个驱动器号 %~p0 - 将 %0 扩展到一个路径 %~n0 - 将 %0 扩展到一个文件名 %~x0 - 将 %0 扩展到一个文件扩展名 %~s0 - 将 %0 扩展的路径只含有短名 %~a0 - 将 %0 扩展到文件的文件属性 %~t0 - 将 %0 扩展到文件的日期/时间 %~z0 - 将 %0 扩展到文件的大小 %~$PATH:0 查找变量0%在路径环境变量$PATH的目录，并将 %0 扩展到找到的第一个完全合格的名称，$PATH未被定义或没找到文件，则结果为空字符串 当然这个写法也可以进行组合，比如 %~d0 和 %~p0 组合后变成 %~dp0 也就是我们常见的那个变量啦~ 可以将这些变量打印出来看一下具体的值： 1234567891011121314151617181920212223242526272829303132# Albert at home-pc in D:\data\bat [0:26:17]% Get-Content showparams.bat@echo offecho %0echo %~0echo %~f0echo %~d0echo %~p0echo %~n0echo %~x0echo %~s0echo %~a0echo %~t0echo %~z0echo %~dp0echo %~nx0# Albert at home-pc in D:\data\bat [0:26:28]% .\showparams.bat"D:\data\bat\showparams.bat"D:\data\bat\showparams.batD:\data\bat\showparams.batD:\data\bat\showparams.batD:\data\bat\showparams.bat--a--------2021/10/17 00:26156D:\data\bat\showparams.bat 从字符串中截取路径、文件名 上面的部分解释了%~dp0，同时也知道了这些脚本参数指出扩展语法，如果是普通变量的话就不能使用扩展语法了，那么对于一个普通的包含字符串怎么才能使用扩展语法，截取到想要的部分呢？目前我知道的有两种方法：一种是传参使其变成脚本参数，也就是 %n的形式，另一种方法就是使用 for 语句，接下来分别看一下。 脚本传参普通的字符串无法进行扩展，如果想把这种变量就需要把它们变成脚本参数，这就需要将参数传递给另一个脚本，这样实现起来会将脚本调用变得复杂一些，实际上可以在一个脚本中完成截取工作，类似于C/C++中的函数调用，可以在批处理中使用 call 命令搭配标签实现，具体代码如下： 123456789101112131415161718192021222324252627# Albert at home-pc in D:\data\bat [17:37:54]% Get-Content extract1.bat@echo offset OriginStr="C:/Demo/myproject/example.txt"echo %OriginStr%call :extract %OriginStr%goto :eof:extractrem 获取到文件路径echo %~dp1rem 获取到文件盘符echo %~d1rem 获取到文件名称echo %~n1rem 获取到文件后缀echo %~x1# Albert at home-pc in D:\data\bat [17:41:25]% .\extract1.bat"C:/Demo/myproject/example.txt"C:\Demo\myproject\C:example.txt 在这段代码中 :eof 标签是一个默认的标签，表示文件结尾，实际需求中需根据具体要求进行调整。 for语法扩展使用 for 循环是另一种实现方式，因为循环变量也可以支持扩展，可以将需要截取的字符串路径放在循环范围中，然后先循环输出测试下： 1234567891011# Albert at home-pc in D:\data\bat [17:46:29]% Get-Content extract2.bat@echo offset OriginStr="C:/Demo/myproject/example.txt"for %%I in (%OriginStr%) do echo %%I# Albert at home-pc in D:\data\bat [17:46:57]% .\extract2.bat"C:/Demo/myproject/example.txt" 在批处理中的循环变量是 %%I的形式，需要两个 % 才可以，后面的变量名可以换成26个字母中的任意一个，并且字母会区分大小写，然后利用这些循环变量就可以进行扩展，然后完成最开始的需求，实现代码如下： 123456789101112131415161718192021222324# Albert at home-pc in D:\data\bat [17:53:53]% Get-Content extract2.bat@echo offset OriginStr="C:/Demo/myproject/example.txt"for %%I in (%OriginStr%) do echo %%Irem 获取到文件路径for %%I in (%OriginStr%) do echo %%~dpIrem 获取到文件盘符for %%I in (%OriginStr%) do echo %%~dIrem 获取到文件名称for %%I in (%OriginStr%) do echo %%~nIrem 获取到文件后缀for %%I in (%OriginStr%) do echo %%~xI# Albert at home-pc in D:\data\bat [17:54:01]% .\extract2.bat"C:/Demo/myproject/example.txt"C:\Demo\myproject\C:example.txt 这种写法的好处就是无需控制标签跳转流程，通过循环命令 for 就可以获取想要的参数，使用起来会方便很多。 总结 在批处理文件中 %~dp0 表示批处理文件所在的目录，而 %cd% 表示执行命令时所在的目录 在批处理文件中想要截取目录操作可以使用变量扩展来实现，而变量必须是 %i 的形式，其中的 i 是可以是 a~zA~Z0~9 for 表达式中的循环变量在cmd命令行中是 %i 的形式，而在批处理文件中需要协程 %%i 的形式 常用的变量扩展有：获取到文件盘符使用 %~d0，获取到文件名称使用 %~n0，获取到文件后缀使用 %~x0 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 反人性需要不断修炼，逆向思维才能战胜人性的弱点，很多时候事情往往不是你想的那样~ 2021-10-17 18:01:07]]></content>
+      <categories>
+        <category>bat</category>
+      </categories>
+      <tags>
+        <tag>实用工具</tag>
+        <tag>bat</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++11中的std::atomic保证的原子性是什么]]></title>
     <url>%2Fblog%2F2021%2F10%2F13%2FC-11%E4%B8%AD%E7%9A%84std-atomic%E4%BF%9D%E8%AF%81%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7%E6%98%AF%E4%BB%80%E4%B9%88%2F</url>
     <content type="text"><![CDATA[前言提到atomic这个词，你首先想到的是什么呢？作为一个长时间混迹于编程世界的菜鸟，我首先想到的一个词是“原子性”，接着飞入脑海的是 “ACID” 这个缩写词组，既然提到了 ACID 我们就来简单的复习一下。 ACID 是指事务管理的4个特性，常见于数据库操作管理中，它们分别是：原子性，一致性，隔离性和持久性。 原子性（Atomicity）是指事务是一个不可分割的工作单位，事务中的操作要么都执行，要么都不执行。 一致性（Consistency）是指事务前后数据的完整性必须保持一致，完全符合逻辑原运算。 隔离性（Isolation）是指在多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离，无需感知其他事务的存在。 持久性（Durability）是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对数据造成损坏。 C++中的atomic原子（atom）是在化学反应中不可分割基本微粒，而编程世界中的原子性也是取自这里的不可分割的含义，不可分割与事务管理中的原子性含义一致，指的是一个操作或者一系列操作只能全都执行或者都不执行，不会只执行其中一部分，那么C++11中引入atomic有什么用？不使用atomic能不能保证原子性呢？ 其实C++11中引入atomic主要还是降低了编程的复杂度，如果不使用atomic同样可以使用锁机制来保证原子性，接下来我们来看看为什么需要原子性。 一个简单的自增运算i++ 是个再简单不过的语句了，我们可以使用它来做一个计数器，每次自增加1，假设我们有一个工程项目有两条商品生产的流水线，每个流水线生产出一件商品则需要计数器加1，这时我们用两个线程来模拟两条流水线，每个线程函数来调用自增的计数器，来看看有什么问题？ 12345678910111213141516171819202122#include &lt;iostream&gt;#include &lt;thread&gt;int i = 0;void func(int n)&#123; for (int k = 0; k &lt; n; k++) i++;&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl;&#125; 测试代码如上所示，执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10 命令编译并运行得到结果 i=20，貌似很正常，一共两个线程，每个线程执行10次自增操作，结果就应该是20啊，先别太早下结论，增大自增范围试试。 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 100000 得到结果 i=112831，多次执行发现每次运行结果都不太一样，但是数据范围在 100000~200000，这就有些奇怪了，每个线程执行循环执行一条语句，那么程序结果应该等于 2n 才对，为什么结果总是小于 2n 呢，难道有些循环没有执行？ 其实不是这样的，i++从C++语言的层面来看确实是一条语句，但是真正再和机器打交道时一般会解释成类似于下面这样3条汇编指令： 1234// x86 msvc v19.latestmov eax, DWORD PTR _i$[ebp]add eax, 1mov DWORD PTR _i$[ebp], eax 3条指令的含义可以理解为读取、自增，设置共三步，既然不是真正的一条语句，那么在多线的环境下就会生语句的交叉执行，比如第一个线程执行读取变量i的值之后，第二个线程也读取了变量i的值，这样两个线程都进行后续的自增和设置指令后，会发现比预期的值少了一个，这种情况在循环次数较多时尤为明显。 通过加锁把自增变为原子操作既然每个自增操作可能会被分解成3条指令，那么我们可以加锁来将3条指令捆绑，当一个线程执行自增操作时加锁来防止其他进程“捣乱”，具体修改如下，可以在自增操作前直接加锁： 12345678910111213141516171819202122232425262728293031323334353637#include &lt;iostream&gt;#include &lt;thread&gt;#include &lt;chrono&gt;#include &lt;mutex&gt;int i = 0;std::mutex mt;void inc()&#123; std::lock_guard&lt;std::mutex&gt; l(mt); i++;&#125;void func(int n)&#123; for (int k = 0; k &lt; n; k++) inc();&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now(); std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl; std::chrono::duration&lt;double&gt; duration_cost = std::chrono::duration_cast&lt; std::chrono::duration&lt;double&gt; &gt;(std::chrono::steady_clock::now() - start); std::cout &lt;&lt; "total cost " &lt;&lt; duration_cost.count() &lt;&lt; " seconds." &lt;&lt; std::endl; return 0;&#125; 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10000000 命令后运行结果如下： 12i=20000000total cost 2.39123 seconds. 通过加锁，我们已经保证了结果的正确性，但是我们知道加锁的额外消耗还是很大的，有没有其他的方式来实现原子操作呢？ 使用atomic来保证自增的原子性其实在C++11之前可以通过嵌入汇编指令来实现，不过自从C++11引入atomic之后，类似的需求变得简单了许多，可以直接使用autmic这个模板类来实现，代码几乎不需要修改，只需将变量 i 改为 atomic&lt;int&gt; 类型，再把锁去掉就可以了，修改后的代码如下： 1234567891011121314151617181920212223242526272829303132333435363738#include &lt;iostream&gt;#include &lt;thread&gt;#include &lt;chrono&gt;#include &lt;mutex&gt;#include &lt;atomic&gt;std::atomic&lt;int&gt; i = 0; // int -&gt; atomic&lt;int&gt;std::mutex mt;void inc()&#123; //std::lock_guard&lt;std::mutex&gt; l(mt); //remove lock i++;&#125;void func(int n)&#123; for (int k = 0; k &lt; n; k++) inc();&#125;int main(int argc, char* argv[])&#123; int n = argc &gt; 1 ? atoi(argv[1]) : 100; std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now(); std::thread t1(func, n); std::thread t2(func, n); t1.join(); t2.join(); std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; std::endl; std::chrono::duration&lt;double&gt; duration_cost = std::chrono::duration_cast&lt; std::chrono::duration&lt;double&gt; &gt;(std::chrono::steady_clock::now() - start); std::cout &lt;&lt; "total cost " &lt;&lt; duration_cost.count() &lt;&lt; " seconds." &lt;&lt; std::endl; return 0;&#125; 执行 g++ -std=c++20 -O0 -pthread main.cpp &amp;&amp; ./a.out 10000000 命令后运行结果如下： 12i=20000000total cost 1.6554 seconds. 通过对比可以发现，使用 std::atomic 模板类之后，在保证了结果正确的同时，相比于加锁实现原子性速度上有了明显的提升。 总结 ACID 是指事务管理中的原子性，一致性，隔离性和持久性4个特性。 加锁（写锁）的目的通常是将可能同时发生的操作串行化，以此来避免对资源的竞争出现问题 操作的并行加快了任务的处理速度，而“加锁”使部分操作回归到串行，两者相互配合是为了在更短的时间内得到正确的结果 std::atomic 降低了原子性操作编程的难度，同时相比于加锁实现原子性还有了性能的提升 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 时光时光慢些吧，不要再让你变老了，我愿用我一切，换你岁月长留~ 时间对于每个人来说，都是公平的，真的是这样吗？我觉得未必吧！ 2021-10-6 00:32:33–]]></content>
@@ -23,9 +49,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -37,9 +63,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -194,8 +220,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>chmod</tag>
+        <tag>文件</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -516,8 +542,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -988,8 +1014,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>reset</tag>
         <tag>checkout</tag>
+        <tag>reset</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1003,8 +1029,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
