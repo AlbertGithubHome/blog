@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言树的所有叶子结点的带权路径长度之和，称为树的带权路径长度，英文缩写为 WPL，从百度百科中得到的信息为 “树的带权路径长度（weighted path length of tree）是2018年公布的计算机科学技术名词”，这就有点奇怪了，这个词印象中在大学课本里学过啊，怎么会是2018年的名词呢？难道我穿越了？ 我赶紧找来严蔚敏、吴伟民老师编著的《数据结构》翻开来看，在2009年9月第30次印">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-11-13T14:55:06.272Z">
+<meta property="og:updated_time" content="2021-11-13T15:12:41.863Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="树的带权路径长度和哈夫曼树">
 <meta name="twitter:description" content="前言树的所有叶子结点的带权路径长度之和，称为树的带权路径长度，英文缩写为 WPL，从百度百科中得到的信息为 “树的带权路径长度（weighted path length of tree）是2018年公布的计算机科学技术名词”，这就有点奇怪了，这个词印象中在大学课本里学过啊，怎么会是2018年的名词呢？难道我穿越了？ 我赶紧找来严蔚敏、吴伟民老师编著的《数据结构》翻开来看，在2009年9月第30次印">
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-11-13T22:55:06+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2021-11-13T23:12:41+08:00">
                 2021-11-13
               </time>
             
@@ -485,8 +485,8 @@
 <blockquote>
 <p>树的带权路径长度为树中所有叶子结点的带权路径之和，通常记作 WPL = …</p>
 </blockquote>
-<p>看来我没记错，不是这个百科弄错了，就是2018年重新公布了一次，并不是新的概念，它确实是一个古老的名词了，接下来可以复习一下了。</p>
 <a id="more"></a>
+<p>看来我没记错，不是这个百科弄错了，就是2018年重新公布了一次，并不是新的概念，它确实是一个古老的名词了，接下来可以复习一下了。</p>
 <h1 id="树的带权路径长度"><a href="#树的带权路径长度" class="headerlink" title="树的带权路径长度"></a>树的带权路径长度</h1><p>前面虽然已经给出了定义，可什么是路径，为什么要带权，还要一步步来解释。</p>
 <p>路径是指从树的一个结点到另一个结点所走过的部分，路径长度也可以理解为两个结点之间的距离，可以简单理解为路过的结点数，那为什么要带权呢？这和我们生活中的路径一样，并不是距离短的路所花费的时间就少，还要考虑路况、成本等多种因素，而权值就是在特定场景下我们赋予每条路的选择概率。</p>
 <p>解释了这几个概念之后我们就可以理解文章开头的定义了，把树的每个叶子结点到根结点的带权路径长度加在一起，就是树的带权路径长度。</p>
@@ -540,7 +540,7 @@
 <p>WPL = 60 + 40 + 28 + 32 + 19 + 21 + 11 + 17 + 5 + 6 + 7 + 10 + 3 + 2 = 261</p>
 </blockquote>
 <h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>我们用统计数量的字母来替换频数，然后在树的左右指针上分别标上数字就可以得到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line"></span><br><span class="line">    R2((11))--0--&gt;R((5))</span><br><span class="line">    R2((11))-.1.-&gt;B[[b]]</span><br><span class="line">    R((5))--0--&gt;D[[d]]</span><br><span class="line">    R((5))-.1.-&gt;H[[h]]</span><br><span class="line"></span><br><span class="line">    R3((17))--0--&gt;C[[c]]</span><br><span class="line">    R3((17))-.1.-&gt;F[[f]]</span><br><span class="line"></span><br><span class="line">    R4((28))--0--&gt;R2((11))</span><br><span class="line">    R4((28))-.1.-&gt;R3((17))</span><br><span class="line"></span><br><span class="line">    R6((60))-.1.-&gt;E[[e]]</span><br><span class="line">    R6((60))--0--&gt;R4((28))</span><br><span class="line"></span><br><span class="line">    R5((40))--0--&gt;A[[a]]</span><br><span class="line">    R5((40))-.1.-&gt;G[[g]]</span><br><span class="line"></span><br><span class="line">    R7((100))--0--&gt;R6((60))</span><br><span class="line">    R7((100))-.1.-&gt;R5((40))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line"></span><br><span class="line">    R2((11))--0--&gt;R((5))</span><br><span class="line">    R2((11))--1--&gt;B[[b]]</span><br><span class="line">    R((5))--0--&gt;D[[d]]</span><br><span class="line">    R((5))--1--&gt;H[[h]]</span><br><span class="line"></span><br><span class="line">    R3((17))--0--&gt;C[[c]]</span><br><span class="line">    R3((17))--1--&gt;F[[f]]</span><br><span class="line"></span><br><span class="line">    R4((28))--0--&gt;R2((11))</span><br><span class="line">    R4((28))--1--&gt;R3((17))</span><br><span class="line"></span><br><span class="line">    R6((60))--1--&gt;E[[e]]</span><br><span class="line">    R6((60))--0--&gt;R4((28))</span><br><span class="line"></span><br><span class="line">    R5((40))--0--&gt;A[[a]]</span><br><span class="line">    R5((40))--1--&gt;G[[g]]</span><br><span class="line"></span><br><span class="line">    R7((100))--0--&gt;R6((60))</span><br><span class="line">    R7((100))--1--&gt;R5((40))</span><br></pre></td></tr></table></figure>
 <p>至此我们就可以给出编码了呀，从根结点走到每个叶子结点路径上经过的0和1就是编码内容，编码表如下：</p>
 <blockquote>
 <p>a–&gt;10<br>b–&gt;0001<br>c–&gt;0010<br>d–&gt;00000<br>e–&gt;01<br>f–&gt;0011<br>g–&gt;11<br>h–&gt;00001</p>
