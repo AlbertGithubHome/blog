@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[git常用配置——git show/diff tab 显示宽度]]></title>
+    <url>%2Fblog%2F2021%2F12%2F19%2Fgit%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E2%80%94%E2%80%94git-show-diff-tab-%E6%98%BE%E7%A4%BA%E5%AE%BD%E5%BA%A6%2F</url>
+    <content type="text"><![CDATA[前言平时在代码开发过程中使用编辑器时一般会使用空格来代替Tab符，而Tab的宽度通常设置为4个空格的宽度。在使用git diff 命令时发现有些老代码的格式混乱，原因就是使用了8个字符宽度的Tab显示格式，经过一番查找发现可以修改 core.pager 来进行调整，特此记录方便日后查找。 常用配置 设置Tab显示为4个字符的宽度 git config --global core.pager &#39;less -x1,5&#39; 设置Tab显示为8个字符的宽度（默认） git config --global core.pager &#39;less&#39; 设置用户名 git config --global user.name &quot;albert&quot; 设置邮箱 git config --global user.email &quot;albert52190@gmail.com&quot; 设置别名 git config --global alias.st status 配置自动更新子模块的命令 git config --global alias.pullall &#39;!f(){ git pull &quot;$@&quot; &amp;&amp; git submodule update --init --recursive; }; f&#39; 设置自动处理换行符 git config --global core.autocrlf true true 在提交时将CRLF转换为LF，当签出代码时，LF会被转换成CRLFinput 在提交是将CRLF转换为LF，签出时不转换false 不进行转换 总结 git config --global core.pager &#39;less -x1,5&#39; 可将 git show/diff 命令的tab按照4字符宽度显示 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 时间不多了，还有很多事情没有做呢，虽说欲速则不达，但是有些事如果还不做可能就真的没机会了《一荤一素》 2021-12-20 00:09:54]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>版本控制</tag>
+        <tag>Git</tag>
+        <tag>config</tag>
+        <tag>pager</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[网络工具nc的常见使用功能方法]]></title>
     <url>%2Fblog%2F2021%2F12%2F12%2F%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7nc%E7%9A%84%E5%B8%B8%E8%A7%81%E4%BD%BF%E7%94%A8%E5%8A%9F%E8%83%BD%E6%96%B9%E6%B3%95%2F</url>
     <content type="text"><![CDATA[前言nc 是一个Linux环境下常用的工具命令，可以用来帮助开发者查询和解决网路问题，通常被认为是 NetCat 工具的缩写，在网络工具中有“瑞士军刀”的美誉。 nc 在Linux环境下常常是自带的，如果你使用的Linux发行版本没有这个工具也可以自行安装，比如在CentOS上的安装命令就是 yum install nc -y，并且这个工具在Windows上也可以直接下载使用，下载页面地址为 netcat，简约而不简单。 nc netcat ncat这三个名字常常出现在一起，也常常混用，可以简单的认为它们都一样，但是如果要追究细节它们还是有些差异的。原始netcat（也就是nc），在2007年发布1.10稳定版本之后，就不再更新了，原作者是Hobbit。而ncat是nmap项目的作者Fyodor，在原始nc之上进行二次开发的另一款强大工具。另外socat、cryptcat等也属于是原始nc的升级，而原始nc在windows上有时会被杀毒软件查杀，这时可以考虑使用ncat、socat。 关于nc的不同，可以看下我本地的查看情况，第一条是在Ubuntu中的man手册说明，第二条是在CentOS中的man手册说明： 12345678910111213NC(1) BSD General Commands Manual NC(1)NAME nc — arbitrary TCP and UDP connections and listensSYNOPSIS nc [-46bCDdhklnrStUuvZz] [-I length] [-i interval] [-O length] [-P proxy_username] [-p source_port] [-q seconds] [-s source] [-T toskeyword] [-V rtable] [-w timeout] [-X proxy_protocol] [-x proxy_address[:port]] [destination] [port]DESCRIPTION The nc (or netcat) utility is used for just about anything under the sun involving TCP, UDP, or UNIX-domain sockets. It can open TCP connections, send UDP packets, listen on arbitrary TCP and UDP ports, do port scanning, and deal with both IPv4 and IPv6. Unlike telnet(1), nc scripts nicely, and separates error messages onto standard error instead of sending them to standard output, as telnet(1) does with some 123456789101112NCAT(1) Ncat Reference Guide NCAT(1)NAME ncat - Concatenate and redirect socketsSYNOPSIS ncat [OPTIONS...] [hostname] [port]DESCRIPTION Ncat is a feature-packed networking utility which reads and writes data across networks from the command line. Ncat was written for the Nmap Project and is the culmination of the currently splintered family of Netcat incarnations. It is designed to be a reliable back-end tool to instantly provide network connectivity to other applications and users. Ncat will not only work with IPv4 and IPv6 but provides the user with a virtually limitless number of potential uses. ncat 是 nmap 套件的一部分，关于nmap的介绍可以参考下来自百科的以下引用内容： nmap是linux最早的网络扫描工具和嗅探工具包，它可以用来扫描网络上电脑开放的网络连接端，确定哪些服务运行在那些连接端，并且推断出计算机运行的是哪个操作系统（这是亦称 fingerprinting）。它是网络管理员必用的软件之一，用以评估网络系统安全。 正如大多数被用于网络安全的工具，nmap 也是不少黑客及骇客爱用的工具 。系统管理员可以利用nmap来探测工作环境中未经批准使用的服务器，但是黑客会利用nmap来搜集目标电脑的网络设定，从而计划攻击的方法。 nc的用法nc是一个强大的网络工具，下面列举几个常见的用法。 测试udp端口是否可用如果是测试某个IP地址地址是否可以访问，通常会使用 ping 命令，执行之后如果可以到达就会得到数据反馈： 12345678910albert@home-pc:~$ ping 82.156.125.169PING 82.156.125.169 (82.156.125.169) 56(84) bytes of data.64 bytes from 82.156.125.169: icmp_seq=1 ttl=54 time=17.8 ms64 bytes from 82.156.125.169: icmp_seq=2 ttl=54 time=39.9 ms64 bytes from 82.156.125.169: icmp_seq=3 ttl=54 time=12.9 ms64 bytes from 82.156.125.169: icmp_seq=4 ttl=54 time=6.81 ms^C--- 82.156.125.169 ping statistics ---4 packets transmitted, 4 received, 0% packet loss, time 3008msrtt min/avg/max/mdev = 6.816/19.397/39.961/12.502 ms 想要测试一个tcp端口是否可以访问，映入脑海的第一个命令应该是telnet，直接在IP后面加空格和端口就可以了： 12345albert@home-pc:~$ telnet 82.156.125.169 22Trying 82.156.125.169...Connected to 82.156.125.169.Escape character is '^]'.SSH-2.0-OpenSSH_7.4 如果想测试UDP端口是否可达使用telnet就不行了，因为它是一种基于TCP的应用层协议，用来测试UDP端口会因为长时间没有反应而超时： 123albert@home-pc:~$ telnet 82.156.125.169 666Trying 82.156.125.169...telnet: Unable to connect to remote host: Connection refused 这时用 nc 命令就可以解决了，命令格式为 nc -nvuz ip port： 12albert@home-pc:~$ nc -nvuz 82.156.125.169 666Connection to 82.156.125.169 666 port [udp/*] succeeded! 端口扫描这实际实际上是对上一个应用的扩展，使用 nc 命令可以指定一个端口范围，用来扫描多个端口是否可用： 123456albert@home-pc:~$ nc -nvz 82.156.125.169 20-24nc: connect to 82.156.125.169 port 20 (tcp) failed: Connection refusednc: connect to 82.156.125.169 port 21 (tcp) failed: Connection refusedConnection to 82.156.125.169 22 port [tcp/*] succeeded!nc: connect to 82.156.125.169 port 23 (tcp) failed: Connection refusednc: connect to 82.156.125.169 port 24 (tcp) failed: Connection refused 一对一聊天使用 nc 命令可以监听一个端口作为服务器，然后在另一台机器上启动 nc 作为客户端发数据： 12345# 启动服务器[root@VM-0-3-centos ~]# nc -l 1314# 以下为接收到客户端发来的数据12client send msg 12345# 启动客户端albert@home-pc:~$ nc 82.156.125.169 1314# 以下为输入的数据12client send msg 传输文件这个用法是对上一种用法的扩展，通过重定向将文件内容通过网络传输： 12# 服务端将socket内容保存到w文件中[root@VM-0-3-centos ~]# nc -l 1314 &gt; w.txt 123456789albert@home-pc:~$ cat w.txtw-rxd# 客户端将w.txt文件内容发送给服务器albert@home-pc:~$ nc 82.156.125.169 1314 &lt; w.txtalbert@home-pc:~$ 客户端运行完 nc 命令之后就会退出，服务器端的 nc 命令也会结束，w.txt 文件的内容就传送过去了。 端口转发这其实也是传输数据的命令的一个变种，使用 -c 参数可以完成数据转发： 1[root@VM-0-3-centos ~]# nc -l 520 -c "nc 82.156.125.169 1314" 执行命令之后，发送到本机 520 端口的数据就会被转发到 IP 为82.156.125.169的1314端口上了。 总结 nc -nvuz ip port 可以检测指定IP的UDP端口能否访问，如果是TCP端口去掉 -u 选项就可以了 nc -l port 可以启动一个本地服务器，接受发往指定端口的数据，并打印到控制台 nc -l port &gt; filename 可以启动一个本地服务器，接受发往指定端口的数据，并保存到名为 filename 的文件中 nc -l port -c &quot;nc ip new_port&quot; 可以启动一个本地服务器，接受发往指定端口的数据，并转发到ip:new_port的机器上 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 人生每时每刻都在积攒素材，能否拼凑出高光的时刻，决定了某些事迹有无机会诉说。 2021-12-12 22:11:51]]></content>
@@ -338,8 +352,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>函数</tag>
+        <tag>语法糖</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -395,10 +409,10 @@
       </categories>
       <tags>
         <tag>git</tag>
+        <tag>config</tag>
+        <tag>pager</tag>
         <tag>branch</tag>
         <tag>log</tag>
-        <tag>pager</tag>
-        <tag>config</tag>
       </tags>
   </entry>
   <entry>
@@ -482,9 +496,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
-        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -549,10 +563,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -931,10 +945,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1059,8 +1073,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>stash</tag>
+        <tag>checkout</tag>
         <tag>merge</tag>
       </tags>
   </entry>
@@ -1118,8 +1132,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -1132,10 +1146,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1161,10 +1175,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1175,10 +1189,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
