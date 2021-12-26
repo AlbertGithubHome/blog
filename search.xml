@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Windows设置防火墙允许指定应用正常使用网络]]></title>
+    <url>%2Fblog%2F2021%2F12%2F26%2FWindows%E8%AE%BE%E7%BD%AE%E9%98%B2%E7%81%AB%E5%A2%99%E5%85%81%E8%AE%B8%E6%8C%87%E5%AE%9A%E5%BA%94%E7%94%A8%E6%AD%A3%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C%2F</url>
+    <content type="text"><![CDATA[前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样： 但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所以我还是决定打开防火墙，同时设置防火墙对自己的开发的应用放行，也就是把应用放到防火墙白名单里，这样就既安全又方便了。 什么是Windows防火墙 防火墙是一项协助确保信息安全的设备，会依照特定的规则，允许或限制传输的数据通过。防火墙可以是一台专属的硬件也可以是架设在一般硬件上的一套软件。总而言之，防火墙就是帮助计算机网络于其内、外网之间构建一道相对隔绝的保护屏障。 这段文字来自于百科，翻译的直白一点就是说：你的电脑就相当于一个城池，然后网络上的病毒、木马等恶意程序就相当于敌对势力派来的间谍，想混进城去，而防火墙就相当于城门口设置的关卡哨兵用来盘查筛选，放合适的人进城，同时放合法的人出去，既要满足城内人与外界的交流，又要防止恶意的坏人蒙混过关。 设置允许通过防火墙的应用要想设置指定应用允许通过防火墙，需要先打开防火墙功能再设置才会生效，下面以Windows10为例操作一次。 打开控制面板 按键盘上的 Win 键，然后输入控制面板，在筛选结果中点击“控制面板”选项： 点击系统和安全选项 点击Windows Defender防火墙选项 其实前面这三步可以简化为，按Win+R快捷键，输入firewall.cpl回车即可 点击启用或关闭Windows Defender防火墙选项 勾选启用 Windows Defender 防火墙 选项，点击确定按钮 点击允许应用或功能通过 Windows Defender 防火墙选项 找到目标应用，把后面两个选项勾选上，然后点击确定即可 这里以 WeChat 为例，在专用 和 公用两个复选框上打钩，然后单击下面的确定按钮就可以了，如果列表中没有想要添加白名单的应用，还可以点击确定按钮上面的 允许其他应用(R)按钮来自己添加。 防火墙中的专用和公用防火墙中的专用 和 公用是针对网络而言的，Windows中给出的说明：专用网络，例如家庭或工作网络；公用网络，比如机场和咖啡店中的网络。那么是不是当我在家里连网时就是专用网络，而在咖啡厅连接网络时就自动识别为公用网络呢？ Windows当然没有这么智能，连接新的网络时属于什么类型的网络需要你自己选择，也就是说你自己要做出判断，如果是自己家的网络，基本是上独享的安全的，那就可以设置为专用网络，如果是连接的公共Wifi那必须要选择公用网络。 而防火墙中对专用网络和公用网络有不同的设置，这个比较好理解，还是以前面城池和哨兵的比喻为例，防火墙作为哨兵在不同的环境下有不同的标准，比如在和平时期，对非常可疑的人才禁止入城，而在战时，除了必要的粮草供应，其他的普通商人可能都不允许入内了。 所以当一个应用无法联网时，需要检查一下应用设置白名单中是在哪个网络环境下，如果是可以信赖的应用，通常在专用网络和公用网络都会设置允许通过防火墙。 总结 快捷键 Win+R 输入 firewall.cpl 后回车，可以快速打开防火墙设置 Windows中的专用网络和公用网络需要自己在连接网络时设置，系统本身没有准确分辨的能力 防火墙中对专用网络和公用网络有不同的设置，相当于在不同的网络环境下设置了不同的安全级别 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 默默的付出是否值得？一查问题就消耗几个小时，修复个BUG前前后后花了几天，有时会假设站在高处，望着此时的自己，这样做是否值得？成年人的世界往往只看性价比，如果说花了几天时间却一无所获，那之前的付出确实不值得，也就是做了一件性价比很低的事情。但是这个结果是做完才知道的，在做之前并不能准确判断是否值得，无法进行“挑选”，也不应该抱着我不做总有人会做的态度，既然做就全力以赴，若无果也仅仅是我们“赌”输了而已。但要记住，现实的世界只记得功劳，没有结论、没有反馈、毫无借鉴意义的苦劳一文不值~ 2021-12-26 23:54:19]]></content>
+      <categories>
+        <category>windows</category>
+      </categories>
+      <tags>
+        <tag>Win10</tag>
+        <tag>windows</tag>
+        <tag>防火墙</tag>
+        <tag>firewall</tag>
+        <tag>白名单</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[git常用配置——git show/diff tab 显示宽度]]></title>
     <url>%2Fblog%2F2021%2F12%2F19%2Fgit%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E2%80%94%E2%80%94git-show-diff-tab-%E6%98%BE%E7%A4%BA%E5%AE%BD%E5%BA%A6%2F</url>
     <content type="text"><![CDATA[前言平时在代码开发过程中使用编辑器时一般会使用空格来代替Tab符，而Tab的宽度通常设置为4个空格的宽度。在使用git diff 命令时发现有些老代码的格式混乱，原因就是使用了8个字符宽度的Tab显示格式，经过一番查找发现可以修改 core.pager 来进行调整，特此记录方便日后查找。 常用配置 设置Tab显示为4个字符的宽度 git config --global core.pager &#39;less -x1,5&#39; 设置Tab显示为8个字符的宽度（默认） git config --global core.pager &#39;less&#39; 设置用户名 git config --global user.name &quot;albert&quot; 设置邮箱 git config --global user.email &quot;albert52190@gmail.com&quot; 设置别名 git config --global alias.st status 配置自动更新子模块的命令 git config --global alias.pullall &#39;!f(){ git pull &quot;$@&quot; &amp;&amp; git submodule update --init --recursive; }; f&#39; 设置自动处理换行符 git config --global core.autocrlf true true 在提交时将CRLF转换为LF，当签出代码时，LF会被转换成CRLFinput 在提交是将CRLF转换为LF，签出时不转换false 不进行转换 总结 git config --global core.pager &#39;less -x1,5&#39; 可将 git show/diff 命令的tab按照4字符宽度显示 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 时间不多了，还有很多事情没有做呢，虽说欲速则不达，但是有些事如果还不做可能就真的没机会了《一荤一素》 2021-12-20 00:09:54]]></content>
@@ -294,9 +309,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -323,8 +338,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>chmod</tag>
+        <tag>文件</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -409,10 +424,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>config</tag>
-        <tag>pager</tag>
         <tag>branch</tag>
         <tag>log</tag>
+        <tag>config</tag>
+        <tag>pager</tag>
       </tags>
   </entry>
   <entry>
@@ -549,8 +564,8 @@
         <category>windows</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>windows</tag>
+        <tag>linux</tag>
         <tag>ternimal</tag>
         <tag>powershell</tag>
       </tags>
@@ -563,10 +578,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -645,8 +660,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -724,9 +739,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -945,10 +960,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -989,9 +1004,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>windows</tag>
         <tag>汇编</tag>
         <tag>linux</tag>
-        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1073,8 +1088,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>stash</tag>
         <tag>checkout</tag>
+        <tag>stash</tag>
         <tag>merge</tag>
       </tags>
   </entry>
@@ -1132,8 +1147,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -1146,10 +1161,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1175,10 +1190,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1189,10 +1204,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1391,8 +1406,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>函数</tag>
-        <tag>堆栈</tag>
         <tag>windows</tag>
+        <tag>堆栈</tag>
       </tags>
   </entry>
   <entry>
