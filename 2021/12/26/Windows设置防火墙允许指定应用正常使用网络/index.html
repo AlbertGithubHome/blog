@@ -102,13 +102,13 @@
 
 
 
-<meta name="description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：  但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所">
+<meta name="description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：">
 <meta name="keywords" content="Win10,windows,防火墙,firewall,白名单">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows设置防火墙允许指定应用正常使用网络">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2021/12/26/Windows设置防火墙允许指定应用正常使用网络/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：  但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所">
+<meta property="og:description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/1.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/2.png">
@@ -118,10 +118,10 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/6.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/7.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/8.png">
-<meta property="og:updated_time" content="2021-12-26T15:59:10.826Z">
+<meta property="og:updated_time" content="2021-12-29T08:17:30.927Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Windows设置防火墙允许指定应用正常使用网络">
-<meta name="twitter:description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：  但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所">
+<meta name="twitter:description" content="前言很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/1.png">
 
 
@@ -400,8 +400,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2021-12-26T23:59:10+08:00">
-                2021-12-26
+              <time title="更新于" itemprop="dateModified" datetime="2021-12-29T16:17:30+08:00">
+                2021-12-29
               </time>
             
           </span>
@@ -490,7 +490,8 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/1.png" alt="pressure"></p>
+<a id="more"></a>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/1.png" alt="1"></p>
 <p>但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所以我还是决定打开防火墙，同时设置防火墙对自己的开发的应用放行，也就是把应用放到防火墙白名单里，这样就既安全又方便了。</p>
 <h1 id="什么是Windows防火墙"><a href="#什么是Windows防火墙" class="headerlink" title="什么是Windows防火墙"></a>什么是Windows防火墙</h1><blockquote>
 <p>防火墙是一项协助确保信息安全的设备，会依照特定的规则，允许或限制传输的数据通过。防火墙可以是一台专属的硬件也可以是架设在一般硬件上的一套软件。总而言之，防火墙就是帮助计算机网络于其内、外网之间构建一道相对隔绝的保护屏障。</p>
@@ -501,34 +502,34 @@
 <li>打开<code>控制面板</code></li>
 </ol>
 <p>按键盘上的 <code>Win</code> 键，然后输入控制面板，在筛选结果中点击“控制面板”选项：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/2.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/2.png" alt="2"></p>
 <ol>
 <li>点击<code>系统和安全</code>选项</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/3.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/3.png" alt="3"></p>
 <ol>
 <li>点击<code>Windows Defender防火墙</code>选项</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/4.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/4.png" alt="4"></p>
 <blockquote>
 <p>其实前面这三步可以简化为，按<code>Win+R</code>快捷键，输入<code>firewall.cpl</code>回车即可</p>
 </blockquote>
 <ol>
 <li>点击<code>启用或关闭Windows Defender防火墙</code>选项</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/5.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/5.png" alt="5"></p>
 <ol>
 <li>勾选<code>启用 Windows Defender 防火墙</code> 选项，点击确定按钮</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/6.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/6.png" alt="6"></p>
 <ol>
 <li>点击<code>允许应用或功能通过 Windows Defender 防火墙</code>选项</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/7.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/7.png" alt="7"></p>
 <ol>
 <li>找到目标应用，把后面两个选项勾选上，然后点击确定即可</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/8.png" alt="pressure"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/8.png" alt="8"></p>
 <p>这里以 <code>WeChat</code> 为例，在<code>专用</code> 和 <code>公用</code>两个复选框上打钩，然后单击下面的确定按钮就可以了，如果列表中没有想要添加白名单的应用，还可以点击确定按钮上面的 <code>允许其他应用(R)</code>按钮来自己添加。</p>
 <h1 id="防火墙中的专用和公用"><a href="#防火墙中的专用和公用" class="headerlink" title="防火墙中的专用和公用"></a>防火墙中的专用和公用</h1><p>防火墙中的<code>专用</code> 和 <code>公用</code>是针对网络而言的，Windows中给出的说明：专用网络，例如家庭或工作网络；公用网络，比如机场和咖啡店中的网络。那么是不是当我在家里连网时就是专用网络，而在咖啡厅连接网络时就自动识别为公用网络呢？</p>
 <p>Windows当然没有这么智能，连接新的网络时属于什么类型的网络需要你自己选择，也就是说你自己要做出判断，如果是自己家的网络，基本是上独享的安全的，那就可以设置为专用网络，如果是连接的公共Wifi那必须要选择公用网络。</p>
@@ -662,6 +663,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2022/01/09/2021年终总结——脚踏实地，为下一次腾飞积蓄力量/" rel="prev" title="2021年终总结——脚踏实地，为下一次腾飞积蓄力量">
+                2021年终总结——脚踏实地，为下一次腾飞积蓄力量 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -762,7 +767,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-count">154</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -784,7 +789,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">357</span>
+                <span class="site-state-item-count">360</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -947,7 +952,7 @@
         <div class="copyright" >
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
