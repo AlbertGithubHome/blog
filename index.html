@@ -346,6 +346,308 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/01/23/linux环境下随时照看服务器进程的ps和top命令/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2022/01/23/linux环境下随时照看服务器进程的ps和top命令/" itemprop="url">linux环境下随时照看服务器进程的ps和top命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-01-23T23:40:05+08:00">
+                2022-01-23
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2022-01-28T00:53:44+08:00">
+                2022-01-28
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2022/01/23/linux环境下随时照看服务器进程的ps和top命令/" class="leancloud_visitors" data-flag-title="linux环境下随时照看服务器进程的ps和top命令">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,217(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在linux环境服务器下通常是不会安装图形界面的，这时如果想看程序是否在正常运行着，就不能像在windows上一样去查看任务管理器，而是需要通过命令来查询程序的进程运行情况，<code>ps</code> 就是一个查询linux环境下进程运行状态的命令，请注意这个可不是我们P图用的那个工具哦。</p>
+<h1 id="ps命令"><a href="#ps命令" class="headerlink" title="ps命令"></a>ps命令</h1><p><code>ps</code> 命令在man手册中描述是 “report a snapshot of the current processes”，其实它的作用就是上报程序运行时的一个快照。</p>
+<blockquote>
+<p>ps displays information about a selection of the active processes.  If you want a repetitive update of the selection and the displayed information, use top(1) instead.</p>
+</blockquote>
+<p>man手册中的这句话也很好理解，<code>ps</code> 命令执行一次就会显示一次所选进程的信息，若想重复刷新显示所选进程的信息，可以使用 <code>top</code> 命令，从作用上来看，可以简单理解为 <code>top</code> 命令是一个反复执行的 <code>ps</code> 命令。</p>
+<h2 id="语法格式"><a href="#语法格式" class="headerlink" title="语法格式"></a>语法格式</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps [options]</span><br></pre></td></tr></table></figure>
+<p><code>ps</code> 命令的格式很简单，但是为什么感觉同一个查询进程的需求，每个人写出来的命令都不太一样呢？其实这是因为有好几种语法规范，无论怎么写都可以，甚至交叉混合的写命令都是能识别的，比如最常见的查询所有进程有些人会写成 <code>ps -ef</code>，而有的人会写成 <code>ps aux</code>，这两种都是可以的。</p>
+<h2 id="语法规范"><a href="#语法规范" class="headerlink" title="语法规范"></a>语法规范</h2><p><code>ps -ef</code> 是使用了UNIX选项，是一种标准语法，而 <code>ps aux</code>使用了BSD选项，是一种BSD语法，另外还有一种加两个短横线的写法，例如 <code>ps --pid 3678</code>，这是一种GNU长选项。</p>
+<h2 id="常用的ps选项"><a href="#常用的ps选项" class="headerlink" title="常用的ps选项"></a>常用的ps选项</h2><ol>
+<li>显示所有的进程，一般搭配grep使用</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep processname</span><br></pre></td></tr></table></figure>
+<ol>
+<li>显示指定的列，可以使用 <code>-eo</code> 来指列名，我最常用的 cmd 是启动时的命令，lstart 是启动时的时间</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># ps -eo cmd,lstart | grep sshd</span></span><br><span class="line">usr/sbin/sshd -D           Tue Feb  9 11:13:55 2021</span><br></pre></td></tr></table></figure>
+<ol>
+<li>以树形结构显示进程</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -axjf</span><br></pre></td></tr></table></figure>
+<ol>
+<li>查询指定用户的进程</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -fu root</span><br></pre></td></tr></table></figure>
+<ol>
+<li>按cpu使用率降序排序</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -aux --sort -pcpu</span><br></pre></td></tr></table></figure>
+<ol>
+<li>按内存使用率降序排序</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -aux --sort +pmem</span><br></pre></td></tr></table></figure>
+<h2 id="ps命令的表头"><a href="#ps命令的表头" class="headerlink" title="ps命令的表头"></a>ps命令的表头</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># ps -aux --sort -pcpu</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root     17444  0.4  3.7 994796 71276 ?        Sl    2021 181:54 /usr/<span class="built_in">local</span>/qcloud/YunJing/YDEyes/YDService</span><br><span class="line">root      8572  0.3  0.7 614824 14416 ?        Sl   Jan20  21:35 barad_agent</span><br><span class="line">root         1  0.0  0.1 191084  3336 ?        Ss    2021  76:42 /usr/lib/systemd/systemd --switched-root --system --deserialize 22</span><br><span class="line">root         2  0.0  0.0      0     0 ?        S     2021   0:09 [kthreadd]</span><br><span class="line">root         4  0.0  0.0      0     0 ?        S&lt;    2021   0:00 [kworker/0:0H]</span><br><span class="line">root      1063  0.0  0.0 110208   792 tty1     Ss+   2021   0:00 /sbin/agetty --noclear tty1 linux</span><br><span class="line">root      1064  0.0  0.0 110208   772 ttyS0    Ss+   2021   0:00 /sbin/agetty --keep-baud 115200,38400,9600 ttyS0 vt220</span><br><span class="line">root      2388  0.0  0.1 157696  1952 pts/0    R+   00:27   0:00 ps -aux --sort -pcpu</span><br><span class="line">root         6  0.0  0.0      0     0 ?        S     2021  13:09 [ksoftirqd/0]</span><br></pre></td></tr></table></figure>
+<p>执行 <code>ps</code> 命令通常有以上几列：<code>USER</code>、<code>PID</code>、<code>%CPU</code>、<code>%MEM</code>、<code>VSZ</code>、<code>RSS</code>、<code>TTY</code>、<code>STAT</code>、<code>START</code>、<code>TIME</code>、<code>COMMAND</code></p>
+<p><code>USER</code>：进程所属用户名<br><code>PID</code>：进程ID<br><code>%CPU</code>：进程CPU使用率，注意所有CPU使用率加起来可以超过100%，如果有4个CPU，在不考虑多核的情况下，最大应该为400%<br><code>%MEM</code>：进程内存使用率，可以配合 <code>free -h</code> 命令使用<br><code>VSZ</code>：进程使用的虚拟内存量<br><code>RSS</code>：进程占用的固定内存量<br><code>TTY</code>：进程在哪个终端上运行，若与终端无关，则显示 <code>?</code><br><code>STAT</code>：进程启动的时间<br><code>START</code>：进程状态，是一个组合值，每个符号有单独含义，见下文<br><code>TIME</code>：进程使用CPU运行的时间<br><code>COMMAND</code>：启动进程时执行的命令的名称和参数</p>
+<h2 id="进程状态"><a href="#进程状态" class="headerlink" title="进程状态"></a>进程状态</h2><p>这一部分是要是对man手册的翻译内容</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Here are the different values that the s, <span class="built_in">stat</span> and state output specifiers (header <span class="string">"STAT"</span> or <span class="string">"S"</span>)</span><br><span class="line">    will display to describe the state of a process:</span><br><span class="line"></span><br><span class="line">           D    uninterruptible sleep (usually IO)</span><br><span class="line">           R    running or runnable (on run queue)</span><br><span class="line">           S    interruptible sleep (waiting <span class="keyword">for</span> an event to complete)</span><br><span class="line">           T    stopped by job control signal</span><br><span class="line">           t    stopped by debugger during the tracing</span><br><span class="line">           W    paging (not valid since the 2.6.xx kernel)</span><br><span class="line">           X    dead (should never be seen)</span><br><span class="line">           Z    defunct (<span class="string">"zombie"</span>) process, terminated but not reaped by its parent</span><br><span class="line"></span><br><span class="line">   For BSD formats and when the <span class="built_in">stat</span> keyword is used, additional characters may be displayed:</span><br><span class="line"></span><br><span class="line">           &lt;    high-priority (not nice to other users)</span><br><span class="line">           N    low-priority (nice to other users)</span><br><span class="line">           L    has pages locked into memory (<span class="keyword">for</span> real-time and custom IO)</span><br><span class="line">           s    is a session leader</span><br><span class="line">           l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads <span class="keyword">do</span>)</span><br><span class="line">           +    is <span class="keyword">in</span> the foreground process group</span><br></pre></td></tr></table></figure>
+<h3 id="常规状态码"><a href="#常规状态码" class="headerlink" title="常规状态码"></a>常规状态码</h3><p><code>D</code>: 无法中断的休眠状态（通常 IO 的进程）<br><code>R</code>: 正在运行可中在队列中可过行的；<br><code>S</code>: 处于休眠状态<br><code>T</code>: 停止或被追踪<br><code>W</code>: 进入内存交换（从内核2.6开始无效）<br><code>X</code>: 死掉的进程（基本很少见）<br><code>Z</code>: 僵尸进程，想杀死通常需要重启系统</p>
+<h3 id="BSD格式状态码"><a href="#BSD格式状态码" class="headerlink" title="BSD格式状态码"></a>BSD格式状态码</h3><p><code>&lt;</code>: 优先级高的进程<br><code>N</code>: 优先级较低的进程<br><code>L</code>: 有些页被锁进内存<br><code>s</code>: 一个会话进程的领导者（在它之下有子进程）<br><code>l</code>: 多进程的（使用 CLONE_THREAD, 类似 NPTL pthreads）<br><code>+</code>: 位于后台的进程组</p>
+<h2 id="进程相关的后续命令"><a href="#进程相关的后续命令" class="headerlink" title="进程相关的后续命令"></a>进程相关的后续命令</h2><ol>
+<li>查询进程的可执行文件所在位置</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/进程id</span><br></pre></td></tr></table></figure>
+<ol>
+<li>按进程名查询进程id</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pidof 进程名</span><br></pre></td></tr></table></figure>
+<h1 id="top命令"><a href="#top命令" class="headerlink" title="top命令"></a>top命令</h1><h2 id="语法格式-1"><a href="#语法格式-1" class="headerlink" title="语法格式"></a>语法格式</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top [options]</span><br></pre></td></tr></table></figure>
+<p><code>top</code> 命令的man手册巨长，它的作用是动态显示进程状态，实际上就是一份份静态数据间隔显示而已，虽然他也有很多参数，但是通常仅使用一个 <code>top</code> 命令即可。</p>
+<h2 id="常用的top选项和快捷键"><a href="#常用的top选项和快捷键" class="headerlink" title="常用的top选项和快捷键"></a>常用的top选项和快捷键</h2><ol>
+<li>显示top帮助</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top -hV</span><br></pre></td></tr></table></figure>
+<ol>
+<li>按照CPU使用率排序</li>
+</ol>
+<p>运行top命令后，输入大写字母P，也就是按快捷键 <code>ctrl+p</code></p>
+<ol>
+<li>按照内存使用率排序</li>
+</ol>
+<p>运行top命令后，输入大写字母M，也就是按快捷键 <code>ctrl+m</code></p>
+<ol>
+<li>展开多核cpu显示</li>
+</ol>
+<p>运行top命令后，输入数字1</p>
+<ol>
+<li>切换显示命令名称和完整命令行</li>
+</ol>
+<p>运行top命令后，输入小写字母c</p>
+<ol>
+<li>切换显示平均负载和启动时间信息</li>
+</ol>
+<p>运行top命令后，输入小写字母l</p>
+<h2 id="top命令的表头"><a href="#top命令的表头" class="headerlink" title="top命令的表头"></a>top命令的表头</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos ~]<span class="comment"># top</span></span><br><span class="line"></span><br><span class="line">top - 00:07:35 up 0 min,  0 users,  load average: 0.52, 0.58, 0.59</span><br><span class="line">Tasks:   4 total,   1 running,   3 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  3.4 us,  8.0 sy,  0.0 ni, 88.4 id,  0.0 wa,  0.2 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem :  8248540 total,  3284196 free,  4727868 used,   236476 buff/cache</span><br><span class="line">KiB Swap: 13107196 total, 13080444 free,    26752 used.  3379816 avail Mem</span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">    1 root      20   0    8940    316    272 S   0.0  0.0   0:00.15 init</span><br><span class="line">   10 root      20   0    8940    224    176 S   0.0  0.0   0:00.00 init</span><br><span class="line">   11 albert    20   0   15024   3568   3468 S   0.0  0.0   0:00.24 bash</span><br><span class="line">   38 albert    20   0   15900   1960   1420 R   0.0  0.0   0:00.04 top</span><br></pre></td></tr></table></figure>
+<p>执行 <code>top</code> 命令后默认有这些列 <code>PID</code>、<code>USER</code>、<code>PR</code>、<code>NI</code>、<code>VIRT</code>、<code>RES</code>、<code>SHR</code>、<code>S</code>、<code>%CPU</code>、<code>%MEM</code>、<code>TIME+</code>、<code>COMMAND</code>，它们的含义分表是：</p>
+<p><code>PID</code>：进程id<br><code>USER</code>：进程所有者用户名<br><code>PR</code>：优先级<br><code>NI</code>：NICE值.负值表示高优先级，正值表示低优先级<br><code>VIRT</code>：进程使用的虚拟内存总量，单位KB，VIRT=SWAP+RES<br><code>RES</code>：进程使用的未被换出的物理内存大小，单位KB，RES=CODE+DATA<br><code>SHR</code>：共享内存大小，单位KB，<br><code>S</code>：进程状态，D=不可中断的睡眠状态，R=运行，S=睡眠，T=跟踪/停止，Z=僵尸进程<br><code>%CPU</code>：CPU使用百分比<br><code>%MEM</code>、内存使用百分比<br><code>TIME+</code>：进程使用的CPU时间总计,单位1/100秒<br><code>COMMAND</code>：启动命令</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>显示所有进程可以使用 <code>ps -ef</code> 或者 <code>ps aux</code>，他们通常是后续过滤的第一步</li>
+<li>按cpu使用率降序排序使用 <code>ps aux --sort -pcpu</code>，按内存使用率降序排序使用 <code>ps aux --sort +pmem</code></li>
+<li><code>top</code> 命令结果的第一行是整体信息，包括了当前时间，系统已运行时间，登录用户数，系统负载等信息</li>
+<li><code>top</code> 命令中按大写字母 <code>P</code> 会按照CPU排序，按大写字母 <code>M</code> 会按照内存排序</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/122401193" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>小孩子才有对错，长大了都是利益。做选择的本质是分类，权衡利弊的过程是分类，趋利避害的行事生活更是分类，所以遇到选择我们才要考虑方方面面，因为这样我们才有足够的理由来把它归为有利的一类，还是有害的一类~</p>
+<p>2022-1-28 00:41:05</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/01/09/通过WindowsStore安装QuickLook小工具方便文件预览/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,7 +695,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2022-01-09T23:27:34+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2022-01-09T23:35:18+08:00">
                 2022-01-09
               </time>
             
@@ -447,7 +749,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,943(字)</span>
+            <span class="post-count">2,960(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2286,222 +2588,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/10/31/MD5是用来加密的吗？BCrypt又是什么呢？/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/10/31/MD5是用来加密的吗？BCrypt又是什么呢？/" itemprop="url">MD5是用来加密的吗？BCrypt又是什么呢？</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-10-31T18:29:03+08:00">
-                2021-10-31
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-11-01T00:25:41+08:00">
-                2021-11-01
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/加密与认证/" itemprop="url" rel="index">
-                    <span itemprop="name">加密与认证</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/10/31/MD5是用来加密的吗？BCrypt又是什么呢？/" class="leancloud_visitors" data-flag-title="MD5是用来加密的吗？BCrypt又是什么呢？">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,810(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">6(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近经常看到一种关于 <code>MD5</code> 的说法，比如某某系统的登录模块使用了 <code>MD5</code> 加密算法，保证了用户密码的安全。那么 <code>MD5</code> 究竟是不是一种加密算法呢？从概念上来说『加密』对应的是『解密』，我们把数据采用某种方式加密之后，可以在之后的某一时刻进行解密来获得原始数据，照此观点来说 <code>MD5</code> 并不是一种加密算法，它只能把原文加密成密文，而不能将密文解密成原文。但是 <code>MD5</code> 确实把明文变成了不容易被破解的密文，达到了 “加密” 的目的，好像说它可以用来加密勉强也可以。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/10/31/MD5是用来加密的吗？BCrypt又是什么呢？/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2552,7 +2638,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">154</span>
+                <span class="site-state-item-count">155</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2574,7 +2660,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">360</span>
+                <span class="site-state-item-count">362</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
