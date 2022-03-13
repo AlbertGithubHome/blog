@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[总结下各种常见树形结构的定义及特点（二叉树、AVL树、红黑树、Trie树、B树、B+树）]]></title>
+    <url>%2Fblog%2F2022%2F03%2F13%2F%E6%80%BB%E7%BB%93%E4%B8%8B%E5%90%84%E7%A7%8D%E5%B8%B8%E8%A7%81%E6%A0%91%E5%BD%A2%E7%BB%93%E6%9E%84%E7%9A%84%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%89%B9%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[前言树形结构相比于数组、链表、队列和栈等线性结构要复杂的多，因为树本身的概念就比较多，通过设定一些条件和限制就可以定义出一种新类型的树，结果造成了树的“变化多端”，所以要学习一种树要从树的定义入手，然后根据定义和特点来熟悉各种树适合的场景，这样就可以做到“树尽其用”目的了。 一棵普通的树树形结构和现实中的树很像，只不过现实中的树根长在地上，而树形结构再展示的时候一般把树根画在“天上”，树形结构中数据元素之间存在着“一对多”的关系，具有以下特点： 没有父节点的节点称为根节点 除空树外每棵树只有一个根节点 每个节点都只有有限个子节点或无子节点 每个非根节点有且只有一个父节点 树里面没有环路，如果从一个节点出发，除非往返，否则无法回到起点 相关术语 根节点：最顶层的节点就是根结点，它是整棵树的源头 叶子节点：在树下端的节点，就是其子节点个数为0的节点 节点的度：指定节点有几个分叉就说这个节点的度是几 树的度：只看根结点，树的度等价于根节点的度 节点高度：指从这个节点到叶子节点的距离（一共经历了几个节点） 节点深度：指从这个节点到根节点的距离（一共经历了几个节点） 树的高度：指所有节点高度的最大值 树的深度：指所有节点深度的最大值 节点的层：从根节点开始，假设根节点为第1层，根节点的子节点为第2层，依此类推 二叉树二叉树是对普通树形结构进行限定得到的一种特殊的树，规定树中节点的度不大于2，当节点有两个子节点，也就是有两颗子树时，它们有左右之分，分别被称为左子树和右子树，左子树和右子树又同样都是二叉树。 二叉树性质 二叉树的第i层上至多有2^(i-1)（i≥1）个节点 深度为h的二叉树中至多含有2^h-1个节点 若在任意一棵二叉树中，有n个叶子节点，有m个度为2的节点，则必有n=m+1 具有n个节点的满二叉树深为log(2n+1) 若对一棵有n个节点的完全二叉树进行顺序编号（1≤i≤n），那么，对于编号为i（i≥1）的节点 当i=1时，该节点为根，它无双亲节点 当i&gt;1时，该节点的双亲节点的编号为i/2 若2i≤n，则有编号为2i的左节点，否则没有左节点 若2i+1≤n，则有编号为2i+1的右节点，否则没有右节点 二叉树特例完美二叉树（Perfect Binary Tree）：除了叶子结点之外的每一个结点都有两个孩子，每一层都被完全填充 完全二叉树（Complete Binary Tree）：除了最后一层之外的其他每一层都被完全填充，并且所有结点都保持向左对齐 完满二叉树（Full Binary Tree）： 除了叶子结点之外的每一个结点都有两个孩子结点 二叉查找树二叉查找树是一种特殊的二叉树，又称为排序二叉树、二叉搜索树、二叉排序树等等，它实际上是数据域有序的二叉树，即对树上的每个结点，都满足其左子树上所有结点的数据域均小于或等于根结点的数据域，右子树上所有结点的数据域均大于根结点的数据域。 AVL树平衡二叉树是由前苏联的两位数学家G.M.Adelse-Velskil和E.M.Landis联合提出，因此一般也称作AVL树，AVL树本质还是一棵二叉查找树，只是在其基础上增加了“平衡”的要求，需保证其左子树与右子树的高度之差的绝对值不超过1，其中左子树与右子树的高度因子之差称为平衡因子。 对于AVL树，不管我们是执行插入还是删除操作，只要不满足上面的条件，就要通过旋转来保持平衡。由于旋转比较耗时，所以AVL树适合用于插入与删除次数比较少，但查找多的情况。 特点及应用所有节点的左右子树高度差不超过1，广泛用于Windows NT内核中 红黑树红黑树也是一颗二叉查找树，需要为每个节点存储节点的颜色，可以是红或黑。通过对任何一条从根到叶子的路径上各个节点着色的方式的限制，来确保没有一条路径会比其它路径长出两倍，因此，红黑树是一种弱平衡二叉树。 由于是弱平衡二叉树，那么在相同的节点情况下，AVL树的高度小于等于红黑树的高度，相对于要求严格的AVL树来说，它的旋转次数少，所以对于插入，删除操作较多的情况下，用红黑树的查找效率会更高一些。 特点 每个节点非红即黑 根节点是黑的 每个叶子节点（叶子节点即树尾端NULL节点）都是黑的 每条路径都包含相同的黑节点 如果一个节点是红的，那么它的两儿子都是黑的 对于任意节点而言，其到叶子点的每条路径都包含相同数目的黑节点 应用 广泛用于C++的STL中，如 map 和 set 是用红黑树实现的 Linux的进程调度用红黑树管理进程控制块，进程的虚拟内存空间都存储在一颗红黑树上，每个虚拟内存空间都对应红黑树的一个节点 IO多路复用的 epoll 采用红黑树组织管理socket fd，以支持快速的增删改查 Nginx中用红黑树管理定时器，可以快速得到距离当前最小的定时器 Java的TreeMap的用红黑树实现 Trie树Trie树又被称为前缀树、字典树是一种用于快速检索的多叉树结构。字典树把字符串看成字符序列，根据字符串中字符序列的先后顺序构造从上到下的树结构，树结构中的每一条边都对应着一个字符。字典树上存储的字符串被视为从根节点到某个节点之间的一条路径，并在终点节点上做个标记”该节点对应词语的结尾”，正因为有终点节点的存在，字典树不仅可以实现简单的存储字符串，还可以实现字符串的映射，只需要将相对应的值悬挂在终点节点上即可。 特点及应用Trie的核心思想是空间换时间，有如下基本性质： 根节点不包含字符，除根节点外每一个节点都只包含一个字符 从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串 每个节点的所有子节点包含的字符都不相同 字典树能够利用字符串中的公共前缀，这样可能会节省内存，利用字符串的公共前缀可以减少查询字符串的时间，能够最大限度的减少无谓的字符串比较，同时在查询的过程中不需要预知待查询字符串的长度，沿着字典树的边进行匹配，查询效率比较高，但是如果系统中存在大量字符串并且这些字符串基本没有前缀，相应的字典树内存消耗也会很大。正是由于字典树的这些特点，字典树被用于统计、排序和保存大量的字符串（不仅限于字符串），还可用于搜索引擎的关键词提示功能。 B树B树是一个多路平衡查找树，B树的出现是为了弥合不同的存储级别之间的访问速度上的巨大差异，实现高效的I/O。平衡二叉树的查找效率是非常高的，并可以通过降低树的深度来提高查找的效率。但是当数据量非常大，树的存储的元素数量是有限的，这样会导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下，同时数据量过大会导致内存空间不够容纳平衡二叉树所有结点的情况，而B树是解决这个问题的很好的结构。 要想了解B树需要了解一个很重要的概念，B树中所有节点的度的最大值称为B树的阶，记为m，这是一个跟重要值，也就是说m阶B树指的是节点度最大为m的B树。 定义及特点 每个节点最多只有m个子节点 根结点的儿子数为[2, m] 除根结点以外的非叶子结点的儿子数为[m/2, m]，向上取整 非叶子结点的关键字个数=子节点数-1 所有叶子都出现在同一层 k个关键字把节点拆成k+1段，分别指向k+1个儿子，同时满足查找树的大小关系 非叶子节点中不仅包含索引，也会包含数据 应用B树是一种平衡的多路查找树，主要用作文件的索引。其优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就会成功并结束查询，有很多基于频率的搜索是选用B树，越频繁查询的结点越往根上走，前提是需要对查询做统计，而且要对key做一些变化。 B+树B+树是b树的一种变体，查询性能更好，m阶的b+树具有以下特征： 有n棵子树的非叶子结点中含有n个关键字（b树是n-1个），这些关键字不保存数据，只用来索引，所有数据都保存在叶子节点（b树是每个关键字都保存数据） 所有的叶子结点中包含了全部关键字的信息，及指向含这些关键字记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接 所有的非叶子结点可以看成是索引部分，结点中仅含其子树中的最大（或最小）关键字 通常在b+树上有两个头指针，一个指向根结点，一个指向关键字最小的叶子结点 同一个数字会在不同节点中重复出现，根节点的最大元素就是b+树的最大元素 B+树的优势及应用 B+tree的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对B树更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多，相对来说IO读写次数也就降低了。 由于非叶子结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。 B+树支持范围遍历，只要遍历叶子节点就可以实现整棵树的遍历，而在数据库中基于范围的查询是非常频繁的，这一点要明显由于B树。 由于拥有以上特点，B+广泛应用于文件存储系统以及数据库系统中。 总结 树是一种常见的非线性结构，拥有众多变种 二叉树是树形结构的一大类，每个节点最多拥有两个子节点树，左右子树顺序固定 AVL树是平衡二叉树，任意节点的左右子树高度差最大为1 红黑树是弱平衡二叉树，每个节点记录的自己的颜色，用来控制左右子树高度不大于2倍 Trie树又叫字典树，是一种用于快速检索的多叉树结构 B树是一种多路平衡树，用于提高了磁盘IO性能，多用于文件系统的索引 B+树是对B树的改进，仅在叶子节点存储数据，相比于B树更加矮胖，支持范围遍历 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 世间从来没有什么『感同身受』，每个人面对相同的事件和意外都会因为家庭背景、个人经历的差异而有不同的反应，更不要说那些没经历过的人，即使你曾经真的经历过类似的事情，那么在被漫长的时间洗礼之后，一切都会淡化许多，所以“未经他人苦，莫劝他人善。你若经我苦，未必有我善”~ 2022-3-13 22:47:31]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>树</tag>
+        <tag>树的特点</tag>
+        <tag>红黑树</tag>
+        <tag>字典树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[简单梳理下git的使用感受，思考git中最重要的是什么]]></title>
+    <url>%2Fblog%2F2022%2F02%2F13%2F%E7%AE%80%E5%8D%95%E6%A2%B3%E7%90%86%E4%B8%8Bgit%E7%9A%84%E4%BD%BF%E7%94%A8%E6%84%9F%E5%8F%97%EF%BC%8C%E6%80%9D%E8%80%83git%E4%B8%AD%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%2F</url>
+    <content type="text"><![CDATA[前言工作中使用git是从两年前开始的，之前一直add -&gt; commit -&gt;push常规操作，真正在工作中使用之后才渐渐理解了git的强大，这种理解是建立在不断解决问题的基础上的，不断的处理遇到的问题，就像升级打怪一样，对git的理解也越来越全面。因为在使用git之前一直用svn作为版本控制工具，所以对git和svn的区别也有了自己的认识，关于两者的区别网上的文章一搜一大把，我就不重复了，我仅仅从自己的理解来描述下两者的不同。 git和svn关于git和svn的区别，网上的文章确实很多，大多数会提到分布式、存储方式、版本号、完整性等方面，而我今天要写的区别是两者提交记录的结构。 既然作为版本控制工具，那么每次历史提交都必须可以追溯和回退，在svn中提交记录时线性的，以时间轴为参考基准，所有提交按照时间先后排列，因为svn记录必须提交到服务器才能生效，所有服务器相当于各个svn客户端的总控，各个svn提交到服务器时线性排列，且必须将本地文件状态更新成和服务器相同时才能修改提交。 正因为在svn中有服务器负责总控操作，所以能保证时间最新的提交记录就是整个svn最新的状态，提交记录不依赖客户端时间，完全由服务器时间进行排序。 在git中没有这样的总控服务器，虽然一般情况下每个代码库都会有统一的托管服务器，但是它的作用任何一个git客户端都能代替，因为git是可以离线提交的，托管服务器只是我们用来存储代码的地方，与svn服务器按时间排序的做法大不相同。 git的提交记录通常是一个树形结构，个别时候会变成有“起点”和“终点”的网状结构，在git中时间只具备参考意义，并不能决定提交记录的先后，如果你对这一点还心存怀疑，可能你是个svn的重度用户，一时还没理解git操作原理。 对于这个问题可以举个例子，操作同一个文件，在svn中2月13日修改一次，2月14日修改一次，那么2月15日看这个文件一定是2月14日修改后的状态；而在git中，同样是那个文件分别在2月13日和2月14日修改一次，2月15日文件的状态取决了两次修改是否在同一分支，以及合并时是怎样处理的，这种错位随着时间的延长和多分支的合并，往往对时间的依赖“微乎其微”，此时再也不能用时间来衡量提交的先后了。 如果一开始就是git，上面提到的这个问题还不太明显，但是用惯了svn再使用git，处理历史回溯问题时往往容易找错方向，经常通过时间过滤出来的内容并不是自己想要的，这一点在实际操作中需要注意。 git最重要的是什么相信这个问题每个人都有自己的答案，有人认为是分布式，有人认为是切换分支很方便，而我的答案是 commit 的设计哲学，我觉得这是git中的精髓，git中的commit就像一个链表中的元素，用来将自身和其他的commit串联到一起，形成branch、tag、HEAD 等等。 我们可以通过 git log 命令来看一条 commit： 123456$ git log -1commit 7bf665f125a4771db095c83a7ad6ed46692cd314 (HEAD -&gt; 6.0, tag: 6.0.6, origin/6.0)Author: Oran Agra &lt;oran@redislabs.com&gt;Date: Sun Jul 19 14:00:20 2020 +0300 Redis 6.0.6. 这条commit id 为 7bf665f125a4771db095c83a7ad6ed46692cd314，这在整个库是惟一的，通过 git log 可以看到这次提交的时间、作者、简要说明等信息，那么这次提交和库是什么关系呢？ 通过括号中的内容可以知道当前提交是这个库的6.0分支，同时为标签6.0.6，也与远端的6.0分支同步。 使用 git cat-file 命令可以进一步查询这个commit的组织形式： 1234567$ git cat-file -p HEADtree c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3parent a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957dauthor Oran Agra &lt;oran@redislabs.com&gt; 1595156420 +0300committer Oran Agra &lt;oran@redislabs.com&gt; 1595268506 +0300Redis 6.0.6. 可以发现这次提交包含了 tree c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3，同时它的父提交就是 parent a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957d，有了这两个id就可以递推出当前版本内容和这个历史记录。 通过 tree c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3 可以递归找出当前版本中的所有文件： 12345678910111213141516171819202122$ git cat-file -p c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3040000 tree 6608d88fe6a7a25b137b869040103ab261310da4 .github100644 blob e445fd2017bb0c13af2f40cd7f24afefdb603ade .gitignore100644 blob 484aeb62186033d32e9a4bdf12434cb6b8c56fb5 00-RELEASENOTES100644 blob 7af2593407805c308cc25739ac9c6520031de60f BUGS100644 blob 000edbeaf0270bf3b9e457274ab092b02b176b84 CONTRIBUTING100644 blob a381681a1c2524ed586c6a87dfeb9ccdf1e86ded COPYING100644 blob 3083f1afd50c34e1139ab1577510a17e968b0ed4 INSTALL100644 blob 3727894624fdabf72995e6f94998a2cad359f760 MANIFESTO100644 blob e614ede891f2dd183a3ae41ea1ac3b63fe2e7634 Makefile100644 blob 55537e01fe862dd200ebe1078033122facfc854e README.md100644 blob 2d020d0ceb0ddc7fd0bb2a6185e57a9afd5aef79 TLS.md040000 tree 43ccdd93a80b35e03160d9db34f1e844a62a74b4 deps100644 blob 8c53f015a20934bdb41c77152fd32a557d719fae redis.conf100755 blob ade1bd09a539ecd8dcdd09e59a658539dab9bce6 runtest100755 blob 27829a5fe8afacf893fe9bafc4245971ce375d6c runtest-cluster100755 blob f6cc0a2589dea0f95b77b226e54200a29b8237ae runtest-moduleapi100755 blob 3fb1ef61561289b2bf8622e49645f66dab83eeea runtest-sentinel100644 blob 4ca5e5f8fc5abe2938c66a6851bba0c90058620f sentinel.conf040000 tree e3b3338a7c60eafb3d9c19d3784e2482beea1d4b src040000 tree af5de133fa0a0da30fe487be40783ef9644fba6d tests040000 tree 5a82556097d23f0c16a8e5432d464f2ab434fd2a utils 通过 parent a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957d 可以找出上一次提交，进而递归找出所有的提交，要注意有些commit的parent不止一个： 1234567$ git cat-file -p a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957dtree 1adcf548620c6134f7d5fd072c05b981d0f36118parent e15528bf1da1f1232fd08801ad382c915be94662author Oran Agra &lt;oran@redislabs.com&gt; 1595162001 +0300committer Oran Agra &lt;oran@redislabs.com&gt; 1595268506 +0300Run daily CI on PRs to release a branch 这个commit的设计真的很神奇，一个个commit串起来就是一个branch，本质来讲branch只是commit的一个别名，包括HEAD也是，而 tag 也是对commit的一个描述，在不加描述信息时和commit也是一样的。 123456789101112131415$ git cat-file -p 6.0.6tree c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3parent a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957dauthor Oran Agra &lt;oran@redislabs.com&gt; 1595156420 +0300committer Oran Agra &lt;oran@redislabs.com&gt; 1595268506 +0300Redis 6.0.6.$ git cat-file -p HEADtree c3d4b2bcd934be7e4ed98edac5aa7e9c054503c3parent a5696bdf4f2687ab45f633ccb7cdc4ee9c2f957dauthor Oran Agra &lt;oran@redislabs.com&gt; 1595156420 +0300committer Oran Agra &lt;oran@redislabs.com&gt; 1595268506 +0300Redis 6.0.6. 所以理解了commit的定位以后，所有切换分支、切换tag、操作HEAD，本质上都是在对commit进行操作，这些操作的参数完全可以用commit id来替换HEAD、branch name、tag name等等。 总结 svn的提交记录是一个按时间排序的线性结构，git的提交记录是一个参考时间的树状结构 git记录中时间先后不能代表commit修改的先后，回溯查找时要注意这一点才能解释很多疑惑 git中的commit我认为是它的精髓，通过commit的串联和别名，形成分支、标签、HEAD等多种元素，隐藏了细节，方便了操作 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 什么才是精彩的人生？扬在脸上的自信、长在心底的善良、融进血里的骨气、刻进生命里的坚强~ 2022-2-13 23:19:05]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>branch</tag>
+        <tag>stash</tag>
+        <tag>commit</tag>
+        <tag>tag</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[linux环境下随时照看服务器进程的ps和top命令]]></title>
     <url>%2Fblog%2F2022%2F01%2F23%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E9%9A%8F%E6%97%B6%E7%85%A7%E7%9C%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9B%E7%A8%8B%E7%9A%84ps%E5%92%8Ctop%E5%91%BD%E4%BB%A4%2F</url>
     <content type="text"><![CDATA[前言在linux环境服务器下通常是不会安装图形界面的，这时如果想看程序是否在正常运行着，就不能像在windows上一样去查看任务管理器，而是需要通过命令来查询程序的进程运行情况，ps 就是一个查询linux环境下进程运行状态的命令，请注意这个可不是我们P图用的那个工具哦。 ps命令ps 命令在man手册中描述是 “report a snapshot of the current processes”，其实它的作用就是上报程序运行时的一个快照。 ps displays information about a selection of the active processes. If you want a repetitive update of the selection and the displayed information, use top(1) instead. man手册中的这句话也很好理解，ps 命令执行一次就会显示一次所选进程的信息，若想重复刷新显示所选进程的信息，可以使用 top 命令，从作用上来看，可以简单理解为 top 命令是一个反复执行的 ps 命令。 语法格式1ps [options] ps 命令的格式很简单，但是为什么感觉同一个查询进程的需求，每个人写出来的命令都不太一样呢？其实这是因为有好几种语法规范，无论怎么写都可以，甚至交叉混合的写命令都是能识别的，比如最常见的查询所有进程有些人会写成 ps -ef，而有的人会写成 ps aux，这两种都是可以的。 语法规范ps -ef 是使用了UNIX选项，是一种标准语法，而 ps aux使用了BSD选项，是一种BSD语法，另外还有一种加两个短横线的写法，例如 ps --pid 3678，这是一种GNU长选项。 常用的ps选项 显示所有的进程，一般搭配grep使用 1ps aux | grep processname 显示指定的列，可以使用 -eo 来指列名，我最常用的 cmd 是启动时的命令，lstart 是启动时的时间 12[root@VM-0-3-centos ~]# ps -eo cmd,lstart | grep sshdusr/sbin/sshd -D Tue Feb 9 11:13:55 2021 以树形结构显示进程 1ps -axjf 查询指定用户的进程 1ps -fu root 按cpu使用率降序排序 1ps -aux --sort -pcpu 按内存使用率降序排序 1ps -aux --sort +pmem ps命令的表头1234567891011[root@VM-0-3-centos ~]# ps -aux --sort -pcpuUSER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMANDroot 17444 0.4 3.7 994796 71276 ? Sl 2021 181:54 /usr/local/qcloud/YunJing/YDEyes/YDServiceroot 8572 0.3 0.7 614824 14416 ? Sl Jan20 21:35 barad_agentroot 1 0.0 0.1 191084 3336 ? Ss 2021 76:42 /usr/lib/systemd/systemd --switched-root --system --deserialize 22root 2 0.0 0.0 0 0 ? S 2021 0:09 [kthreadd]root 4 0.0 0.0 0 0 ? S&lt; 2021 0:00 [kworker/0:0H]root 1063 0.0 0.0 110208 792 tty1 Ss+ 2021 0:00 /sbin/agetty --noclear tty1 linuxroot 1064 0.0 0.0 110208 772 ttyS0 Ss+ 2021 0:00 /sbin/agetty --keep-baud 115200,38400,9600 ttyS0 vt220root 2388 0.0 0.1 157696 1952 pts/0 R+ 00:27 0:00 ps -aux --sort -pcpuroot 6 0.0 0.0 0 0 ? S 2021 13:09 [ksoftirqd/0] 执行 ps 命令通常有以上几列：USER、PID、%CPU、%MEM、VSZ、RSS、TTY、STAT、START、TIME、COMMAND USER：进程所属用户名PID：进程ID%CPU：进程CPU使用率，注意所有CPU使用率加起来可以超过100%，如果有4个CPU，在不考虑多核的情况下，最大应该为400%%MEM：进程内存使用率，可以配合 free -h 命令使用VSZ：进程使用的虚拟内存量RSS：进程占用的固定内存量TTY：进程在哪个终端上运行，若与终端无关，则显示 ?STAT：进程启动的时间START：进程状态，是一个组合值，每个符号有单独含义，见下文TIME：进程使用CPU运行的时间COMMAND：启动进程时执行的命令的名称和参数 进程状态这一部分是要是对man手册的翻译内容 1234567891011121314151617181920Here are the different values that the s, stat and state output specifiers (header "STAT" or "S") will display to describe the state of a process: D uninterruptible sleep (usually IO) R running or runnable (on run queue) S interruptible sleep (waiting for an event to complete) T stopped by job control signal t stopped by debugger during the tracing W paging (not valid since the 2.6.xx kernel) X dead (should never be seen) Z defunct ("zombie") process, terminated but not reaped by its parent For BSD formats and when the stat keyword is used, additional characters may be displayed: &lt; high-priority (not nice to other users) N low-priority (nice to other users) L has pages locked into memory (for real-time and custom IO) s is a session leader l is multi-threaded (using CLONE_THREAD, like NPTL pthreads do) + is in the foreground process group 常规状态码D: 无法中断的休眠状态（通常 IO 的进程）R: 正在运行可中在队列中可过行的；S: 处于休眠状态T: 停止或被追踪W: 进入内存交换（从内核2.6开始无效）X: 死掉的进程（基本很少见）Z: 僵尸进程，想杀死通常需要重启系统 BSD格式状态码&lt;: 优先级高的进程N: 优先级较低的进程L: 有些页被锁进内存s: 一个会话进程的领导者（在它之下有子进程）l: 多进程的（使用 CLONE_THREAD, 类似 NPTL pthreads）+: 位于后台的进程组 进程相关的后续命令 查询进程的可执行文件所在位置 1cat /proc/进程id 按进程名查询进程id 1pidof 进程名 top命令语法格式1top [options] top 命令的man手册巨长，它的作用是动态显示进程状态，实际上就是一份份静态数据间隔显示而已，虽然他也有很多参数，但是通常仅使用一个 top 命令即可。 常用的top选项和快捷键 显示top帮助 1top -hV 按照CPU使用率排序 运行top命令后，输入大写字母P，也就是按快捷键 ctrl+p 按照内存使用率排序 运行top命令后，输入大写字母M，也就是按快捷键 ctrl+m 展开多核cpu显示 运行top命令后，输入数字1 切换显示命令名称和完整命令行 运行top命令后，输入小写字母c 切换显示平均负载和启动时间信息 运行top命令后，输入小写字母l top命令的表头12345678910111213[root@VM-0-3-centos ~]# toptop - 00:07:35 up 0 min, 0 users, load average: 0.52, 0.58, 0.59Tasks: 4 total, 1 running, 3 sleeping, 0 stopped, 0 zombie%Cpu(s): 3.4 us, 8.0 sy, 0.0 ni, 88.4 id, 0.0 wa, 0.2 hi, 0.0 si, 0.0 stKiB Mem : 8248540 total, 3284196 free, 4727868 used, 236476 buff/cacheKiB Swap: 13107196 total, 13080444 free, 26752 used. 3379816 avail Mem PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND 1 root 20 0 8940 316 272 S 0.0 0.0 0:00.15 init 10 root 20 0 8940 224 176 S 0.0 0.0 0:00.00 init 11 albert 20 0 15024 3568 3468 S 0.0 0.0 0:00.24 bash 38 albert 20 0 15900 1960 1420 R 0.0 0.0 0:00.04 top 执行 top 命令后默认有这些列 PID、USER、PR、NI、VIRT、RES、SHR、S、%CPU、%MEM、TIME+、COMMAND，它们的含义分表是： PID：进程idUSER：进程所有者用户名PR：优先级NI：NICE值.负值表示高优先级，正值表示低优先级VIRT：进程使用的虚拟内存总量，单位KB，VIRT=SWAP+RESRES：进程使用的未被换出的物理内存大小，单位KB，RES=CODE+DATASHR：共享内存大小，单位KB，S：进程状态，D=不可中断的睡眠状态，R=运行，S=睡眠，T=跟踪/停止，Z=僵尸进程%CPU：CPU使用百分比%MEM、内存使用百分比TIME+：进程使用的CPU时间总计,单位1/100秒COMMAND：启动命令 总结 显示所有进程可以使用 ps -ef 或者 ps aux，他们通常是后续过滤的第一步 按cpu使用率降序排序使用 ps aux --sort -pcpu，按内存使用率降序排序使用 ps aux --sort +pmem top 命令结果的第一行是整体信息，包括了当前时间，系统已运行时间，登录用户数，系统负载等信息 top 命令中按大写字母 P 会按照CPU排序，按大写字母 M 会按照内存排序 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 小孩子才有对错，长大了都是利益。做选择的本质是分类，权衡利弊的过程是分类，趋利避害的行事生活更是分类，所以遇到选择我们才要考虑方方面面，因为这样我们才有足够的理由来把它归为有利的一类，还是有害的一类~ 2022-1-28 00:41:05]]></content>
@@ -135,10 +164,10 @@
         <category>数据结构</category>
       </categories>
       <tags>
+        <tag>树</tag>
         <tag>WPL</tag>
         <tag>哈夫曼树</tag>
         <tag>带权路径长度</tag>
-        <tag>树</tag>
       </tags>
   </entry>
   <entry>
@@ -205,9 +234,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -219,9 +248,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -376,8 +405,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>chmod</tag>
+        <tag>文件</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -463,9 +492,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -563,8 +592,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -684,8 +713,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -698,8 +727,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1043,8 +1072,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>asm</tag>
       </tags>
   </entry>
