@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[epoll的LT模式（水平触发）和ET模式（边沿触发）]]></title>
+    <url>%2Fblog%2F2022%2F03%2F27%2Fepoll%E7%9A%84LT%E6%A8%A1%E5%BC%8F%EF%BC%88%E6%B0%B4%E5%B9%B3%E8%A7%A6%E5%8F%91%EF%BC%89%E5%92%8CET%E6%A8%A1%E5%BC%8F%EF%BC%88%E8%BE%B9%E6%B2%BF%E8%A7%A6%E5%8F%91%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[前言epoll的触发模式是个引发讨论非常多的话题，网络上这方面总结的文章也很多，首先从名字上就不是很统一，LT模式常被称为水平触发、电平触发、条件触发，而ET模式常被称为边缘触发、边沿触发等，这些都是从英文翻译过来的，只不过翻译的时候有些差异，LT全称 level-triggered，ET全称 edge-triggered。 虽然这个知识点热度很高，但很多人对于它的理解总是差那么一点，特别是在面试的时候，很多面试者总是处于一种回忆和背诵的状态，其实这两种模式真的不需要去死记硬背，下面说说我个人对这两种模式的理解和记忆方法。 名称的记忆每次提到ET（边沿触发）首先映入我脑海的是大学里《数字逻辑电路》这门课程，里面会提到低电平、高电平，当电平从低到高时会有一个上升沿，而电平从高到低时会有一个下降沿，这个“沿”就是边沿触发时提到的“边沿”，跟马路边的马路牙子是同一种概念，也就是指状态变化的时候。提起上升沿和下降沿我还是印象很深的，当时我可是占用了好几节课的时间用Verilog语言写了一个显示“HELLO WORLD”的仿真波形，依靠的就是电平变化中的“沿”。 状态变化LT模式和ET模式可以类比电平变化来学习，但是在实际应用中概念却不是完全一样的，在epoll的应用中涉及到关于IO的读写，而读写的状态变化有哪些呢？可读、不可读、可写、不可写，其实就是这四种状态而已，以socket为例。 可读：socket上有数据不可读：socket上没有数据了可写：socket上有空间可写不可写：socket上无空间可写 对于水平触发模式，一个事件只要有，就会一直触发。对于边缘触发模式，只有一个事件从无到有才会触发。 LT模式对于读事件 EPOLLIN，只要socket上有未读完的数据，EPOLLIN 就会一直触发；对于写事件 EPOLLOUT，只要socket可写（一说指的是 TCP 窗口一直不饱和，我觉得是TCP缓冲区未满时，这一点还需验证），EPOLLOUT 就会一直触发。 在这种模式下，大家会认为读数据会简单一些，因为即使数据没有读完，那么下次调用epoll_wait()时，它还会通知你在上没读完的文件描述符上继续读，也就是人们常说的这种模式不用担心会丢失数据。 而写数据时，因为使用 LT 模式会一直触发 EPOLLOUT 事件，那么如果代码实现依赖于可写事件触发去发送数据，一定要在数据发送完之后移除检测可写事件，避免没有数据发送时无意义的触发。 ET模式对于读事件 EPOLLIN，只有socket上的数据从无到有，EPOLLIN 才会触发；对于写事件 EPOLLOUT，只有在socket写缓冲区从不可写变为可写，EPOLLOUT 才会触发（刚刚添加事件完成调用epoll_wait时或者缓冲区从满到不满） 这种模式听起来清爽了很多，只有状态变化时才会通知，通知的次数少了自然也会引发一些问题，比如触发读事件后必须把数据收取干净，因为你不一定有下一次机会再收取数据了，即使不采用一次读取干净的方式，也要把这个激活状态记下来，后续接着处理，否则如果数据残留到下一次消息来到时就会造成延迟现象。 这种模式下写事件触发后，后续就不会再触发了，如果还需要下一次的写事件触发来驱动发送数据，就需要再次注册一次检测可写事件。 数据的读取和发送关于数据的读比较好理解，无论是LT模式还是ET模式，监听到读事件从socket开始读数据就好了，只不过读的逻辑有些差异，LT模式下，读事件触发后，可以按需收取想要的字节数，不用把本次接收到的数据收取干净，ET模式下，读事件触发后通常需要数据一次性收取干净。 而数据的写不太容易理解，因为数据的读是对端发来数据导致的，而数据的写其实是自己的逻辑层触发的，所以在通过网络发数据时通常都不会去注册监可写事件，一般都是调用 send 或者 write 函数直接发送，如果发送过程中， 函数返回 -1，并且错误码是 EWOULDBLOCK 表明发送失败，此时才会注册监听可写事件，并将剩余的服务存入自定义的发送缓冲区中，等可写事件触发后再接着将发送缓冲区中剩余的数据发送出去。 代码实践基础代码以下为一个epoll触发模式测试的基础代码，也不算太长，直接拿来就可以测试： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158#include &lt;sys/socket.h&gt; //for socket#include &lt;arpa/inet.h&gt; //for htonl htons#include &lt;sys/epoll.h&gt; //for epoll_ctl#include &lt;unistd.h&gt; //for close#include &lt;fcntl.h&gt; //for fcntl#include &lt;errno.h&gt; //for errno#include &lt;iostream&gt; //for coutclass fd_object&#123;public: fd_object(int fd) &#123; listen_fd = fd; &#125; ~fd_object() &#123; close(listen_fd); &#125;private: int listen_fd;&#125;;/*./epoll for lt modeand./epoll 1 for et mode*/int main(int argc, char* argv[])&#123; //create a socket fd int listen_fd = socket(AF_INET, SOCK_STREAM, 0); if (listen_fd == -1) &#123; std::cout &lt;&lt; "create listen socket fd error." &lt;&lt; std::endl; return -1; &#125; fd_object obj(listen_fd); //set socket to non-block int socket_flag = fcntl(listen_fd, F_GETFL, 0); socket_flag |= O_NONBLOCK; if (fcntl(listen_fd, F_SETFL, socket_flag) == -1) &#123; std::cout &lt;&lt; "set listen fd to nonblock error." &lt;&lt; std::endl; return -1; &#125; //init server bind info int port = 51741; struct sockaddr_in bind_addr; bind_addr.sin_family = AF_INET; bind_addr.sin_addr.s_addr = htonl(INADDR_ANY); bind_addr.sin_port = htons(port); if (bind(listen_fd, (struct sockaddr *)&amp;bind_addr, sizeof(bind_addr)) == -1) &#123; std::cout &lt;&lt; "bind listen socket fd error." &lt;&lt; std::endl; return -1; &#125; //start listen if (listen(listen_fd, SOMAXCONN) == -1) &#123; std::cout &lt;&lt; "listen error." &lt;&lt; std::endl; return -1; &#125; else std::cout &lt;&lt; "start server at port [" &lt;&lt; port &lt;&lt; "] with [" &lt;&lt; (argc &lt;= 1 ? "LT" : "ET") &lt;&lt; "] mode." &lt;&lt; std::endl; //create a epoll fd int epoll_fd = epoll_create(88); if (epoll_fd == -1) &#123; std::cout &lt;&lt; "create a epoll fd error." &lt;&lt; std::endl; return -1; &#125; epoll_event listen_fd_event; listen_fd_event.data.fd = listen_fd; listen_fd_event.events = EPOLLIN; if (argc &gt; 1) listen_fd_event.events |= EPOLLET; //add epoll event for listen fd if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listen_fd, &amp;listen_fd_event) == -1) &#123; std::cout &lt;&lt; "epoll ctl error." &lt;&lt; std::endl; return -1; &#125; while (true) &#123; epoll_event epoll_events[1024]; int n = epoll_wait(epoll_fd, epoll_events, 1024, 1000); if (n &lt; 0) break; else if (n == 0) //timeout continue; for (int i = 0; i &lt; n; ++i) &#123; if (epoll_events[i].events &amp; EPOLLIN)//trigger read event &#123; if (epoll_events[i].data.fd == listen_fd) &#123; //accept a new connection struct sockaddr_in client_addr; socklen_t client_addr_len = sizeof(client_addr); int client_fd = accept(listen_fd, (struct sockaddr*)&amp;client_addr, &amp;client_addr_len); if (client_fd == -1) continue; socket_flag = fcntl(client_fd, F_GETFL, 0); socket_flag |= O_NONBLOCK; if (fcntl(client_fd, F_SETFL, socket_flag) == -1) &#123; close(client_fd); std::cout &lt;&lt; "set client fd to non-block error." &lt;&lt; std::endl; continue; &#125; epoll_event client_fd_event; client_fd_event.data.fd = client_fd; client_fd_event.events = EPOLLIN | EPOLLOUT; if (argc &gt; 1) client_fd_event.events |= EPOLLET; if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &amp;client_fd_event) == -1) &#123; std::cout &lt;&lt; "add client fd to epoll fd error." &lt;&lt; std::endl; close(client_fd); continue; &#125; std::cout &lt;&lt; "accept a new client fd [" &lt;&lt; client_fd &lt;&lt; "]." &lt;&lt; std::endl; &#125; else &#123; std::cout &lt;&lt; "EPOLLIN event triggered for client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "]." &lt;&lt; std::endl; char recvbuf[1024] = &#123; 0 &#125;; int m = recv(epoll_events[i].data.fd, recvbuf, 1, 0); // only read 1 bytes when read event triggered if (m == 0 || (m &lt; 0 &amp;&amp; errno != EWOULDBLOCK &amp;&amp; errno != EINTR)) &#123; if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, epoll_events[i].data.fd, NULL) != -1) std::cout &lt;&lt; "the client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] disconnected." &lt;&lt; std::endl; close(epoll_events[i].data.fd); &#125; std::cout &lt;&lt; "recv data from client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] and data is [" &lt;&lt; recvbuf &lt;&lt; "]." &lt;&lt; std::endl; &#125; &#125; else if (epoll_events[i].events &amp; EPOLLOUT) &#123; if (epoll_events[i].data.fd == listen_fd) //trigger write event continue; std::cout &lt;&lt; "EPOLLOUT event triggered for client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "]." &lt;&lt; std::endl; &#125; &#125; &#125; return 0;&#125; 简单说下这段代码的测试方法，可以使用 g++ testepoll.cpp -o epoll 进行编译，编译后通过 ./epoll 运行为LT模式，通过 ./epoll et模式运行为ET模式，我们用编译好的epoll程序作为服务器，使用nc命令来模拟一个客户端。 测试分类 编译后直接./epoll，然后在另一个命令行窗口用 nc -v 127.0.0.1 51741 命令模拟一次连接，此时 ./epoll 会产生大量的 EPOLLOUT event triggered for client fd ...，那是因为在LT模式下，EPOLLOUT会被一直触发。 123456789101112albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epollstart server at port [51741] with [LT] mode.accept a new client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLOUT event triggered for client fd [5].... 注释包含 EPOLLOUT event triggered for client fd 输出内容的第152行代码，编译后 ./epoll运行，然后在另一个命令行窗口用 nc -v 127.0.0.1 51741 模拟一次连接后，输入abcd回车，可以看到服务器./epoll输出内容，EPOLLIN被触发多次，每次读取一个字节。 1234567891011121314albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epollstart server at port [51741] with [LT] mode.accept a new client fd [5].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [a].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [b].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [c].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [d].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is []. 还原刚才注释的那行代码，编译后执行 ./epoll et 启动服务器，然后在另一个命令行窗口用 nc -v 127.0.0.1 51741 模拟一次连接后，然后在另一个命令行窗口用 nc -v 127.0.0.1 51741 模拟一次连接，服务器窗口显示触发了EPOLLOUT事件 1234albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epoll etstart server at port [51741] with [ET] mode.accept a new client fd [5].EPOLLOUT event triggered for client fd [5]. 在此基础上，从刚刚运行 nc命令的窗口中输入回车、输入回车、输出回车，那么epoll服务器窗口看到的是触发了三次EPOLLIN事件，每次收到一个回车: 12345678910111213albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epoll etstart server at port [51741] with [ET] mode.accept a new client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is []. 但是如果在nc模拟的客户端里输出abcd回车，那么在epoll服务器窗口触发一次EPOLLIN事件接收到一个a之后便再也不会触发EPOLLIN了，即使你在nc客户端在此输入也没有用，那是因为在接受的缓冲区中一直还有数据，新数据来时没有出现缓冲区从空到有数据的情况，所以在ET模式下也注意这种情况。 123456789101112131415albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epoll etstart server at port [51741] with [ET] mode.accept a new client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [a]. 怎么解决ET触发了一次就不再触发了改代码呗，ET模式在连接后触发一次EPOLLOUT，接收到数据时触发一次EPOLLIN，如果数据没收完，以后这两个事件就再也不会被触发了，要想改变这种情况可以再次注册一下这两个事件，时机可以选择接收到数据的时候，所以可以修改这部分代码： 12345678910111213141516else&#123; std::cout &lt;&lt; "EPOLLIN event triggered for client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "]." &lt;&lt; std::endl; char recvbuf[1024] = &#123; 0 &#125;; int m = recv(epoll_events[i].data.fd, recvbuf, 1, 0); // only read 1 bytes when read event triggered if (m == 0 || (m &lt; 0 &amp;&amp; errno != EWOULDBLOCK &amp;&amp; errno != EINTR)) &#123; if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, epoll_events[i].data.fd, NULL) != -1) std::cout &lt;&lt; "the client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] disconnected." &lt;&lt; std::endl; close(epoll_events[i].data.fd); &#125; std::cout &lt;&lt; "recv data from client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] and data is [" &lt;&lt; recvbuf &lt;&lt; "]." &lt;&lt; std::endl;&#125; 添加再次注册的逻辑： 1234567891011121314151617181920212223else&#123; std::cout &lt;&lt; "EPOLLIN event triggered for client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "]." &lt;&lt; std::endl; char recvbuf[1024] = &#123; 0 &#125;; int m = recv(epoll_events[i].data.fd, recvbuf, 1, 0); // only read 1 bytes when read event triggered if (m == 0 || (m &lt; 0 &amp;&amp; errno != EWOULDBLOCK &amp;&amp; errno != EINTR)) &#123; if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, epoll_events[i].data.fd, NULL) != -1) std::cout &lt;&lt; "the client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] disconnected." &lt;&lt; std::endl; close(epoll_events[i].data.fd); &#125; epoll_event client_fd_event; client_fd_event.data.fd = epoll_events[i].data.fd; client_fd_event.events = EPOLLIN | EPOLLOUT; if (argc &gt; 1) client_fd_event.events |= EPOLLET; epoll_ctl(epoll_fd, EPOLL_CTL_MOD, epoll_events[i].data.fd, &amp;client_fd_event); std::cout &lt;&lt; "recv data from client fd [" &lt;&lt; epoll_events[i].data.fd &lt;&lt; "] and data is [" &lt;&lt; recvbuf &lt;&lt; "]." &lt;&lt; std::endl;&#125; 这次以 ./epoll et 方式启动服务器，使用 nc -v 127.0.0.1 51741 模拟客户端，输入abc回车发现，epoll服务器输出显示触发的事件变了： 1234567891011121314albert@home-pc:/mnt/d/data/cpp/testepoll$ ./epoll etstart server at port [51741] with [ET] mode.accept a new client fd [5].EPOLLOUT event triggered for client fd [5].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [a].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [b].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [c].EPOLLIN event triggered for client fd [5].recv data from client fd [5] and data is [].EPOLLOUT event triggered for client fd [5]. 总结 LT模式会一直触发EPOLLOUT，当缓冲区有数据时会一直触发EPOLLIN ET模式会在连接建立后触发一次EPOLLOUT，当收到数据时会触发一次EPOLLIN LT模式触发EPOLLIN时可以按需读取数据，残留了数据还会再次通知读取 ET模式触发EPOLLIN时必须把数据读取完，否则即使来了新的数据也不会再次通知了 LT模式的EPOLLOUT会一直触发，所以发送完数据记得删除，否则会产生大量不必要的通知 ET模式的EPOLLOUT事件若数据未发送完需再次注册，否则不会再有发送的机会 通常发送网络数据时不会依赖EPOLLOUT事件，只有在缓冲区满发送失败时会注册这个事件，期待被通知后再次发送 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 即使是在灿烂的阳光下也会有黑暗的角落，不能因为角落的阴暗就忽略阳光下的美好，我们要做的不是把黑暗面放大，而是要做阳光的传递者，哪怕是一面面镜子，通过反射来照亮那星星点点的黑暗，认清自己，不与黑暗为伍，那绝不是你自甘堕落的借口。 两千光束已然出发~ 2022-4-4 18:25:50]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>epoll</tag>
+        <tag>LT</tag>
+        <tag>ET</tag>
+        <tag>水平触发</tag>
+        <tag>边沿触发</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[总结下各种常见树形结构的定义及特点（二叉树、AVL树、红黑树、Trie树、B树、B+树）]]></title>
     <url>%2Fblog%2F2022%2F03%2F13%2F%E6%80%BB%E7%BB%93%E4%B8%8B%E5%90%84%E7%A7%8D%E5%B8%B8%E8%A7%81%E6%A0%91%E5%BD%A2%E7%BB%93%E6%9E%84%E7%9A%84%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%89%B9%E7%82%B9%2F</url>
     <content type="text"><![CDATA[前言树形结构相比于数组、链表、队列和栈等线性结构要复杂的多，因为树本身的概念就比较多，通过设定一些条件和限制就可以定义出一种新类型的树，结果造成了树的“变化多端”，所以要学习一种树要从树的定义入手，然后根据定义和特点来熟悉各种树适合的场景，这样就可以做到“树尽其用”目的了。 一棵普通的树树形结构和现实中的树很像，只不过现实中的树根长在地上，而树形结构再展示的时候一般把树根画在“天上”，树形结构中数据元素之间存在着“一对多”的关系，具有以下特点： 没有父节点的节点称为根节点 除空树外每棵树只有一个根节点 每个节点都只有有限个子节点或无子节点 每个非根节点有且只有一个父节点 树里面没有环路，如果从一个节点出发，除非往返，否则无法回到起点 相关术语 根节点：最顶层的节点就是根结点，它是整棵树的源头 叶子节点：在树下端的节点，就是其子节点个数为0的节点 节点的度：指定节点有几个分叉就说这个节点的度是几 树的度：只看根结点，树的度等价于根节点的度 节点高度：指从这个节点到叶子节点的距离（一共经历了几个节点） 节点深度：指从这个节点到根节点的距离（一共经历了几个节点） 树的高度：指所有节点高度的最大值 树的深度：指所有节点深度的最大值 节点的层：从根节点开始，假设根节点为第1层，根节点的子节点为第2层，依此类推 二叉树二叉树是对普通树形结构进行限定得到的一种特殊的树，规定树中节点的度不大于2，当节点有两个子节点，也就是有两颗子树时，它们有左右之分，分别被称为左子树和右子树，左子树和右子树又同样都是二叉树。 二叉树性质 二叉树的第i层上至多有2^(i-1)（i≥1）个节点 深度为h的二叉树中至多含有2^h-1个节点 若在任意一棵二叉树中，有n个叶子节点，有m个度为2的节点，则必有n=m+1 具有n个节点的满二叉树深为log(2n+1) 若对一棵有n个节点的完全二叉树进行顺序编号（1≤i≤n），那么，对于编号为i（i≥1）的节点 当i=1时，该节点为根，它无双亲节点 当i&gt;1时，该节点的双亲节点的编号为i/2 若2i≤n，则有编号为2i的左节点，否则没有左节点 若2i+1≤n，则有编号为2i+1的右节点，否则没有右节点 二叉树特例完美二叉树（Perfect Binary Tree）：除了叶子结点之外的每一个结点都有两个孩子，每一层都被完全填充 完全二叉树（Complete Binary Tree）：除了最后一层之外的其他每一层都被完全填充，并且所有结点都保持向左对齐 完满二叉树（Full Binary Tree）： 除了叶子结点之外的每一个结点都有两个孩子结点 二叉查找树二叉查找树是一种特殊的二叉树，又称为排序二叉树、二叉搜索树、二叉排序树等等，它实际上是数据域有序的二叉树，即对树上的每个结点，都满足其左子树上所有结点的数据域均小于或等于根结点的数据域，右子树上所有结点的数据域均大于根结点的数据域。 AVL树平衡二叉树是由前苏联的两位数学家G.M.Adelse-Velskil和E.M.Landis联合提出，因此一般也称作AVL树，AVL树本质还是一棵二叉查找树，只是在其基础上增加了“平衡”的要求，需保证其左子树与右子树的高度之差的绝对值不超过1，其中左子树与右子树的高度因子之差称为平衡因子。 对于AVL树，不管我们是执行插入还是删除操作，只要不满足上面的条件，就要通过旋转来保持平衡。由于旋转比较耗时，所以AVL树适合用于插入与删除次数比较少，但查找多的情况。 特点及应用所有节点的左右子树高度差不超过1，广泛用于Windows NT内核中 红黑树红黑树也是一颗二叉查找树，需要为每个节点存储节点的颜色，可以是红或黑。通过对任何一条从根到叶子的路径上各个节点着色的方式的限制，来确保没有一条路径会比其它路径长出两倍，因此，红黑树是一种弱平衡二叉树。 由于是弱平衡二叉树，那么在相同的节点情况下，AVL树的高度小于等于红黑树的高度，相对于要求严格的AVL树来说，它的旋转次数少，所以对于插入，删除操作较多的情况下，用红黑树的查找效率会更高一些。 特点 每个节点非红即黑 根节点是黑的 每个叶子节点（叶子节点即树尾端NULL节点）都是黑的 每条路径都包含相同的黑节点 如果一个节点是红的，那么它的两儿子都是黑的 对于任意节点而言，其到叶子点的每条路径都包含相同数目的黑节点 应用 广泛用于C++的STL中，如 map 和 set 是用红黑树实现的 Linux的进程调度用红黑树管理进程控制块，进程的虚拟内存空间都存储在一颗红黑树上，每个虚拟内存空间都对应红黑树的一个节点 IO多路复用的 epoll 采用红黑树组织管理socket fd，以支持快速的增删改查 Nginx中用红黑树管理定时器，可以快速得到距离当前最小的定时器 Java的TreeMap的用红黑树实现 Trie树Trie树又被称为前缀树、字典树是一种用于快速检索的多叉树结构。字典树把字符串看成字符序列，根据字符串中字符序列的先后顺序构造从上到下的树结构，树结构中的每一条边都对应着一个字符。字典树上存储的字符串被视为从根节点到某个节点之间的一条路径，并在终点节点上做个标记”该节点对应词语的结尾”，正因为有终点节点的存在，字典树不仅可以实现简单的存储字符串，还可以实现字符串的映射，只需要将相对应的值悬挂在终点节点上即可。 特点及应用Trie的核心思想是空间换时间，有如下基本性质： 根节点不包含字符，除根节点外每一个节点都只包含一个字符 从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串 每个节点的所有子节点包含的字符都不相同 字典树能够利用字符串中的公共前缀，这样可能会节省内存，利用字符串的公共前缀可以减少查询字符串的时间，能够最大限度的减少无谓的字符串比较，同时在查询的过程中不需要预知待查询字符串的长度，沿着字典树的边进行匹配，查询效率比较高，但是如果系统中存在大量字符串并且这些字符串基本没有前缀，相应的字典树内存消耗也会很大。正是由于字典树的这些特点，字典树被用于统计、排序和保存大量的字符串（不仅限于字符串），还可用于搜索引擎的关键词提示功能。 B树B树是一个多路平衡查找树，B树的出现是为了弥合不同的存储级别之间的访问速度上的巨大差异，实现高效的I/O。平衡二叉树的查找效率是非常高的，并可以通过降低树的深度来提高查找的效率。但是当数据量非常大，树的存储的元素数量是有限的，这样会导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下，同时数据量过大会导致内存空间不够容纳平衡二叉树所有结点的情况，而B树是解决这个问题的很好的结构。 要想了解B树需要了解一个很重要的概念，B树中所有节点的度的最大值称为B树的阶，记为m，这是一个跟重要值，也就是说m阶B树指的是节点度最大为m的B树。 定义及特点 每个节点最多只有m个子节点 根结点的儿子数为[2, m] 除根结点以外的非叶子结点的儿子数为[m/2, m]，向上取整 非叶子结点的关键字个数=子节点数-1 所有叶子都出现在同一层 k个关键字把节点拆成k+1段，分别指向k+1个儿子，同时满足查找树的大小关系 非叶子节点中不仅包含索引，也会包含数据 应用B树是一种平衡的多路查找树，主要用作文件的索引。其优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就会成功并结束查询，有很多基于频率的搜索是选用B树，越频繁查询的结点越往根上走，前提是需要对查询做统计，而且要对key做一些变化。 B+树B+树是b树的一种变体，查询性能更好，m阶的b+树具有以下特征： 有n棵子树的非叶子结点中含有n个关键字（b树是n-1个），这些关键字不保存数据，只用来索引，所有数据都保存在叶子节点（b树是每个关键字都保存数据） 所有的叶子结点中包含了全部关键字的信息，及指向含这些关键字记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接 所有的非叶子结点可以看成是索引部分，结点中仅含其子树中的最大（或最小）关键字 通常在b+树上有两个头指针，一个指向根结点，一个指向关键字最小的叶子结点 同一个数字会在不同节点中重复出现，根节点的最大元素就是b+树的最大元素 B+树的优势及应用 B+tree的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对B树更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多，相对来说IO读写次数也就降低了。 由于非叶子结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。 B+树支持范围遍历，只要遍历叶子节点就可以实现整棵树的遍历，而在数据库中基于范围的查询是非常频繁的，这一点要明显由于B树。 由于拥有以上特点，B+广泛应用于文件存储系统以及数据库系统中。 总结 树是一种常见的非线性结构，拥有众多变种 二叉树是树形结构的一大类，每个节点最多拥有两个子节点树，左右子树顺序固定 AVL树是平衡二叉树，任意节点的左右子树高度差最大为1 红黑树是弱平衡二叉树，每个节点记录的自己的颜色，用来控制左右子树高度不大于2倍 Trie树又叫字典树，是一种用于快速检索的多叉树结构 B树是一种多路平衡树，用于提高了磁盘IO性能，多用于文件系统的索引 B+树是对B树的改进，仅在叶子节点存储数据，相比于B树更加矮胖，支持范围遍历 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 世间从来没有什么『感同身受』，每个人面对相同的事件和意外都会因为家庭背景、个人经历的差异而有不同的反应，更不要说那些没经历过的人，即使你曾经真的经历过类似的事情，那么在被漫长的时间洗礼之后，一切都会淡化许多，所以“未经他人苦，莫劝他人善。你若经我苦，未必有我善”~ 2022-3-13 22:47:31]]></content>
@@ -234,9 +249,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -248,9 +263,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -434,8 +449,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>函数</tag>
+        <tag>语法糖</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -506,10 +521,10 @@
       </categories>
       <tags>
         <tag>int</tag>
-        <tag>hex</tag>
         <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
+        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -578,9 +593,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
-        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -592,8 +607,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -713,8 +728,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -1027,10 +1042,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1072,8 +1087,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1358,8 +1373,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>Blob substring</tag>
         <tag>hex</tag>
+        <tag>Blob substring</tag>
         <tag>concat</tag>
       </tags>
   </entry>
