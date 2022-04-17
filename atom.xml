@@ -125,9 +125,9 @@
     
       <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
     
-      <category term="stash" scheme="http://AlbertGithubHome.github.io/blog/tags/stash/"/>
-    
       <category term="branch" scheme="http://AlbertGithubHome.github.io/blog/tags/branch/"/>
+    
+      <category term="stash" scheme="http://AlbertGithubHome.github.io/blog/tags/stash/"/>
     
       <category term="commit" scheme="http://AlbertGithubHome.github.io/blog/tags/commit/"/>
     

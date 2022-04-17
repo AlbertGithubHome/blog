@@ -52,8 +52,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>stash</tag>
         <tag>branch</tag>
+        <tag>stash</tag>
         <tag>commit</tag>
         <tag>tag</tag>
       </tags>
@@ -521,9 +521,9 @@
       <tags>
         <tag>git</tag>
         <tag>log</tag>
+        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -535,10 +535,10 @@
       </categories>
       <tags>
         <tag>int</tag>
+        <tag>hex</tag>
         <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
-        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -621,8 +621,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -742,8 +742,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -1101,8 +1101,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1387,8 +1387,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>hex</tag>
         <tag>Blob substring</tag>
+        <tag>hex</tag>
         <tag>concat</tag>
       </tags>
   </entry>
@@ -1528,9 +1528,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2187,8 +2187,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>实用工具</tag>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
