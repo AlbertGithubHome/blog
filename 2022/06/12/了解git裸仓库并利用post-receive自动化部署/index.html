@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="前言【裸仓库】指的是使用 git init --bare 命令得到的仓库，是对这种操作结果的一种直译，这个词对于刚接触 git 软件的小伙伴来说可能是第一次听说，而我也是最近实际操作了几次才渐渐理解，下面解释一下什么是裸仓库，以及为什么要使用它，有理解不对的地方还请大家指正。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-06-12T12:53:20.285Z">
+<meta property="og:updated_time" content="2022-06-12T14:01:34.328Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="了解git裸仓库并利用post-receive自动化部署">
 <meta name="twitter:description" content="前言【裸仓库】指的是使用 git init --bare 命令得到的仓库，是对这种操作结果的一种直译，这个词对于刚接触 git 软件的小伙伴来说可能是第一次听说，而我也是最近实际操作了几次才渐渐理解，下面解释一下什么是裸仓库，以及为什么要使用它，有理解不对的地方还请大家指正。">
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2022-06-12T20:53:20+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2022-06-12T22:01:34+08:00">
                 2022-06-12
               </time>
             
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,792(字)</span>
+            <span class="post-count">3,791(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -483,7 +483,7 @@
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>【裸仓库】指的是使用 <code>git init --bare</code> 命令得到的仓库，是对这种操作结果的一种直译，这个词对于刚接触 git 软件的小伙伴来说可能是第一次听说，而我也是最近实际操作了几次才渐渐理解，下面解释一下什么是裸仓库，以及为什么要使用它，有理解不对的地方还请大家指正。</p>
 <a id="more"></a>
 <h1 id="普通库和裸仓库"><a href="#普通库和裸仓库" class="headerlink" title="普通库和裸仓库"></a>普通库和裸仓库</h1><h2 id="普通库"><a href="#普通库" class="headerlink" title="普通库"></a>普通库</h2><p>在解释裸仓库之前，还是先来看看 <code>git init</code>命令创建一个普通仓库的目录结构:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[root@VM-0-3-centos data]<span class="comment"># git init simple</span></span><br><span class="line">Initialized empty Git repository <span class="keyword">in</span> /data/simple/.git/</span><br><span class="line">[root@VM-0-3-centos data]<span class="comment"># cd simple/</span></span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># touch README.md</span></span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># cd ..</span></span><br><span class="line">[root@VM-0-3-centos data]<span class="comment"># tree -a simple/</span></span><br><span class="line">simple/</span><br><span class="line">|-- .git</span><br><span class="line">|   |-- branches</span><br><span class="line">|   |-- config</span><br><span class="line">|   |-- description</span><br><span class="line">|   |-- HEAD</span><br><span class="line">|   |-- hooks</span><br><span class="line">|   |   |-- applypatch-msg.sample</span><br><span class="line">|   |   |-- commit-msg.sample</span><br><span class="line">|   |   |-- post-update.sample</span><br><span class="line">|   |   |-- pre-applypatch.sample</span><br><span class="line">|   |   |-- pre-commit.sample</span><br><span class="line">|   |   |-- prepare-commit-msg.sample</span><br><span class="line">|   |   |-- pre-push.sample</span><br><span class="line">|   |   |-- pre-rebase.sample</span><br><span class="line">|   |   `-- update.sample</span><br><span class="line">|   |-- info</span><br><span class="line">|   |   `-- exclude</span><br><span class="line">|   |-- objects</span><br><span class="line">|   |   |-- info</span><br><span class="line">|   |   `-- pack</span><br><span class="line">|   `-- refs</span><br><span class="line">|       |-- heads</span><br><span class="line">|       `-- tags</span><br><span class="line">`-- README.md</span><br><span class="line"></span><br><span class="line">10 directories, 14 files</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos data]<span class="comment"># git init simple</span></span><br><span class="line">Initialized empty Git repository <span class="keyword">in</span> /data/simple/.git/</span><br><span class="line">[root@VM-0-3-centos data]<span class="comment"># cd simple/</span></span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># touch README.md</span></span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># cd ..</span></span><br><span class="line">[root@VM-0-3-centos data]<span class="comment"># tree -a simple/</span></span><br><span class="line">simple/</span><br><span class="line">|-- .git</span><br><span class="line">|   |-- branches</span><br><span class="line">|   |-- config</span><br><span class="line">|   |-- description</span><br><span class="line">|   |-- HEAD</span><br><span class="line">|   |-- hooks</span><br><span class="line">|   |   |-- applypatch-msg.sample</span><br><span class="line">|   |   |-- commit-msg.sample</span><br><span class="line">|   |   |-- post-update.sample</span><br><span class="line">|   |   |-- pre-applypatch.sample</span><br><span class="line">|   |   |-- pre-commit.sample</span><br><span class="line">|   |   |-- prepare-commit-msg.sample</span><br><span class="line">|   |   |-- pre-push.sample</span><br><span class="line">|   |   |-- pre-rebase.sample</span><br><span class="line">|   |   `-- update.sample</span><br><span class="line">|   |-- info</span><br><span class="line">|   |   `-- exclude</span><br><span class="line">|   |-- objects</span><br><span class="line">|   |   |-- info</span><br><span class="line">|   |   `-- pack</span><br><span class="line">|   `-- refs</span><br><span class="line">|       |-- heads</span><br><span class="line">|       `-- tags</span><br><span class="line">`-- README.md</span><br><span class="line"></span><br><span class="line">10 directories, 14 files</span><br></pre></td></tr></table></figure>
 <p>通过上述命令操作后可以看到，<code>git init simple</code> 操作之后，创建了一个名为 <code>simple</code> 的库，<code>simple</code> 目录下还有一个 <code>.git</code> 子目录，其中包含了git系统常用的文件，在 <code>.git</code> 目录外是我们的工作区，可以存放我们库中待更新的文件，修改之后可以通过 <code>git add</code>，<code>git commit</code> 等命令更新 <code>.git</code> 中的内容，简单来说普通库就是在工作目录 <code>simple</code> 中还包括一个 <code>.git</code> 目录，下面添加一个文件试试。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">[root@VM-0-3-centos simple]<span class="comment"># git add README.md</span></span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># git commit -m"add readme file"</span></span><br><span class="line">[master (root-commit) 9a9b255] add readme file</span><br><span class="line"> 1 file changed, 0 insertions(+), 0 deletions(-)</span><br><span class="line"> create mode 100644 README.md</span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment"># tree . -a</span></span><br><span class="line">.</span><br><span class="line">|-- .git</span><br><span class="line">|   |-- branches</span><br><span class="line">|   |-- COMMIT_EDITMSG</span><br><span class="line">|   |-- config</span><br><span class="line">|   |-- description</span><br><span class="line">|   |-- HEAD</span><br><span class="line">|   |-- hooks</span><br><span class="line">|   |   |-- applypatch-msg.sample</span><br><span class="line">|   |   |-- commit-msg.sample</span><br><span class="line">|   |   |-- post-update.sample</span><br><span class="line">|   |   |-- pre-applypatch.sample</span><br><span class="line">|   |   |-- pre-commit.sample</span><br><span class="line">|   |   |-- prepare-commit-msg.sample</span><br><span class="line">|   |   |-- pre-push.sample</span><br><span class="line">|   |   |-- pre-rebase.sample</span><br><span class="line">|   |   `-- update.sample</span><br><span class="line">|   |-- index</span><br><span class="line">|   |-- info</span><br><span class="line">|   |   `-- exclude</span><br><span class="line">|   |-- logs</span><br><span class="line">|   |   |-- HEAD</span><br><span class="line">|   |   `-- refs</span><br><span class="line">|   |       `-- heads</span><br><span class="line">|   |           `-- master</span><br><span class="line">|   |-- objects</span><br><span class="line">|   |   |-- 9a</span><br><span class="line">|   |   |   `-- 9b255b81e994fa9af2b9c7ecbd852eb716ad6c</span><br><span class="line">|   |   |-- e6</span><br><span class="line">|   |   |   `-- 9de29bb2d1d6434b8b29ae775ad8c2e48c5391</span><br><span class="line">|   |   |-- f9</span><br><span class="line">|   |   |   `-- 3e3a1a1525fb5b91020da86e44810c87a2d7bc</span><br><span class="line">|   |   |-- info</span><br><span class="line">|   |   `-- pack</span><br><span class="line">|   `-- refs</span><br><span class="line">|       |-- heads</span><br><span class="line">|       |   `-- master</span><br><span class="line">|       `-- tags</span><br><span class="line">`-- README.md</span><br><span class="line"></span><br><span class="line">16 directories, 22 files</span><br><span class="line">[root@VM-0-3-centos simple]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
 <p>添加文件之后，<code>.git</code> 目录中的内容发生了变化，多了3个新的object。</p>
@@ -657,6 +657,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2022/06/18/C-17新语法之if和switch语句中可以初始化变量啦/" rel="prev" title="C++17新语法之if和switch语句中可以初始化变量啦">
+                C++17新语法之if和switch语句中可以初始化变量啦 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -757,7 +761,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">165</span>
+                <span class="site-state-item-count">168</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -768,7 +772,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -779,7 +783,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">388</span>
+                <span class="site-state-item-count">397</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
