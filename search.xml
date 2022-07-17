@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[C++17使用std::optional表示一个可能存在的值]]></title>
+    <url>%2Fblog%2F2022%2F07%2F17%2FC-17%E4%BD%BF%E7%94%A8std-optional%E8%A1%A8%E7%A4%BA%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E5%80%BC%2F</url>
+    <content type="text"><![CDATA[前言平时写代码会遇到一种传递参数特殊值标记特殊流程，或者函数返回值存在魔法数的情况，很需要一种标记参数或返回值状态的结构，那么在 C++17 标准下提供了 std::optional 这个模板类，可以表示一个值不存在的状态，一起来看看用法吧。 返回一个bool值以下例子纯属虚构，只为说明问题，无实际意义 1234567891011121314151617181920212223bool getBoolVal(int a, int b)&#123; int* n = new int; if (!n) return false; *n = 1; if (a + *n &gt; b) return true; else return false;&#125;int main()&#123; if (getBoolVal(10, 9)) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 1 &lt;&lt; std::endl; return 0;&#125; 这个例子中的函数 getBoolVal 本意是想返回一个 bool 类型的判断结果，但是函数中有一些异常情况时，比如申请内存异常时，也会返回一个bool值，这是与原判断结果语义不同的，所以需要单独返回这种情况，如果也放到同一个返回值中会导致含义模糊，这时可以考虑使用引用变量参数来返回实际比较结果。 12345678910111213141516171819202122232425262728293031bool getBoolVal(int a, int b, bool&amp; ret)&#123; int* n = new int; if (!n) return false; *n = 1; if (a + *n &gt; b) ret = true; else ret = false; return true;&#125;int main()&#123; bool ret = false; if (getBoolVal(10, 9, ret)) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 这个引用参数 ret 使用起来有点不方便，那把两个值都返回怎么样，虽然C++不允许有多个返回值，但可以把它们包装成 std::pair 或者 std::tuple 来返回，再来改写一下： 1234567891011121314151617181920212223242526272829std::pair&lt;bool, bool&gt; getBoolVal3(int a, int b)&#123; int* n = new int; if (!n) return &#123;false, false&#125;; *n = 1; if (a + *n &gt; b) return &#123;true, true&#125;; else return &#123;true, false&#125;;&#125;int main()&#123; auto [err, ret] = getBoolVal(10, 9); if (err) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 这种方法把实际的返回值，搭配一个表示状态的 bool 变量，组成 std::pair 进行返回，基本上得到而来语义明确的目的，但是看起来还是不太优雅，而 std::optional 可以帮助我们实现类似的需求，并且代码看起来能更简洁一点。 使用 std::optional 改写std::optional 本身是一个模板类：会有一个 std::nullopt 12template &lt;class T&gt;class optional; 它内部有两种状态，要么有一个T类型的值，要么用 std::nullopt 表示没有值，查看一个 std::optional 对象是否有值，可以用 has_value() 进行判断，当一个 std::optional 有值时，可以通过用指针的方式(*号和-&gt;号)来使用它，或者用 value()函数取它的值，下面我们用它来改写一下之前的实现： 123456789101112131415161718192021222324252627282930std::optional&lt;bool&gt; getBoolVal4(int a, int b)&#123; int* n = new int; if (!n) return std::nullopt; *n = 1; if (a + *n &gt; b) return true; else return false;&#125;int main()&#123; std::optional&lt;bool&gt; ret = getBoolVal(10, 9); if (ret.has_value()) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret.value()) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 使用了 std::optional 之后就把 bool 类型之前的两态变成了三态，很多类似的逻辑也被封装成了函数，使用它之后代码更清晰了，从此可以告别一些烦人的魔法数了，一些函数参数也可以使用 std::optional 来包装，用法类似，在此就不展开说了。 总结 std::optional 是一个模板类，可以表示一个可能存在的值 std::optional 的内部有两种状态，要么表示一个T类型的值，要么用 std::nullopt 表示没有值 可以用 has_value() 判断一个 std::optional 是否有值，然后用 value() 函数取它表示的值 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 子未经历过，安知此文是鸡汤，子非我，安知我不知此文是鸡汤。意见向左的人往往在内心互道傻X，而现实生活中哪有什么绝对的对错，只是出发点和眼界不同罢了，即使是真理也有适用的环境，“两点之间线段最短”，这一定是对的吗？ 2022-7-17 23:26:03]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>optional</tag>
+        <tag>可选值</tag>
+        <tag>魔法数</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[偶然在github开源项目中发现了.travis.yml这货]]></title>
     <url>%2Fblog%2F2022%2F07%2F02%2F%E5%81%B6%E7%84%B6%E5%9C%A8github%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%8F%91%E7%8E%B0%E4%BA%86-travis-yml%E8%BF%99%E8%B4%A7%2F</url>
     <content type="text"><![CDATA[前言偶然在一个github开源项目中发现了.travis.yml这货，然后一发不可收拾，翻了翻之前看的几个开源库都有这个文件，并且最近经常看到它，这被称为“巴德尔-迈因霍夫现象”，是一种认知偏见，即在第一次注意到某一事物后，有一种更频繁地注意到它的倾向，导致某人相信它有很高的频率，既然这样索性就深入研究了一下这个文件，发现它原来是用于持续集成的。 持续集成持续集成是一种 DevOps（Development和Operations的组合词）软件开发实践。采用持续集成时，开发人员会定期将代码变更合并到一个中央存储库中，之后系统会自动运行构建和测试操作。每次集成都通过自动化的构建（包括编译，发布，自动化测试）来进行验证，从而尽早地发现集成错误，提高软件质量，并减少验证和发布新软件更新所需的时间。 持续集成是将构建并测试的过程自动化，在你提交代码时，持续集成服务能够自动触发构建与测试过程，并反馈结果，加快开发周期，同时减少脏代码的引入，而持续集成工具有很多，常见的包括 Jenkins、Gitlab-CI、Travis CI 和 AppVeyor，github上项目的持续集成可以选择使用 Travis CI，也有项目使用 AppVeyor，它们都是开源持续集成云服务。 YAML.travis.yml 是 github 用于说明持续集成步骤配置文件，使用的语言是 YAML。它是一种可读性非常高，与程序语言数据结构非常接近，同时具备丰富的表达能力和可扩展性，并且易于使用的数据标记语言。经常会拿它和 XML 和 JSON 进行对比，YAML 比 XML 语法简洁得多，但是没有 XML 的标签概念，而 JSON 语法是 YAML 1.2 的子集，非常接近 YAML1.0 与 YAML1.1 的子集。 YAML 可以简单表达清单、散列表，标量等数据结构。它使用空白符号缩进，适合用来表达或编辑数据结构、各种配置文件、倾印调试内容、文件大纲等，配置文件后缀为通常为 .yml，比如：.travis.yml。 关于具体的语法本文就不展开说了，网上自行搜索一下，不同类型的项目的配置通常有自己的规范，可以参照travis官方配置说明，下面展示一个 .travis.yml 文件 12345678910111213141516171819language: cppsudo: falseos: - linux - osxcompiler: - gcc - clangscript: - $CC ccronexpr.c ccronexpr_test.c -I. -Wall -Wextra -std=c89 -DCRON_TEST_MALLOC -o a.out &amp;&amp; ./a.out - $CXX ccronexpr.c ccronexpr_test.c -I. -Wall -Wextra -std=c++11 -DCRON_TEST_MALLOC -o a.out &amp;&amp; ./a.outnotifications: email: on_success: always 第一次使用 .travis.yml要想学会一件事必须反复强化记忆，所以我决定自己写个.travis.yml来使用一次，刚开始语法还不太熟悉，所以我打算在一些开源项目的文件基础上来修改，需求也比较简单，只要能实现我上传到github的代码能自动编译就可以了。 注册登录travis登陆 travis 官网，直接用github账号登陆即可，这样 travis 可以直接关联登录的github账号，自动获取你的仓库信息。 登陆之后，点击settings，然后激活 Travis CI 勾选需要持续集成的仓库。 编写代码为了方便测试，我们只编写一个简单的 HelloWolrd.cpp 测试文件好了 1234567#include &lt;iostream&gt;int main() &#123; std::cout &lt;&lt; "Hello World!" &lt;&lt; std::endl; return 0;&#125; 编写.travis.yml我只写了一个文件，要求只要编译 gcc 通过就行了，暂时也不需要邮件通知 123456789101112language: cppsudo: falseos: - linuxcompiler: - gccscript: - $CXX wolrd/code/c++/HelloWorld.cpp -o a.out &amp;&amp; ./a.out 推送代码启动Travis CI123456789101112131415161718Albert@home-pc MINGW64 /d/data/maingit/HelloWorld (master)$ git add .Albert@home-pc MINGW64 /d/data/maingit/HelloWorld (master)$ git commit -m&quot;test travis ci&quot;[master 8e92384] test travis ci 2 files changed, 2 insertions(+), 2 deletions(-)Albert@home-pc MINGW64 /d/data/maingit/HelloWorld (master)$ git pushEnumerating objects: 13, done.Counting objects: 100% (13/13), done.Delta compression using up to 4 threadsCompressing objects: 100% (6/6), done.Writing objects: 100% (7/7), 604 bytes | 302.00 KiB/s, done.Total 7 (delta 3), reused 0 (delta 0)remote: Resolving deltas: 100% (3/3), completed with 3 local objects.To github.com:AlbertGithubHome/HelloWorld.git af45c67..8e92384 master -&gt; master 推送之后travis-ci网站会自动启动，构建过程和结果如下： 第一次尝试失败，检查发现编译文件的路径写错了，修改后再次推送，成功构建的界面如下： 然后就可以在编译状态按钮后面领取这样一个标签，它可以根据项目构建状态实时变化，快把它加到项目的README文件里吧。 [![Build Status](https://app.travis-ci.com/AlbertGithubHome/HelloWorld.svg?branch=master)](https://app.travis-ci.com/AlbertGithubHome/HelloWorld) 总结 .travis.yml 是使用 Travis CI 持续集成服务的配置文件，使用 YAML 语言编写 YAML 比 XML 语法简洁得多，但是没有 XML 的标签概念，而 JSON 语法是 YAML 1.2 的子集 GitHub 和 Travis CI 是一对好基友，几乎不用额外的配置，只要按照官方语法写好 .travis.yml 文件即可 可以把Travis CI 看成一个机器人，每当我们 push 代码时，这个机器人会按照既定流程帮我们自动构建和检测 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 卅是一个阶段，更是一个开始~ 2022-7-3 01:08:33]]></content>
@@ -391,9 +405,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -405,9 +419,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -562,8 +576,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>chmod</tag>
+        <tag>文件</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -591,8 +605,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>函数</tag>
         <tag>语法糖</tag>
+        <tag>函数</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -649,9 +663,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
-        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -662,9 +676,9 @@
         <category>Python</category>
       </categories>
       <tags>
+        <tag>int</tag>
         <tag>hex</tag>
         <tag>Python</tag>
-        <tag>int</tag>
         <tag>str</tag>
         <tag>bytes</tag>
       </tags>
@@ -735,9 +749,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
+        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -749,8 +763,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -788,8 +802,8 @@
         <category>windows</category>
       </categories>
       <tags>
-        <tag>windows</tag>
         <tag>linux</tag>
+        <tag>windows</tag>
         <tag>ternimal</tag>
         <tag>powershell</tag>
       </tags>
@@ -870,8 +884,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -884,8 +898,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1228,9 +1242,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>windows</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
+        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1630,8 +1644,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>函数</tag>
-        <tag>windows</tag>
         <tag>堆栈</tag>
+        <tag>windows</tag>
       </tags>
   </entry>
   <entry>
@@ -1656,9 +1670,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2315,8 +2329,8 @@
         <category>Python</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>Python</tag>
+        <tag>实用工具</tag>
       </tags>
   </entry>
   <entry>
