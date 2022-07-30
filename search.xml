@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[一个月黑风高的夜晚紧急完成gitlab服务器数据迁移]]></title>
+    <url>%2Fblog%2F2022%2F07%2F30%2F%E4%B8%80%E4%B8%AA%E6%9C%88%E9%BB%91%E9%A3%8E%E9%AB%98%E7%9A%84%E5%A4%9C%E6%99%9A%E7%B4%A7%E6%80%A5%E5%AE%8C%E6%88%90gitlab%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%2F</url>
+    <content type="text"><![CDATA[前言真是无巧不成书，白天刚刚讨论了一天SVN服务器迁移事情，晚上突然被告知 gitlab 服务无法访问了，赶紧连接到服务器上查看，好家伙，磁盘还剩下可怜的 98K，SVN 不管了，先把 gitlab 搞定吧，毕竟第二天的游戏更新包都打不出来了，确认是磁盘不足问题后已经是9点半了，月亮都升起老高了，赶紧开始修复吧。 修复过程关于修复过程，网上有很多文章写了具体的步骤，都非常的相似，基本来自于官方文档的翻译，不过抄来抄去的内容产生了一些错误，甚至是在关键的步骤上出错，所以在看这些文章是要特别注意，如果你的英文还不错的话，建议看一下官方文档 为了记录过程我也不免俗套的把这些步骤写一写，方便日后拿来即用，关于每步的作用我会进行简述，并且提一下注意事项。 总体步骤：在配置文件中把存放数据的路径改一个新目录，把原数据移动到新的目录，重启gitlab服务即可 备份数据虽然只是做数据迁移，不涉及切换物理机，也不会更换服务版本，但是为了保险起见，还是先把数据备份一份，现在遇到的问题是 gitlab 是默认安装的，数据存放在 /var/opt/gitlab/git-data 目录下，仓库存放在子目录 repositories 里面，这个目录一般空间都不大，很容易出现磁盘满的情况，目录结构如下： 123456789101112131415git-data└── repositories ├── +gitaly │ ├── cache │ ├── state │ └── tmp └── @hashed ├── 19 ├── 35 ├── 3f ├── 45 ├── 4a ├── 4b ├── ... └── f5 真正的仓库数据就在 @hashed 目录下众多子目录下，再往下走就是一个个 .git目录了，结构与我们本地的 .git 目录一致。 备份的命令需要记录一下: 1gitlab-rake gitlab:backup:create 备份的路径可以在配置文件 /etc/gitlab/gitlab.rb 中修改： 12345[root@code-server ~]# vim /etc/gitlab/gitlab.rbgitlab_rails['manage_backup_path'] = truegitlab_rails['backup_path'] = "/data/gitlab/backups" // gitlab备份目录gitlab_rails['backup_archive_permissions'] = 0644 // 生成的备份文件权限gitlab_rails['backup_keep_time'] = 7776000 // 备份保留天数为90天 备份从21:30开始一直到凌晨1点左右结束，200G 数据用时3个半小时，真是太慢了，大部分的时间都卡在备份了 Dumping lfs objects 了 1234567891011121314151617181920212223242526272829303132333435363738394041[root@gitlab-server ~]# gitlab-rake gitlab:backup:create2022-07-25 21:27:34 +0800 -- Dumping database ...Dumping PostgreSQL database gitlabhq_production ... [DONE]2022-07-25 21:27:42 +0800 -- done2022-07-25 21:27:42 +0800 -- Dumping repositories ... * xxxx/project (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x) ... * xxxx/project (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x) ... [DONE] * xxxx/project.wiki (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x.wiki) ... * xxxx/project.wiki (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x.wiki) ... [EMPTY] [SKIPPED] * xxxx/project.design (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x.design) ... * xxxx/project.design (@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab3x.design) ... [EMPTY] [SKIPPED] ... ...2022-07-25 22:16:14 +0800 -- done2022-07-25 22:16:14 +0800 -- Dumping uploads ...2022-07-25 22:16:15 +0800 -- done2022-07-25 22:16:15 +0800 -- Dumping builds ...2022-07-25 22:16:15 +0800 -- done2022-07-25 22:16:15 +0800 -- Dumping artifacts ...2022-07-25 22:16:15 +0800 -- done2022-07-25 22:16:15 +0800 -- Dumping pages ...2022-07-25 22:16:15 +0800 -- done2022-07-25 22:16:15 +0800 -- Dumping lfs objects ...2022-07-26 00:41:39 +0800 -- done2022-07-26 00:41:39 +0800 -- Dumping container registry images ...2022-07-26 00:41:39 +0800 -- [DISABLED]Creating backup archive: 1658767299_2022_07_26_xx.xx.xx-ee_gitlab_backup.tar ... doneUploading backup archive to remote storage ... skippedDeleting tmp directories ... donedonedonedonedonedonedonedoneDeleting old backups ... skippingWarning: Your gitlab.rb and gitlab-secrets.json files contain sensitive dataand are not included in this backup. You will need these files to restore a backup.Please back them up manually.Backup task is done. 修改存放目录这一步注意创建新目录后修改权限，并修改配置文件 12345[root@gitlab ~]# mkdir -p /data/gitlab-data[root@gitlab ~]# chown -R git:root /data/gitlab-data[root@gitlab ~]# vim /etc/gitlab/gitlab.rb# 把注释取消然后指定新的仓库存储位置，原配置是# git_data_dirs(&#123; "default" =&gt; &#123; "path" =&gt; "/mnt/nas/git-data" &#125; &#125;)git_data_dirs(&#123; "default" =&gt; &#123; "path" =&gt; "/data/gitlab-data" &#125; &#125;) /data/gitlab-data 是新挂载的目录，目标路径和其子路径必须不能为软链接。 关闭服务迁移数据前关闭服务主要是怕别人再使用，其实已经凌晨应该没有人用了，为了保险起见还是先关了吧 1gitlab-ctl stop 关闭时会自动关闭多个服务项 12345678910111213141516[root@gitlab-server gitlab]# gitlab-ctl stopok: down: alertmanager: 0s, normally upok: down: gitaly: 0s, normally upok: down: gitlab-exporter: 0s, normally upok: down: gitlab-workhorse: 0s, normally upok: down: grafana: 0s, normally upok: down: logrotate: 0s, normally upok: down: nginx: 1s, normally upok: down: node-exporter: 0s, normally upok: down: postgres-exporter: 1s, normally upok: down: postgresql: 0s, normally upok: down: prometheus: 0s, normally upok: down: puma: 0s, normally upok: down: redis: 0s, normally upok: down: redis-exporter: 1s, normally upok: down: sidekiq: 0s, normally up 迁移数据1rsync -av /var/opt/gitlab/git-data/repositories /data/gitlab-data/ 末尾的/要有，这一点很多文章都提到了，但是它们给的例子中有没有，很容易造成迷惑，这一步其实就是把 repositories 完整的拷贝到 /data/gitlab-data/ 目录下，并保留原文件和目录的属性，不加 / 就少了一级目录，不过也有文章让使用 cp 或者 mv 命令迁移数据，虽然也能达到目的，但是不如 rsync 合适，他们无法保留原属性。 200G 数据拷贝了半小时，比备份操作快多了 刷新配置1gitlab-ctl reconfigure 这一步我在执行前以为瞬间就能完成，运行后才发现这个命令检查了很多数据，在控制台输出了一大堆内容，可以注意一下有没有报错信息。 启动服务1gitlab-ctl start 启动之后需要等大概一分钟才能访问，否则会报服务器内部错误，应该是有些服务还没完全开始工作吧 12345678910111213141516[root@gitlab-server gitlab]# gitlab-ctl startok: run: alertmanager: (pid 17961) 1sok: run: gitaly: (pid 17984) 0sok: run: gitlab-exporter: (pid 18023) 0sok: run: gitlab-workhorse: (pid 18025) 1sok: run: grafana: (pid 18054) 0sok: run: logrotate: (pid 18063) 1sok: run: nginx: (pid 18082) 0sok: run: node-exporter: (pid 18111) 1sok: run: postgres-exporter: (pid 18120) 0sok: run: postgresql: (pid 18129) 0sok: run: prometheus: (pid 18136) 1sok: run: puma: (pid 18151) 0sok: run: redis: (pid 18157) 1sok: run: redis-exporter: (pid 18173) 0sok: run: sidekiq: (pid 18183) 1s 总结 gitlab 服务器配置文件是 /etc/gitlab/gitlab.rb gitlab 配置文中设置备份目录 gitlab_rails[&#39;manage_backup_path&#39;]，存储目录 git_data_dirs gitlab-rake gitlab:backup:create 用于备份 gitlab 关闭组件 gitlab-ctl stop，开启组件 gitlab-ctl start，重启组件 gitlab-ctl restart gitlab-ctl reconfigure 用于刷新配置 gitlab 迁移数据命令 rsync -av /var/opt/gitlab/git-data/repositories /data/gitlab-data/ ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 曾经幅员辽阔，东征西讨的元朝占据了欧亚大陆，但持续时间不过百年，在历史长河中只是星星点点，若要在这长河中留下痕迹，必然要做出影响全人类的重大成就，而你我绝大多数都是普通人，承认自己是普通人的那一刻你已经成长了~ 2022-7-30 16:59:18]]></content>
+      <categories>
+        <category>CI/CD</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>gitlab</tag>
+        <tag>数据迁移</tag>
+        <tag>服务器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[推荐一个C++枚举转字符串的开源项目magic_enum]]></title>
+    <url>%2Fblog%2F2022%2F07%2F23%2F%E6%8E%A8%E8%8D%90%E4%B8%80%E4%B8%AAC-%E6%9E%9A%E4%B8%BE%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AEmagic-enum%2F</url>
+    <content type="text"><![CDATA[前言C++11引入了强类型的枚举类 enum class 用来代替旧风格枚举enum，新引入的 enum class 具有诸多优点：防止命名空间污染，不能隐式的转换为整型，防止不同类型的枚举相互赋值，支持前置声明。当然它也不是只有优点，因为类型不能隐式转换成int，所以在使用或者输出时需要使用 static_cast 进行转换，不过即便使用 static_cast 可以转换后输出，也不便于我们辨识枚举的值，如果想输出枚举定义时的名字就需要使用一些魔法了。 magic_enum因为C++本身不支持反射，或者说反射能力极弱，所以想反射我们必须自己实现一些东西，比如 UE 引擎就为C++写了一套自己的反射标签，而我们想获得枚举定义时的名字就需要自己记录了，因为编译后的枚举一般都转化成了整数，一个简单粗暴的想法是在定义时为每个枚举值同时指定一个同名字符串，构成map存储下来，不过我们不想每次都自己来做这件事，要是有人能帮忙就好了，这不它来了， magic_enum 就可以帮你实现这个愿望。 简单介绍magic_enum 是一个单头文件的开源库，使用方便，可以轻松帮你实现打印枚举值定义时名字的需求，另外除了可以实现这个功能，还可以根据字符串生成枚举值，根据整数生成枚举值，获取枚举值数组，获取枚举值和名字对应的数字组等等，简直是一个封装了枚举操作的宝库。 具体使用直接引用头文件 magic_enum.hpp，然后调用函数 magic_enum::enum_name(enum_xxx) 即可： 1234567891011121314151617181920212223#include &lt;iostream&gt;#include "magic_enum.hpp"enum class WeekDay&#123; WD_SUNDAY = 0, WD_MONDAY, WD_TUESDAY, WD_WEDNESDAY, WD_THURSDAY, WD_FRIDAY, WD_SATURDAY,&#125;;int main()&#123; WeekDay day = WeekDay::WD_MONDAY; std::cout &lt;&lt; "enum value: " &lt;&lt; static_cast&lt;std::underlying_type&lt;WeekDay&gt;::type&gt;(day) &lt;&lt; "\n"; std::cout &lt;&lt; "enum name: " &lt;&lt; magic_enum::enum_name(day) &lt;&lt; "\n"; return 0;&#125; 编译运行如下： 123$ g++ testenum.cpp -std=c++17 &amp;&amp; ./a.outenum value: 1enum name: WD_MONDAY 原理简述很神奇对不对，其实枚举值转换成字符串这一步，是是利用了函数模板和 __PRETTY_FUNCTION__ 组合使用获得到的，也就是对 __PRETTY_FUNCTION__ 进行截取得到的字符串。 __PRETTY_FUNCTION__ 在预编译阶段会替换成带有参数的函数名，比如 constexpr auto magic_enum::detail::n() [with E = WeekDay; E e = WD_MONDAY] 从中截取出 WD_MONDAY 就可以了。 局限性为了实现从字符串到枚举值的转换，这个库的内部定义了一个整数范围，默认从-128到128，用于遍历查找字符串对应的枚举值是多少，并且在代码中加了 static_assert 来判断范围，如果超过了这个范围就会报编译错误，这个范围可以通过修改源码中的 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 重新编译来修改，在这个范围之外还有个最大值 std::numeric_limits&lt;std::uint16_t&gt;::max 的限制。 这个最大限制也是可以改的，不过我尝试把 MAGIC_ENUM_RANGE_MAX 改到上限值 32767 之后编译时间明显变成，编译过程变得异常的慢，单个文件编译30秒，所以不建议把这个值调太大。 对比一下不使用 magic_enum 和使用它之后生成的汇编代码，从100多行扩充到1000多行，利用 type_traits 生成了大量的函数： 1234567891011121314151617181920... .type _ZN10magic_enum6detail7names_vI7WeekDayEE, @gnu_unique_object .size _ZN10magic_enum6detail7names_vI7WeekDayEE, 112_ZN10magic_enum6detail7names_vI7WeekDayEE: .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_1EEE .quad 10 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_2EEE .quad 12 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_3EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_4EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_5EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_6EEE .weak _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE... 简化与改进其实我最想要的还是通过枚举值转化转化成字符串名称的功能，可以将这个开源库简化一下，仅保留这个功能，这样也不会有范围限制了，感觉这个库为了实现从字符串到枚举值转换背负了太多，去掉它会很清爽。 总结 magic_enum 是一个开源的、单头文件的、枚举操作工具箱 magic_enum 可以实现枚举值到字符串、字符串到枚举值、获取所有枚举名等多种操作 magic_enum 本身对枚举值有范围限制，默认是 [-128, 128], 可通过 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 修改 不建议将 magic_enum 默认枚举范围改的太大，这会明显拖慢编译时间 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 世界上有那么多美好，不要总跟自己过不去，总是揪着那些角落里的肮脏不放。我们无法选择抓到什么牌，但可以决定怎么把手里的牌打出去，摆烂也是一天，奋斗也是一天，究竟要怎么做，取决于你自己~ 2022-7-24 02:30:58]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>enum</tag>
+        <tag>枚举类</tag>
+        <tag>magic_enum</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++17使用std::optional表示一个可能存在的值]]></title>
     <url>%2Fblog%2F2022%2F07%2F17%2FC-17%E4%BD%BF%E7%94%A8std-optional%E8%A1%A8%E7%A4%BA%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E5%80%BC%2F</url>
     <content type="text"><![CDATA[前言平时写代码会遇到一种传递参数特殊值标记特殊流程，或者函数返回值存在魔法数的情况，很需要一种标记参数或返回值状态的结构，那么在 C++17 标准下提供了 std::optional 这个模板类，可以表示一个值不存在的状态，一起来看看用法吧。 返回一个bool值以下例子纯属虚构，只为说明问题，无实际意义 1234567891011121314151617181920212223bool getBoolVal(int a, int b)&#123; int* n = new int; if (!n) return false; *n = 1; if (a + *n &gt; b) return true; else return false;&#125;int main()&#123; if (getBoolVal(10, 9)) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 1 &lt;&lt; std::endl; return 0;&#125; 这个例子中的函数 getBoolVal 本意是想返回一个 bool 类型的判断结果，但是函数中有一些异常情况时，比如申请内存异常时，也会返回一个bool值，这是与原判断结果语义不同的，所以需要单独返回这种情况，如果也放到同一个返回值中会导致含义模糊，这时可以考虑使用引用变量参数来返回实际比较结果。 12345678910111213141516171819202122232425262728293031bool getBoolVal(int a, int b, bool&amp; ret)&#123; int* n = new int; if (!n) return false; *n = 1; if (a + *n &gt; b) ret = true; else ret = false; return true;&#125;int main()&#123; bool ret = false; if (getBoolVal(10, 9, ret)) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 这个引用参数 ret 使用起来有点不方便，那把两个值都返回怎么样，虽然C++不允许有多个返回值，但可以把它们包装成 std::pair 或者 std::tuple 来返回，再来改写一下： 1234567891011121314151617181920212223242526272829std::pair&lt;bool, bool&gt; getBoolVal3(int a, int b)&#123; int* n = new int; if (!n) return &#123;false, false&#125;; *n = 1; if (a + *n &gt; b) return &#123;true, true&#125;; else return &#123;true, false&#125;;&#125;int main()&#123; auto [err, ret] = getBoolVal(10, 9); if (err) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 这种方法把实际的返回值，搭配一个表示状态的 bool 变量，组成 std::pair 进行返回，基本上得到而来语义明确的目的，但是看起来还是不太优雅，而 std::optional 可以帮助我们实现类似的需求，并且代码看起来能更简洁一点。 使用 std::optional 改写std::optional 本身是一个模板类：会有一个 std::nullopt 12template &lt;class T&gt;class optional; 它内部有两种状态，要么有一个T类型的值，要么用 std::nullopt 表示没有值，查看一个 std::optional 对象是否有值，可以用 has_value() 进行判断，当一个 std::optional 有值时，可以通过用指针的方式(*号和-&gt;号)来使用它，或者用 value()函数取它的值，下面我们用它来改写一下之前的实现： 123456789101112131415161718192021222324252627282930std::optional&lt;bool&gt; getBoolVal4(int a, int b)&#123; int* n = new int; if (!n) return std::nullopt; *n = 1; if (a + *n &gt; b) return true; else return false;&#125;int main()&#123; std::optional&lt;bool&gt; ret = getBoolVal(10, 9); if (ret.has_value()) std::cout &lt;&lt; "error" &lt;&lt; std::endl; else &#123; if (ret.value()) std::cout &lt;&lt; 1 &lt;&lt; std::endl; else std::cout &lt;&lt; 0 &lt;&lt; std::endl; &#125; return 0;&#125; 使用了 std::optional 之后就把 bool 类型之前的两态变成了三态，很多类似的逻辑也被封装成了函数，使用它之后代码更清晰了，从此可以告别一些烦人的魔法数了，一些函数参数也可以使用 std::optional 来包装，用法类似，在此就不展开说了。 总结 std::optional 是一个模板类，可以表示一个可能存在的值 std::optional 的内部有两种状态，要么表示一个T类型的值，要么用 std::nullopt 表示没有值 可以用 has_value() 判断一个 std::optional 是否有值，然后用 value() 函数取它表示的值 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 子未经历过，安知此文是鸡汤，子非我，安知我不知此文是鸡汤。意见向左的人往往在内心互道傻X，而现实生活中哪有什么绝对的对错，只是出发点和眼界不同罢了，即使是真理也有适用的环境，“两点之间线段最短”，这一定是对的吗？ 2022-7-17 23:26:03]]></content>
@@ -81,9 +109,9 @@
       <tags>
         <tag>find</tag>
         <tag>查找</tag>
+        <tag>grep</tag>
         <tag>locate</tag>
         <tag>which</tag>
-        <tag>grep</tag>
       </tags>
   </entry>
   <entry>
@@ -194,8 +222,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>commit</tag>
         <tag>tag</tag>
       </tags>
@@ -405,9 +433,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -419,9 +447,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -663,9 +691,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -802,8 +830,8 @@
         <category>windows</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>windows</tag>
+        <tag>linux</tag>
         <tag>ternimal</tag>
         <tag>powershell</tag>
       </tags>
@@ -1198,10 +1226,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1242,9 +1270,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>windows</tag>
         <tag>linux</tag>
         <tag>汇编</tag>
-        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1326,8 +1354,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>stash</tag>
+        <tag>checkout</tag>
         <tag>merge</tag>
       </tags>
   </entry>
@@ -1385,8 +1413,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -1644,8 +1672,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>函数</tag>
-        <tag>堆栈</tag>
         <tag>windows</tag>
+        <tag>堆栈</tag>
       </tags>
   </entry>
   <entry>
@@ -1670,9 +1698,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
