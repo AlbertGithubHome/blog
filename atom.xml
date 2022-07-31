@@ -6,7 +6,7 @@
   <link href="/blog/atom.xml" rel="self"/>
   
   <link href="http://AlbertGithubHome.github.io/blog/"/>
-  <updated>2022-07-30T09:29:45.138Z</updated>
+  <updated>2022-07-31T12:37:52.060Z</updated>
   <id>http://AlbertGithubHome.github.io/blog/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SVN如何删除文件名包含空格的文件</title>
+    <link href="http://AlbertGithubHome.github.io/blog/2022/07/31/SVN%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%90%8D%E5%8C%85%E5%90%AB%E7%A9%BA%E6%A0%BC%E7%9A%84%E6%96%87%E4%BB%B6/"/>
+    <id>http://AlbertGithubHome.github.io/blog/2022/07/31/SVN如何删除文件名包含空格的文件/</id>
+    <published>2022-07-31T09:21:53.000Z</published>
+    <updated>2022-07-31T12:37:52.060Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>SVN</code> 和 <code>Git</code> 两个常用的版本管理工具都有 <code>add</code> 和 <code>commit</code> 命令，但是这两个命令的含义是不同的，<code>git add</code> 命令添加的是变化的文件，不管是增加的文件、删除的文件还是更新的文件，使用 <code>git add</code> 命令之后都可以放到暂存区，而 <code>svn add</code> 命令只能影响新增和变化的文件，对原在库中现已删除的文件没有影响，想要真正删除文件需要在执行 <code>svn commit</code> 命令之前先执行 <code>svn delete</code> 命令。</p><a id="more"></a><h1 id="SVN删除文件"><a href="#SVN删除文件" class="headerlink" title="SVN删除文件"></a>SVN删除文件</h1><p><code>SVN</code> 删除文件需要指定文件名字，而使用在一些自动化脚本中时，被删除的文件都是其他脚本自动删除的，要想获得这些文件的名字，可以利用 <code>svn st</code> 命令来查询，然后搭配管道再使用 <code>svn del</code> 命令来删除这些文件。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ svn st</span><br><span class="line">!       test/A.txt</span><br><span class="line">!       test/B.txt</span><br><span class="line">!       test/C Blank.txt</span><br><span class="line">!       test/DD.txt</span><br><span class="line">M       test/E.txt</span><br><span class="line">?       test/F.txt</span><br><span class="line">A       test/G.txt</span><br></pre></td></tr></table></figure><p><code>svn st</code> 命令的结果对每个变化文件显示一行，第一列是文件状态，第二列及后面的部分是文件名</p><ul><li><code>!</code>：表示已经删除的文件</li><li><code>M</code>：表示文件内容发生变化的文件</li><li><code>?</code>：表示一个新文件，不在原版本库中</li><li><code>A</code>：表示本次新增的文件</li></ul><p>要想删除文件只需要把 <code>!</code> 开头的文件删除就可以了，常规命令如下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svn st | grep ^! | awk <span class="string">'&#123;print " --force "$2&#125;'</span> | xargs -r svn del</span><br></pre></td></tr></table></figure><p>这个命令就是要生成 <code>svn del --force test/A.txt</code> 命令然后执行，这样就能达到删除文件的目的了</p><p>基于这个目的，一般自动化部署的机器上的svn提交命令如下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">svn st | grep ^! | awk <span class="string">'&#123;print " --force "$2&#125;'</span> | xargs -r svn del</span><br><span class="line">svn add . --no-ignore --force</span><br><span class="line">svn commit -m <span class="string">"build message"</span></span><br></pre></td></tr></table></figure><h1 id="被删除的文件名带空格"><a href="#被删除的文件名带空格" class="headerlink" title="被删除的文件名带空格"></a>被删除的文件名带空格</h1><p>上述命令能处理绝大部分的情况，但是如果被删除的文件中包含空格，那么执行命令时就会报错:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ svn st | grep ^! | awk <span class="string">'&#123;print " --force "$2&#125;'</span> | xargs -r svn del</span><br><span class="line">svn: E125001: <span class="string">'test/C'</span> does not exist</span><br></pre></td></tr></table></figure><p>为什么会报错的呢？就是说因为文件 <code>test/C Blank.txt</code> 的名字中包含了空格，使用 <code>awk &#39;{print &quot; --force &quot;$2}&#39;</code> 把空格后半部分的文件名丢掉了，所以只要处理一下这种情况就可以了，处理命令如下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svn st | grep ^! | awk <span class="string">'&#123;$1="";print $0 &#125;'</span> | awk <span class="string">'$1=$1'</span> | awk <span class="string">'&#123;print " --force ""\""$0"\""&#125;'</span> | xargs -r svn del</span><br></pre></td></tr></table></figure><ul><li><code>svn st</code> 显示个文件状态</li><li><code>grep ^!</code> 过滤出原在版本库中但现已删除的文件</li><li><code>awk &#39;{$1=&quot;&quot;;print $0 }&#39;</code> 去掉每行信息中第一列的状态值</li><li><code>awk &#39;$1=$1&#39;</code> 去掉数据开头和结尾的空格</li><li><code>awk &#39;{print &quot; --force &quot;&quot;\&quot;&quot;$0&quot;\&quot;&quot;}&#39;</code> 拼接文件名，并在前后添加引号，<code>--force &quot;test/C Blank.txt&quot;</code></li><li><code>xargs -r svn del</code> 利用管道传递文件名将文件删除</li></ul><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul><li><code>svn st</code> 命令可以查询 <code>SVN</code> 当前目录下各个文件的状态</li><li><code>svn del</code> 命令用于删除原版本库中的文件</li><li>如果待删除的文件名包含空格可使用 <code>svn st | grep ^! | awk &#39;{$1=&quot;&quot;;print $0}&#39; | awk &#39;$1=$1&#39; | awk &#39;{print &quot; --force &quot;&quot;\&quot;&quot;$0&quot;\&quot;&quot;}&#39; | xargs -r svn del</code></li></ul><hr><center><a href="https://blog.csdn.net/albertsh/article/details/126075098" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center><hr><blockquote><p>互发声明并非只是打打嘴架，应该是在相互试探着对方的底线，各自盘算着多方的利益，双方都是极其聪明的人，背后也都有强大的团队提供支持，博弈啊博弈，每一方都会选择对自己最有利的行动~</p><p>2022-7-31 20:13:21</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;&lt;code&gt;SVN&lt;/code&gt; 和 &lt;code&gt;Git&lt;/code&gt; 两个常用的版本管理工具都有 &lt;code&gt;add&lt;/code&gt; 和 &lt;code&gt;commit&lt;/code&gt; 命令，但是这两个命令的含义是不同的，&lt;code&gt;git add&lt;/code&gt; 命令添加的是变化的文件，不管是增加的文件、删除的文件还是更新的文件，使用 &lt;code&gt;git add&lt;/code&gt; 命令之后都可以放到暂存区，而 &lt;code&gt;svn add&lt;/code&gt; 命令只能影响新增和变化的文件，对原在库中现已删除的文件没有影响，想要真正删除文件需要在执行 &lt;code&gt;svn commit&lt;/code&gt; 命令之前先执行 &lt;code&gt;svn delete&lt;/code&gt; 命令。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="SVN" scheme="http://AlbertGithubHome.github.io/blog/categories/SVN/"/>
+    
+    
+      <category term="SVN" scheme="http://AlbertGithubHome.github.io/blog/tags/SVN/"/>
+    
+      <category term="del" scheme="http://AlbertGithubHome.github.io/blog/tags/del/"/>
+    
+      <category term="add" scheme="http://AlbertGithubHome.github.io/blog/tags/add/"/>
+    
+      <category term="commit" scheme="http://AlbertGithubHome.github.io/blog/tags/commit/"/>
+    
+  </entry>
   
   <entry>
     <title>一个月黑风高的夜晚紧急完成gitlab服务器数据迁移</title>
@@ -461,13 +489,13 @@
       <category term="Git" scheme="http://AlbertGithubHome.github.io/blog/categories/Git/"/>
     
     
-      <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
+      <category term="commit" scheme="http://AlbertGithubHome.github.io/blog/tags/commit/"/>
     
-      <category term="stash" scheme="http://AlbertGithubHome.github.io/blog/tags/stash/"/>
+      <category term="git" scheme="http://AlbertGithubHome.github.io/blog/tags/git/"/>
     
       <category term="branch" scheme="http://AlbertGithubHome.github.io/blog/tags/branch/"/>
     
-      <category term="commit" scheme="http://AlbertGithubHome.github.io/blog/tags/commit/"/>
+      <category term="stash" scheme="http://AlbertGithubHome.github.io/blog/tags/stash/"/>
     
       <category term="tag" scheme="http://AlbertGithubHome.github.io/blog/tags/tag/"/>
     
@@ -559,36 +587,6 @@
       <category term="学习" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%AD%A6%E4%B9%A0/"/>
     
       <category term="生活" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%94%9F%E6%B4%BB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Windows设置防火墙允许指定应用正常使用网络</title>
-    <link href="http://AlbertGithubHome.github.io/blog/2021/12/26/Windows%E8%AE%BE%E7%BD%AE%E9%98%B2%E7%81%AB%E5%A2%99%E5%85%81%E8%AE%B8%E6%8C%87%E5%AE%9A%E5%BA%94%E7%94%A8%E6%AD%A3%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C/"/>
-    <id>http://AlbertGithubHome.github.io/blog/2021/12/26/Windows设置防火墙允许指定应用正常使用网络/</id>
-    <published>2021-12-26T09:58:52.000Z</published>
-    <updated>2021-12-29T08:17:30.927Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：</p><a id="more"></a><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/1.png" alt="1"></p><p>但这确实不是一个好的习惯，最近学习了一些网络安全相关的课程，发现打开防火墙还是很有必要的，它可以避免我们遭受一些攻击，最起码可以降低受到攻击的概率，所以我还是决定打开防火墙，同时设置防火墙对自己的开发的应用放行，也就是把应用放到防火墙白名单里，这样就既安全又方便了。</p><h1 id="什么是Windows防火墙"><a href="#什么是Windows防火墙" class="headerlink" title="什么是Windows防火墙"></a>什么是Windows防火墙</h1><blockquote><p>防火墙是一项协助确保信息安全的设备，会依照特定的规则，允许或限制传输的数据通过。防火墙可以是一台专属的硬件也可以是架设在一般硬件上的一套软件。总而言之，防火墙就是帮助计算机网络于其内、外网之间构建一道相对隔绝的保护屏障。</p></blockquote><p>这段文字来自于百科，翻译的直白一点就是说：你的电脑就相当于一个城池，然后网络上的病毒、木马等恶意程序就相当于敌对势力派来的间谍，想混进城去，而防火墙就相当于城门口设置的关卡哨兵用来盘查筛选，放合适的人进城，同时放合法的人出去，既要满足城内人与外界的交流，又要防止恶意的坏人蒙混过关。</p><h1 id="设置允许通过防火墙的应用"><a href="#设置允许通过防火墙的应用" class="headerlink" title="设置允许通过防火墙的应用"></a>设置允许通过防火墙的应用</h1><p>要想设置指定应用允许通过防火墙，需要先打开防火墙功能再设置才会生效，下面以Windows10为例操作一次。</p><ol><li>打开<code>控制面板</code></li></ol><p>按键盘上的 <code>Win</code> 键，然后输入控制面板，在筛选结果中点击“控制面板”选项：</p><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/2.png" alt="2"></p><ol><li>点击<code>系统和安全</code>选项</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/3.png" alt="3"></p><ol><li>点击<code>Windows Defender防火墙</code>选项</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/4.png" alt="4"></p><blockquote><p>其实前面这三步可以简化为，按<code>Win+R</code>快捷键，输入<code>firewall.cpl</code>回车即可</p></blockquote><ol><li>点击<code>启用或关闭Windows Defender防火墙</code>选项</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/5.png" alt="5"></p><ol><li>勾选<code>启用 Windows Defender 防火墙</code> 选项，点击确定按钮</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/6.png" alt="6"></p><ol><li>点击<code>允许应用或功能通过 Windows Defender 防火墙</code>选项</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/7.png" alt="7"></p><ol><li>找到目标应用，把后面两个选项勾选上，然后点击确定即可</li></ol><p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/firewall/8.png" alt="8"></p><p>这里以 <code>WeChat</code> 为例，在<code>专用</code> 和 <code>公用</code>两个复选框上打钩，然后单击下面的确定按钮就可以了，如果列表中没有想要添加白名单的应用，还可以点击确定按钮上面的 <code>允许其他应用(R)</code>按钮来自己添加。</p><h1 id="防火墙中的专用和公用"><a href="#防火墙中的专用和公用" class="headerlink" title="防火墙中的专用和公用"></a>防火墙中的专用和公用</h1><p>防火墙中的<code>专用</code> 和 <code>公用</code>是针对网络而言的，Windows中给出的说明：专用网络，例如家庭或工作网络；公用网络，比如机场和咖啡店中的网络。那么是不是当我在家里连网时就是专用网络，而在咖啡厅连接网络时就自动识别为公用网络呢？</p><p>Windows当然没有这么智能，连接新的网络时属于什么类型的网络需要你自己选择，也就是说你自己要做出判断，如果是自己家的网络，基本是上独享的安全的，那就可以设置为专用网络，如果是连接的公共Wifi那必须要选择公用网络。</p><p>而防火墙中对专用网络和公用网络有不同的设置，这个比较好理解，还是以前面城池和哨兵的比喻为例，防火墙作为哨兵在不同的环境下有不同的标准，比如在和平时期，对非常可疑的人才禁止入城，而在战时，除了必要的粮草供应，其他的普通商人可能都不允许入内了。</p><p>所以当一个应用无法联网时，需要检查一下应用设置白名单中是在哪个网络环境下，如果是可以信赖的应用，通常在专用网络和公用网络都会设置允许通过防火墙。</p><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul><li>快捷键 <code>Win+R</code> 输入 <code>firewall.cpl</code> 后回车，可以快速打开防火墙设置</li><li>Windows中的专用网络和公用网络需要自己在连接网络时设置，系统本身没有准确分辨的能力</li><li>防火墙中对专用网络和公用网络有不同的设置，相当于在不同的网络环境下设置了不同的安全级别</li></ul><hr><center><a href="https://blog.csdn.net/albertsh/article/details/122032810" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center><hr><blockquote><p>默默的付出是否值得？一查问题就消耗几个小时，修复个BUG前前后后花了几天，有时会假设站在高处，望着此时的自己，这样做是否值得？成年人的世界往往只看性价比，如果说花了几天时间却一无所获，那之前的付出确实不值得，也就是做了一件性价比很低的事情。但是这个结果是做完才知道的，在做之前并不能准确判断是否值得，无法进行“挑选”，也不应该抱着我不做总有人会做的态度，既然做就全力以赴，若无果也仅仅是我们“赌”输了而已。但要记住，现实的世界只记得功劳，没有结论、没有反馈、毫无借鉴意义的苦劳一文不值~</p><p>2021-12-26 23:54:19</p></blockquote>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;很长一段时间以来，防火墙这个神奇的“玩意”在我的电脑上基本属于名存死亡，因为做网络软件开发的缘故，经常需要别人连接我的电脑来进行测试，打开Windows的防火墙常常出现网络无法联通的情况，所以在我的电脑上防火墙基本处于关闭状态，就像下面这样：&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="windows" scheme="http://AlbertGithubHome.github.io/blog/categories/windows/"/>
-    
-    
-      <category term="Win10" scheme="http://AlbertGithubHome.github.io/blog/tags/Win10/"/>
-    
-      <category term="windows" scheme="http://AlbertGithubHome.github.io/blog/tags/windows/"/>
-    
-      <category term="防火墙" scheme="http://AlbertGithubHome.github.io/blog/tags/%E9%98%B2%E7%81%AB%E5%A2%99/"/>
-    
-      <category term="firewall" scheme="http://AlbertGithubHome.github.io/blog/tags/firewall/"/>
-    
-      <category term="白名单" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%99%BD%E5%90%8D%E5%8D%95/"/>
     
   </entry>
   
