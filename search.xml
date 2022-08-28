@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[rm -rf 真是删库跑路的一把好手]]></title>
+    <url>%2Fblog%2F2022%2F08%2F26%2Frm-rf-%E7%9C%9F%E6%98%AF%E5%88%A0%E5%BA%93%E8%B7%91%E8%B7%AF%E7%9A%84%E4%B8%80%E6%8A%8A%E5%A5%BD%E6%89%8B%2F</url>
+    <content type="text"><![CDATA[前言上回书说到《一个月黑风高的夜晚紧急完成gitlab服务器数据迁移》，因为数据迁移后原数据还是存在的，该分区硬盘快满了，进而影响了原目录下的日志存储，既然数据已经迁移到新的路径了，那原来的库直接删掉就好了，往往就是这么不经意间做了一个令人十分后怕的决定。 删库说干就干，连上服务器就开始操作了，为了避免搞错了，我还打开了另一个ssh窗口，对照着正在使用的git库，来一步步查找原来路径下已经废弃的仓库，嗯，终于找到了，对比各种信息没啥问题，两个窗口相互对照，十分“保险”。 rm -rf xxx 走你，一切都安静了，好了退出当前路径检查一下空间大小，咦？路径怎么不对，好像删的是正在使用的那个库哎！服了，还真是受到了惊吓啊！背后发凉啊！gitlab网站访问一下，嗯，果然找不到了，拜拜！ 跑路既然库都删完了，要不跑路吧？ 算了，能跑到哪呢？先回去看看能不能找回来吧~ 恢复rm -rf 恢复硬盘数据是别想了，一般会让你卸载硬盘，断网，防止擦除，用第三方工具等，这我之前都演练过，几乎没什么用，这个时候需要冷静，先理智的分析一下： 既然是git库，我本地也是有的，要不我把我的库推上去试试？虽然没有那么新，但也差不了几个提交了，不过远程库都被我删了，我如果推上去一个新库，别人是不是直接访问不了，或者引发冲突呢？ 想起之前迁移的时候我还备份了数据目录呢，那这样，先把备份的数据恢复到误删除的目录下，然后我再找一个本地的拉取到了最新状态git库推上去，既然想清楚了，那就动手吧。 通知相关人员先不要拉取和推送数据 把一月前备份的git-data目录中对应数据通过 rsync 命令拷贝到误删除目录，这时通过gitlab网站已经能看到数据了，只是数据是一个月前的 跳到版本发布机，上面的Git库数据是最新的，按照分支把版本发布机上的git数据逐个推送到gitlab服务器 再次打开gitlab网站发现一切恢复如初，真是…… 感想rm -rf 命令真是删库跑路的一把好手，一点也不拖泥带水，更无回收站这个后悔药可以吃，所以在服务器上对文件使用了这个命令，基本上等于判了死刑，但是git库真是一个好东西，分布式的存储可以保证每个人那都有完整的仓库，只要能找到一个最新的就行。 为了保证我能有最新的库可以用，我赶紧在 jenkins 上新建了两个定时任务，每天定时把仓库拉取到最新，防止类似意外的发生。 后续其实这个后续和删库这件事没有任何关系，如果非得说有什么关系，就是它们都属于“灾难”，删库刚刚处理完，紧接着游戏玩家出现登录不上的问题，一开始以为是网络波动，因为我登录过程也不太顺畅，直到玩家发来了录屏，我才发现这个问题又有的查了。 玩家所说的无法登录并不是真的登不进去，而是登录之后加载完读条刚要进场景，直接退到登录界面，查询网络消息发现每次登录后几秒钟，网络连接自动断开，但是断开前的通讯流程日志显示的延迟信息，又说明网络状况良好，一头雾水。 最后耗时两天，在收集了各种线索以后，发现是升级Unity版本后，在法语、俄语、乌克兰语作为系统语言时，对c#的字符串处理逻辑要求更加严格，如果不做处理沿用之前的写法，很容易出现崩溃错误，因为有try-catch处理，表现出来就是直接断网会登录界面，统一设置语言处理函数时修复了此问题。 身心俱疲~ 总结 使用 rm -rf 命令还是要谨慎，谨慎，再谨慎 如果真的删库了，也不一定非得跑路，先冷静想想有没有补救的措施 语言、字符集、编码真的是相互纠结，至此我的bug库里又收录了系统语言运行时，神奇 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 北风卷地白草折，胡天八月即飞雪~ 2022-8-26 23:41:18]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>Git</tag>
+        <tag>rm</tag>
+        <tag>删除</tag>
+        <tag>恢复</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[git查看历史记录及修改内容]]></title>
+    <url>%2Fblog%2F2022%2F08%2F21%2Fgit%E6%9F%A5%E7%9C%8B%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E5%8F%8A%E4%BF%AE%E6%94%B9%E5%86%85%E5%AE%B9%2F</url>
+    <content type="text"><![CDATA[前言在 Git 中没有真正的方法来做任何事情，这就是它的妙处！比如查看修改内容这件事，有些人会想到 git log，有些人会想到 git show，最近我又学到一个 git whatchanged，实现目的方法多种多样，各种途径任君挑选。 刚开始步入软件开发行业时喜欢捣鼓各种软件，进行各种个性化配置，任意修改快捷键，这样在开发过程中确实会舒服一些，但是换了一个环境时（电脑重装或在别人的机器），就好像一个什么也不会的傻子一样，所以慢慢的我开始强迫自己熟悉软件自己的快捷键和各种命令，这样在重装系统时会免去很多麻烦，并且因为一些命令用习惯了，在编写部署脚本时也不会总是写出不能识别的简写命令了。 修改文件为了测试各种的查找修改记录的命令，我先进行一次包含增加、修改、删除的提交，然后对比来看各个命令的作用，实际修改如下： 在文件address.txt中增加两行数据 清空文件age.txt中4行数据 修改文件name.txt中一行数据 增加带有3行数据的phone.txt文件 删除带有2行数据的story.txt文件 在执行了 git add . 命令后，可以用 git diff --staged 查看即将提交的文件修改，展示如下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849$ git diff --stageddiff --git a/address.txt b/address.txtindex e69de29..8f9d6e6 100644--- a/address.txt+++ b/address.txt@@ -0,0 +1,2 @@+beijing+shanghai\ No newline at end of filediff --git a/age.txt b/age.txtindex 58f78c9..e69de29 100644--- a/age.txt+++ b/age.txt@@ -1,4 +0,0 @@-12-16-17-15\ No newline at end of filediff --git a/name.txt b/name.txtindex ac37a53..0ed306a 100644--- a/name.txt+++ b/name.txt@@ -1,4 +1,4 @@ tom-alice+jerry bily andy\ No newline at end of filediff --git a/phone.txt b/phone.txtnew file mode 100644index 0000000..241bcdb--- /dev/null+++ b/phone.txt@@ -0,0 +1,3 @@+110+120+119\ No newline at end of filediff --git a/story.txt b/story.txtdeleted file mode 100644index 0d89902..0000000--- a/story.txt+++ /dev/null@@ -1,2 +0,0 @@-King-Wolf\ No newline at end of file 关于 git diff 对于很多使用 git 管理代码的小伙伴再熟悉不过了，但是其中有些细节还是需要学习的： diff --git a/name.txt b/name.txt 这一行是说以下展示 name.txt 文件修改前后的信息，a/name.txt 和 b/name.txt 分别表示修改前后的文件名 index ac37a53..0ed306a 100644 这一行表示文件修改前后的 object，100644 表示这是一个常规文件，文件权限为 644，使用 git cat-file -p可以查看文件内容： 1234567891011$ git cat-file -p ac37a53tomalicebilyandy$ git cat-file -p 0ed306atomjerrybilyandy a/name.txt``` 表示修改前的文件，```+++ b/name.txt``` 表示修改后的文件12345678910114. `@@ -1,4 +1,4 @@` 这一句应该是最有意思的，也是不用一看懂的一行，其中开头和结尾的 `@@` 为固定格式，`-1,4` 表示修改前的 `1~4`行，`+1~4`表示修改后的`1~4`行，这句话的意思就是，以下内容展示了修改前 `1~4`行到修改后 `1~4`行的文件变化，因为我们只修改了一行，所以修改前后行数不变，如果新增行数和删除行数不同，那么这个位置展示的行数也是不同的，例如 `phone.txt` 文件的变化 `@@ -0,0 +1,3 @@`5. 最后就是文件具体的变化了，新增内容前面是加号 `+`，删除内容前面是减号 `-`： ```bash tom -alice +jerry bily andy 查询文件修改当我们把修改的内容提交以后，这条修改属于存入了仓库的历史之中，git diff 就无法再查看文件的变化了，而需要使用 git log 或 git show 来查看文件修改的内容，接下来我们来看看这些命令都能用来干嘛。 git showgit show 默认展示最近一次提交的修改，与执行 git commit 命令之前的 git diff --staged 查看得到的绝大部分内容相同，只是在开头位置包含最新提交的信息： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455$ git showcommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example datadiff --git a/address.txt b/address.txtindex e69de29..8f9d6e6 100644--- a/address.txt+++ b/address.txt@@ -0,0 +1,2 @@+beijing+shanghai\ No newline at end of filediff --git a/age.txt b/age.txtindex 58f78c9..e69de29 100644--- a/age.txt+++ b/age.txt@@ -1,4 +0,0 @@-12-16-17-15\ No newline at end of filediff --git a/name.txt b/name.txtindex ac37a53..0ed306a 100644--- a/name.txt+++ b/name.txt@@ -1,4 +1,4 @@ tom-alice+jerry bily andy\ No newline at end of filediff --git a/phone.txt b/phone.txtnew file mode 100644index 0000000..241bcdb--- /dev/null+++ b/phone.txt@@ -0,0 +1,3 @@+110+120+119\ No newline at end of filediff --git a/story.txt b/story.txtdeleted file mode 100644index 0d89902..0000000--- a/story.txt+++ /dev/null@@ -1,2 +0,0 @@-King-Wolf\ No newline at end of file git show 还可以加数字，比如 git show -3 就是展示最近3次提交修改信息。 git show --stat 可以查看最新提交的修改文件，如果想查看指定提交的修改文件信息，可以在后面跟上commit-id，例如 git show --stat 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee 12345678910111213$ git show --statcommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data address.txt | 2 ++ age.txt | 4 ---- name.txt | 2 +- phone.txt | 3 +++ story.txt | 2 -- 5 files changed, 6 insertions(+), 7 deletions(-) 这个展示信息可以清楚的看出哪些文件新增了内容，哪些文件删除了内容，并且展示了文件增伤行数的比例，但是有一点它不够清晰，那就是无法看出哪些是新增的文件，哪些是删除的文件，比如 age.txt 和 story.txt 都显示删除了数据，但实际上 story.txt 整个文件都从仓库中删除了，要想看出文件增删状态可以使用接下来展示的这个命令 git whatchanged git whatchangedgit whatchanged 可以展示出文件的增删状态和权限修改，默认分页展示所有提交记录，可以后面加数字来展示最近几次的文件增删状态： 123456789101112$ git whatchanged -1commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data:100644 100644 e69de29 8f9d6e6 M address.txt:100644 100644 58f78c9 e69de29 M age.txt:100644 100644 ac37a53 0ed306a M name.txt:000000 100644 0000000 241bcdb A phone.txt:100644 000000 0d89902 0000000 D story.txt 从这个文件中就可以看出 address.txt、age.txt、name.txt 三个文件被修改了，phone.txt 是新增加的，story.txt 文件被删除了，如果在命令后面加上选项 --stat 作用就和 git show 一样了，兜兜转转回到原点~ 12345678910111213$ git whatchanged -1 --statcommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data address.txt | 2 ++ age.txt | 4 ---- name.txt | 2 +- phone.txt | 3 +++ story.txt | 2 -- 5 files changed, 6 insertions(+), 7 deletions(-) git log根据我个人的理解，git show 注重查看一次提交中修改的内容，而 git log 主要用于查找历史提交的脉络，但这不是绝对的，因为git做一件事，没有绝对的一种方式，你也可以用 git log 来实现 git show。 展示最近一次提交 123456$ git log -1commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data 展示其他分支最近一次提交 123456$ git log -1 devcommit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 12:02:11 2022 +0800 init git repository 展示修改的文件列表及文件修改的统计 12345678910111213$ git log -1 --statcommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data address.txt | 2 ++ age.txt | 4 ---- name.txt | 2 +- phone.txt | 3 +++ story.txt | 2 -- 5 files changed, 6 insertions(+), 7 deletions(-) 展示每次修改的文件列表 123456789101112$ git log -1 --name-onlycommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example dataaddress.txtage.txtname.txtphone.txtstory.txt 展示修改的文件列表和显示状态 123456789101112$ git log -1 --name-statuscommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example dataM address.txtM age.txtM name.txtA phone.txtD story.txt 展示指定作者提交的记录 123456$ git log -1 --author="albert"commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data 单行展示提交的记录 123$ git log --oneline2447e2b (HEAD -&gt; master) update example data62cc52c (dev) init git repository 展示指定日期之前的提交记录 123456789101112$ git log --before='2022-08-22'commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example datacommit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 12:02:11 2022 +0800 init git repository 展示一天之内的提交记录 123456789101112$ git log --since=1.day.agocommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example datacommit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 12:02:11 2022 +0800 init git repository 展示指定包含指定内容的提交记录 123456$ git log --grep=updatecommit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 15:22:08 2022 +0800 update example data 展示指定不包含指定内容的提交记录 123456$ git log --grep=update --invert-grepcommit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)Author: albert &lt;albert101@163.com&gt;Date: Sun Aug 21 12:02:11 2022 +0800 init git repository 终极大招，图形化展示，其实用的并不多 12345678$ git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset' --abbrev-commit --date=relative --all* 2447e2b - (HEAD -&gt; master) update example data (77 minutes ago) &lt;albert&gt;* 62cc52c - (dev) init git repository (2 hours ago) &lt;albert&gt;* 719ec7a - (refs/stash) WIP on master: 83f00c5 init git repository (2 hours ago) &lt;albert&gt;|\| * 9c87e06 - index on master: 83f00c5 init git repository (2 hours ago) &lt;albert&gt;|/* 83f00c5 - init git repository (5 hours ago) &lt;albert&gt; 总结 查看最近一次修改的内容使用 git show 查看最近一次修改的文件使用 git show --stat 或 git log -1 --name-only 查看最近一次修改的文件状态使用 git whatchanged -1 或 git log -1 --name-status 图形化显示git提交记录使用 git log --graph ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 轻生的人到底是勇敢还是懦弱呢？虽说我未经历过他的人生不该轻易评判，但就我主观来思考这类事，大抵是因为对生活失去了信心。人固有一死，或重于泰山，或轻于鸿毛。而遇到困难就选择轻生的人是自私且不负责任的，若你无牵无挂走了也就走了，倘若还有家人岂不是还要拿出额外一笔钱给你办个葬礼？连死都不怕了，还有什么是过不去的呢？ 2022-8-21 21:19:13 &lt;!–我曾走过山，走过水，其实只是借助它们走过我的生命；我看着天，看着地，其实只是借助它们确定我的位置；我爱着他，爱着你，其实只是借助别人实现了我的爱欲。 ——史铁生《务虚笔记》– &gt;]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>log</tag>
+        <tag>版本控制</tag>
+        <tag>Git</tag>
+        <tag>历史记录</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[参考开源项目实现一个简易的C++枚举转字符串的函数]]></title>
+    <url>%2Fblog%2F2022%2F08%2F07%2F%E5%8F%82%E8%80%83%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E6%98%93%E7%9A%84C-%E6%9E%9A%E4%B8%BE%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%87%BD%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[前言前段时间接触了 magic_enum 这个开源库，代码量不算太多，是一个但头文件的枚举操作库，关于如何使用还写了一篇总结 《推荐一个C++枚举转字符串的开源项目magic_enum》，当时觉得这个库很棒，但是对于我当前枚举转化字符串的需求还说还是太臃肿了，所以决定改造一下，这不今天过来填坑了。 改造一开始还没太理解开源库的原理，认为原来的实现限制太大，为了实现后面字符串转枚举，获取所有枚举名等需求，不得不限定一个枚举的范围，这个范围在 magic_enum 这个开源库中是 [-128, 128]，所以当我开始改造时打算把这个范围去掉，但是当我真正弄懂它的原理后，才发现这个范围是必须指定的，不然无法在编译期预处理，从而达到枚举值转换成字符串的目的。 认识到这一点以后，我也不再纠结范围的限制，设定了一个 [0, 31] 的常用枚举范围，相比于原来 [-128, 128] 的范围缩小了不少，这样能加快编译的速度，参考这个开源库和一些网络上关于这个库的讲解，我也实现了一个功能单一的简洁的枚举转字符串的函数 Enum2String，大约70行代码，使用起来还是比较方便的。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273#include &lt;array&gt;#include &lt;string&gt;#include &lt;utility&gt;#include &lt;string_view&gt;template &lt;typename E, E V&gt;constexpr auto PrettyName()&#123; std::string_view name&#123;__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__) - 2&#125;; name.remove_prefix(name.find_last_of(" ") + 1); if (name.front() == '(') name.remove_prefix(name.size()); return name;&#125;template &lt;typename E, E V&gt;constexpr bool IsValidEnum()&#123; return !PrettyName&lt;E, V&gt;().empty();&#125;template &lt;int... Seq&gt;constexpr auto MakeIntegerSequence(std::integer_sequence&lt;int, Seq...&gt;)&#123; return std::integer_sequence&lt;int, (Seq)...&gt;();&#125;constexpr auto NormalIntegerSequence = MakeIntegerSequence(std::make_integer_sequence&lt;int, 32&gt;());template &lt;typename E, int... Seq&gt;constexpr size_t GetEnumSize(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::array&lt;bool, sizeof...(Seq)&gt; valid&#123;IsValidEnum&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; constexpr std::size_t count = [](decltype((valid)) v) constexpr noexcept-&gt;std::size_t &#123; auto cnt = std::size_t&#123;0&#125;; for (auto b : v) if (b) ++cnt; return cnt; &#125;(valid); return count;&#125;template &lt;typename E, int... Seq&gt;constexpr auto GetAllValidValues(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::size_t count = sizeof...(Seq); constexpr std::array&lt;bool, count&gt; valid&#123;IsValidEnum&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; constexpr std::array&lt;int, count&gt; seq&#123;Seq...&#125;; std::array&lt;int, GetEnumSize&lt;E&gt;(NormalIntegerSequence)&gt; values&#123;&#125;; for (std::size_t i = 0, v = 0; i &lt; count; ++i) if (valid[i]) values[v++] = seq[i]; return values;&#125;template &lt;typename E, int... Seq&gt;constexpr auto GetAllValidNames(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::array&lt;std::string_view, sizeof...(Seq)&gt; names&#123;PrettyName&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; std::array&lt;std::string_view, GetEnumSize&lt;E&gt;(NormalIntegerSequence)&gt; validNames&#123;&#125;; for (std::size_t i = 0, v = 0; i &lt; names.size(); ++i) if (!names[i].empty()) validNames[v++] = names[i]; return validNames;&#125;template &lt;typename E&gt;constexpr std::string_view Enum2String(E V)&#123; constexpr auto names = GetAllValidNames&lt;E&gt;(NormalIntegerSequence); constexpr auto values = GetAllValidValues&lt;E&gt;(NormalIntegerSequence); constexpr auto size = GetEnumSize&lt;E&gt;(NormalIntegerSequence); for (size_t i = 0; i &lt; size; ++i) if (static_cast&lt;int&gt;(V) == values[i]) return names[i]; return std::to_string(static_cast&lt;int&gt;(V));&#125; 函数使用这个Enum2String函数使用也非常方便，直接把枚举变量作为参数传进去就可以了: 1234567891011121314151617#include "myenum.h"#include &lt;iostream&gt;enum class Color&#123; RED, GREEN, BLUE,&#125;;int main()&#123; Color c = Color::BLUE; std::cout &lt;&lt; Enum2String(c) &lt;&lt; std::endl; return 0;&#125; 编译运行后的结果为： 12$ g++ enumtest.cpp -std=c++17 &amp;&amp; ./a.outColor::BLUE 各函数的作用前面提到过，我这个库还是参考 magic_enum 这个开源库的源码及网上对它的讲解来实现的，只不过精简了大部分我用不到的内容，仅实现了我想要的枚举转字符串的功能，并且大部分都在编译器求值，仅 Enum2String 函数中遍历的部分只能在运行时才能计算求得，所以效率还算不错，各个模板函数作用明确，下面简单描述下： 12345678template &lt;typename E, E V&gt;constexpr auto PrettyName()&#123; std::string_view name&#123;__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__) - 2&#125;; name.remove_prefix(name.find_last_of(" ") + 1); if (name.front() == '(') name.remove_prefix(name.size()); return name;&#125; PrettyName() 函数是利用 __PRETTY_FUNCTION__ 这个宏来截取最终我们想要的字符串，如果不做处理，__PRETTY_FUNCTION__ 的值会是这样： constexpr auto PrettyName() [with E = Color; E V = Color::BLUE] 靠近结尾的 Color::BLUE 正是我们想要得到的字符串，所以我们可以按照自己的需要把它截取出来。 12345template &lt;typename E, E V&gt;constexpr bool IsValidEnum()&#123; return !PrettyName&lt;E, V&gt;().empty();&#125; IsValidEnum() 函数是用于判断一个枚举名字是否有效，如果截取的最终名字为空，则认为此枚举无效。 1234567template &lt;int... Seq&gt;constexpr auto MakeIntegerSequence(std::integer_sequence&lt;int, Seq...&gt;)&#123; return std::integer_sequence&lt;int, (Seq)...&gt;();&#125;constexpr auto NormalIntegerSequence = MakeIntegerSequence(std::make_integer_sequence&lt;int, 32&gt;()); MakeIntegerSequence() 用于生成一个范围是 [0, 32) 的整数数列。 123456789101112template &lt;typename E, int... Seq&gt;constexpr size_t GetEnumSize(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::array&lt;bool, sizeof...(Seq)&gt; valid&#123;IsValidEnum&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; constexpr std::size_t count = [](decltype((valid)) v) constexpr noexcept-&gt;std::size_t &#123; auto cnt = std::size_t&#123;0&#125;; for (auto b : v) if (b) ++cnt; return cnt; &#125;(valid); return count;&#125; GetEnumSize() 用于遍历数列范围内的各个整数，找出有效的枚举有多少个。 1234567891011template &lt;typename E, int... Seq&gt;constexpr auto GetAllValidValues(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::size_t count = sizeof...(Seq); constexpr std::array&lt;bool, count&gt; valid&#123;IsValidEnum&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; constexpr std::array&lt;int, count&gt; seq&#123;Seq...&#125;; std::array&lt;int, GetEnumSize&lt;E&gt;(NormalIntegerSequence)&gt; values&#123;&#125;; for (std::size_t i = 0, v = 0; i &lt; count; ++i) if (valid[i]) values[v++] = seq[i]; return values;&#125; GetAllValidValues() 用于遍历数列范围内各个整数，找出全部有效枚举值，返回包含有效值的数组。 123456789template &lt;typename E, int... Seq&gt;constexpr auto GetAllValidNames(std::integer_sequence&lt;int, Seq...&gt;)&#123; constexpr std::array&lt;std::string_view, sizeof...(Seq)&gt; names&#123;PrettyName&lt;E, static_cast&lt;E&gt;(Seq)&gt;()...&#125;; std::array&lt;std::string_view, GetEnumSize&lt;E&gt;(NormalIntegerSequence)&gt; validNames&#123;&#125;; for (std::size_t i = 0, v = 0; i &lt; names.size(); ++i) if (!names[i].empty()) validNames[v++] = names[i]; return validNames;&#125; GetAllValidNames() 用于遍历数列范围内各个整数，找出全部有效枚举值的名字，返回包含这些名字的数组。 12345678910template &lt;typename E&gt;constexpr std::string_view Enum2String(E V)&#123; constexpr auto names = GetAllValidNames&lt;E&gt;(NormalIntegerSequence); constexpr auto values = GetAllValidValues&lt;E&gt;(NormalIntegerSequence); constexpr auto size = GetEnumSize&lt;E&gt;(NormalIntegerSequence); for (size_t i = 0; i &lt; size; ++i) if (static_cast&lt;int&gt;(V) == values[i]) return names[i]; return std::to_string(static_cast&lt;int&gt;(V));&#125; Enum2String() 用于从编译期生成的数组中遍历寻找枚举值等于参数的枚举值名字，如果枚举值无效或者超出范围就范围对应的整数字符串。 总结 magic_enum 是个很不错的库，但他相对于我的需求来说显得太大了 根据自己的需求改造开源库，一方面巩固了知识，另一方面也更适合自己的要求 constexpr 这个东东可以在编译期求值，后面可以多花点时间研究一下 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 原始财富的积累的真的是太难了，那些趁着各种东风各种红利的人们是幸运的，运气也是人生的一部分，而大部分没有这运气的人们想要积累财富，必然要付出十倍甚至上百倍的努力，这些不可选择也无需抱怨，只要踏踏实实往前走就好了~ 2022-8-7 16:19:20]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>字符串</tag>
+        <tag>enum</tag>
+        <tag>开源项目</tag>
+        <tag>枚举</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[std::uniform_real_distribution的一个bug引发的服务器崩溃]]></title>
     <url>%2Fblog%2F2022%2F08%2F06%2Fstd-uniform-real-distribution%E7%9A%84%E4%B8%80%E4%B8%AAbug%E5%BC%95%E5%8F%91%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B4%A9%E6%BA%83%2F</url>
     <content type="text"><![CDATA[前言近日发生一次线上游戏服务器宕机问题，通过日志和core文件信息定位到崩溃的函数，但是崩溃的位置却是一段很长时间都没有改动过的代码，起初怀疑是配置数据的问题，但仔细查看之后均正常，然后又怀疑是玩家旧数据异常导致，但是分析代码逻辑后也没发现问题，最后是一个同事发现生成随机数的代码有bug，导致数组越界了，还真是个意想不到的原因。 崩溃问题崩溃出现在从数组中随机一个数的逻辑中，其中用到了 std::uniform_real_distribution 这个模板类，示例代码如下： 123456789vector&lt;int&gt; v&#123;1, 3, 5, 6&#125;;std::random_device rd;std::mt19937 gen(rd());std::uniform_real_distribution&lt;float&gt; dis(0, 1.0f);int n = static_cast&lt;int&gt;(dis(gen) * v.size());return v[n]; 之前也了解过 std::uniform_real_distribution&lt;float&gt; dis(0, 1.0f); 这个用法，他应该返回的范围是 [0, 1.0) 内左闭右开的浮点数，所以最终计算出的 n 的值应该为 [0, n-1] 范围内的整数，所以这段代码不应该有问题，但是问题却恰恰出现在 std::uniform_real_distribution 的身上。 std::uniform_real_distribution&lt;&gt; 的bugstd::uniform_real_distribution 这个模板类定义在头文件 &lt;random&gt; 中，是C++11新加的内容，定义如下： 12template&lt; class RealType = double &gt;class uniform_real_distribution; 可产生均匀分布在区间 [a, b) 上的随机浮点值 x。 但是这个函数有个bug，它有时候会返回边界值b，也就是说实际范围变成了 [a, b]。 可以通过 cppreference.com - uniform_real_distribution查到，具体描如下： It is difficult to create a distribution over the closed interval [a,b] from this distribution. Using std::nextafter(b, std::numeric_limits::max()) as the second parameter does not always work due to rounding error. Most existing implementations have a bug where they may occasionally return b (GCC #63176 LLVM #18767 MSVC STL #1074). This was originally only thought to happen when RealType is float and when LWG issue 2524 is present, but it has since been shown that neither is required to trigger the bug. 关于这个bug还可以看一下这个帖子的讨论： Is 1.0 a valid output from std::generate_canonical? 看得时候注意一下这段描述 This problem can also occur with std::uniform_real_distribution; the solution is the same, to specialize the distribution on double and round the result towards negative infinity in float. bug 重现方法这个bug有多种变体，其中一个就是说它和 generate_canonical 产生随机数有关 12345678910111213141516171819202122#include &lt;iostream&gt;#include &lt;limits&gt;#include &lt;random&gt;int main()&#123; std::mt19937 rng; std::seed_seq sequence&#123;0, 1, 2, 3, 4, 5, 6, 7, 8, 9&#125;; rng.seed(sequence); rng.discard(12 * 629143 + 6); float random = std::generate_canonical&lt;float, std::numeric_limits&lt;float&gt;::digits&gt;(rng); if (random == 1.0f) &#123; std::cout &lt;&lt; "Bug!\n"; &#125; return 0;&#125; 此段代码在编译器 g++ 5.4.0 上编译执行时能重现，但是在 g++ 10.0.3 上已经被修复无法重现了，再看下面这段代码： 12345678910111213141516171819202122#include &lt;iostream&gt;#include &lt;random&gt;int main()&#123; std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution&lt;&gt; dis(0, 1.0f); while (true) &#123; float f = dis(gen); if (f &gt;= 1.0) &#123; std::cout &lt;&lt; "BUG\n"; break; &#125; &#125; return 0;&#125; 这段代码无论是 g++ 5.4.0 版本还是 g++ 10.0.3 都能重现打印出 BUG，这个问题在于模板默认是 double 类型，最后转化成 float 来使用，我按照建议之前帖子中的建议，都改成 double 来使用，之后一直运行了10来天再没出现过随机到边界值的问题。 总结 标准库中的内容很权威，但是不保证一定是正确的，可以持有怀疑态度 std::uniform_real_distribution的历史版本是有bug，几乎各个编译器都出现过随机到边界值的情况 这个bug其实在文档中已经指出了，所以大家看文档时还是要仔细一点，往往使用不规范也容易造成bug ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 适当的放松是生活的调味剂，有时候真的需要肆意挥霍一下，一张一弛，生活之道~ 2022-8-7 01:30:30]]></content>
@@ -46,7 +90,7 @@
   <entry>
     <title><![CDATA[推荐一个C++枚举转字符串的开源项目magic_enum]]></title>
     <url>%2Fblog%2F2022%2F07%2F23%2F%E6%8E%A8%E8%8D%90%E4%B8%80%E4%B8%AAC-%E6%9E%9A%E4%B8%BE%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AEmagic-enum%2F</url>
-    <content type="text"><![CDATA[前言C++11引入了强类型的枚举类 enum class 用来代替旧风格枚举enum，新引入的 enum class 具有诸多优点：防止命名空间污染，不能隐式的转换为整型，防止不同类型的枚举相互赋值，支持前置声明。当然它也不是只有优点，因为类型不能隐式转换成int，所以在使用或者输出时需要使用 static_cast 进行转换，不过即便使用 static_cast 可以转换后输出，也不便于我们辨识枚举的值，如果想输出枚举定义时的名字就需要使用一些魔法了。 magic_enum因为C++本身不支持反射，或者说反射能力极弱，所以想反射我们必须自己实现一些东西，比如 UE 引擎就为C++写了一套自己的反射标签，而我们想获得枚举定义时的名字就需要自己记录了，因为编译后的枚举一般都转化成了整数，一个简单粗暴的想法是在定义时为每个枚举值同时指定一个同名字符串，构成map存储下来，不过我们不想每次都自己来做这件事，要是有人能帮忙就好了，这不它来了， magic_enum 就可以帮你实现这个愿望。 简单介绍magic_enum 是一个单头文件的开源库，使用方便，可以轻松帮你实现打印枚举值定义时名字的需求，另外除了可以实现这个功能，还可以根据字符串生成枚举值，根据整数生成枚举值，获取枚举值数组，获取枚举值和名字对应的数字组等等，简直是一个封装了枚举操作的宝库。 具体使用直接引用头文件 magic_enum.hpp，然后调用函数 magic_enum::enum_name(enum_xxx) 即可： 1234567891011121314151617181920212223#include &lt;iostream&gt;#include "magic_enum.hpp"enum class WeekDay&#123; WD_SUNDAY = 0, WD_MONDAY, WD_TUESDAY, WD_WEDNESDAY, WD_THURSDAY, WD_FRIDAY, WD_SATURDAY,&#125;;int main()&#123; WeekDay day = WeekDay::WD_MONDAY; std::cout &lt;&lt; "enum value: " &lt;&lt; static_cast&lt;std::underlying_type&lt;WeekDay&gt;::type&gt;(day) &lt;&lt; "\n"; std::cout &lt;&lt; "enum name: " &lt;&lt; magic_enum::enum_name(day) &lt;&lt; "\n"; return 0;&#125; 编译运行如下： 123$ g++ testenum.cpp -std=c++17 &amp;&amp; ./a.outenum value: 1enum name: WD_MONDAY 原理简述很神奇对不对，其实枚举值转换成字符串这一步，是是利用了函数模板和 __PRETTY_FUNCTION__ 组合使用获得到的，也就是对 __PRETTY_FUNCTION__ 进行截取得到的字符串。 __PRETTY_FUNCTION__ 在预编译阶段会替换成带有参数的函数名，比如 constexpr auto magic_enum::detail::n() [with E = WeekDay; E e = WD_MONDAY] 从中截取出 WD_MONDAY 就可以了。 局限性为了实现从字符串到枚举值的转换，这个库的内部定义了一个整数范围，默认从-128到128，用于遍历查找字符串对应的枚举值是多少，并且在代码中加了 static_assert 来判断范围，如果超过了这个范围就会报编译错误，这个范围可以通过修改源码中的 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 重新编译来修改，在这个范围之外还有个最大值 std::numeric_limits&lt;std::uint16_t&gt;::max 的限制。 这个最大限制也是可以改的，不过我尝试把 MAGIC_ENUM_RANGE_MAX 改到上限值 32767 之后编译时间明显变成，编译过程变得异常的慢，单个文件编译30秒，所以不建议把这个值调太大。 对比一下不使用 magic_enum 和使用它之后生成的汇编代码，从100多行扩充到1000多行，利用 type_traits 生成了大量的函数： 1234567891011121314151617181920... .type _ZN10magic_enum6detail7names_vI7WeekDayEE, @gnu_unique_object .size _ZN10magic_enum6detail7names_vI7WeekDayEE, 112_ZN10magic_enum6detail7names_vI7WeekDayEE: .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_1EEE .quad 10 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_2EEE .quad 12 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_3EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_4EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_5EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_6EEE .weak _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE... 简化与改进其实我最想要的还是通过枚举值转化转化成字符串名称的功能，可以将这个开源库简化一下，仅保留这个功能，这样也不会有范围限制了，感觉这个库为了实现从字符串到枚举值转换背负了太多，去掉它会很清爽。 总结 magic_enum 是一个开源的、单头文件的、枚举操作工具箱 magic_enum 可以实现枚举值到字符串、字符串到枚举值、获取所有枚举名等多种操作 magic_enum 本身对枚举值有范围限制，默认是 [-128, 128], 可通过 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 修改 不建议将 magic_enum 默认枚举范围改的太大，这会明显拖慢编译时间 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 世界上有那么多美好，不要总跟自己过不去，总是揪着那些角落里的肮脏不放。我们无法选择抓到什么牌，但可以决定怎么把手里的牌打出去，摆烂也是一天，奋斗也是一天，究竟要怎么做，取决于你自己~ 2022-7-24 02:30:58]]></content>
+    <content type="text"><![CDATA[前言C++11引入了强类型的枚举类 enum class 用来代替旧风格枚举enum，新引入的 enum class 具有诸多优点：防止命名空间污染，不能隐式的转换为整型，防止不同类型的枚举相互赋值，支持前置声明。当然它也不是只有优点，因为类型不能隐式转换成int，所以在使用或者输出时需要使用 static_cast 进行转换，不过即便使用 static_cast 可以转换后输出，也不便于我们辨识枚举的值，如果想输出枚举定义时的名字就需要使用一些魔法了。 magic_enum因为C++本身不支持反射，或者说反射能力极弱，所以想反射我们必须自己实现一些东西，比如 UE 引擎就为C++写了一套自己的反射标签，而我们想获得枚举定义时的名字就需要自己记录了，因为编译后的枚举一般都转化成了整数，一个简单粗暴的想法是在定义时为每个枚举值同时指定一个同名字符串，构成map存储下来，不过我们不想每次都自己来做这件事，要是有人能帮忙就好了，这不它来了， magic_enum 就可以帮你实现这个愿望。 简单介绍magic_enum 是一个单头文件的开源库，使用方便，可以轻松帮你实现打印枚举值定义时名字的需求，另外除了可以实现这个功能，还可以根据字符串生成枚举值，根据整数生成枚举值，获取枚举值数组，获取枚举值和名字对应的数字组等等，简直是一个封装了枚举操作的宝库。 具体使用直接引用头文件 magic_enum.hpp，然后调用函数 magic_enum::enum_name(enum_xxx) 即可： 1234567891011121314151617181920212223#include &lt;iostream&gt;#include "magic_enum.hpp"enum class WeekDay&#123; WD_SUNDAY = 0, WD_MONDAY, WD_TUESDAY, WD_WEDNESDAY, WD_THURSDAY, WD_FRIDAY, WD_SATURDAY,&#125;;int main()&#123; WeekDay day = WeekDay::WD_MONDAY; std::cout &lt;&lt; "enum value: " &lt;&lt; static_cast&lt;std::underlying_type&lt;WeekDay&gt;::type&gt;(day) &lt;&lt; "\n"; std::cout &lt;&lt; "enum name: " &lt;&lt; magic_enum::enum_name(day) &lt;&lt; "\n"; return 0;&#125; 编译运行如下： 123$ g++ testenum.cpp -std=c++17 &amp;&amp; ./a.outenum value: 1enum name: WD_MONDAY 原理简述很神奇对不对，其实枚举值转换成字符串这一步，是是利用了函数模板和 __PRETTY_FUNCTION__ 组合使用获得到的，也就是对 __PRETTY_FUNCTION__ 进行截取得到的字符串。 __PRETTY_FUNCTION__ 在预编译阶段会替换成带有参数的函数名，比如 constexpr auto magic_enum::detail::n() [with E = WeekDay; E e = WD_MONDAY] 从中截取出 WD_MONDAY 就可以了。 局限性为了实现从字符串到枚举值的转换，这个库的内部定义了一个整数范围，默认从-128到128，用于遍历查找字符串对应的枚举值是多少，并且在代码中加了 static_assert 来判断范围，如果超过了这个范围就会报编译错误，这个范围可以通过修改源码中的 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 重新编译来修改，在这个范围之外还有个最大值 std::numeric_limits&lt;std::uint16_t&gt;::max 的限制。 这个最大限制也是可以改的，不过我尝试把 MAGIC_ENUM_RANGE_MAX 改到上限值 32767 之后编译时间明显变成，编译过程变得异常的慢，单个文件编译30秒，所以不建议把这个值调太大。 对比一下不使用 magic_enum 和使用它之后生成的汇编代码，从100多行扩充到1000多行，利用 type_traits 生成了大量的函数： 1234567891011121314151617181920... .type _ZN10magic_enum6detail7names_vI7WeekDayEE, @gnu_unique_object .size _ZN10magic_enum6detail7names_vI7WeekDayEE, 112_ZN10magic_enum6detail7names_vI7WeekDayEE: .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_1EEE .quad 10 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_2EEE .quad 12 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_3EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_4EEE .quad 9 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_5EEE .quad 11 .quad _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_6EEE .weak _ZN10magic_enum6detail11enum_name_vI7WeekDayLS2_0EEE... 简化与改进其实我最想要的还是通过枚举值转化转化成字符串名称的功能，可以将这个开源库简化一下，仅保留这个功能，这样也不会有范围限制了，感觉这个库为了实现从字符串到枚举值转换背负了太多，去掉它会很清爽。 总结 magic_enum 是一个开源的、单头文件的、枚举操作工具箱 magic_enum 可以实现枚举值到字符串、字符串到枚举值、获取所有枚举名等多种操作 magic_enum 本身对枚举值有范围限制，默认是 [-128, 128], 可通过 MAGIC_ENUM_RANGE_MIN 和 MAGIC_ENUM_RANGE_MAX 修改 不建议将 magic_enum 默认枚举范围改的太大，这会明显拖慢编译时间 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 世界上有那么多美好，不要跟自己过不去，总是揪着那些角落里的肮脏不放。我们无法选择抓到什么牌，但可以决定怎么把已经抓到手的牌打出去，摆烂是一天，奋斗也是一天，究竟要怎么做，取决于你自己~ 2022-7-24 02:30:58]]></content>
       <categories>
         <category>C/C++</category>
       </categories>
@@ -252,8 +296,8 @@
       <tags>
         <tag>commit</tag>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -604,9 +648,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -734,10 +778,10 @@
       </categories>
       <tags>
         <tag>int</tag>
-        <tag>hex</tag>
         <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
+        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -820,8 +864,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -941,8 +985,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -1008,8 +1052,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>Excel</tag>
+        <tag>SVN</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -1034,9 +1078,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1155,9 +1199,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>source</tag>
         <tag>linux</tag>
         <tag>gdb</tag>
+        <tag>source</tag>
         <tag>dir</tag>
         <tag>path</tag>
       </tags>
@@ -1255,10 +1299,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1300,8 +1344,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1398,9 +1442,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>历史</tag>
+        <tag>删除</tag>
         <tag>remove</tag>
         <tag>remove_if</tag>
-        <tag>删除</tag>
       </tags>
   </entry>
   <entry>
@@ -1427,8 +1471,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1442,8 +1486,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -1586,8 +1630,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>Blob substring</tag>
         <tag>hex</tag>
+        <tag>Blob substring</tag>
         <tag>concat</tag>
       </tags>
   </entry>

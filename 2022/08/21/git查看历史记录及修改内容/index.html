@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="log,版本控制,Git,历史记录," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言在 Git 中没有真正的方法来做任何事情，这就是它的妙处！比如查看修改内容这件事，有些人会想到 git log，有些人会想到 git show，最近我又学到一个 git whatchanged，实现目的方法多种多样，各种途径任君挑选。 刚开始步入软件开发行业时喜欢捣鼓各种软件，进行各种个性化配置，任意修改快捷键，这样在开发过程中确实会舒服一些，但是换了一个环境时（电脑重装或在别人的机器），就好">
+<meta name="keywords" content="log,版本控制,Git,历史记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git查看历史记录及修改内容">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2022/08/21/git查看历史记录及修改内容/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言在 Git 中没有真正的方法来做任何事情，这就是它的妙处！比如查看修改内容这件事，有些人会想到 git log，有些人会想到 git show，最近我又学到一个 git whatchanged，实现目的方法多种多样，各种途径任君挑选。 刚开始步入软件开发行业时喜欢捣鼓各种软件，进行各种个性化配置，任意修改快捷键，这样在开发过程中确实会舒服一些，但是换了一个环境时（电脑重装或在别人的机器），就好">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-08-21T13:39:44.717Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git查看历史记录及修改内容">
+<meta name="twitter:description" content="前言在 Git 中没有真正的方法来做任何事情，这就是它的妙处！比如查看修改内容这件事，有些人会想到 git log，有些人会想到 git show，最近我又学到一个 git whatchanged，实现目的方法多种多样，各种途径任君挑选。 刚开始步入软件开发行业时喜欢捣鼓各种软件，进行各种个性化配置，任意修改快捷键，这样在开发过程中确实会舒服一些，但是换了一个环境时（电脑重装或在别人的机器），就好">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2022/08/21/git查看历史记录及修改内容/"/>
+
+
+
+
+
+  <title>git查看历史记录及修改内容 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/08/21/git查看历史记录及修改内容/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">git查看历史记录及修改内容</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-21T08:04:41+08:00">
+                2022-08-21
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2022-08-21T21:39:44+08:00">
+                2022-08-21
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2022/08/21/git查看历史记录及修改内容/" class="leancloud_visitors" data-flag-title="git查看历史记录及修改内容">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,988(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">14(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在 <code>Git</code> 中没有真正的方法来做任何事情，这就是它的妙处！比如查看修改内容这件事，有些人会想到 <code>git log</code>，有些人会想到 <code>git show</code>，最近我又学到一个 <code>git whatchanged</code>，实现目的方法多种多样，各种途径任君挑选。</p>
+<p>刚开始步入软件开发行业时喜欢捣鼓各种软件，进行各种个性化配置，任意修改快捷键，这样在开发过程中确实会舒服一些，但是换了一个环境时（电脑重装或在别人的机器），就好像一个什么也不会的傻子一样，所以慢慢的我开始强迫自己熟悉软件自己的快捷键和各种命令，这样在重装系统时会免去很多麻烦，并且因为一些命令用习惯了，在编写部署脚本时也不会总是写出不能识别的简写命令了。</p>
+<a id="more"></a>
+<h1 id="修改文件"><a href="#修改文件" class="headerlink" title="修改文件"></a>修改文件</h1><p>为了测试各种的查找修改记录的命令，我先进行一次包含增加、修改、删除的提交，然后对比来看各个命令的作用，实际修改如下：</p>
+<ol>
+<li>在文件address.txt中增加两行数据</li>
+<li>清空文件age.txt中4行数据</li>
+<li>修改文件name.txt中一行数据</li>
+<li>增加带有3行数据的phone.txt文件</li>
+<li>删除带有2行数据的story.txt文件</li>
+</ol>
+<p>在执行了 <code>git add .</code> 命令后，可以用 <code>git diff --staged</code> 查看即将提交的文件修改，展示如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --staged</span><br><span class="line">diff --git a/address.txt b/address.txt</span><br><span class="line">index e69de29..8f9d6e6 100644</span><br><span class="line">--- a/address.txt</span><br><span class="line">+++ b/address.txt</span><br><span class="line">@@ -0,0 +1,2 @@</span><br><span class="line">+beijing</span><br><span class="line">+shanghai</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/age.txt b/age.txt</span><br><span class="line">index 58f78c9..e69de29 100644</span><br><span class="line">--- a/age.txt</span><br><span class="line">+++ b/age.txt</span><br><span class="line">@@ -1,4 +0,0 @@</span><br><span class="line">-12</span><br><span class="line">-16</span><br><span class="line">-17</span><br><span class="line">-15</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/name.txt b/name.txt</span><br><span class="line">index ac37a53..0ed306a 100644</span><br><span class="line">--- a/name.txt</span><br><span class="line">+++ b/name.txt</span><br><span class="line">@@ -1,4 +1,4 @@</span><br><span class="line"> tom</span><br><span class="line">-alice</span><br><span class="line">+jerry</span><br><span class="line"> bily</span><br><span class="line"> andy</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/phone.txt b/phone.txt</span><br><span class="line">new file mode 100644</span><br><span class="line">index 0000000..241bcdb</span><br><span class="line">--- /dev/null</span><br><span class="line">+++ b/phone.txt</span><br><span class="line">@@ -0,0 +1,3 @@</span><br><span class="line">+110</span><br><span class="line">+120</span><br><span class="line">+119</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/story.txt b/story.txt</span><br><span class="line">deleted file mode 100644</span><br><span class="line">index 0d89902..0000000</span><br><span class="line">--- a/story.txt</span><br><span class="line">+++ /dev/null</span><br><span class="line">@@ -1,2 +0,0 @@</span><br><span class="line">-King</span><br><span class="line">-Wolf</span><br><span class="line">\ No newline at end of file</span><br></pre></td></tr></table></figure>
+<p>关于 <code>git diff</code> 对于很多使用 <code>git</code> 管理代码的小伙伴再熟悉不过了，但是其中有些细节还是需要学习的：</p>
+<ol>
+<li><p><code>diff --git a/name.txt b/name.txt</code> 这一行是说以下展示 <code>name.txt</code> 文件修改前后的信息，<code>a/name.txt</code> 和 <code>b/name.txt</code> 分别表示修改前后的文件名</p>
+</li>
+<li><p><code>index ac37a53..0ed306a 100644</code> 这一行表示文件修改前后的 <code>object</code>，<code>100644</code> 表示这是一个常规文件，文件权限为 <code>644</code>，使用 <code>git cat-file -p</code>可以查看文件内容：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git cat-file -p ac37a53</span><br><span class="line">tom</span><br><span class="line">alice</span><br><span class="line">bily</span><br><span class="line">andy</span><br><span class="line"></span><br><span class="line">$ git cat-file -p 0ed306a</span><br><span class="line">tom</span><br><span class="line">jerry</span><br><span class="line">bily</span><br><span class="line">andy</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><figcaption><span>a/name.txt``` 表示修改前的文件，```+++ b/name.txt``` 表示修改后的文件</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">4. `@@ -1,4 +1,4 @@` 这一句应该是最有意思的，也是不用一看懂的一行，其中开头和结尾的 `@@` 为固定格式，`-1,4` 表示修改前的 `1~4`行，`+1~4`表示修改后的`1~4`行，这句话的意思就是，以下内容展示了修改前 `1~4`行到修改后 `1~4`行的文件变化，因为我们只修改了一行，所以修改前后行数不变，如果新增行数和删除行数不同，那么这个位置展示的行数也是不同的，例如 `phone.txt` 文件的变化 `@@ -0,0 +1,3 @@`</span><br><span class="line"></span><br><span class="line">5. 最后就是文件具体的变化了，新增内容前面是加号 `+`，删除内容前面是减号 `-`：</span><br><span class="line"></span><br><span class="line">    ```bash</span><br><span class="line">     tom</span><br><span class="line">    -alice</span><br><span class="line">    +jerry</span><br><span class="line">     bily</span><br><span class="line">     andy</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="查询文件修改"><a href="#查询文件修改" class="headerlink" title="查询文件修改"></a>查询文件修改</h1><p>当我们把修改的内容提交以后，这条修改属于存入了仓库的历史之中，<code>git diff</code> 就无法再查看文件的变化了，而需要使用 <code>git log</code> 或 <code>git show</code> 来查看文件修改的内容，接下来我们来看看这些命令都能用来干嘛。</p>
+<h2 id="git-show"><a href="#git-show" class="headerlink" title="git show"></a>git show</h2><p><code>git show</code> 默认展示最近一次提交的修改，与执行 <code>git commit</code> 命令之前的 <code>git diff --staged</code> 查看得到的绝大部分内容相同，只是在开头位置包含最新提交的信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">$ git show</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">diff --git a/address.txt b/address.txt</span><br><span class="line">index e69de29..8f9d6e6 100644</span><br><span class="line">--- a/address.txt</span><br><span class="line">+++ b/address.txt</span><br><span class="line">@@ -0,0 +1,2 @@</span><br><span class="line">+beijing</span><br><span class="line">+shanghai</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/age.txt b/age.txt</span><br><span class="line">index 58f78c9..e69de29 100644</span><br><span class="line">--- a/age.txt</span><br><span class="line">+++ b/age.txt</span><br><span class="line">@@ -1,4 +0,0 @@</span><br><span class="line">-12</span><br><span class="line">-16</span><br><span class="line">-17</span><br><span class="line">-15</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/name.txt b/name.txt</span><br><span class="line">index ac37a53..0ed306a 100644</span><br><span class="line">--- a/name.txt</span><br><span class="line">+++ b/name.txt</span><br><span class="line">@@ -1,4 +1,4 @@</span><br><span class="line"> tom</span><br><span class="line">-alice</span><br><span class="line">+jerry</span><br><span class="line"> bily</span><br><span class="line"> andy</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/phone.txt b/phone.txt</span><br><span class="line">new file mode 100644</span><br><span class="line">index 0000000..241bcdb</span><br><span class="line">--- /dev/null</span><br><span class="line">+++ b/phone.txt</span><br><span class="line">@@ -0,0 +1,3 @@</span><br><span class="line">+110</span><br><span class="line">+120</span><br><span class="line">+119</span><br><span class="line">\ No newline at end of file</span><br><span class="line">diff --git a/story.txt b/story.txt</span><br><span class="line">deleted file mode 100644</span><br><span class="line">index 0d89902..0000000</span><br><span class="line">--- a/story.txt</span><br><span class="line">+++ /dev/null</span><br><span class="line">@@ -1,2 +0,0 @@</span><br><span class="line">-King</span><br><span class="line">-Wolf</span><br><span class="line">\ No newline at end of file</span><br></pre></td></tr></table></figure>
+<p><code>git show</code> 还可以加数字，比如 <code>git show -3</code> 就是展示最近3次提交修改信息。</p>
+<p><code>git show --stat</code> 可以查看最新提交的修改文件，如果想查看指定提交的修改文件信息，可以在后面跟上<code>commit-id</code>，例如 <code>git show --stat 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git show --<span class="built_in">stat</span></span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line"> address.txt | 2 ++</span><br><span class="line"> age.txt     | 4 ----</span><br><span class="line"> name.txt    | 2 +-</span><br><span class="line"> phone.txt   | 3 +++</span><br><span class="line"> story.txt   | 2 --</span><br><span class="line"> 5 files changed, 6 insertions(+), 7 deletions(-)</span><br></pre></td></tr></table></figure>
+<p>这个展示信息可以清楚的看出哪些文件新增了内容，哪些文件删除了内容，并且展示了文件增伤行数的比例，但是有一点它不够清晰，那就是无法看出哪些是新增的文件，哪些是删除的文件，比如 <code>age.txt</code> 和 <code>story.txt</code> 都显示删除了数据，但实际上 <code>story.txt</code> 整个文件都从仓库中删除了，要想看出文件增删状态可以使用接下来展示的这个命令 <code>git whatchanged</code></p>
+<h2 id="git-whatchanged"><a href="#git-whatchanged" class="headerlink" title="git whatchanged"></a>git whatchanged</h2><p><code>git whatchanged</code> 可以展示出文件的增删状态和权限修改，默认分页展示所有提交记录，可以后面加数字来展示最近几次的文件增删状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ git whatchanged -1</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">:100644 100644 e69de29 8f9d6e6 M        address.txt</span><br><span class="line">:100644 100644 58f78c9 e69de29 M        age.txt</span><br><span class="line">:100644 100644 ac37a53 0ed306a M        name.txt</span><br><span class="line">:000000 100644 0000000 241bcdb A        phone.txt</span><br><span class="line">:100644 000000 0d89902 0000000 D        story.txt</span><br></pre></td></tr></table></figure>
+<p>从这个文件中就可以看出 address.txt、age.txt、name.txt 三个文件被修改了，phone.txt 是新增加的，story.txt 文件被删除了，如果在命令后面加上选项 <code>--stat</code> 作用就和 <code>git show</code> 一样了，兜兜转转回到原点~</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git whatchanged -1 --<span class="built_in">stat</span></span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line"> address.txt | 2 ++</span><br><span class="line"> age.txt     | 4 ----</span><br><span class="line"> name.txt    | 2 +-</span><br><span class="line"> phone.txt   | 3 +++</span><br><span class="line"> story.txt   | 2 --</span><br><span class="line"> 5 files changed, 6 insertions(+), 7 deletions(-)</span><br></pre></td></tr></table></figure>
+<h2 id="git-log"><a href="#git-log" class="headerlink" title="git log"></a>git log</h2><p>根据我个人的理解，<code>git show</code> 注重查看一次提交中修改的内容，而 <code>git log</code> 主要用于查找历史提交的脉络，但这不是绝对的，因为git做一件事，没有绝对的一种方式，你也可以用 <code>git log</code> 来实现 <code>git show</code>。</p>
+<ul>
+<li><p>展示最近一次提交</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示其他分支最近一次提交</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1 dev</span><br><span class="line">commit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 12:02:11 2022 +0800</span><br><span class="line"></span><br><span class="line">    init git repository</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示修改的文件列表及文件修改的统计</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1 --<span class="built_in">stat</span></span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line"> address.txt | 2 ++</span><br><span class="line"> age.txt     | 4 ----</span><br><span class="line"> name.txt    | 2 +-</span><br><span class="line"> phone.txt   | 3 +++</span><br><span class="line"> story.txt   | 2 --</span><br><span class="line"> 5 files changed, 6 insertions(+), 7 deletions(-)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示每次修改的文件列表</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1 --name-only</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">address.txt</span><br><span class="line">age.txt</span><br><span class="line">name.txt</span><br><span class="line">phone.txt</span><br><span class="line">story.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示修改的文件列表和显示状态</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1 --name-status</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">M       address.txt</span><br><span class="line">M       age.txt</span><br><span class="line">M       name.txt</span><br><span class="line">A       phone.txt</span><br><span class="line">D       story.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示指定作者提交的记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -1 --author=<span class="string">"albert"</span></span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单行展示提交的记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --oneline</span><br><span class="line">2447e2b (HEAD -&gt; master) update example data</span><br><span class="line">62cc52c (dev) init git repository</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示指定日期之前的提交记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --before=<span class="string">'2022-08-22'</span></span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">commit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 12:02:11 2022 +0800</span><br><span class="line"></span><br><span class="line">    init git repository</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示一天之内的提交记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --since=1.day.ago</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br><span class="line"></span><br><span class="line">commit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 12:02:11 2022 +0800</span><br><span class="line"></span><br><span class="line">    init git repository</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示指定包含指定内容的提交记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --grep=update</span><br><span class="line">commit 2447e2b9c15472f2ead7bf451aa5fc9c3f34f5ee (HEAD -&gt; master)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 15:22:08 2022 +0800</span><br><span class="line"></span><br><span class="line">    update example data</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示指定不包含指定内容的提交记录</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --grep=update --invert-grep</span><br><span class="line">commit 62cc52cbc7f9581fa825b443aba3481083459656 (dev)</span><br><span class="line">Author: albert &lt;albert101@163.com&gt;</span><br><span class="line">Date:   Sun Aug 21 12:02:11 2022 +0800</span><br><span class="line"></span><br><span class="line">    init git repository</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>终极大招，图形化展示，其实用的并不多</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --graph --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --abbrev-commit --date=relative --all</span><br><span class="line">* 2447e2b - (HEAD -&gt; master) update example data (77 minutes ago) &lt;albert&gt;</span><br><span class="line">* 62cc52c - (dev) init git repository (2 hours ago) &lt;albert&gt;</span><br><span class="line">*   719ec7a - (refs/stash) WIP on master: 83f00c5 init git repository (2 hours ago) &lt;albert&gt;</span><br><span class="line">|\</span><br><span class="line">| * 9c87e06 - index on master: 83f00c5 init git repository (2 hours ago) &lt;albert&gt;</span><br><span class="line">|/</span><br><span class="line">* 83f00c5 - init git repository (5 hours ago) &lt;albert&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>查看最近一次修改的内容使用 <code>git show</code></li>
+<li>查看最近一次修改的文件使用 <code>git show --stat</code> 或 <code>git log -1 --name-only</code></li>
+<li>查看最近一次修改的文件状态使用 <code>git whatchanged -1</code> 或 <code>git log -1 --name-status</code></li>
+<li>图形化显示git提交记录使用 <code>git log --graph</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/126214355" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>轻生的人到底是勇敢还是懦弱呢？虽说我未经历过他的人生不该轻易评判，但就我主观来思考这类事，大抵是因为对生活失去了信心。人固有一死，或重于泰山，或轻于鸿毛。而遇到困难就选择轻生的人是自私且不负责任的，若你无牵无挂走了也就走了，倘若还有家人岂不是还要拿出额外一笔钱给你办个葬礼？连死都不怕了，还有什么是过不去的呢？</p>
+<p>2022-8-21 21:19:13</p>
+</blockquote>
+<p>&lt;!–<br>我曾走过山，走过水，其实只是借助它们走过我的生命；<br>我看着天，看着地，其实只是借助它们确定我的位置；<br>我爱着他，爱着你，其实只是借助别人实现了我的爱欲。</p>
+<p>——史铁生《务虚笔记》<br>– &gt;</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2022/08/21/git查看历史记录及修改内容/" title="git查看历史记录及修改内容">http://AlbertGithubHome.github.io/blog/2022/08/21/git查看历史记录及修改内容/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/log/" rel="tag"><i class="fa fa-tag"></i> log</a>
+          
+            <a href="/blog/tags/版本控制/" rel="tag"><i class="fa fa-tag"></i> 版本控制</a>
+          
+            <a href="/blog/tags/Git/" rel="tag"><i class="fa fa-tag"></i> Git</a>
+          
+            <a href="/blog/tags/历史记录/" rel="tag"><i class="fa fa-tag"></i> 历史记录</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2022/08/07/参考开源项目实现一个简易的C-枚举转字符串的函数/" rel="next" title="参考开源项目实现一个简易的C++枚举转字符串的函数">
+                <i class="fa fa-chevron-left"></i> 参考开源项目实现一个简易的C++枚举转字符串的函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2022/08/26/rm-rf-真是删库跑路的一把好手/" rel="prev" title="rm -rf 真是删库跑路的一把好手">
+                rm -rf 真是删库跑路的一把好手 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">176</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">414</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改文件"><span class="nav-number">2.</span> <span class="nav-text">修改文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查询文件修改"><span class="nav-number">3.</span> <span class="nav-text">查询文件修改</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#git-show"><span class="nav-number">3.1.</span> <span class="nav-text">git show</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-whatchanged"><span class="nav-number">3.2.</span> <span class="nav-text">git whatchanged</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-log"><span class="nav-number">3.3.</span> <span class="nav-text">git log</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
