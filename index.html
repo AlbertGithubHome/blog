@@ -346,6 +346,267 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/10/01/本来打算完整安装一次redmine最终还是放弃了/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2022/10/01/本来打算完整安装一次redmine最终还是放弃了/" itemprop="url">本来打算完整安装一次redmine最终还是放弃了</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-01T23:59:11+08:00">
+                2022-10-01
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2022-10-03T02:44:13+08:00">
+                2022-10-03
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/tools/" itemprop="url" rel="index">
+                    <span itemprop="name">tools</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2022/10/01/本来打算完整安装一次redmine最终还是放弃了/" class="leancloud_visitors" data-flag-title="本来打算完整安装一次redmine最终还是放弃了">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,652(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">6(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>redmine</code> 是最近工作中经常使用的项目管理软件，因为平时主要使用跟踪一些开发进度和bug修复情况，平时使用并不算重度，体验还不错，最近因为需要停电重启，所以想借着这个机会学习一下怎么安装，看了不少教程，各种安装方法，因为依赖项确实有点多，至今也没按照官网wiki安装成功（战术捂脸），不过从中发现了很多新的知识点，还是记录一下。</p>
+<h1 id="安装参考"><a href="#安装参考" class="headerlink" title="安装参考"></a>安装参考</h1><p>其实官方的wiki写的就不错，但是有关依赖项的部分提及的很少，还有就是没有说怎么安装 <code>ruby</code>，先把写的比较好的文档列举在此，有时间再试试，其实也快安装成功了，就是云主机内存太低，有一步安装需要编译，总是内存不足…</p>
+<ul>
+<li><a href="https://www.redmine.org/projects/redmine/wiki/redmineinstall" target="_blank" rel="noopener">redmine/wiki/redmineinstall</a></li>
+<li><a href="https://qizhanming.com/blog/2020/04/16/how-to-install-and-config-redmine-4-on-centos-7" target="_blank" rel="noopener">CentOS 7 安装 Redmine 4.1</a></li>
+<li><a href="https://www.361way.com/redmine/6154.html" target="_blank" rel="noopener">Linux下redmine安装使用</a></li>
+<li><a href="https://www.cnblogs.com/kaishirenshi/p/12559138.html" target="_blank" rel="noopener">centos安装ruby及更换gem的源</a></li>
+<li><a href="https://www.361way.com/bitnami-redmine/6256.html" target="_blank" rel="noopener">bitnami redmine一键式安装</a></li>
+<li><a href="http://blog.51yip.com/server/1883.html" target="_blank" rel="noopener">centos 安装 redmine mysql ruby on rails</a></li>
+<li><a href="https://gist.github.com/brunojppb/bb5dbfacdbcb06ce6bd6303329ff2d72" target="_blank" rel="noopener">How to setup Redmine 4 on Ubuntu 18.04</a></li>
+<li><a href="https://developer.aliyun.com/article/670150" target="_blank" rel="noopener">Linux 下安装 Redmine</a></li>
+<li><a href="https://blog.csdn.net/yang1393214887/article/details/108488754" target="_blank" rel="noopener">linux搭建redmine：bitnami-redmine-4.1.1-4-linux-x64-installer.run</a></li>
+<li><a href="https://blog.csdn.net/yunyin_link/article/details/101100351" target="_blank" rel="noopener">Redmine安装神器：Bitnami redmine 的安装指导（Linux的安装方法）</a></li>
+<li><a href="https://hub.docker.com/r/bitnami/redmine/" target="_blank" rel="noopener">Redmine packaged by Bitnami</a></li>
+</ul>
+<p>以上列举的教程前几个还不错，虽然没安装完整，但是接触了ruby、nginx、mysql这些依赖项，也了解了不少新东西，大概知道运行 redmine 需要哪些东西了，完成安装只是时间和硬件问题，咳咳~</p>
+<p>其中有几篇文章建议利用 bitnami 来简化 redmine 的安装，看步骤确实方便了很多，但是不幸的是 Bitnami 在2021年6月30日之前停止对大多数Linux本地安装程序的支持，我已经找不到安装程序 <code>bitnami-redmine-4.0.5-0-linux-x64-installer.run</code>了</p>
+<blockquote>
+<p>Bitnami plans on discontinuing the support for the majority of Native Installers for Linux by June 30th 2021. Please read this <a href="https://blog.bitnami.com/2021/04/amplifying-our-focus-on-cloud-native.html" target="_blank" rel="noopener">blog post</a> for more information.</p>
+</blockquote>
+<h1 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h1><p>已经多次接触到 <code>Ruby</code> 了，上次是升级gitlab服务器的时候，新版本的gitlab需要安装ruby依赖项，这次安装redmine同样需要安装Ruby，对于Ruby的安装省事的方法可以通过Linux对应包管理工具直接安装，但是版本通常达不到要求，所以我们总是需要采用复杂的方式才可以安装Ruby，先了解下Ruby是什么。</p>
+<p>Ruby 是一种跨平台、面向对象的动态类型编程语言。Ruby 体现了表达的一致性和简单性，它不仅是一门编程语言，更是表达想法的一种简练方式。</p>
+<p>Ruby 的作者于 1993 年 2 月 24 日开始编辑 Ruby，直至 1995 年 12 月才正式公开发布。之所以称为 Ruby，是因为 Perl 的发音与 6 月的诞生石 pearl（珍珠）相同，因此 Ruby 以 7 月的诞生石 ruby（红宝石）命名。</p>
+<p>Ruby 的特性与 Smalltalk、Perl 和 Python 类似。Perl、Python 和 Smalltalk 是脚本语言。Smalltalk 是一个真正的面向对象语言。Ruby，与 Smalltalk 一样，是一个完美的面向对象语言。使用 Ruby 的语法比使用 Smalltalk 的语法要容易得多。</p>
+<h2 id="Rails"><a href="#Rails" class="headerlink" title="Rails"></a>Rails</h2><p><code>Ruby on Rails</code>（官方简称为 Rails，亦被简称为 RoR），是一个使用 Ruby 语言写的开源 Web 应用框架，它是严格按照 MVC 结构开发的。它努力使自身保持简单，来使实际的应用开发时的代码更少，使用最少的配置。 Rails 的设计原则包括“不做重复的事”和“惯例优于设置” 。</p>
+<p><code>Ruby on Rails</code> 是一种结合 Ruby 语言与 Rails 平台的一种网页程序框架，Ruby 语言以自然、简洁、快速著称，全面支持面向对象程序设计，而 Rails 则是 Ruby 广泛应用方式之一，在 Rails 平台上设计出一套独特的 MVC 开发架构，采取模型（Model）、视图（View）、控制器（Controller）分离的开发方式，不但减少了开发中的问题，更简化了许多繁复的动作。</p>
+<h2 id="RubyGems"><a href="#RubyGems" class="headerlink" title="RubyGems"></a>RubyGems</h2><p><code>RubyGems</code> 是 Ruby 的一个包管理器，它提供一个分发 Ruby 程序和库的标准格式，还提供了一个管理程序包安装的工具，它将一个 Ruby 应用程序打包到一个 gem 里，作为一个安装单元，旨在方便地管理 gem 安装的工具，以及用于分发 gem 的服务器，这类似于 Ubuntu 下的apt-get，Centos 的 yum，Python 的 pip，大约创建于2003年11月，从Ruby 1.9版起成为Ruby标准库的一部分。</p>
+<h2 id="RVM"><a href="#RVM" class="headerlink" title="RVM"></a>RVM</h2><p>在linux上安装Ruby在之前提到了，可以通过对应系统的包管理软件来直接安装，比如在CentOS上可以直接运行 <code>sudo yum install ruby</code> 命令来安装，但是这种方式通常安装的版本比较低，无法满足需要，所以你也可以采用源码编译的方式安装。</p>
+<p>如果从源码级别安装已经超出了你的能力范围还可以使用 RVM 来安装，它是 Ruby 的版本管理工具，类似 nodejs的 nvm 工具，可以方便的安装和配置当前系统使用的Ruby版本，安装RVM的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB</span><br><span class="line">$ curl -sSL https://get.rvm.io | bash -s stable</span><br></pre></td></tr></table></figure>
+<p>若安装报错先输入以下命令再继续：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">command</span> curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -</span><br><span class="line">$ <span class="built_in">command</span> curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -</span><br></pre></td></tr></table></figure>
+<p>之后就可以利用 rvm 命令来安装 Ruby 了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ rvm install 2.6</span><br><span class="line">$ ruby -v</span><br></pre></td></tr></table></figure>
+<h1 id="另辟蹊径"><a href="#另辟蹊径" class="headerlink" title="另辟蹊径"></a>另辟蹊径</h1><p>安装 redmine 很困难，难道我们就没办法了吗？不！我们还有 <code>docker</code>，一条命令 <code>docker run -d --name some-redmine -p 8080:3000 redmine</code> 搞定，首先会下载所需要的镜像，之后直接启动，通过 <code>http://IP:8080/</code> 直接就可以访问了，真香~</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/redmine/redmine.png" alt="redmine"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>redmine 是一个项目管理web软件，依赖Rails、MySQL、Nginx等组件或服务</li>
+<li>Ruby on Rails 是一个使用 Ruby 语言写的开源 Web 应用框架，严格按照 MVC 结构开发</li>
+<li>可以通过RVM安装Ruby， RVM 是 Ruby 的版本管理工具，可以方便的安装和配置当前系统使用的Ruby版本</li>
+<li>如果参照官方的wiki实在安装不上redmine，可以通过 docker 来安装，虽然看起来像个玩具，但是真的能用啊</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/126910878" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>黄河远上白云间，一片孤城万仞山。羌笛何须怨杨柳，春风不度玉门关。</p>
+<p>2022-10-3 02:33:26</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/09/13/如期而至的SVN服务器迁移引来一个大瓜XAMPP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,8 +654,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2022-09-17T21:46:47+08:00">
-                2022-09-17
+              <time title="更新于" itemprop="dateModified" datetime="2022-10-03T02:39:19+08:00">
+                2022-10-03
               </time>
             
           </span>
@@ -2284,222 +2545,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/07/23/推荐一个C-枚举转字符串的开源项目magic-enum/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2022/07/23/推荐一个C-枚举转字符串的开源项目magic-enum/" itemprop="url">推荐一个C++枚举转字符串的开源项目magic_enum</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-23T22:20:14+08:00">
-                2022-07-23
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2022-08-21T08:11:08+08:00">
-                2022-08-21
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
-                    <span itemprop="name">C/C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2022/07/23/推荐一个C-枚举转字符串的开源项目magic-enum/" class="leancloud_visitors" data-flag-title="推荐一个C++枚举转字符串的开源项目magic_enum">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,261(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>C++11引入了强类型的枚举类 <code>enum class</code> 用来代替旧风格枚举<code>enum</code>，新引入的 <code>enum class</code> 具有诸多优点：防止命名空间污染，不能隐式的转换为整型，防止不同类型的枚举相互赋值，支持前置声明。当然它也不是只有优点，因为类型不能隐式转换成int，所以在使用或者输出时需要使用 <code>static_cast</code> 进行转换，不过即便使用 <code>static_cast</code> 可以转换后输出，也不便于我们辨识枚举的值，如果想输出枚举定义时的名字就需要使用一些魔法了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2022/07/23/推荐一个C-枚举转字符串的开源项目magic-enum/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2550,7 +2595,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">179</span>
+                <span class="site-state-item-count">180</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2561,7 +2606,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2572,7 +2617,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">424</span>
+                <span class="site-state-item-count">426</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -346,6 +346,223 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/" itemprop="url">使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-15T15:23:13+08:00">
+                2021-05-15
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-07-10T16:37:32+08:00">
+                2021-07-10
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/" class="leancloud_visitors" data-flag-title="使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,409(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">16(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>指针是C/C++程序中的利器，同时也引入了风险，现代C++中增加了智能指针来降低使用“裸”指针带来的风险，但是智能指针不是一颗银弹，它不能解决所有的指针问题，内存泄漏在C/C++程序开发中依旧是值得注意的，学会合理、合适的方法来查找内存泄漏问题也是一项有用的技能。</p>
+<p>通常内存泄漏问题会在开发到一定程度时集中检查，一些检测方法长时间不去使用难免会忘记，所以本文记录一种自己常用的检测方法，方便日后查阅。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/04/30/linux文件权限简单备忘知识点/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2277,222 +2494,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/" itemprop="url">Go环境配置时遇到的GOPATH路径以及包管理问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T22:39:19+08:00">
-                2021-02-19
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-02-21T23:29:58+08:00">
-                2021-02-21
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
-                    <span itemprop="name">Go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/" class="leancloud_visitors" data-flag-title="Go环境配置时遇到的GOPATH路径以及包管理问题">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,351(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>过了个年回到工作岗位，发现之前好好的 <code>Go</code> 环境无法进行调试了，于是又重新配置了一次，弄好之后的新参数与原来有一些不一样的地方，甚至还有一些矛盾的地方，真搞不清楚原来的配置参数怎么能成功调试的，也是奇了怪了。配置过程中还遇到了一些问题，特别记录一下，防止今后遇到类似问题还要苦苦寻找。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2543,7 +2544,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">179</span>
+                <span class="site-state-item-count">180</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2554,7 +2555,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2565,7 +2566,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">424</span>
+                <span class="site-state-item-count">426</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
