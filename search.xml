@@ -1,6 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[借助第三方工具网站完成消息自动推送]]></title>
+    <url>%2Fblog%2F2022%2F11%2F19%2F%E5%80%9F%E5%8A%A9%E7%AC%AC%E4%B8%89%E6%96%B9%E5%B7%A5%E5%85%B7%E7%BD%91%E7%AB%99%E5%AE%8C%E6%88%90%E6%B6%88%E6%81%AF%E8%87%AA%E5%8A%A8%E6%8E%A8%E9%80%81%2F</url>
+    <content type="text"><![CDATA[前言寻找消息推送的起因是之前买过一台云服务器，用于开发环境搭建和学习，最近想用它进行一些数据分析，而数据分析的结果如果每次都需要登录服务器来看就有点“太老土”了，所以想找一种使用方便的消息推送模式。提到之前的消息通知最常用的是短信和邮件，但是随着时代的发展，它们的弊端也逐渐暴露出来，短信的内容主要以文本为主，想要发送图片就比较困难，邮件查看起来不是太方便。而微信作为每天都用的社交软件，用它来接收消息就很方便了，所以朝着这个方向寻找，我发现了 pushplus 这个第三方工具。 pushplus是什么pushplus(推送加)是集成了微信、短信、邮件、企业微信、HiFlow连接器、钉钉、飞书等渠道的信息推送平台，只需要调用一个简单的API接口，即可帮助你迅速完成消息推送，使用简单方便。 我主要想用它的微信推送，一开始也想试试短信推送的，但是需要支付每条0.1元的费用所以放弃了（什么年代了，短信收费还这么贵），这里先简单说下它的微信推送的原理，利用的就是微信公众号的消息通道。 什么是消息通道，我的理解就是获取消息的途径，比如短信、邮件、微信、电话等等，这个pushplus本身并没有搭建新的消息通道，而是整合了已有消息通道的使用方式，让消息通知变得简单了，而微信消息推送利用的就是微信公众号这个途径。 我们知道微信公众号可以接收消息，并且微信公众平台也开放了后台接口，允许公众号运营方通过程序接口发送消息给关注者，这就是微信公众号的消息通道。pushplus就是使用了这个通道，他们把微信公众平台的接口进行了封装，开放给所有关注 pushplus 的人，而这些人就可以利用这个通道给自己发送消息，给群组发送消息，甚至给所有的关注者发送消息，当然这些消息都是显示在这个公众号里，要想接收消息必须先关注公众号，或者按照pushplus的规则加入群组。 既然是利用别人家的通道，必然要收到这个通道原有的限制，pushplus也不例外，首先当前微信公众号对模板消息推送有当日100万次的上限，超过这个上限有当日将无法发送模板消息，也就是所有pushplus的用户都将无法使用微信渠道的推送功能，所以pushplus在单日推送次数上做了部分限制。每人每日可用推送条数为200条，当大于200条的时候消息将不在推送。 目前这个每天200条是免费的，但随着用户量的增大，这个限制必然是会更加严格的，按现在计算没人推送200条也只能服务于5000人，不过大部分人是不会发这么多的，短时间应该没问题。另外该网站目前还推出了绑定自己公众号的服务，必须是经过认证的非个人公众号才可以哦，腾讯就是这么要求的，它也没办法，当前还提供了会员制度，可以适当放宽消息推送的次数。 我觉得大家不要反感会员制度，人总是要恰饭的，即使不是为了赚钱，也需要付出成本的，免费提供这项服务是需要服务器资源的，总不能一直永爱发电吧，收个合理的费用方便广大开发者我觉得无可厚非，就像我买的服务器1年一百多，续费成本每年要700多，如果对外提供服务器不收钱总不能靠西北风活着吧。 pushplus测试使用pushplus 的官方网站是 www.pushplus.plus，直接微信扫码就注册成功，同时会关注微信公众号用于接收消息，对于一对一消息和一对多消息都提供了消息发送界面，输入内容直接点击发送按钮就可以了，非常方便。 官网介绍如下： 一对一消息发送 一对一消息发送 微信公众号里看到的消息通知 代码发送一对一发送消息的代码非常简单，也就下面这几行，更复杂的格式还需要研究下： 123456789import requestsdef send_wechat_msg(title, content): token = '2c358fyearacb4581bc92f0c320c728fb' url = 'http://www.pushplus.plus/send?token='+token+'&amp;title='+title+'&amp;content='+content requests.get(url)if __name__ == "__main__": send_wechat_msg('python推送测试消息', '测试消息详细内容') 注意的问题 限制问题。前面已经提到，使用pushplus公众号，所有用户共享100万条消息的限制，随着公司后期的发展这可能不够用 合规问题。因为是自定义推送内容，所以平台要注意合规问题，不仅公众号要进行内容审查，pushplus也需要进行内容审查，否则可能因为一个用户的违规导致所有用户都发不了消息。 消息格式。目前pushplus支持多种消息格式，包括 text、html、json、markdown 等格式，这能满足大部分用户的要求了 发送图片。pushplus不支持直接发送图片，具体方式通过html的 &lt;img&gt; 标签来实现，可以将本地的图片上传到七牛云等云存储空间上来获取图片的外链地址。 总结 消息推送可以选择 pushplus 官网扫码即可使用 pushplus 的微信推送借用了微信公众号的消息通道，会受到的平台原有的100万条消息限制 pushplus 提供给普通用户每天有200条消息的使用权限，仅通过http请求即可方便的使用api 注意后续的平台发展，很可能发展到一定程度后增加更严格的使用限制 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 一道残阳铺水中，半江瑟瑟半江红。可怜九月初三夜，露似真珠月似弓~ 2022-11-20 13:01:16]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>消息推送</tag>
+        <tag>微信</tag>
+        <tag>短信</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下使用rsync命令完成数据同步]]></title>
+    <url>%2Fblog%2F2022%2F11%2F13%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8rsync%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%88%90%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%2F</url>
+    <content type="text"><![CDATA[前言linux 环境下说到数据复制第一个映入脑海的命令还是 cp，毕竟它用起来很方便，但是只能完成本地数据的拷贝，如果想实现本地和远程主机之间的数据拷贝可以使用 scp，有些文章会把它翻译成 “ssh copy”，但实际上它的全称是 “secure copy”，不过它确实利用了ssh协议，缺点就是只能全量拷贝，如果想完成增量拷贝可以选择 rsync命令，官网 rsync.samba.org 比较简陋，但很符合GNU的风格。 rsync的特点 可实现增量同步，即只同步发生变化的数据 可保持原文件或目录的权限、时间、软硬连接、属主、组等所有属性均保持不变 支持拷贝特殊文件，如连接文件、设备等 排除指定文件或目录同步的功能，相当于打包命令tar的排除功能 rsync本身不对数据加密，可使用rcp/rsh/ssh等方式来配合传输文件 支持匿名的活认证的进程模式传输，可实现方便安全的数据备份和镜像 rsync 传输模式 本地方式，类似cp，可完成本机数据的拷贝复制 远程方式，类似scp，但可实现增量复制，可以将数据从本地推送至服务端，也可以将数据从服务端拉取到本地 守护进程方式，区分客户端和服务端，可以启动 rsyncd 服务（未使用过需研究） rynsc 命令格式1234567891011Local: rsync [OPTION...] SRC... [DEST]Access via remote shell: Pull: rsync [OPTION...] [USER@]HOST:SRC... [DEST] Push: rsync [OPTION...] SRC... [USER@]HOST:DESTAccess via rsync daemon: Pull: rsync [OPTION...] [USER@]HOST::SRC... [DEST] rsync [OPTION...] rsync://[USER@]HOST[:PORT]/SRC... [DEST] Push: rsync [OPTION...] SRC... [USER@]HOST::DEST rsync [OPTION...] SRC... rsync://[USER@]HOST[:PORT]/DEST 常用的还是第2种和第3种，第一种是本地复制，一般用cp代替就够了，4~7用于守护进程模式，至今我还没用过 rsync 命令选项12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061-v, --verbose 详细模式输出。-q, --quiet 精简输出模式。-c, --checksum 打开校验开关，强制对文件传输进行校验。-a, --archive 归档模式，表示以递归方式传输文件，并保持所有文件属性，等于-rlptgoD。-r, --recursive 对子目录以递归模式处理。-R, --relative 使用相对路径信息。-b, --backup 创建备份，也就是对于目的已经存在有同样的文件名时，将老的文件重新命名为~filename。可以使用--suffix选项来指定不同的备份文件前缀。--backup-dir 将备份文件(如~filename)存放在在目录下。-suffix=SUFFIX 定义备份文件前缀。-u, --update 仅仅进行更新，也就是跳过所有已经存在于DST，并且文件时间晚于要备份的文件，不覆盖更新的文件。-l, --links 保留软链结。-L, --copy-links 想对待常规文件一样处理软链结。--copy-unsafe-links 仅仅拷贝指向SRC路径目录树以外的链结。--safe-links 忽略指向SRC路径目录树以外的链结。-H, --hard-links 保留硬链结。-p, --perms 保持文件权限。-o, --owner 保持文件属主信息。-g, --group 保持文件属组信息。-D, --devices 保持设备文件信息。-t, --times 保持文件时间信息。-S, --sparse 对稀疏文件进行特殊处理以节省DST的空间。-n, --dry-run现实哪些文件将被传输。-w, --whole-file 拷贝文件，不进行增量检测。-x, --one-file-system 不要跨越文件系统边界。-B, --block-size=SIZE 检验算法使用的块尺寸，默认是700字节。-e, --rsh=command 指定使用rsh、ssh方式进行数据同步。--rsync-path=PATH 指定远程服务器上的rsync命令所在路径信息。-C, --cvs-exclude 使用和CVS一样的方法自动忽略文件，用来排除那些不希望传输的文件。--existing 仅仅更新那些已经存在于DST的文件，而不备份那些新创建的文件。--delete 删除那些DST中SRC没有的文件。--delete-excluded 同样删除接收端那些被该选项指定排除的文件。--delete-after 传输结束以后再删除。--ignore-errors 及时出现IO错误也进行删除。--max-delete=NUM 最多删除NUM个文件。--partial 保留那些因故没有完全传输的文件，以是加快随后的再次传输。--force 强制删除目录，即使不为空。--numeric-ids 不将数字的用户和组id匹配为用户名和组名。--timeout=time ip超时时间，单位为秒。-I, --ignore-times 不跳过那些有同样的时间和长度的文件。--size-only 当决定是否要备份文件时，仅仅察看文件大小而不考虑文件时间。--modify-window=NUM 决定文件是否时间相同时使用的时间戳窗口，默认为0。-T --temp-dir=DIR 在DIR中创建临时文件。--compare-dest=DIR 同样比较DIR中的文件来决定是否需要备份。-P 等同于 --partial。--progress 显示备份过程。-z, --compress 对备份的文件在传输时进行压缩处理。--exclude=PATTERN 指定排除不需要传输的文件模式。--include=PATTERN 指定不排除而需要传输的文件模式。--exclude-from=FILE 排除FILE中指定模式的文件。--include-from=FILE 不排除FILE指定模式匹配的文件。--version 打印版本信息。--address 绑定到特定的地址。--config=FILE 指定其他的配置文件，不使用默认的rsyncd.conf文件。--port=PORT 指定其他的rsync服务端口。--blocking-io 对远程shell使用阻塞IO。-stats 给出某些文件的传输状态。--progress 在传输时显示传输过程。--log-format=formAT 指定日志文件格式。--password-file=FILE 从FILE中得到密码。--bwlimit=KBPS 限制I/O带宽，KBytes per second。-h, --help 显示帮助信息。 常用组合从上面描述的选项可以看到，这个命令的参数特别多，但实际使用时只需要掌握一些常用组合即可： 保留文件原属性拷贝1rsync -avz jerry@82.156.125.169:/data/logs /data/backuplogs 从远程主机将目录 /data/logs 拷贝到本地，对应目录为 /data/backuplogs，保留文件原有属性，包括权限、时间、软硬连接、属主、组等 删除目标目录中S再原目录不存在的文件1rsync -avz --delete --progress /data/logs 82.156.125.169:/data/backuplogs 将本地 /data/logs 目录推送到远程目录 82.156.125.169:/data/backuplogs 下，同时删除在原目录下不存在的文件，这个参数组合特别适合用来完全同步两个目录的内容 限制网速传输1rsync -avz --bwlimit=1024 /data/logs 82.156.125.169:/data/backuplogs/ 同步数据时限制传输速度为1024kBytes/s（就是1MB/s），防止占用过多带宽，可以根据需要调整数值，注意末尾加了一个斜杠 / 表示将原目录同步到目标目录下，而不是与目标目录完全同步，这一点在实践中要注意 断点续传1rsync -avz --partial /data/logs root@82.156.125.169:/data/backuplogs 传输时保留那些因故没有完全传输的文件，来是加快随后的再次传输 总结 本地拷贝数据用 cp，远程拷贝选 scp，如果想实现增量复制拷贝可以使用 rsync rsync 可以将数据从本地推送至服务端，也可以将数据从服务端拉取到本地，也可以使用 daemon 模式 rsync 最常用的命令组合就是 avz，可以保留文件原有属性进行递归拷贝 使用 rsync 命令传输数据时注意目录末尾的斜杠 /，加上它表示目录下的内容，使用时要注意不要覆盖错了 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== “人类一思考，上帝就发笑”。虽然我们已经总结了万物，终究还是渺小和无知的代表，但我们可以利用这些渺小的总结，在有限的生命内过的更好，一些看似无法到达和接触的领域，在被划分整理之后显得那么苍白，他想笑就让他去笑吧，毕竟我们只需要为自己的有限生命而负责~ 2022-11-14 00:29:36]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>rsync</tag>
+        <tag>cp</tag>
+        <tag>数据同步</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下查询主板、CPU、内存等硬件信息]]></title>
+    <url>%2Fblog%2F2022%2F11%2F06%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E8%AF%A2%E4%B8%BB%E6%9D%BF%E3%80%81CPU%E3%80%81%E5%86%85%E5%AD%98%E7%AD%89%E7%A1%AC%E4%BB%B6%E4%BF%A1%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[前言如果是在windows系统下，查询电脑硬件会容易的多，可以通过电脑属性、计算机管理等多种图形化界面中查到，如果安装了各种电脑管家，那查询这类信息就更方便了，但如果在linux系统下通常要使用命令来解决，特别是查询服务器配置时，一般不会给服务器安装图形化界面，所以掌握必要的查询命令对于合理使用服务器资源很有必要。 dmidecode这个命令是偶然发现的，之前一般是查询电脑硬件资源的使用情况，比如 top 来看各个进程消耗的CPU和内存，使用 free -h 查询内存总体使用情况，最近电脑内存不太够了，想查询一下内存插槽状况，所以找到了这个命令 dmidecode，英文解释为 “DMI table decoder”，也就是DMI表解码器，可以理解为DMI信息的解释器。 在学习什么是DMI之前，先了解一下 SMBIOS 的概念，BOIS 是英文”Basic Input Output System”的缩略词，它是一组固化到计算机内主板上一个ROM芯片上的程序，它保存着计算机最重要的基本输入输出的程序、开机后自检程序和系统自启动程序，并可以从CMOS中读写系统设置的具体信息，为计算机提供最底层的、最直接的硬件设置和控制。 SMBIOS 全称是”System Management Basic Input/Output System”，表示系统管理基本输入输出系统，是主板或系统制造者以标准格式显示产品管理信息所需遵循的统一规范。 DMI 全称 “Desktop Management Interface”，用于帮助收集电脑系统信息的管理系统，DMI信息的收集必须在严格遵照SMBIOS规范的前提下进行，其设计适用于任何的平台和操作系统，充当了管理工具和系统层之间接口的角色。它建立了标准的可管理系统，更加方便了电脑厂商和用户对系统的了解，同时提供更为友好的用户工作环境。SMBIOS 和 DMI 都是由行业指导机构 “Desktop Management Task Force (DMTF)” 起草的开放性的技术标准。 常用参数 -q：显示会简单点，一些未知的、不活动的和oem指定的条目不显示，元数据和句柄引用被隐藏。 -t: 一个非常重要的参数，用于显示指定类型的条目，可以使用数字，也可以使用一些代表数字组合的单词 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849DMI TYPES The SMBIOS specification defines the following DMI types: Type Information ──────────────────────────────────────────── 0 BIOS 1 System 2 Baseboard 3 Chassis 4 Processor 5 Memory Controller 6 Memory Module 7 Cache 8 Port Connector 9 System Slots 10 On Board Devices 11 OEM Strings 12 System Configuration Options 13 BIOS Language 14 Group Associations 15 System Event Log 16 Physical Memory Array 17 Memory Device 18 32-bit Memory Error 19 Memory Array Mapped Address 20 Memory Device Mapped Address 21 Built-in Pointing Device 22 Portable Battery 23 System Reset 24 Hardware Security 25 System Power Controls 26 Voltage Probe 27 Cooling Device 28 Temperature Probe 29 Electrical Current Probe 30 Out-of-band Remote Access 31 Boot Integrity Services 32 System Boot 33 64-bit Memory Error 34 Management Device 35 Management Device Component 36 Management Device Threshold Data 37 Memory Channel 38 IPMI Device 39 Power Supply 40 Additional Information 41 Onboard Devices Extended Information 42 Management Controller Host Interface 数字组合的单词代表： 123456789101112131415161718Keyword Types──────────────────────────────bios 0, 13system 1, 12, 15, 23, 32baseboard 2, 10, 41chassis 3processor 4memory 5, 6, 16, 17cache 7connector 8slot 9Keywords are matched case-insensitively. The following command lines are equivalent:· dmidecode --type 0 --type 13· dmidecode --type 0,13· dmidecode --type bios· dmidecode --type BIOS -s：可以输出一些指定关键词相关信息，可用关键词如下： 123456789101112131415161718192021222324Valid string keywords are: bios-vendor bios-version bios-release-date system-manufacturer system-product-name system-version system-serial-number system-uuid system-family baseboard-manufacturer baseboard-product-name baseboard-version baseboard-serial-number baseboard-asset-tag chassis-manufacturer chassis-type chassis-version chassis-serial-number chassis-asset-tag processor-family processor-manufacturer processor-version processor-frequency -t参数测试以查看内存信息为例，可以使用 sudo dmidecode -t memory 命令查看内存所有信息，根据man手册知道这个命令包括5、6、16、17四项内容，但实际上我查询到的5、6为空，这个命令在我的电脑上只包含16、17两项 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283$ sudo dmidecode -t memory# dmidecode 3.2Getting SMBIOS data from sysfs.SMBIOS 3.2.0 present.Handle 0x0002, DMI type 16, 23 bytesPhysical Memory Array Location: System Board Or Motherboard Use: System Memory Error Correction Type: None Maximum Capacity: 32 GB Error Information Handle: Not Provided Number Of Devices: 2Handle 0x0003, DMI type 17, 84 bytesMemory Device Array Handle: 0x0002 Error Information Handle: Not Provided Total Width: 64 bits Data Width: 64 bits Size: 4096 MB Form Factor: SODIMM Set: None Locator: ChannelA-DIMM0 Bank Locator: BANK 0 Type: DDR4 Type Detail: Synchronous Speed: 2667 MT/s Manufacturer: Micron Serial Number: 00000000 Asset Tag: None Part Number: 4ATF51264HZ-2G6E1 Rank: 1 Configured Memory Speed: 2667 MT/s Minimum Voltage: Unknown Maximum Voltage: Unknown Configured Voltage: 1.2 V Memory Technology: DRAM Memory Operating Mode Capability: Volatile memory Firmware Version: Not Specified Module Manufacturer ID: Bank 1, Hex 0x2C Module Product ID: Unknown Memory Subsystem Controller Manufacturer ID: Unknown Memory Subsystem Controller Product ID: Unknown Non-Volatile Size: None Volatile Size: 4 GB Cache Size: None Logical Size: NoneHandle 0x0004, DMI type 17, 84 bytesMemory Device Array Handle: 0x0002 Error Information Handle: Not Provided Total Width: 64 bits Data Width: 64 bits Size: 4096 MB Form Factor: SODIMM Set: None Locator: ChannelB-DIMM0 Bank Locator: BANK 2 Type: DDR4 Type Detail: Synchronous Speed: 2667 MT/s Manufacturer: Micron Serial Number: 00000000 Asset Tag: None Part Number: 4ATF51264HZ-2G6E1 Rank: 1 Configured Memory Speed: 2667 MT/s Minimum Voltage: Unknown Maximum Voltage: Unknown Configured Voltage: 1.2 V Memory Technology: DRAM Memory Operating Mode Capability: Volatile memory Firmware Version: Not Specified Module Manufacturer ID: Bank 1, Hex 0x2C Module Product ID: Unknown Memory Subsystem Controller Manufacturer ID: Unknown Memory Subsystem Controller Product ID: Unknown Non-Volatile Size: None Volatile Size: 4 GB Cache Size: None Logical Size: None 可以直接指定单独的数字查询，比如查询内存阵列： 12345678910111213$ sudo dmidecode -t 16# dmidecode 3.2Getting SMBIOS data from sysfs.SMBIOS 3.2.0 present.Handle 0x0002, DMI type 16, 23 bytesPhysical Memory Array Location: System Board Or Motherboard Use: System Memory Error Correction Type: None Maximum Capacity: 32 GB Error Information Handle: Not Provided Number Of Devices: 2 查询内存设备（内存条）信息： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374$ sudo dmidecode -t 17# dmidecode 3.2Getting SMBIOS data from sysfs.SMBIOS 3.2.0 present.Handle 0x0003, DMI type 17, 84 bytesMemory Device Array Handle: 0x0002 Error Information Handle: Not Provided Total Width: 64 bits Data Width: 64 bits Size: 4096 MB Form Factor: SODIMM Set: None Locator: ChannelA-DIMM0 Bank Locator: BANK 0 Type: DDR4 Type Detail: Synchronous Speed: 2667 MT/s Manufacturer: Micron Serial Number: 00000000 Asset Tag: None Part Number: 4ATF51264HZ-2G6E1 Rank: 1 Configured Memory Speed: 2667 MT/s Minimum Voltage: Unknown Maximum Voltage: Unknown Configured Voltage: 1.2 V Memory Technology: DRAM Memory Operating Mode Capability: Volatile memory Firmware Version: Not Specified Module Manufacturer ID: Bank 1, Hex 0x2C Module Product ID: Unknown Memory Subsystem Controller Manufacturer ID: Unknown Memory Subsystem Controller Product ID: Unknown Non-Volatile Size: None Volatile Size: 4 GB Cache Size: None Logical Size: NoneHandle 0x0004, DMI type 17, 84 bytesMemory Device Array Handle: 0x0002 Error Information Handle: Not Provided Total Width: 64 bits Data Width: 64 bits Size: 4096 MB Form Factor: SODIMM Set: None Locator: ChannelB-DIMM0 Bank Locator: BANK 2 Type: DDR4 Type Detail: Synchronous Speed: 2667 MT/s Manufacturer: Micron Serial Number: 00000000 Asset Tag: None Part Number: 4ATF51264HZ-2G6E1 Rank: 1 Configured Memory Speed: 2667 MT/s Minimum Voltage: Unknown Maximum Voltage: Unknown Configured Voltage: 1.2 V Memory Technology: DRAM Memory Operating Mode Capability: Volatile memory Firmware Version: Not Specified Module Manufacturer ID: Bank 1, Hex 0x2C Module Product ID: Unknown Memory Subsystem Controller Manufacturer ID: Unknown Memory Subsystem Controller Product ID: Unknown Non-Volatile Size: None Volatile Size: 4 GB Cache Size: None Logical Size: None 一共有2个存储插槽，每个插槽上装有一个4G的内存条，最大支持32G内存 -q参数测试测试查询内存信息命令 sudo dmidecode -t 16 时可以看到开头有一些版本信息，查询其他类型时也包含这些信息 123# dmidecode 3.2Getting SMBIOS data from sysfs.SMBIOS 3.2.0 present. 如果想屏蔽这些信息就可以使用 -q 参数，还可以屏蔽未知信息，可以对比一下： 1234567$ sudo dmidecode -t 16 -qPhysical Memory Array Location: System Board Or Motherboard Use: System Memory Error Correction Type: None Maximum Capacity: 32 GB Number Of Devices: 2 12345678910111213$ sudo dmidecode -t 16# dmidecode 3.2Getting SMBIOS data from sysfs.SMBIOS 3.2.0 present.Handle 0x0002, DMI type 16, 23 bytesPhysical Memory Array Location: System Board Or Motherboard Use: System Memory Error Correction Type: None Maximum Capacity: 32 GB Error Information Handle: Not Provided Number Of Devices: 2 -s参数测试查询BOIS信息: 12345678$ sudo dmidecode -s bios-vendorLENOVO$ sudo dmidecode -s bios-versionN2SET18P (1.12 )$ sudo dmidecode -s bios-release-date04/01/2020 查询系统信息： 12345678$ sudo dmidecode -s system-uuida2d29e4c-2f08-11b2-a85c-8252d66b70f9$ sudo dmidecode -s system-familyThinkPad X390$ sudo dmidecode -s system-manufacturerLENOVO 查询机箱主板信息 1234567891011121314151617$ sudo dmidecode -s chassis-typeNotebook$ sudo dmidecode -s chassis-versionNone$ sudo dmidecode -s chassis-serial-numberPC1JX6X4$ sudo dmidecode -s baseboard-manufacturerLENOVO$ sudo dmidecode -s baseboard-product-name20SDA01ACD$ sudo dmidecode -s baseboard-versionSDK0L77769 WIN 查询处理器信息 12345$ sudo dmidecode -s processor-familyCore i5$ sudo dmidecode -s processor-versionIntel(R) Core(TM) i5-10210U CPU @ 1.60GHz 总结 DMI 在遵守SMBIOS规范的前提下帮助收集电脑系统信息，适用于任何的平台和操作系统，可用 dmidecode 命令查询 dmidecode 最重要的是 -t 参数，可以指定的特定数字类型0-42，可以使用具有组合命令的单词， 这些预定单词不区分大小写： bios、system、baseboard、chassis、processor、memory、cache、connector、slot 还有查询硬件使用情况的 top、htop、free 命令，查询静态信息的 lscpu、lsgpu、lsmem、lspci、lsusb命令等待挖掘 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 管理的本质是管人理事。真诚待人，踏实做事，坚信自己的目标可以实现并全力以赴，用行动表明自己的态度，不要忘了沟通交流，了解每个人的核心诉求，不要大包大揽，学会做应该做的事而不是所有事~ 2022-11-6 23:03:25]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>dmidecode</tag>
+        <tag>lscpu</tag>
+        <tag>硬件信息</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[awk处理/etc/passwd文件]]></title>
+    <url>%2Fblog%2F2022%2F10%2F30%2Fawk%E5%A4%84%E7%90%86-etc-passwd%E6%96%87%E4%BB%B6%2F</url>
+    <content type="text"><![CDATA[前言awk 是 linux 环境下的一个强大的编程工具，用于对文本和数据进行处理。数据可以来自标准输入、一个或多个文件，或其它命令的输出。同时它支持用户自定义函数和动态正则表达式等先进功能，可以被作为一种编程语言，可以很方便的在命令行中使用，但更多是在脚本来使用，为了熟悉这个命令，我们可以用它来尝试处理 /etc/passwd 文件学习一下常见用法。 awk处理流程awk 这个名字来源于它的三个作者姓氏的第一个字母，分别是Alfred Aho、Brian Kernighan、Peter Weinberger，常用的版本是 gawk， 它是awk的GNU版本，提供了Bell实验室和GNU的一些扩展。 awk 工作流程可分为三个部分： 读输入文件之前执行的代码段（GEGIN块，由BEGIN关键字标识，可选） 主循环执行输入文件的代码段（BODY块，可选） 读输入文件之后的代码段（END块，由END关键字标识，可选） 命令结构: 1awk &apos;BEGIN&#123; commands &#125; pattern&#123; commands &#125; END&#123; commands &#125;&apos; 开始块（BEGIN）1BEGIN &#123;awk-commands&#125; 开始块部分是可选的，可以没有开始块部分，如果存在必须以 BEGIN 开头 开始块就是在程序启动的时候执行的代码部分，并且它在整个过程中只执行一次，我们可以在开始块中初始化一些变量。 主体块（BODY）1pattern &#123;awk-commands&#125; 默认情况下，对于输入的每一行，awk 都会执行命令，我们可以通过 pattern 将其限定在指定的模式中，这部分也是可选的，不存在也是可以的，不过不存在主体的脚本用处不大。 结束块（END）1END &#123;awk-commands&#125; 结束块部分是可选的，可以没有结束块部分，是在程序结束时执行的代码。 如果存在必须以 END 开头 /etc/passwd文件起初 /etc/passwd 文件包含了用户名和密码，但是由于该文件允许所有用户读取，易导致用户密码泄露，因此 Linux 系统将用户的密码信息从 /etc/passwd 文件中分离出来，并单独放到了/etc/shadow 文件中，此文件只有 root 用户拥有读权限，其他用户没有任何权限，这样就一定程度上保证了用户密码的安全性。 /etc/passwd 配置文件的内容用冒号 : 隔开分为7段，分别为： 用户名：账户名字 x：早期这个部分放的是用户登入密码，现在的密码是放入/etc/shadow中的 UID：用户ID，0表示系统管理员，1~999保留给系统使用的ID，1000以上给一般使用者 GID：组ID，0表示系统管理员，1~999保留给系统使用的ID，1000以上给一般使用者 使用者的信息说明 用户家目录：用户登入时所在的目录 默认shell：用户在登入的时候，默认使用的shell类型，如果不能使用shell，则会显示/sbin/nologin /etc/shadow 配置文件的内容用冒号 : 隔开分为9段，分别为： 用户名 经过加密的密码( * 表示用户被锁定，！表示无加密) 最近更改过密码的日期：Linux中的日期是经过1970年1月1号开始累计的日期 密码不能修改的天数，0表示随时可以修改 密码需要重新被修改的天数，通过修改该值可以强制修改密码 密码需要变更的告警天数，7表示系统会向用户发出警告的天数 密码到期后帐号可以使用的时间 帐号失效日期，通过1970年1月1号开始累加的日期，到了时间后无论密码是否过期，该账号就不能再使用了 保留的 如果忘记自己的账户密码，该怎么处理呢？ 对于普通账户的密码遗失，可以通过 root 账户使用 passwd 命令重新设置密码解决，passwd username。 如果 root 账号的密码遗失，则需要重新启动进入单用户模式，系统会提供 root 权限的 bash 接口，此时可以用 passwd 命令修改账户密码。或者通过挂载根目录，修改 /etc/shadow 文件将 root 密码清空，无密码即登陆后再使用 passwd 命令配置 root 密码。 awk 常用处理字段分割及相关变量 $1,$2,$3…$n：awk中用该顺序形式表示files中每行以间隔符号分割的各列的不同字段 $0：表示文本本身 NF：表示当前记录的字段数（列数） $NF：最后一列 $(NF-1)：倒数第二列 FNR/NR：行号 FILENAME：文件名 “\t”：制表符 RS：换行符 “”： 打印字符串 FS：定义间隔符 ~：匹配，与==相比不是精确比较 !~：不匹配，不精确比较 ==：等于，必须全部相等，精确比较 /[0-9][0-9]+/：两个或两个以上数字 -F’[:#]’：定义两个分隔符 常用处理添加表头12345678[root@VM-0-3-centos ~]# awk -F: 'BEGIN&#123;print"用户名\t密码\tUID\tGID\t信息\t家目录\tshell"&#125;&#123;printf $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\n"&#125;' /etc/passwd用户名 密码 UID GID 信息 家目录 shellroot x 0 0 root /root /bin/bashbin x 1 1 bin /bin /sbin/nologindaemon x 2 2 daemon /sbin /sbin/nologinadm x 3 4 adm /var/adm /sbin/nologinlp x 4 7 lp /var/spool/lpd /sbin/nologinsync x 5 0 sync /sbin /bin/sync 添加行号1234567[root@VM-0-3-centos ~]# awk -F: '&#123;printf NR"\t"$0"\n"&#125;' /etc/passwd1 root:x:0:0:root:/root:/bin/bash2 bin:x:1:1:bin:/bin:/sbin/nologin3 daemon:x:2:2:daemon:/sbin:/sbin/nologin4 adm:x:3:4:adm:/var/adm:/sbin/nologin5 lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin6 sync:x:5:0:sync:/sbin:/bin/sync 打印第三行第1列和第7列12[root@VM-0-3-centos ~]# awk -F: 'NR==3&#123;print $1"\t"$7&#125;' /etc/passwddaemon /sbin/nologin 打印文件总行数12[root@VM-0-3-centos ~]# awk -F: 'END&#123;print FILENAME"\t"NR&#125;' /etc/passwd/etc/passwd 28 查询不能登录的用户数12[root@VM-0-3-centos ~]# awk -F: 'BEGIN&#123;x=0&#125; &#123;if($7=="/sbin/nologin") x++&#125; END&#123;print FILENAME"\t"x&#125;' /etc/passwd/etc/passwd 21 12[root@VM-0-3-centos ~]# awk '/nologin/' /etc/passwd | wc -l21 查询可以登录的用户123[root@VM-0-3-centos ~]# awk -F: '$NF !~ /nologin$/&#123;print $1&#125;' /etc/passwdrootsync 打印UID小于300的用户1234567[root@VM-0-3-centos ~]# awk -F: '&#123; if($3&lt;300) print $1"\t"$3 &#125;' /etc/passwdroot 0bin 1daemon 2adm 3lp 4sync 5 打印UID在2和6之间的用户1234[root@VM-0-3-centos ~]# awk -F: '($3&gt;2&amp;&amp;$3&lt;6)&#123;print $1"\t"$3 &#125;' /etc/passwdadm 3lp 4sync 5 进行算术运算1234[root@VM-0-3-centos ~]# awk -F: '($3*2 &lt; 6)&#123;print $1"\t"$3 &#125;' /etc/passwdroot 0bin 1daemon 2 利用条件判断统计各类用户数1234[root@VM-0-3-centos ~]# awk -F: '&#123;if($3==0)&#123;i++&#125; else if($3&gt;999)&#123;k++&#125; else&#123;j++&#125;&#125; END&#123;print "管理员个数: "i; print "普通用个数: "k; print "系统用户数: "j&#125;' /etc/passwd管理员个数: 1普通用个数: 1系统用户数: 26 每行数据打印3遍12345678910111213141516[root@VM-0-3-centos ~]# awk -F: '&#123;for(i=1;i&lt;=3;i++) print NR"\t"i"\t"$0&#125;' /etc/passwd1 1 root:x:0:0:root:/root:/bin/bash1 2 root:x:0:0:root:/root:/bin/bash1 3 root:x:0:0:root:/root:/bin/bash2 1 bin:x:1:1:bin:/bin:/sbin/nologin2 2 bin:x:1:1:bin:/bin:/sbin/nologin2 3 bin:x:1:1:bin:/bin:/sbin/nologin3 1 daemon:x:2:2:daemon:/sbin:/sbin/nologin3 2 daemon:x:2:2:daemon:/sbin:/sbin/nologin3 3 daemon:x:2:2:daemon:/sbin:/sbin/nologin4 1 adm:x:3:4:adm:/var/adm:/sbin/nologin4 2 adm:x:3:4:adm:/var/adm:/sbin/nologin4 3 adm:x:3:4:adm:/var/adm:/sbin/nologin5 1 lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin5 2 lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin5 3 lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin 统计/etc/passwd中各种类型shell的数量1234567[root@VM-0-3-centos ~]# awk -F: '&#123;shells[$NF]++&#125;END&#123; for(i in shells)&#123;print i,shells[i]&#125;&#125;' /etc/passwd/bin/sync 1/bin/bash 3/sbin/nologin 21/sbin/halt 1/bin/false 1/sbin/shutdown 1 网站访问状态统计1234[root@VM-0-3-centos ~]# netstat -ant | grep :80 | awk '&#123;access_stat[$NF]++&#125;END&#123;for(i in access_stat)&#123;print i, access_stat[i]&#125;&#125;'LISTEN 3CLOSE_WAIT 1ESTABLISHED 1 生成清空arp命令的文本12345678[root@VM-0-3-centos ~]# arp | awk '!/Address/&#123;print "arp -d " $1&#125;'arp -d 169.254.0.2arp -d 169.254.0.3arp -d 169.254.0.79arp -d 172.18.0.3arp -d 169.254.128.8arp -d 169.254.128.9arp -d 10.10.0.17 直接在末尾加管道 bash 就可以执行了，arp | awk &#39;!/Address/{print &quot;arp -d &quot; $1}&#39;| bash 这是一种通用的生成处理命令的方式，先生成命令文本，然后作为bash输入，执行即可。 总结 awk 处理流程分为3个阶段，BEGIN块、BODY块、END块，其中BEGIN块和END块都执行一次，BODY块对每一行输入执行一次 awk 的3个处理块都是可选的，对于待处理的文件，一般至少会包含BODY块 awk 中BODY块的 pattern 用于行过滤，/pattern/ 表示匹配，/!pattern/ 表示不匹配 awk 中BODY块的中也可对指定字段判断是否包含，&#39;$1 ~ /root/&#39; 表示第一列包含root，&#39;$NF !~ /nologin$/&#39; 表示最后一列不包含nologin awk 还可用于待处理命令文本的预处理，先将过滤文本拼装成命令文本，然后利用管道直接通过bash执行 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 最近有些急躁，虽知欲速则不达，但压力之下确实难以平静。之所以这么拼，并不是为了卷谁，也不是为了表现给别人看，只是想有所提升超越昨天的自己，目的也非常俗套，通过提升自身来给自己的小家一个更好的生活。“一室之不治，何以天下家国为？”如果每个人都能把自己的小日子过好，则天下太平! 2022-10-30 21:24:10]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>awk</tag>
+        <tag>passwd</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[后台运行一个go程序]]></title>
+    <url>%2Fblog%2F2022%2F10%2F23%2F%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%E4%B8%80%E4%B8%AAgo%E7%A8%8B%E5%BA%8F%2F</url>
+    <content type="text"><![CDATA[前言后台运行在日常开发中比较常用，特别是在部署服务器上，一般都是通过ssh连接到服务器，然后启动后台运行程序，如果程序不支持后台运行，那么当终端断开时程序也就退出了，所以掌握常用的后台运行方式还是比较有用的。 概念提到后台运行，通常会想到 daemon 模式，日常开发时也常常混着说，不过通过查询资料时发现，这两个概念还有些区别： 后台运行：是指进程在操作系统中非显示运行，未关联到任何命令行终端或程序界面，这种方式运行的进程则被称为后台进程。 daemon模式：也叫守护进程，它首先是后台运行，然后它还有守护的职责，若异常退出，可以自动重启服务程序。 所以说 daemon 不仅要时候后台运行，还有守护进程职责，像Windows 和 Linux 中的各种服务，比如MySQL、防火墙、SSH服务等都是后台运行的进程。 常用方式很多产品会部署在linux服务器上，所以相比较而言，后台运行在linux上更常用，而 nohup、&amp;、setsid 等命令就基本上可以达到后台运行的目的，之前写过一篇总结 《linux环境下运行程序常用的nohup和&amp;的区别》，可以简单回忆下： nohup 是no hang up的缩写，就是不挂断的意思，忽略SIGHUP信号，在关闭命令终端后程序依旧运行 &amp; 是只后台运行，即忽略SIGINT信号，也就是按Ctrl+C不会终止程序，但是关闭命令行终端程序终止 而 setsid 是新学到的命令，使用起来也非常的简单，只需要加在待执行命令的前面即可： 1[root@VM-0-3-centos ~]# setsid ping www.baidu.com &gt; out.log 此时关闭当前终端，重新打开另一终端会发现 ping 的进程，同时文件 out.log 文件也一直在更新 12345678[root@VM-0-3-centos ~]# ps -ef | grep pingroot 1692 1 0 23:36 ? 00:00:00 ping www.baidu.comroot 1707 1279 0 23:36 pts/1 00:00:00 grep --color=auto ping[root@VM-0-3-centos ~]# tail -f out.log64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq=8 ttl=251 time=9.38 ms64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq=9 ttl=251 time=9.36 ms64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq=10 ttl=251 time=9.35 ms64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq=11 ttl=251 time=9.37 ms 小技巧&amp; 不能让进程永久在后台执行，但是如果在命令前后加上()括起来，一样可以实现nohup ..&amp;的功能，命令就能永久在后台执行了。 12345[root@VM-0-3-centos ~]# (ping www.baidu.com &gt; t.log &amp;)[root@VM-0-3-centos ~]# ps -ef | grep pingroot 3410 1 0 23:44 pts/0 00:00:00 ping www.baidu.comroot 3450 1279 0 23:44 pts/1 00:00:00 grep --color=auto ping 代码级别实现虽然上面的方式很方便，但毕竟只能在 linux 上使用，如果可以通过修改 go 代码在 windows 和 linux 上都实现后台运行那再好不过了，很幸运查到一个go的库 github.com/codyguo/godaemon，使用起来非常方便，只需要在代码中引入这个库，然后启动程序是加入 -d 参数就可以后台运行了 123import ( _ "github.com/codyguo/godaemon") 不过我在使用的过程中发现两个问题，一个是传递的后续参数会莫名消失，另一个是好像关闭终端会导致程序退出，所以我打算看看源码，结果发现源码就只有几行： 1234567891011121314151617181920212223package godaemonimport ( "flag" "fmt" "os" "os/exec")func init() &#123; goDaemon := flag.Bool("d", false, "run app as a daemon with -d=true.") flag.Parse() if *goDaemon &#123; cmd := (os.Args[0], flag.Args()...) if err := cmd.Start(); err != nil &#123; fmt.Printf("start %s failed, error: %v\n", os.Args[0], err) os.Exit(1) &#125; fmt.Printf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid) os.Exit(0) &#125;&#125; 这些就是源码的全部了，是不是很吃惊，其实弄懂原理就很好明白了，其中利用了 exec.Command 函数，因为go 中没有 fork 的便利实现，所以可以利用 exec.Command 启动新的进程，这样新启动的进程在当前进程退出后就被系统进程接管了，只不过它处理的参数有点问题，flag.Args()会把所有 - 开头的参数都消耗掉，自己按需实现就可以了 另一个关闭终端会导致程序退出的问题，可以在传入 -d 参数的情况下调用 signal.Ignore(syscall.SIGHUP) 忽略掉 SIGHUP 信号即可 总结 在操作系统中非显示运行，未关联到任何命令行终端或程序界面的进程则被称为后台进程 linux环境下常用来后台运行程序的命令有 hohup、&amp; 和 setsid github.com/codyguo/godaemon 是一个极简的后台运行可用库，仅添加修改一行代码 若想更丰富的功能可以参考 github.com/sevlyar/go-daemon 和 github.com/zh-five/xdaemon 两个库 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 人生若只如初见，何事秋风悲画扇。等闲变却故人心，却道故人心易变~ 2022-10-24 00:04:29]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>nohup</tag>
+        <tag>setsid</tag>
+        <tag>后台</tag>
+        <tag>daemon</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[由逆序对数引发的解题目录]]></title>
+    <url>%2Fblog%2F2022%2F10%2F04%2F%E7%94%B1%E9%80%86%E5%BA%8F%E5%AF%B9%E6%95%B0%E5%BC%95%E5%8F%91%E7%9A%84%E8%A7%A3%E9%A2%98%E7%9B%AE%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[前言如果你恰巧看到了我的上一篇总结《排序算法系列之（七）——分分合合的归并排序》会发现我把搁置了3年半的排序系列又续更了，起因是最近刷题时遇到了逆序对数求解，而解这类问题常用的方法之一就是归并排序，究竟是怎样的一道题呢？我们可以先试着解决一下。 逆序对数题目非常简短，描述内容如下： 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。 示例 1: 12输入: [7,5,6,4]输出: 5 限制： 10 &lt;= 数组长度 &lt;= 50000 作者：LeetCode-Solution链接：https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/来源：力扣（LeetCode）著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 求解过程题目要求不难理解，即使你不知道什么是逆序对也能很容易的根据描述写出下面暴力的解法： 123456789101112class Solution &#123; int ans = 0;public: int reversePairs(vector&lt;int&gt;&amp; nums) &#123; for (int i = 0; i &lt; nums.size(); i++) &#123; for (int j = i + 1; j &lt; nums.size(); j++) &#123; if (nums[i] &gt; nums[j]) ++ans; &#125; &#125; return ans; &#125;&#125;; 不出意外的获得了 TLE，看看限制范围也能猜到这题暴力肯定不让过，如果数组长度小于 100 还可以考虑搏一搏，而这道题必须用更巧妙的方法才行，而归并排序就是解法之一： 12345678910111213141516171819202122232425262728293031class Solution &#123; int ans = 0;public: void mergeCnt(vector&lt;int&gt;&amp; v, int left, int right, vector&lt;int&gt;&amp; t) &#123; if (left &gt;= right) return; int i = left, mid = (left+right) / 2, j = mid + 1, k = 0; mergeCnt(v, left, mid, t); mergeCnt(v, mid+1, right, t); while(i &lt;= mid &amp;&amp; j &lt;= right) &#123; if (v[i] &lt;= v[j]) t[k++] = v[i++]; else &#123; t[k++] = v[j++]; ans += mid - i + 1; // 相比归并排序只多了这一行 &#125; &#125; while (i &lt;= mid) t[k++] = v[i++]; while (j &lt;= right) t[k++] = v[j++]; copy(t.begin(), t.begin() + right - left + 1, v.begin() + left); &#125; int reversePairs(vector&lt;int&gt;&amp; nums) &#123; int n = nums.size(); vector&lt;int&gt; t(n); mergeCnt(nums, 0, n-1, t); return ans; &#125;&#125;; 相比原始的归并排序只增加了一行代码，就得到了一个优于暴力解法O(N^2)的O(NlogN)的解法，具体解释可以去看相关题解，本文的总结目的不是解一道题，而是想给自己保留一个有趣的解题目录。 解题目录刷题大计最近两年断断续续的在进行着，题解也有写过一些，尝试过多种方式，内容比较零散，复习时比较头疼，没有一个完整的大纲和复习线路，所以打算单开一篇总结，持续收集一些有意思的题目，方便后续的复习和拿来即用。 题目的标签主要有两个方面，一是本身的题目知识点类型，另一种是解题用到的解法类型，比如上面提到的这道题，从题目看归为逆序对数，从解法看可以归为排序解法和离散化树状数组解法，所以后面可以会看到一个题目出现在多个目录中的情况，只是分类依据不同而已。 题目分类逆序对数 51. 数组中的逆序对 解法分类归并排序 51. 数组中的逆序对 离散化树状数组 51. 数组中的逆序对 差分数组 2406. 将区间分为最少组数 滑动窗口 2379. 得到 K 个黑块的最少涂色次数 Trie树 2416. 字符串的前缀分数和 1233. 删除子文件夹 动态规划 19. 秋叶收藏集 ……持续补充 总结 有时看似无关的两件事居然关系紧密，比如归并排序加一行代码就可以求解逆序对数 分类、总结、重新分类，在不断分类中重新认识这个世界 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不积跬步，无以至千里；不积小流，无以成江海。放眼于未来，着眼于脚下，一味计划而不行动，最终醒来只会发现是梦一场~ 2022-10-5 00:49:14]]></content>
+      <categories>
+        <category>OJ</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>OJ</tag>
+        <tag>解题目录</tag>
+        <tag>逆序对数</tag>
+        <tag>归并排序</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[排序算法系列之（七）——分分合合的归并排序]]></title>
+    <url>%2Fblog%2F2022%2F10%2F03%2F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%E4%B9%8B%EF%BC%88%E4%B8%83%EF%BC%89%E2%80%94%E2%80%94%E5%88%86%E5%88%86%E5%90%88%E5%90%88%E7%9A%84%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%2F</url>
+    <content type="text"><![CDATA[前言再一次总结基础的排序算法，印象里距离上一次总结排序也没过多久，查询后才发现上一篇总结《排序算法系列之（六）——逐步砍掉树杈的堆排序》到现在已经过去了3年多的时间，真是时光荏苒，岁月如梭啊，这次想起总结排序起因并不是排序，而是查找逆序数对，而解决逆序数对通常使用的两种方式是归并排序和离散化树状数组，所以我又把归并排序捡起来了 归并排序温故而知新，知识有时候就是这么神奇，多年以后再次看到归并排序，才发现以前掌握的归并排序并不全面，之前理解的归并排序主要放在“并”这个操作，但是其实归并排序中还有很重要的一环，那就是“分”，先分后合才是完整的归并排序。 归并排序是建立在归并操作上的一种有效，稳定的排序算法，该算法是采用分治法的一个非常典型的应用，首先将整个序列一分为二得到两个序列，然后将分出的两个序列排好序后再合并，得到完全有序的序列。对于子序列如果元素大于1则继续进行一分为二，分别排序再合并的操作，直至有序，算法本身是通过一个递归的概念定义。当然反过来通过递推也可以实现，相邻区间两两合并，最终至全部有序也是可以的。 提到一分为二很容易联想到快速排序，在最优的情况下待排序的数组每次被一分为二，将小于中间值的元素全部移到数组前半段，将大于中间值的元素全部移到数组后半段，完成一趟快排，然后对每段分别采用相同的策略从而达到整理有序，这是快排的思想，听起来有些部分确实和归并排序很像，但是区别也是很大的，比如快排不需要合并的操作，另外快排是一种不稳定的排序。 为了简单一点，我们还是采用递归的版本来描述一下归并排序，先画一个图，直观的看下归并排序中二分天下是怎么操作的，先分裂： 12345678910111213141516171819graph TB A[2,3,9,4,7,12,6,1,11,5]--&gt;B[2,3,9,4,7]; A[2,3,9,4,7,12,6,1,11,5]--&gt;C[12,6,1,11,5]; B[2,3,9,4,7]--&gt;D[2,3,9]; B[2,3,9,4,7]--&gt;E[4,7]; C[12,6,1,11,5]--&gt;F[12,6,1]; C[12,6,1,11,5]--&gt;G[11,5]; D[2,3,9]--&gt;H[2,3]; D[2,3,9]--&gt;I[9]; E[4,7]--&gt;J[4]; E[4,7]--&gt;K[7]; F[12,6,1]--&gt;L[12,6]; F[12,6,1]--&gt;M[1]; G[11,5]--&gt;N[11]; G[11,5]--&gt;O[5]; H[2,3]--&gt;P[2]; H[2,3]--&gt;Q[3]; L[12,6]--&gt;R[12]; L[12,6]--&gt;S[6]; idx_0 idx_1 idx_2 idx_3 idx_4 idx_5 idx_6 idx_7 idx_8 idx_9 2 3 9 4 7 12 6 1 11 5 排序后再合并： 12345678910111213141516171819graph BT A[1,2,3,4,5,6,7,9,11,12]--&gt;B[2,3,4,7,9]; A[1,2,3,4,5,6,7,9,11,12]--&gt;C[1,5,6,11,12]; B[2,3,4,7,9]--&gt;D[2,3,9]; B[2,3,4,7,9]--&gt;E[4,7]; C[1,5,6,11,12]--&gt;F[1,6,12]; C[1,5,6,11,12]--&gt;G[5,11]; D[2,3,9]--&gt;H[2,3]; D[2,3,9]--&gt;I[9]; E[4,7]--&gt;J[4]; E[4,7]--&gt;K[7]; F[1,6,12]--&gt;L[6,12]; F[1,6,12]--&gt;M[1]; G[11,5]--&gt;N[11]; G[11,5]--&gt;O[5]; H[2,3]--&gt;P[2]; H[2,3]--&gt;Q[3]; L[6,12]--&gt;R[12]; L[6,12]--&gt;S[6]; 排序过程上面的图可以很清楚的看出怎样划分以及合并的结果，但是对于描述怎样每个子数组怎样从无序变成有序不太明显，同时也忽略了合并的算法，所以下面用语言简单描述下，其实每个子数组怎样从无序变成有序这个并不需要关心，因为数组是一个元素是必定有序，当数组包含两个元素时，说明它是由两个单元素数组“归并”而成，所以我们需要掌握的是归并的算法。同理，4个元素的数组是由两个双元素有序数组归并而成，同样说明需要掌握的只有归并的逻辑。 下面我们具体操作一下，以 [2,3,4,7,9] 和 [1,5,6,11,12] 两个子数组归并成最终有序数组为例，模拟一次从小到大排序。 首先我们假设有两个指针L 和 R 分别指向两个数组的首个元素，另有一个数组 M 为结果数组，初始为空 M = []，下面开始操作，初始数据如下： 123[2(L),3,4,7,9][1(R),5,6,11,12][] 比较两个指针元素，找出两个指针所指的更小的元素，放入结果数组后指针加一，R 指针元素更小，元素1放入结果数组，指针向后加一 123[2(L),3,4,7,9][1,5(R),6,11,12][1] 继续步骤1，这次 L 指针元素更小，元素2放入结果数组，指针向后加一 123[2,3(L),4,7,9][1,5(R),6,11,12][1,2] 继续比较，还是 L 指针元素更小，元素3放入结果数组，指针向后移动 123[2,3,4(L),7,9][1,5(R),6,11,12][1,2,3] 继续比较，仍然是 L 指针元素更小，元素4放入结果数组，指针向后移动 123[2,3,4,7(L),9][1,5(R),6,11,12][1,2,3,4] 继续比较，这次变成 R 指针元素更小，元素5放入结果数组，指针向后移动 123[2,3,4,7(L),9][1,5,6(R),11,12][1,2,3,4,5] 继续比较，仍然是 R 指针元素更小，元素6放入结果数组，指针向后移动 123[2,3,4,7(L),9][1,5,6,11(R),12][1,2,3,4,5,6] 继续比较，现在是 L 指针元素更小，元素7放入结果数组，指针向后移动 123[2,3,4,7,9(L)][1,5,6,11(R),12][1,2,3,4,5,6,7] 继续比较，仍是 L 指针元素更小，元素9放入结果数组，指针向后移动 123[2,3,4,7,9](L)[1,5,6,11(R),12][1,2,3,4,5,6,7,9] 现在 L 指针已经走到了数组的最后，而 R 所在的数组还有元素，说明 R 中剩余的元素肯定都比 L 最后一个元素都大，所以直接把 R 中剩余元素11和12放到结果数组就完成了排序 123[2,3,4,7,9](L)[1,5,6,11,12](R)[1,2,3,4,5,6,7,9,11,12] 从排序过程也可以看出，使用归并排序需要一个额外的结果数组来完成合并操作，下面我们用代码来实现一下这个算法。 代码实现12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667/*功能： 交换两个变量参数： element1--被交换的第一个元素的地址 element2--被交换的第二个元素的地址返回值：无注意： 只用来表示思路，不考虑指针为空等特殊情况*/void swap_data(int* element1, int* element2)&#123; int middle_value = *element1; *element1 = *element2; *element2 = middle_value;&#125;/*功能： 将数组的两个有序段[left,mid]和[mid+1,right]合并成[left,right]区间完整有序参数： array--表示待排序的数组，此处会退化成指针 left--数组第一段开始的索引 mid--数组第一段结束的索引 right--数组第二段结束的索引返回值：无注意： 只用来表示思路，不考虑指针为空等特殊情况*/void merge(int array[], int left, int mid, int right)&#123; int* temp = (int*)malloc((right-left+1)*4); int i = 0, l = left, r = mid + 1; while (l &lt;= mid &amp;&amp; r &lt;= right) &#123; if (array[l] &lt;= array[r]) temp[i++] = array[l++]; else temp[i++] = array[r++]; &#125; //第一段仍有元素没加到结果 while (l &lt;= mid) temp[i++] = array[l++]; //第二段仍有元素没加到结果 while (r &lt;= right) temp[i++] = array[r++]; //结果赋值回原数组 for (int j = 0; j &lt;= right - left; j++) array[left+j] = temp[j]; free(temp);&#125;/*功能： 归并排序，实现数组元素从小到大排列参数： array--表示待排序的数组，此处会退化成指针 left--数组第一个待排序元素索引 right--数组最后一个待排序元素索引返回值：无注意： 只用来表示思路，不考虑指针为空等特殊情况*/void merge_sort(int array[], int left, int right)&#123; if (right &gt; left) &#123; int mid = (right + left) / 2; merge_sort(array, left, mid); merge_sort(array, mid+1, right); merge(array, left, mid, right); &#125;&#125; 代码分析归并排序的核心的是分割和归并，分割时采取递归一分为二就可以，然后归并才是体现算法精髓的地方，合并时通常使用两个指针来分别指向数组的两段，通过不断比较元素大小将两段有序数组合并成一段，在排序过程中使用了额外的空间，这也是归并排序的劣势，例子中为了方便每次合并时都申请了新数组，其实可以优化一下，在排序开始申请一个临时数组就可以，中间合并时使用同一个临时数组就可以。 运行测试在线编辑器是一个很方便的测试代码的环境，如果想本地调试一下，也可以直接下载归并排序–源码，在本地编译后进行调试，其实边看代码边调试是理解算法思路很有效的方式。 总结 归并排序的核心思想是不断二分后合并两段有序子数组达到最终有序 归并排序因为是优先比较相邻的元素，所以是稳定的排序算法 归并排序使用了临时空间，最大与原数组等长，优化时可以在排序前申请一个就可以服务于整个排序过程 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 生活的点点滴滴随时间流淌，它们不是逝去，恰恰是它们组成了我们的生活，我们可以选择躺平，可以选择奋斗，可以选择全力以赴，当我们还可以选择的时候，请感恩你所拥有的一切吧，特别是对已经攥在手里的东西，深深地表达一下感激，勿等失去徒伤悲。 2022-10-4 02:20:05]]></content>
+      <categories>
+        <category>Sort</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>排序</tag>
+        <tag>概念</tag>
+        <tag>Sort</tag>
+        <tag>归并</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[本来打算完整安装一次redmine最终还是放弃了]]></title>
     <url>%2Fblog%2F2022%2F10%2F01%2F%E6%9C%AC%E6%9D%A5%E6%89%93%E7%AE%97%E5%AE%8C%E6%95%B4%E5%AE%89%E8%A3%85%E4%B8%80%E6%AC%A1redmine%E6%9C%80%E7%BB%88%E8%BF%98%E6%98%AF%E6%94%BE%E5%BC%83%E4%BA%86%2F</url>
     <content type="text"><![CDATA[前言redmine 是最近工作中经常使用的项目管理软件，因为平时主要使用跟踪一些开发进度和bug修复情况，平时使用并不算重度，体验还不错，最近因为需要停电重启，所以想借着这个机会学习一下怎么安装，看了不少教程，各种安装方法，因为依赖项确实有点多，至今也没按照官网wiki安装成功（战术捂脸），不过从中发现了很多新的知识点，还是记录一下。 安装参考其实官方的wiki写的就不错，但是有关依赖项的部分提及的很少，还有就是没有说怎么安装 ruby，先把写的比较好的文档列举在此，有时间再试试，其实也快安装成功了，就是云主机内存太低，有一步安装需要编译，总是内存不足… redmine/wiki/redmineinstall CentOS 7 安装 Redmine 4.1 Linux下redmine安装使用 centos安装ruby及更换gem的源 bitnami redmine一键式安装 centos 安装 redmine mysql ruby on rails How to setup Redmine 4 on Ubuntu 18.04 Linux 下安装 Redmine linux搭建redmine：bitnami-redmine-4.1.1-4-linux-x64-installer.run Redmine安装神器：Bitnami redmine 的安装指导（Linux的安装方法） Redmine packaged by Bitnami 以上列举的教程前几个还不错，虽然没安装完整，但是接触了ruby、nginx、mysql这些依赖项，也了解了不少新东西，大概知道运行 redmine 需要哪些东西了，完成安装只是时间和硬件问题，咳咳~ 其中有几篇文章建议利用 bitnami 来简化 redmine 的安装，看步骤确实方便了很多，但是不幸的是 Bitnami 在2021年6月30日之前停止对大多数Linux本地安装程序的支持，我已经找不到安装程序 bitnami-redmine-4.0.5-0-linux-x64-installer.run了 Bitnami plans on discontinuing the support for the majority of Native Installers for Linux by June 30th 2021. Please read this blog post for more information. Ruby已经多次接触到 Ruby 了，上次是升级gitlab服务器的时候，新版本的gitlab需要安装ruby依赖项，这次安装redmine同样需要安装Ruby，对于Ruby的安装省事的方法可以通过Linux对应包管理工具直接安装，但是版本通常达不到要求，所以我们总是需要采用复杂的方式才可以安装Ruby，先了解下Ruby是什么。 Ruby 是一种跨平台、面向对象的动态类型编程语言。Ruby 体现了表达的一致性和简单性，它不仅是一门编程语言，更是表达想法的一种简练方式。 Ruby 的作者于 1993 年 2 月 24 日开始编辑 Ruby，直至 1995 年 12 月才正式公开发布。之所以称为 Ruby，是因为 Perl 的发音与 6 月的诞生石 pearl（珍珠）相同，因此 Ruby 以 7 月的诞生石 ruby（红宝石）命名。 Ruby 的特性与 Smalltalk、Perl 和 Python 类似。Perl、Python 和 Smalltalk 是脚本语言。Smalltalk 是一个真正的面向对象语言。Ruby，与 Smalltalk 一样，是一个完美的面向对象语言。使用 Ruby 的语法比使用 Smalltalk 的语法要容易得多。 RailsRuby on Rails（官方简称为 Rails，亦被简称为 RoR），是一个使用 Ruby 语言写的开源 Web 应用框架，它是严格按照 MVC 结构开发的。它努力使自身保持简单，来使实际的应用开发时的代码更少，使用最少的配置。 Rails 的设计原则包括“不做重复的事”和“惯例优于设置” 。 Ruby on Rails 是一种结合 Ruby 语言与 Rails 平台的一种网页程序框架，Ruby 语言以自然、简洁、快速著称，全面支持面向对象程序设计，而 Rails 则是 Ruby 广泛应用方式之一，在 Rails 平台上设计出一套独特的 MVC 开发架构，采取模型（Model）、视图（View）、控制器（Controller）分离的开发方式，不但减少了开发中的问题，更简化了许多繁复的动作。 RubyGemsRubyGems 是 Ruby 的一个包管理器，它提供一个分发 Ruby 程序和库的标准格式，还提供了一个管理程序包安装的工具，它将一个 Ruby 应用程序打包到一个 gem 里，作为一个安装单元，旨在方便地管理 gem 安装的工具，以及用于分发 gem 的服务器，这类似于 Ubuntu 下的apt-get，Centos 的 yum，Python 的 pip，大约创建于2003年11月，从Ruby 1.9版起成为Ruby标准库的一部分。 RVM在linux上安装Ruby在之前提到了，可以通过对应系统的包管理软件来直接安装，比如在CentOS上可以直接运行 sudo yum install ruby 命令来安装，但是这种方式通常安装的版本比较低，无法满足需要，所以你也可以采用源码编译的方式安装。 如果从源码级别安装已经超出了你的能力范围还可以使用 RVM 来安装，它是 Ruby 的版本管理工具，类似 nodejs的 nvm 工具，可以方便的安装和配置当前系统使用的Ruby版本，安装RVM的命令如下： 12$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB$ curl -sSL https://get.rvm.io | bash -s stable 若安装报错先输入以下命令再继续： 12$ command curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -$ command curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import - 之后就可以利用 rvm 命令来安装 Ruby 了 12$ rvm install 2.6$ ruby -v 另辟蹊径安装 redmine 很困难，难道我们就没办法了吗？不！我们还有 docker，一条命令 docker run -d --name some-redmine -p 8080:3000 redmine 搞定，首先会下载所需要的镜像，之后直接启动，通过 http://IP:8080/ 直接就可以访问了，真香~ 总结 redmine 是一个项目管理web软件，依赖Rails、MySQL、Nginx等组件或服务 Ruby on Rails 是一个使用 Ruby 语言写的开源 Web 应用框架，严格按照 MVC 结构开发 可以通过RVM安装Ruby， RVM 是 Ruby 的版本管理工具，可以方便的安装和配置当前系统使用的Ruby版本 如果参照官方的wiki实在安装不上redmine，可以通过 docker 来安装，虽然看起来像个玩具，但是真的能用啊 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 黄河远上白云间，一片孤城万仞山。羌笛何须怨杨柳，春风不度玉门关。 2022-10-3 02:33:26]]></content>
@@ -80,9 +181,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
+        <tag>log</tag>
         <tag>历史记录</tag>
       </tags>
   </entry>
@@ -237,11 +338,11 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
+        <tag>grep</tag>
         <tag>locate</tag>
         <tag>which</tag>
-        <tag>grep</tag>
       </tags>
   </entry>
   <entry>
@@ -563,9 +664,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -577,9 +678,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -763,8 +864,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>函数</tag>
         <tag>语法糖</tag>
+        <tag>函数</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -777,8 +878,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>算法</tag>
         <tag>find</tag>
+        <tag>算法</tag>
         <tag>KMP</tag>
       </tags>
   </entry>
@@ -821,9 +922,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
-        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -835,8 +936,8 @@
       </categories>
       <tags>
         <tag>int</tag>
-        <tag>Python</tag>
         <tag>hex</tag>
+        <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
       </tags>
@@ -907,9 +1008,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
+        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -921,8 +1022,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -1042,8 +1143,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>编译</tag>
         <tag>linux</tag>
+        <tag>编译</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -1162,9 +1263,9 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>awk</tag>
         <tag>git</tag>
         <tag>log</tag>
-        <tag>awk</tag>
         <tag>统计</tag>
       </tags>
   </entry>
@@ -1370,8 +1471,8 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>工具</tag>
+        <tag>git</tag>
         <tag>mergetool</tag>
         <tag>文件冲突</tag>
         <tag>bc4</tag>
@@ -1401,8 +1502,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>汇编</tag>
         <tag>linux</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -2158,8 +2259,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
