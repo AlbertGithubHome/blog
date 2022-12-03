@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[linux环境下统计目录下所有文件的行数]]></title>
+    <url>%2Fblog%2F2022%2F11%2F30%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%BB%9F%E8%AE%A1%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%89%80%E6%9C%89%E6%96%87%E4%BB%B6%E7%9A%84%E8%A1%8C%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[前言工作中时常有统计数据行和代码行的需求，虽然能依次打开每个文件数一下，但是这样操作效率太低了，如果是在linux环境中，可以使用一个常用的命令 wc，一起记录一下常见的用法吧。 wc命令wc命令，（全称water closet，洗手间，哦，错了），全称word count？我也没找到，作用就是输出每个文件包含的行数、单词数和字节数，这三项是基础信息也是最常用的信息，此外它还可以输出文件中字符数量、输出文件中最长行的长度。 使用方法非常简单，直接在命令末尾添加文件名就行了 12$ wc README.md 35 60 2460 README.md 上面的信息显示，README.md文件中包含25行内容，存在60个单词，共有2460个字节，可能是因为该文件中包含中文，所以单词数统计不太准确。 常用选项该命令各选项含义如下： - l: 统计行数 - w: 统计字数 - c：统计字节数 - m：统计字符数 - L：统计最长行的长度 其中 - l 使我们统计行数的利器 统计文件行数wc 命令搭配一些其他的命令能更方便的完成统计工作 统计1个文件行数12$ wc -l README.md35 README.md 统计2个文件行数wc 命令后名跟多个文件名时会打印出每个文件的行数，并且在最后一行显示所有文件总行数 1234$ wc -l README.md test.txt 35 README.md 3 test.txt 38 total 统计当前目录下python代码文件数量12$ find ./ -name "*.py" | wc -l317 统计当前目录下python代码文件行数12$ find ./ -name "*.py" | xargs cat | wc -l38538 统计当前目录下python代码文件非空行数12$ find ./ -name "*.py" | xargs cat | grep -v ^$ | wc -l35320 实现的方式就是在输出文件内容的过程中过滤掉空行，但我认为统计代码行数时不应该过滤空行，适当的留白也是优秀代码的一部分 统计当前目录下2种代码文件的总行数一个项目中使用的代码往往不止一种，所以在统计代码行数时要考虑多种代码文件，可以写多个-name选项或者使用正则表达式 123456$ find ./ -regex '.*\.\(py\|h\)' | xargs cat | wc -l39795$ find ./ -regextype posix-extended -regex '.*\.(py|h)' | xargs cat | wc -l39795$ find ./ -name "*.py" -o -name "*.h" | xargs cat | wc -l39795 总结 wc 命令是用来查询文件行数的核心命令，不加选项时默认输出文件行数、单词数、字节数 wc 命令配合 find、xargs、cat 等命令可以统计出目录内指定类型文件的总行数 find 查找多个文件的常用写法 find ./ -regex &#39;.*\.\(py\|h\)&#39; 或 find ./ -name &quot;*.py&quot; -o -name &quot;*.h&quot; 查项目全部代码量终极大招：find ./ -regex &#39;.*\.\(py\|lua\|go\|h\|hpp\|cpp\|c\|cc\)&#39; | xargs cat | wc -l ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 确实挺难的，再坚持一下~ 2022-12-1 17:16:29]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>grep</tag>
+        <tag>wc</tag>
+        <tag>统计函数</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[借助第三方工具网站完成消息自动推送]]></title>
     <url>%2Fblog%2F2022%2F11%2F19%2F%E5%80%9F%E5%8A%A9%E7%AC%AC%E4%B8%89%E6%96%B9%E5%B7%A5%E5%85%B7%E7%BD%91%E7%AB%99%E5%AE%8C%E6%88%90%E6%B6%88%E6%81%AF%E8%87%AA%E5%8A%A8%E6%8E%A8%E9%80%81%2F</url>
     <content type="text"><![CDATA[前言寻找消息推送的起因是之前买过一台云服务器，用于开发环境搭建和学习，最近想用它进行一些数据分析，而数据分析的结果如果每次都需要登录服务器来看就有点“太老土”了，所以想找一种使用方便的消息推送模式。提到之前的消息通知最常用的是短信和邮件，但是随着时代的发展，它们的弊端也逐渐暴露出来，短信的内容主要以文本为主，想要发送图片就比较困难，邮件查看起来不是太方便。而微信作为每天都用的社交软件，用它来接收消息就很方便了，所以朝着这个方向寻找，我发现了 pushplus 这个第三方工具。 pushplus是什么pushplus(推送加)是集成了微信、短信、邮件、企业微信、HiFlow连接器、钉钉、飞书等渠道的信息推送平台，只需要调用一个简单的API接口，即可帮助你迅速完成消息推送，使用简单方便。 我主要想用它的微信推送，一开始也想试试短信推送的，但是需要支付每条0.1元的费用所以放弃了（什么年代了，短信收费还这么贵），这里先简单说下它的微信推送的原理，利用的就是微信公众号的消息通道。 什么是消息通道，我的理解就是获取消息的途径，比如短信、邮件、微信、电话等等，这个pushplus本身并没有搭建新的消息通道，而是整合了已有消息通道的使用方式，让消息通知变得简单了，而微信消息推送利用的就是微信公众号这个途径。 我们知道微信公众号可以接收消息，并且微信公众平台也开放了后台接口，允许公众号运营方通过程序接口发送消息给关注者，这就是微信公众号的消息通道。pushplus就是使用了这个通道，他们把微信公众平台的接口进行了封装，开放给所有关注 pushplus 的人，而这些人就可以利用这个通道给自己发送消息，给群组发送消息，甚至给所有的关注者发送消息，当然这些消息都是显示在这个公众号里，要想接收消息必须先关注公众号，或者按照pushplus的规则加入群组。 既然是利用别人家的通道，必然要收到这个通道原有的限制，pushplus也不例外，首先当前微信公众号对模板消息推送有当日100万次的上限，超过这个上限有当日将无法发送模板消息，也就是所有pushplus的用户都将无法使用微信渠道的推送功能，所以pushplus在单日推送次数上做了部分限制。每人每日可用推送条数为200条，当大于200条的时候消息将不在推送。 目前这个每天200条是免费的，但随着用户量的增大，这个限制必然是会更加严格的，按现在计算没人推送200条也只能服务于5000人，不过大部分人是不会发这么多的，短时间应该没问题。另外该网站目前还推出了绑定自己公众号的服务，必须是经过认证的非个人公众号才可以哦，腾讯就是这么要求的，它也没办法，当前还提供了会员制度，可以适当放宽消息推送的次数。 我觉得大家不要反感会员制度，人总是要恰饭的，即使不是为了赚钱，也需要付出成本的，免费提供这项服务是需要服务器资源的，总不能一直永爱发电吧，收个合理的费用方便广大开发者我觉得无可厚非，就像我买的服务器1年一百多，续费成本每年要700多，如果对外提供服务器不收钱总不能靠西北风活着吧。 pushplus测试使用pushplus 的官方网站是 www.pushplus.plus，直接微信扫码就注册成功，同时会关注微信公众号用于接收消息，对于一对一消息和一对多消息都提供了消息发送界面，输入内容直接点击发送按钮就可以了，非常方便。 官网介绍如下： 一对一消息发送 一对一消息发送 微信公众号里看到的消息通知 代码发送一对一发送消息的代码非常简单，也就下面这几行，更复杂的格式还需要研究下： 123456789import requestsdef send_wechat_msg(title, content): token = '2c358fyearacb4581bc92f0c320c728fb' url = 'http://www.pushplus.plus/send?token='+token+'&amp;title='+title+'&amp;content='+content requests.get(url)if __name__ == "__main__": send_wechat_msg('python推送测试消息', '测试消息详细内容') 注意的问题 限制问题。前面已经提到，使用pushplus公众号，所有用户共享100万条消息的限制，随着公司后期的发展这可能不够用 合规问题。因为是自定义推送内容，所以平台要注意合规问题，不仅公众号要进行内容审查，pushplus也需要进行内容审查，否则可能因为一个用户的违规导致所有用户都发不了消息。 消息格式。目前pushplus支持多种消息格式，包括 text、html、json、markdown 等格式，这能满足大部分用户的要求了 发送图片。pushplus不支持直接发送图片，具体方式通过html的 &lt;img&gt; 标签来实现，可以将本地的图片上传到七牛云等云存储空间上来获取图片的外链地址。 总结 消息推送可以选择 pushplus 官网扫码即可使用 pushplus 的微信推送借用了微信公众号的消息通道，会受到的平台原有的100万条消息限制 pushplus 提供给普通用户每天有200条消息的使用权限，仅通过http请求即可方便的使用api 注意后续的平台发展，很可能发展到一定程度后增加更严格的使用限制 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 一道残阳铺水中，半江瑟瑟半江红。可怜九月初三夜，露似真珠月似弓~ 2022-11-20 13:01:16]]></content>
@@ -123,8 +137,8 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>linux</tag>
+        <tag>SVN</tag>
         <tag>XAMPP</tag>
         <tag>svnmanager</tag>
         <tag>ntp</tag>
@@ -181,9 +195,9 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
-        <tag>log</tag>
         <tag>历史记录</tag>
       </tags>
   </entry>
@@ -225,8 +239,8 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>del</tag>
+        <tag>SVN</tag>
         <tag>add</tag>
         <tag>commit</tag>
       </tags>
@@ -452,10 +466,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>commit</tag>
         <tag>git</tag>
         <tag>branch</tag>
         <tag>stash</tag>
+        <tag>commit</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -594,10 +608,10 @@
         <category>数据结构</category>
       </categories>
       <tags>
-        <tag>树</tag>
         <tag>WPL</tag>
         <tag>哈夫曼树</tag>
         <tag>带权路径长度</tag>
+        <tag>树</tag>
       </tags>
   </entry>
   <entry>
@@ -864,8 +878,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>函数</tag>
+        <tag>语法糖</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -922,9 +936,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1008,9 +1022,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
-        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -1022,8 +1036,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>make</tag>
       </tags>
   </entry>
@@ -1143,8 +1157,8 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>linux</tag>
         <tag>编译</tag>
+        <tag>linux</tag>
         <tag>cmake</tag>
       </tags>
   </entry>
@@ -1263,9 +1277,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>awk</tag>
         <tag>git</tag>
         <tag>log</tag>
+        <tag>awk</tag>
         <tag>统计</tag>
       </tags>
   </entry>
@@ -1471,8 +1485,8 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>工具</tag>
         <tag>git</tag>
+        <tag>工具</tag>
         <tag>mergetool</tag>
         <tag>文件冲突</tag>
         <tag>bc4</tag>
@@ -1502,8 +1516,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>windows</tag>
-        <tag>linux</tag>
         <tag>汇编</tag>
+        <tag>linux</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1571,8 +1585,8 @@
         <category>windows</category>
       </categories>
       <tags>
-        <tag>del</tag>
         <tag>Win10</tag>
+        <tag>del</tag>
         <tag>exe</tag>
       </tags>
   </entry>
@@ -2086,10 +2100,10 @@
         <category>Mysql</category>
       </categories>
       <tags>
-        <tag>if</tag>
         <tag>Mysql</tag>
         <tag>count</tag>
         <tag>条件统计</tag>
+        <tag>if</tag>
         <tag>casewhen</tag>
       </tags>
   </entry>
