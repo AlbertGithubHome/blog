@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[git配置中的core.autocrlf和core.safecrlf]]></title>
+    <url>%2Fblog%2F2023%2F03%2F04%2Fgit%E9%85%8D%E7%BD%AE%E4%B8%AD%E7%9A%84core-autocrlf%E5%92%8Ccore-safecrlf%2F</url>
+    <content type="text"><![CDATA[前言使用git作为版本管理工具的朋友们，有没有遇到更新完同事写的脚本无法运行的问题？逻辑正确的脚本换台机器不能运行了多半是换行符捣的鬼，修改git中的core.autocrlf设置即可解决问题，那么autocrlf是什么意思呢？我来简单件解释下。 core.autocrlfautocrlf 是三部分的缩写 auto-cr-lf，分开来看应该是3组词 auto/carriage-return/linefeed，直译的话就是自动回车换行。 还是说下前面的问题，这是因为 Windows 使用回车（CR）和换行（LF）两个字符来结束一行，而 MacOS 和 Linux 只使用换行（LF）一个字符来结束一行。 当你在Windows下用常见编辑器写一个Shell脚本是，直接拿到Linux去执行很可能会报错，而在Linux编辑的文件拿到Windows环境下打开通常会显示成一行。 git 作为一个多人共同使用的版本管理工具，使用者的系统可能是Windows、Linux或者是Mac中的任意一种，所以在共同操作一个文件时就会造成换行符混乱，这时就要用到 core.autocrlf参数了。 core.autocrlf 参数不仅影响检出时的换行符装换，还会影响提交时的换行符转换，共有 true、false、input 三种可选值 12345678# 提交时转换为LF，检出时转换为CRLFgit config --global core.autocrlf true# 提交和检出时都不转换git config --global core.autocrlf false# 提交时转换为LF，检出时不转换git config --global core.autocrlf input 根据他们的定义我们可以选择一种保险的方式，在windows系统上设置为 true，在 Linux 和 Mac 上设置为 input，如果所有使用者仅在统一系统下工作，设置成 false 就好了。 core.safecrlf前一个 autocrlf 大家听到的应该比较多，而这个safecrlf可能很多人是第一次听到，它的默认只是false，若果改成true表示拒绝提交混合换行符的代码，也就是说如果你的代码中同时包含两种系统中不同的换行格式会被禁止提交，如果设置成 warn 表示只提出警告但可以提交。 总结 多人合作的git库如果下载之后，其中的脚本不能直接运行先看看是不是换行符搞的鬼 Windows平台建议设置 git config --global core.autocrlf true Linux平台建议设置 git config --global core.autocrlf input 可以使用工具 dos2unix 与 unix2dos 将 LF 和 CRLF 相互转化 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 一代文豪东坡居士，却写多篇祈雨文~]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>换行符</tag>
+        <tag>配置</tag>
+        <tag>autocrlf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[工作十年对游戏看法的转变历程]]></title>
+    <url>%2Fblog%2F2023%2F02%2F05%2F%E5%B7%A5%E4%BD%9C%E5%8D%81%E5%B9%B4%E5%AF%B9%E6%B8%B8%E6%88%8F%E7%9C%8B%E6%B3%95%E7%9A%84%E8%BD%AC%E5%8F%98%E5%8E%86%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[前言现在一提到玩游戏很多人的第一反应就是『手游』『网游』，是社会的发展将“游戏”这个词狭义化了，甚至在搜索引擎中输入『游戏』一词，得到的前几页搜索结果都是手机游戏推荐，而游戏本来的定义是指体育手段的一种，也是文化娱乐的一种形式。以一定的形式反映人类社会劳动、军事、文化等方面的活动。 称之为游戏论之父的豪伊金格说：“游戏是在明确规定的时间、空间里所进行的行为或者活动。它是按照自发接受的规则来进行的。这种规则一旦被接受就具有绝对的约束力。游戏的目的就存在于游戏行为自身之中，它伴有紧张和喜悦的感情与日常生活不同。” 现在也很少听到“网瘾少年”这个词了，在网络刚刚兴起时，这个词可是让很多父母闻风丧胆，当网络开始和游戏相结合时，又让多少自制力差的孩子深陷其中，所以当时的网络、游戏都被看做是大老虎，是一切美好事物的对立面，但随着时间的推移，互联网开始普及并渗透到生活中方方面面。 人们理智了很多，认识到了我们的生活离不开网络，而孩子们从小生活在这样的环境中，对一切都习以为常，所以很难出现深陷其中无法自拔的情况，之前是因为没有接触过，所以一旦陷入这种虚拟环境中很容易无法自控，而如今社会网络无处不在，没有而来环境落差也就不容易沉迷了，就像一个穷苦孩子落入富豪家就会沉迷，而富二代的公子哥只觉得眼前的生活无趣而已。 初识游戏我们从来到这个世界就在和游戏打交道，三岁前父母家人是我们最亲密的游戏玩伴，上了幼儿园又有了其他的小伙伴，而我对这些记忆已经模糊了，除了捉迷藏、丢沙包、跳皮筋这些常规游戏外，记得还算清楚的一个游戏应该是小学时玩的，名字叫『鸭子嘴』，就是一群孩子追来追去，那时的孩子们玩这些游戏很开心的。 那时的电脑还是一个昂贵的稀罕物，我记得经常在电视购物广告里看到，“电脑只要9999轻松搬回家”，当时并不知道电脑能做什么，其实当时的家用电脑还真做不了什么，方方的大头，粗糙的98。 后来老爸给买了一台学习机，就是小霸王横行的那个年代，这是我第一次接触电子游戏，虽然他的目的是让我来学习打字的，可是我的盲打真的很烂，还是工作之后才慢慢好的，为此还被同事嘲笑过。 这台学习机是我对电脑的启蒙，真正接触电脑是初中的微机课，每周只有一节课，大头电脑没有网络，操作完Excel和Word能让玩一会扫雷都开心的不得了，当然，课业紧张时微机老师总是恰好来不了。 在高中时我家买了台电脑，当时整个村子应该也没有几台，而我对电脑也渐渐熟悉了，当时对游戏没有那么痴迷，但是对QQ太阳过分迷恋，整天的挂着QQ升等级，没事养养动物偷偷菜，电脑里的红色警戒我就没玩明白过。 计算机专业因为接触过电脑觉的很有意思，所以大学想学计算机专业，而我也很幸运的被第一志愿的计算机专业录取，大学军训的刚结束就跟着班长去网吧了，当时好像没玩游戏，去网吧是登QQ跟家人视频了，说出来可能很多人不信，那是我第一次去网吧，那天晚上视频时老爸还说呢，刚上大学就学会上网吧了，你这是要学坏吧，看了吧，这就是那个谈『网吧』色变的时代。 其实当时学计算机也不是为了游戏，但是因为学计算机，让我更多的接触到了游戏。前面提到说我要挂QQ等级、要偷菜、要升级农场，这就为我后来的游戏风格建立的开端，这样游戏都是养成类，也就是你的付出在游戏中一直有积累，比较偏向于RPG类型游戏。 所以我在上大学后，同学邀我一起玩对战游戏dota时，我觉得简直不可思议，花了半天时间攒的金钱装备，下一把游戏时一点用都没有了，这游戏有什么意思啊。 但是人总是会变的，当融入兄弟环境中，一起开黑打dota，打CF，我也渐渐迷上了这种MOBA类风格，但是我是个手残，技术特别烂，技能通常是一顿乱按，就是喜欢和大家凑热闹，一起在游戏里玩而已，我就是传说中越菜越爱玩的菜狗。 步入游戏开发行业大学时光转瞬即逝，时间来到大四实习阶段，从几份Offer中选择了工资较低但比较感兴趣的游戏公司，找工作之前并没有想着一定要开发游戏，但是缘分来了挡都挡不住，众多工作中只有一份游戏开发，而我就选择了它，在一家小公司工资只有可怜的3K。 那是2013年页游风靡的时代，我们也不落俗套，正正经经的微端页游，类型MMORPG。后来在同一家公司接触了端游，手游，虽然形式不同，但类型一直是MMORPG，没想到这家签了毕业三方的小公司，我一待就是6年多。 长时间同质化游戏的开发，使我对游戏的兴趣大大降低，从刚开始的新奇，到后来的麻木，我发现我对这些游戏不再感冒，有时候甚至都不想伸手点一点了。 这一阶段我还能坚持玩的两款游戏，一个是之前玩的《dota》，一个是后来通了几千关的《开心消消乐》，重度的RPG我真的不想再玩，因为我真的有点肝吐了，各种游戏玩法上线前我都测了几百遍，上线后真的不想玩了。 转变游戏开发类型肝不动的RPG影响了心情，在2020年我跳出了原来的舒适圈，开始了回合制游戏的开发，新换的环境必然会带来新鲜感，我开始了新的征程，体会着回合制与RPG游戏的差距。 但是近几年回合制游戏变了，除了战斗模式，回合制变得越来越RPG化，重度的培养系统慢慢加入，导致回合制游戏也很肝，工作3年之后我觉得之前很多的兴趣点也没有了。 现在的对于我这些哪里亮光点哪里的游戏，真的感觉有些麻木，难道我做出来的游戏就是引导大家一直点亮光？难道就是让大家熬夜点亮光？难道就是让大家把钱放到游戏中不断点亮光？ 手机游戏应该什么样最近我经常有些错觉，我之前真的是做游戏的？我做的那些真的叫游戏吗？我总有一种感觉，这种跟着指引点点点的东西没有游戏性，根本不能叫游戏，甚至是扫雷、蜘蛛纸牌、俄罗斯方块这些才能叫做游戏，一个RPG游戏整天无脑点点点到底有什么游戏性可言？ 回归游戏的本质，“游戏的目的就存在于游戏行为自身之中，它伴有紧张和喜悦的感情与日常生活不同”。也就是说这些东西是不是游戏要分人的，如果玩这个东西能让你感觉到快乐、感觉到兴趣使然，那么它就是游戏，而对于我来说，这种东西我真的是不爱玩了。 现在的我想去试一试休闲游戏的开发，因为我觉得那才是我现在的兴趣点，是能给我带来快乐的游戏类型。 我的历程人生进行到现在和游戏密不可分，接触电脑 -&gt; 报计算机专业 -&gt; 和同学一起打电脑游戏 -&gt; 毕业进行游戏开发 -&gt; MMORPG -&gt; 回合制卡牌。 喜欢的游戏类型也在悄然发生变化，小游戏 -&gt; 模拟经营养成类 -&gt; MOBA、FPS -&gt; MMORPG、回合制卡牌 -&gt; dota、休闲类，因为现在的网络游戏太肝了，所以渐渐只玩随时可以暂停的小游戏了。 现在的我也很迷茫，觉得自己并不是一个游戏开发人员，起码是不合格的，除了十几前年的学习机让我体验了几把游戏，后来的游戏机我是一窍不通，所以我也想回归游戏本质，去年年末我在便利店买了一个8090掌上游戏机，就是最原始的俄罗斯方块，玩了几次感觉挺好的。 这是我曾经梦寐以求却得不到的，现在终于有能力把它买回家好好玩了，经典的游戏永不过时。 买年货时又和老婆在商场的游戏厅体验了一下当年的手柄游戏，感觉这才有游戏的乐趣。 为了不与时代脱轨，我前段时间又在网上下单了台Switch游戏机，真的是查了很多资料才弄清楚要买什么，已经在海关卡了好几天了，估计还得至少半个月才能到我手中，希望我能从这个现代的游戏机中找到一点灵感。 总结 游戏本来的定义是指体育手段的一种，也是文化娱乐的一种形式，如今的社会将游戏狭义化成了网游 我与游戏有缘，从接触电脑、选择专业，到毕业后找到游戏开发工作，因为喜欢dota、所以选择游戏 我对于我开发游戏的喜欢不是因为游戏性，而是有一种作为自己产品的感情，所以我自己做的游戏我都有充钱，但并不是因为它好玩 同一款游戏中玩法思路也在变，之前玩dota总喜欢玩战士或刺客，享受对拼的感觉，而现在更喜欢玩法师，变着花样搞怪更有意思 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 最近一周从好几个地方看到“人生的意义是什么”这个问题，有些问题我也做了回答，甚至很多人去请教了ChatGPT，但问这种问题真的有意义吗？问这种问题的人目前应该处于迷茫期，想要过来人提供一些答案，可人生必须要有意义吗？每个人的追求不同，人生意义的解释也就不同。我现在觉得清晨能看见一缕阳光，静静的呼吸着清晰的空气这就够了，如果还要奢侈一点，那么我想说“有事做，有人爱，有所期待”。 2023-2-5 19:03:15]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>工作</tag>
+        <tag>游戏</tag>
+        <tag>想法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[跟风试试ChatGPT]]></title>
     <url>%2Fblog%2F2023%2F02%2F05%2F%E8%B7%9F%E9%A3%8E%E8%AF%95%E8%AF%95ChatGPT%2F</url>
     <content type="text"><![CDATA[前言其实现在也不算是跟风了，从 ChatGPT 出现至今已经有几个月的时间，这股风似乎已经刮过去了，虽然各种新闻铺天盖地，但因为懒一直没有亲手试一试，这两天尝试了一下，发现要想使用还是有点门槛的，它使用方式很简单，可以把它想象成一个智能机器人，可以回答你的各种提问，当然它比淘宝机器人客服智能多了，它的门槛在于地域限制非常强，中国用户要想使用须得费一番功夫。 什么是ChatGPTChatGPT 以其强大的信息整合和对话能力惊艳了全球，是人工智能研究实验室OpenAI新推出的一种人工智能技术驱动的自然语言处理工具，使用了Transformer神经网络架构，也是GPT-3.5架构，能够在输入序列中捕捉长期依赖性。它还使用了大量的语料库来训练模型，这些语料库包含了真实世界中的对话，以便模型能够更好地理解人类语言。 ChatGPT怎么玩要想使用 ChatGPT 主要有以下几步： 注册 ChatGPT 账号 完成 ChatGPT 手机号验证后登录 输入任意话题，探索 ChatGPT 的强大功能 注册 需要将网络环境切换成国外IP完成整个注册步骤（美国、加拿大、日本等，大陆IP肯定不行，香港澳门 IP 据说也不行） 访问 https://chat.openai.com/auth/login 链接并使用自己的邮箱进行账号注册，我就偷了个懒使用 Microsoft Account 直接登录的 不管是用邮箱注册，还是第三方账号登录都需要打开邮箱查收 OpenAI 账号验证邮件，并完成邮箱验证 验证 登录成功之后需要验证手机号，这一步中国大陆手机号不好使，需要借助短信接码平台 sms-activate.org 具体使用方法比较简单，可以自己试试或者百度一下，其实就是提供一个外国号码给我们验证使用，在网站上可以收验证码，把收到的验证码填到 ChatGPT 平台就可以完成验证了 使用前需要先用邮箱在 sms-activate.org 注册账号后充值，用支付宝可以自动转汇率充值，佣金2.3%，我充值的这段过年时间好像免佣金 一般充值0.2美元就可以，因为免佣金我充了0.5，方便以后再用 选择号码地区时尽量使用印度尼西亚，这个地区验证过了，没有问题 使用直接在最下方的框中输入想问的问题就可以了，下面随便截两个问题，有些问题它还是答不上来的，我曾让它用 Python 画一个猪猪，每次代码生成约10分钟就卡主了，让它画一个兔子结果只画了耳朵。 设计型 开发型 强人所难型 Python调用ChatGPT先去 https://beta.openai.com/account/api-keys 点击 Create new secret key 按钮创建一个API密钥，然后赋值给下面代码中的 openai.api_key 变量直接运行就可以了 1234567891011121314151617import openaidef use_openai(): # Set your API key openai.api_key = "YOUR_API_KEY" # Use the GPT-3 model completion = openai.Completion.create( engine="text-davinci-002", prompt="今天中午吃什么", max_tokens=1024, temperature=0.5 ) # Print the generated text print(completion.choices[0].text)if __name__ == '__main__': use_openai() 总结 ChatGPT 是经过训练的语言模型，以GPT-3.5为基础，其强大的信息整合和对话能力惊艳了全球 ChatGPT 有时很聪明，仿佛是一个拥有了自己的智力，可以应对许多问题，甚至可以直接写代码 ChatGPT 有时却很蠢，特意回避了一些问题，并认为加了一些限制，所以目前来看局限性还很大 ChatGPT 注册登录地址 https://chat.openai.com/auth/login ChatGPT 短信验证可使用的第三方平台 https://sms-activate.org ChatGPT 创建密钥地址 https://beta.openai.com/account/api-keys ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 试图窥探整个世界的运行规律，至今一无所获~ 2023-1-31 00:57:05-->]]></content>
@@ -221,8 +248,8 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>SVN</tag>
+        <tag>linux</tag>
         <tag>XAMPP</tag>
         <tag>svnmanager</tag>
         <tag>ntp</tag>
@@ -323,8 +350,8 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>del</tag>
         <tag>SVN</tag>
+        <tag>del</tag>
         <tag>add</tag>
         <tag>commit</tag>
       </tags>
@@ -438,9 +465,9 @@
       <tags>
         <tag>find</tag>
         <tag>查找</tag>
-        <tag>grep</tag>
         <tag>locate</tag>
         <tag>which</tag>
+        <tag>grep</tag>
       </tags>
   </entry>
   <entry>
@@ -762,9 +789,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -776,9 +803,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -846,11 +873,11 @@
         <category>C/C++</category>
       </categories>
       <tags>
+        <tag>C++</tag>
+        <tag>C++11</tag>
         <tag>左值</tag>
         <tag>右值</tag>
         <tag>右值引用</tag>
-        <tag>C++</tag>
-        <tag>C++11</tag>
       </tags>
   </entry>
   <entry>
@@ -904,9 +931,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1020,9 +1047,9 @@
       <tags>
         <tag>git</tag>
         <tag>log</tag>
-        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1308,8 +1335,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>Excel</tag>
         <tag>SVN</tag>
+        <tag>Excel</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -1334,9 +1361,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1555,10 +1582,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1600,8 +1627,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>汇编</tag>
         <tag>windows</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -1669,8 +1696,8 @@
         <category>windows</category>
       </categories>
       <tags>
-        <tag>Win10</tag>
         <tag>del</tag>
+        <tag>Win10</tag>
         <tag>exe</tag>
       </tags>
   </entry>
@@ -1727,8 +1754,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1742,8 +1769,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2001,8 +2028,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>函数</tag>
-        <tag>堆栈</tag>
         <tag>windows</tag>
+        <tag>堆栈</tag>
       </tags>
   </entry>
   <entry>
