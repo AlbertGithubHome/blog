@@ -346,6 +346,263 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/" itemprop="url">linux环境下利用rsync+find实现同步指定时间段文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-18T21:52:29+08:00">
+                2023-03-18
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-03-19T21:02:13+08:00">
+                2023-03-19
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/" class="leancloud_visitors" data-flag-title="linux环境下利用rsync+find实现同步指定时间段文件">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,796(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">8(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 <code>find</code>、<code>rsync</code>、<code>sed</code> 等，之前也写过一篇 <a href="https://blog.csdn.net/albertsh/article/details/127840091" target="_blank" rel="noopener">《linux环境下使用rsync命令完成数据同步》</a>，不过这次有新的需求了。</p>
+<h1 id="插曲"><a href="#插曲" class="headerlink" title="插曲"></a>插曲</h1><p>前段时间发现通过 <code>rysnc</code> 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该是 <code>rsync</code> 的 <code>-c</code> 参数导致的，参数全称是 <code>--checksum</code> 打开校验开关，强制对文件传输进行校验，多次实验后发现只要把 <code>-c</code> 参数省略，这个检验所花的4分钟就能省掉，同步前校验只会根据修改的时间戳和文件大小来判断，这在大多数情况下足够了。</p>
+<h1 id="根据时间段同步"><a href="#根据时间段同步" class="headerlink" title="根据时间段同步"></a>根据时间段同步</h1><p>现在想同步日志文件，因为日志文件是每小时产生一个，之前的日志文件绝大多数情况也不会改动，所以再同步时没必要检测所有的日志文件，只需要同步最近一段时间的就可以了，这样可以减少文件比对的时间。</p>
+<p>查询了 <code>sync</code> 命令的所有参数，没有找到指定同步时间段的参数，但是有个 <code>--files-from=FILE</code> 看起来能实现这个需求，man手册中是这样写的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Using this option allows you to specify the exact list of files to transfer (as read from the specified FILE or - for standard input).  It also tweaks the default behavior of rsync to make transferring just the specified files and directories easier:</span><br><span class="line"></span><br><span class="line">    o      The  --relative  (-R) option is implied, which preserves the path information that is specified for each item in the file (use --no-relative or --no-R if you want to turn that off).</span><br><span class="line"></span><br><span class="line">    o      The --dirs (-d) option is implied, which will create directories specified in the list on the destination rather than noisily skipping them (use --no-dirs or  --no-d if you want to turn that off).</span><br><span class="line"></span><br><span class="line">    o      The --archive (-a) option’s behavior does not imply --recursive (-r), so specify it explicitly, if you want it.</span><br><span class="line"></span><br><span class="line">    o      These  side-effects  change the default state of rsync, so the position of the --files-from option on the command-line has no bearing on how other options are parsed (e.g. -a works the same before or after --files-from, as does --no-R and all other options).</span><br><span class="line"></span><br><span class="line">    The filenames that are read from the FILE are all relative to the source dir -- any leading slashes are removed and no &quot;..&quot; references are allowed to  go  higher  than  the source dir.  For example, take this command:</span><br><span class="line"></span><br><span class="line">        rsync -a --files-from=/tmp/foo /usr remote:/backup</span><br></pre></td></tr></table></figure>
+<p>基于参数的描述，我只要提供一个包含指定时间段的待同步的所有文件名的文件就可以了，比如将指定时间段需要同步的文件名放到 <code>/tmp/foo</code> 文件中，然后以 <code>--files-from=/tmp/foo</code> 形式来指定就行了。</p>
+<p>其实还有一个方便的写法，就是直接在参数后面利用 <code>find</code> 写过滤文件的命令，比如只同步最近3天修改过的文件就可以写成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz --files-from=&lt;(find /var/<span class="built_in">log</span>/ -mtime -3) /usr remote:/backup</span><br></pre></td></tr></table></figure>
+<p>其中 <code>find /var/log/ -mtime -3</code> 命令的含义就是找出 <code>/var/log/</code> 目录下最近3天修改的文件。</p>
+<h1 id="按时间过滤文件"><a href="#按时间过滤文件" class="headerlink" title="按时间过滤文件"></a>按时间过滤文件</h1><p>有了上面的基础命令，想要同步不同时间段的文件只需要修改 <code>find</code> 命令参数就可以了，比较常用的参数就是 <code>mtime</code> 了。</p>
+<h2 id="使用-mtime-参数查找"><a href="#使用-mtime-参数查找" class="headerlink" title="使用 mtime 参数查找"></a>使用 mtime 参数查找</h2><p>mtime 表示文件的修改时间，用在 <code>find</code> 查找时是以天为单位的，最小间隔24小时，数字是几就表示几天前，带有 <code>+</code> 表示几天前之外，带有 <code>-</code> 表示今天前之内，下面举几个例子：</p>
+<ul>
+<li>查找修改时间在3天之前的文件（修改时间距今大于96小时）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /var/<span class="built_in">log</span>/ -mtime +3</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查找修改时间在3天之内的文件（修改时间距今小于72小时）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /var/<span class="built_in">log</span>/ -mtime -3</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查找修改时间在3天前当天的文件（修改时间距今大于72小时，小于96小时）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /var/<span class="built_in">log</span>/ -mtime 3</span><br></pre></td></tr></table></figure>
+<p>如果对mtime参数的使用有点疑惑，可以看一下下面的示意图：</p>
+<p>除了上面提到的 <code>-mtime</code> 参数，还有类似的 <code>-atime</code> 和 <code>-ctime</code> 参数，这三个参数的含义如下，使用时可根据定义来选择：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-atime：文件访问时间，文件被读取或执行的时间。</span><br><span class="line">-ctime：属性改变时间，文件的inode被修改的时间</span><br><span class="line">-mtime：内容修改时间</span><br></pre></td></tr></table></figure>
+<h2 id="使用-newermt-进行更精确查找"><a href="#使用-newermt-进行更精确查找" class="headerlink" title="使用 newermt 进行更精确查找"></a>使用 newermt 进行更精确查找</h2><p><code>find -newermt</code> 的通用形式是find -newerXY reference，目的是找到一些X属性比variable的Y属性更早的文件，其中X代表find的目标文件属性，Y代表参照属性。X可选a,c,m，Y可选a,c,m,t，其中t代表客观绝对时间，只作为参照属性存在，具体详细的用法参照man手册：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-newerXY reference</span><br><span class="line">    Compares the timestamp of the current file with reference.  The reference argument is normally the name of a file (and one of its timestamps is used for the comparison) but it may also be a string describing an absolute time.  X and Y are placeholders for other letters, and these letters select which time belonging to how reference is used for the comparison.</span><br><span class="line"></span><br><span class="line">    a   The access time of the file reference</span><br><span class="line">    B   The birth time of the file reference</span><br><span class="line">    c   The inode status change time of reference</span><br><span class="line">    m   The modification time of the file reference</span><br><span class="line">    t   reference is interpreted directly as a time</span><br><span class="line"></span><br><span class="line">    Some combinations are invalid; for example, it is invalid for X to be t.  Some combinations are not implemented on all systems; for example B is not supported on  all  sys‐tems.   If an invalid or unsupported combination of XY is specified, a fatal error results.  Time specifications are interpreted as for the argument to the -d option of GNU date.  If you try to use the birth time of a reference file, and the birth time cannot be determined, a fatal error message results.  If you specify a test which refers  to the birth time of files being examined, this test will fail for any files where the birth time is unknown.</span><br></pre></td></tr></table></figure>
+<p>如果要找到修改时间在2023-3-18 20:00:00 和 2023-3-18 22:00:00 之间的文件可以写成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /var/<span class="built_in">log</span> -newermt <span class="string">'2023-3-18 20:00:00'</span> ! -newermt <span class="string">'2023-3-18 22:00:00'</span></span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>rsync</code> 命令本身不能指定同步的时间段，可搭配 <code>find</code> 命令来同步指定时间段的文件</li>
+<li><code>rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup</code> 同步修改时间在3天内的文件</li>
+<li>使用 <code>newermt</code> 可按时间精确查找，形式如 <code>find /var/log -newermt &#39;2023-3-18 20:00:00&#39; ! -newermt &#39;2023-3-18 22:00:00&#39;</code></li>
+<li>假设变量 KEY=birthday、FILE=myfile.log，查找KEY所在的行号可以使用 <code>grep -rn $KEY&quot; $FILE | awk -F &#39;:&#39; &#39;{print $1}&#39;</code></li>
+<li>还是在上面的假设 <code>sed -n &#39;/${KEY}=/&#39; $FILE</code> 无法获得行号，使用 <code>sed -n &#39;/birthday=/&#39; $FILE</code> 就可以</li>
+<li>上面这种sed命令中使用变量不生效的问题目前还没找到解决方法，有解决方案的大佬请指教</li>
+<li>不过 <code>sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE</code> 这种替换命令就支持变量，目前有点迷糊，还在探索中</li>
+</ul>
+<center><a href="https://blog.csdn.net/albertsh/article/details/129629916" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>不要规划孩子必须在哪一个领域取得成就，但只要她喜欢，就提供一个舞台，让她尽情去发挥~</p>
+<p>2023-3-19 21:01:51</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/03/17/Ununtu环境下的sh-xxx-xxx-unexpected-operator的问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,8 +650,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-03-17T22:59:27+08:00">
-                2023-03-17
+              <time title="更新于" itemprop="dateModified" datetime="2023-03-18T21:53:11+08:00">
+                2023-03-18
               </time>
             
           </span>
@@ -478,29 +735,14 @@
 
       
         
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是个小问题，本质原因是判断字符相等使用两个 <code>==</code> 需要在 <code>bash</code> 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。</p>
-<h1 id="现场还原"><a href="#现场还原" class="headerlink" title="现场还原"></a>现场还原</h1><p>为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面<code>a.sh</code> 和 <code>b.sh</code> 两个脚本：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">VAL=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line">sh ./b.sh <span class="variable">$VAL</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">VAL=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$VAL</span> == <span class="string">"1"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"find it"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
-<p>考虑到兼容问题，我还在开头写了 <code>#!/bin/bash</code>，让它默认的用bash来执行，这样我无论在 Ununtu 还是其他的 Linux 版本都应该没问题了，可事实却不是这样，运行结果如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@demo:~<span class="comment"># ./a.sh fly</span></span><br><span class="line">./b.sh: 5: [: fly: unexpected operator</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-<p>如果眼尖的话一眼就看出来了，问题出在 <code>sh ./b.sh $VAL</code> 这一句，导致 <code>#!/bin/bash</code> 没有起到作用，使用 <code>sh</code> 这个shell 来执行的 <code>b.sh</code> 脚本，所以用 <code>==</code> 判断字符串相等会报错。</p>
-<p>这个例子里很好发现，但是放在实际工作中的复杂脚本中就比较难发现了，再看报错 <code>./b.sh: 5</code> 没有发现任何问题，因为查到可能是 Ubuntu 系统下的shell 语法导致的，我还尝试了多次改成单等号的写法，其他比较字符串的方式，依旧报错，但是当我发现问题的所在之后，无论单个等号还是两个等号我都能让他正确执行，这就是忙中出乱，静下来就好了</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>使用 <code>==</code> 判断字符串相等是 <code>bash</code> 中的语法</li>
-<li>Shell 脚本开头的 <code>#!/bin/bash</code> 表示执行脚本时若没有指定Shell类型，则用说明的这种Shell执行</li>
-<li>遇到问题时需要静下心来慢慢解决，切忌忙中出乱</li>
-</ul>
-<center><a href="https://blog.csdn.net/albertsh/article/details/129543700" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
-
-<hr>
-<blockquote>
-<p>有的人活下来就已经花光了所有力气，还要靠什么去抗争命运~</p>
-<p>2023-3-17 22:55:15</p>
-</blockquote>
-
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是个小问题，本质原因是判断字符相等使用两个 <code>==</code> 需要在 <code>bash</code> 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2023/03/17/Ununtu环境下的sh-xxx-xxx-unexpected-operator的问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2299,222 +2541,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2022/12/03/自动推送消息时附带图片的一种实现方式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2022/12/03/自动推送消息时附带图片的一种实现方式/" itemprop="url">自动推送消息时附带图片的一种实现方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-12-03T23:24:40+08:00">
-                2022-12-03
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2022-12-04T22:27:23+08:00">
-                2022-12-04
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2022/12/03/自动推送消息时附带图片的一种实现方式/" class="leancloud_visitors" data-flag-title="自动推送消息时附带图片的一种实现方式">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,230(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">11(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是之前总结 <code>pushplus</code> 使用的这篇文章 <a href="https://blog.csdn.net/albertsh/article/details/127947817" target="_blank" rel="noopener">《借助第三方工具网站完成消息自动推送》</a> 的后续，当时说使用pushplus的微信公众号渠道不允许直接发图片，但是可以将图片链接放到 image 标签中，这就要求我们必须要有一个图床，今天也是从这里开始。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2022/12/03/自动推送消息时附带图片的一种实现方式/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2565,7 +2591,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">198</span>
+                <span class="site-state-item-count">199</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。 现场还原为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面a.sh 和 b.sh 两个脚本： 123">
+<meta name="description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。">
 <meta name="keywords" content="Ubuntu,shell,字符串判断,等号问题">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ununtu环境下的判断字符串相等出现sh: xxx: [: xxx: unexpected operator的问题">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/03/17/Ununtu环境下的sh-xxx-xxx-unexpected-operator的问题/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。 现场还原为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面a.sh 和 b.sh 两个脚本： 123">
+<meta property="og:description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2023-03-17T14:59:27.860Z">
+<meta property="og:updated_time" content="2023-03-18T13:53:11.014Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ununtu环境下的判断字符串相等出现sh: xxx: [: xxx: unexpected operator的问题">
-<meta name="twitter:description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。 现场还原为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面a.sh 和 b.sh 两个脚本： 123">
+<meta name="twitter:description" content="前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。">
 
 
 
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-03-17T22:59:27+08:00">
-                2023-03-17
+              <time title="更新于" itemprop="dateModified" datetime="2023-03-18T21:53:11+08:00">
+                2023-03-18
               </time>
             
           </span>
@@ -481,6 +481,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是个小问题，本质原因是判断字符相等使用两个 <code>==</code> 需要在 <code>bash</code> 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。</p>
+<a id="more"></a>
 <h1 id="现场还原"><a href="#现场还原" class="headerlink" title="现场还原"></a>现场还原</h1><p>为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面<code>a.sh</code> 和 <code>b.sh</code> 两个脚本：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">VAL=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line">sh ./b.sh <span class="variable">$VAL</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">VAL=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$VAL</span> == <span class="string">"1"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"find it"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
@@ -613,6 +614,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/" rel="prev" title="linux环境下利用rsync+find实现同步指定时间段文件">
+                linux环境下利用rsync+find实现同步指定时间段文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -713,7 +718,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">198</span>
+                <span class="site-state-item-count">199</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[linux环境下利用rsync+find实现同步指定时间段文件]]></title>
+    <url>%2Fblog%2F2023%2F03%2F18%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%88%A9%E7%94%A8rsync-find%E5%AE%9E%E7%8E%B0%E5%90%8C%E6%AD%A5%E6%8C%87%E5%AE%9A%E6%97%B6%E9%97%B4%E6%AE%B5%E6%96%87%E4%BB%B6%2F</url>
+    <content type="text"><![CDATA[前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该是 rsync 的 -c 参数导致的，参数全称是 --checksum 打开校验开关，强制对文件传输进行校验，多次实验后发现只要把 -c 参数省略，这个检验所花的4分钟就能省掉，同步前校验只会根据修改的时间戳和文件大小来判断，这在大多数情况下足够了。 根据时间段同步现在想同步日志文件，因为日志文件是每小时产生一个，之前的日志文件绝大多数情况也不会改动，所以再同步时没必要检测所有的日志文件，只需要同步最近一段时间的就可以了，这样可以减少文件比对的时间。 查询了 sync 命令的所有参数，没有找到指定同步时间段的参数，但是有个 --files-from=FILE 看起来能实现这个需求，man手册中是这样写的： 12345678910111213Using this option allows you to specify the exact list of files to transfer (as read from the specified FILE or - for standard input). It also tweaks the default behavior of rsync to make transferring just the specified files and directories easier: o The --relative (-R) option is implied, which preserves the path information that is specified for each item in the file (use --no-relative or --no-R if you want to turn that off). o The --dirs (-d) option is implied, which will create directories specified in the list on the destination rather than noisily skipping them (use --no-dirs or --no-d if you want to turn that off). o The --archive (-a) option’s behavior does not imply --recursive (-r), so specify it explicitly, if you want it. o These side-effects change the default state of rsync, so the position of the --files-from option on the command-line has no bearing on how other options are parsed (e.g. -a works the same before or after --files-from, as does --no-R and all other options). The filenames that are read from the FILE are all relative to the source dir -- any leading slashes are removed and no &quot;..&quot; references are allowed to go higher than the source dir. For example, take this command: rsync -a --files-from=/tmp/foo /usr remote:/backup 基于参数的描述，我只要提供一个包含指定时间段的待同步的所有文件名的文件就可以了，比如将指定时间段需要同步的文件名放到 /tmp/foo 文件中，然后以 --files-from=/tmp/foo 形式来指定就行了。 其实还有一个方便的写法，就是直接在参数后面利用 find 写过滤文件的命令，比如只同步最近3天修改过的文件就可以写成： 1rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 其中 find /var/log/ -mtime -3 命令的含义就是找出 /var/log/ 目录下最近3天修改的文件。 按时间过滤文件有了上面的基础命令，想要同步不同时间段的文件只需要修改 find 命令参数就可以了，比较常用的参数就是 mtime 了。 使用 mtime 参数查找mtime 表示文件的修改时间，用在 find 查找时是以天为单位的，最小间隔24小时，数字是几就表示几天前，带有 + 表示几天前之外，带有 - 表示今天前之内，下面举几个例子： 查找修改时间在3天之前的文件（修改时间距今大于96小时） 1find /var/log/ -mtime +3 查找修改时间在3天之内的文件（修改时间距今小于72小时） 1find /var/log/ -mtime -3 查找修改时间在3天前当天的文件（修改时间距今大于72小时，小于96小时） 1find /var/log/ -mtime 3 如果对mtime参数的使用有点疑惑，可以看一下下面的示意图： 除了上面提到的 -mtime 参数，还有类似的 -atime 和 -ctime 参数，这三个参数的含义如下，使用时可根据定义来选择： 123-atime：文件访问时间，文件被读取或执行的时间。-ctime：属性改变时间，文件的inode被修改的时间-mtime：内容修改时间 使用 newermt 进行更精确查找find -newermt 的通用形式是find -newerXY reference，目的是找到一些X属性比variable的Y属性更早的文件，其中X代表find的目标文件属性，Y代表参照属性。X可选a,c,m，Y可选a,c,m,t，其中t代表客观绝对时间，只作为参照属性存在，具体详细的用法参照man手册： 12345678910-newerXY reference Compares the timestamp of the current file with reference. The reference argument is normally the name of a file (and one of its timestamps is used for the comparison) but it may also be a string describing an absolute time. X and Y are placeholders for other letters, and these letters select which time belonging to how reference is used for the comparison. a The access time of the file reference B The birth time of the file reference c The inode status change time of reference m The modification time of the file reference t reference is interpreted directly as a time Some combinations are invalid; for example, it is invalid for X to be t. Some combinations are not implemented on all systems; for example B is not supported on all sys‐tems. If an invalid or unsupported combination of XY is specified, a fatal error results. Time specifications are interpreted as for the argument to the -d option of GNU date. If you try to use the birth time of a reference file, and the birth time cannot be determined, a fatal error message results. If you specify a test which refers to the birth time of files being examined, this test will fail for any files where the birth time is unknown. 如果要找到修改时间在2023-3-18 20:00:00 和 2023-3-18 22:00:00 之间的文件可以写成： 1find /var/log -newermt '2023-3-18 20:00:00' ! -newermt '2023-3-18 22:00:00' 总结 rsync 命令本身不能指定同步的时间段，可搭配 find 命令来同步指定时间段的文件 rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 同步修改时间在3天内的文件 使用 newermt 可按时间精确查找，形式如 find /var/log -newermt &#39;2023-3-18 20:00:00&#39; ! -newermt &#39;2023-3-18 22:00:00&#39; 假设变量 KEY=birthday、FILE=myfile.log，查找KEY所在的行号可以使用 grep -rn $KEY&quot; $FILE | awk -F &#39;:&#39; &#39;{print $1}&#39; 还是在上面的假设 sed -n &#39;/${KEY}=/&#39; $FILE 无法获得行号，使用 sed -n &#39;/birthday=/&#39; $FILE 就可以 上面这种sed命令中使用变量不生效的问题目前还没找到解决方法，有解决方案的大佬请指教 不过 sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE 这种替换命令就支持变量，目前有点迷糊，还在探索中 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不要规划孩子必须在哪一个领域取得成就，但只要她喜欢，就提供一个舞台，让她尽情去发挥~ 2023-3-19 21:01:51]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>find</tag>
+        <tag>shell</tag>
+        <tag>linux</tag>
+        <tag>sed</tag>
+        <tag>rsync</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Ununtu环境下的判断字符串相等出现sh: xxx: [: xxx: unexpected operator的问题]]></title>
     <url>%2Fblog%2F2023%2F03%2F17%2FUnuntu%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%9A%84sh-xxx-xxx-unexpected-operator%E7%9A%84%E9%97%AE%E9%A2%98%2F</url>
     <content type="text"><![CDATA[前言这是个小问题，本质原因是判断字符相等使用两个 == 需要在 bash 环境下，而Ubuntu默认不是这个Shell环境，所以就会出现在 CentOS 上运行的好好的Shell，放到Ubuntu上就运行出错的问题，我遇到的问题本质也是这个原因，不过在复杂的状况下却不能一眼找到是哪里导致的。 现场还原为了找出这个问题的原因，我把无关逻辑都去掉了，出现了下面a.sh 和 b.sh 两个脚本： 12345#!/bin/bashVAL=$1sh ./b.sh $VAL 123456789#!/bin/bashVAL=$1if [ $VAL == "1" ] ; then echo "find it"fiecho "end" 考虑到兼容问题，我还在开头写了 #!/bin/bash，让它默认的用bash来执行，这样我无论在 Ununtu 还是其他的 Linux 版本都应该没问题了，可事实却不是这样，运行结果如下： 123root@demo:~# ./a.sh fly./b.sh: 5: [: fly: unexpected operatorend 如果眼尖的话一眼就看出来了，问题出在 sh ./b.sh $VAL 这一句，导致 #!/bin/bash 没有起到作用，使用 sh 这个shell 来执行的 b.sh 脚本，所以用 == 判断字符串相等会报错。 这个例子里很好发现，但是放在实际工作中的复杂脚本中就比较难发现了，再看报错 ./b.sh: 5 没有发现任何问题，因为查到可能是 Ubuntu 系统下的shell 语法导致的，我还尝试了多次改成单等号的写法，其他比较字符串的方式，依旧报错，但是当我发现问题的所在之后，无论单个等号还是两个等号我都能让他正确执行，这就是忙中出乱，静下来就好了 总结 使用 == 判断字符串相等是 bash 中的语法 Shell 脚本开头的 #!/bin/bash 表示执行脚本时若没有指定Shell类型，则用说明的这种Shell执行 遇到问题时需要静下心来慢慢解决，切忌忙中出乱 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 有的人活下来就已经花光了所有力气，还要靠什么去抗争命运~ 2023-3-17 22:55:15]]></content>
@@ -606,8 +621,8 @@
       <tags>
         <tag>commit</tag>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -987,8 +1002,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>chmod</tag>
         <tag>文件</tag>
+        <tag>chmod</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -1074,9 +1089,9 @@
       <tags>
         <tag>git</tag>
         <tag>log</tag>
-        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1309,8 +1324,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>sed</tag>
+        <tag>文件</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
