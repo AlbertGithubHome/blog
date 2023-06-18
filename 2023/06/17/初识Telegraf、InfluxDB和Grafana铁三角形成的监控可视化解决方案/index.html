@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,服务器,Telegraf,InfluxDB,Grafana," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta name="keywords" content="linux,服务器,Telegraf,InfluxDB,Grafana">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2baa1c032a6c48d6b6ff0ee634c4268f.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f622fa54e73a400c857d697d047dd031.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/bf5f90b7524b43449ff26d01057ce636.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/fc2d904cb3684df380f84ec5d19e7d48.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3a4a5c9b3860410a8776a89a2326c86f.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/9d22f9db6a76477e981a81d8ac90135d.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/986fefd7d3464d6eb3919b7e67ecdf9b.png">
+<meta property="og:updated_time" content="2023-06-18T07:29:48.091Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">
+<meta name="twitter:description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2baa1c032a6c48d6b6ff0ee634c4268f.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/"/>
+
+
+
+
+
+  <title>初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-06-17T19:39:56+08:00">
+                2023-06-17
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:29:48+08:00">
+                2023-06-18
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/" class="leancloud_visitors" data-flag-title="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,716(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">9(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>@[toc]</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。</p>
+<a id="more"></a>
+<h1 id="原始的监控靠人盯"><a href="#原始的监控靠人盯" class="headerlink" title="原始的监控靠人盯"></a>原始的监控靠人盯</h1><p>如果服务器只有一台或者很少，可以每隔一段时间去服务器上看看，<code>top</code> 看一下整体运行情况，<code>free</code> 查一下内存详情，<code>df</code> 看一下硬盘还够不够，<code>iftop</code> 看一下网络带宽情况，不要觉得不可能，有次测试我真的就是开了好几个远程窗口来盯着各个指标，不过人的精力有限，这样做毕竟不是长久之计。</p>
+<h1 id="进化的监控靠批处理脚本"><a href="#进化的监控靠批处理脚本" class="headerlink" title="进化的监控靠批处理脚本"></a>进化的监控靠批处理脚本</h1><p>随着服务器的增多，靠人盯的方式的已经达不到要求了，看看上面的这些命令都是已知的，并且只需要定期得到这些值就可以了，完全可以使用脚本定期执行来做呀，把上面提到的命令封装成脚本然后定期执行得到结果列表，然后发送到指定的地址，我们就可以只分析这些结果，没必要登录到各个服务器上去查询了。</p>
+<h1 id="高端的监控靠完整的可视化解决方案"><a href="#高端的监控靠完整的可视化解决方案" class="headerlink" title="高端的监控靠完整的可视化解决方案"></a>高端的监控靠完整的可视化解决方案</h1><p>懒惰是科学发展的推动力，使用脚本收集数据就不用登录服务器去实时查询了，那能不能帮我自动分析结果，或者在异常时直接给出提醒，因为我连分析的操作都不想做，肯定有人这样想当然也有人这样做了，并且形成了成熟的解决方案，我们只需要简单搭建和配置就可以早点下班了，半夜收到服务器报警电话时起来解决就可以了。</p>
+<h1 id="Telegraf、InfluxDB和Grafana铁三角"><a href="#Telegraf、InfluxDB和Grafana铁三角" class="headerlink" title="Telegraf、InfluxDB和Grafana铁三角"></a>Telegraf、InfluxDB和Grafana铁三角</h1><p>Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置。</p>
+<p>InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据。</p>
+<p>Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来。</p>
+<p>通过将Telegraf用作数据收集代理，将数据发送到InfluxDB中存储，然后使用Grafana从InfluxDB中提取数据进行可视化，这个铁三角组合提供了一个强大的监控和数据可视化解决方案。</p>
+<h2 id="Telegraf"><a href="#Telegraf" class="headerlink" title="Telegraf"></a>Telegraf</h2><p>Telegraf是一个开源的代理程序，用于收集、处理和发送指标数据。它设计用于高效地收集各种类型的数据，并将其发送到不同的目标位置，如时序数据库、消息队列等，具有以下是关键特点和功能：</p>
+<ul>
+<li><p>插件架构：Telegraf采用模块化的插件架构，具有丰富的输入和输出插件。它支持多种输入插件，如系统性能指标、日志文件、数据库查询、API调用等，以便从不同的数据源中收集数据。同样，Telegraf还支持多种输出插件，如InfluxDB、Elasticsearch、Kafka等，用于将收集到的数据发送到不同的目标位置。</p>
+</li>
+<li><p>多平台支持：Telegraf可在多个操作系统上运行，包括Linux、Windows和macOS，以适应不同的部署环境和需求。</p>
+</li>
+<li><p>轻量级和高性能：Telegraf被设计为轻量级和高性能的代理程序，可以在资源受限的环境中高效运行。它使用Golang编写，具有低的内存和CPU占用，并能够处理高并发的数据收集和处理任务。</p>
+</li>
+<li><p>数据转换和处理：Telegraf提供了灵活的数据转换和处理功能，可以对收集到的数据进行过滤、转换、聚合等操作。它支持各种数据处理任务，如标签添加、数据格式转换、聚合计算等，以便对数据进行预处理和清洗，使其适应目标存储或分析平台的要求。</p>
+</li>
+<li><p>插件生态系统：Telegraf拥有一个活跃的插件生态系统，用户可以根据自己的需求选择和配置适当的插件。社区提供了大量的插件，覆盖了各种数据源和目标位置，使得Telegraf具备广泛的适用性和灵活性。</p>
+</li>
+</ul>
+<h2 id="InfluxDB"><a href="#InfluxDB" class="headerlink" title="InfluxDB"></a>InfluxDB</h2><p>InfluxDB是一个开源的高性能时序数据库，专门用于存储和处理时间序列数据。它被设计为能够高效地处理大规模的时间相关数据，并提供快速的数据插入、查询和聚合能力，具有关键特点和功能：</p>
+<ul>
+<li><p>时序数据存储：InfluxDB专注于存储和管理时间序列数据，如传感器数据、监控指标、日志事件等。它使用特定的数据结构和索引机制，以优化对时间序列数据的写入和查询操作。</p>
+</li>
+<li><p>高性能和可扩展性：InfluxDB被设计为具有高吞吐量和低延迟的数据库系统。它采用了一系列的优化策略，包括压缩算法、分片存储、数据分区等，以实现高效的数据处理和查询性能。此外，InfluxDB还支持水平扩展，可以通过添加更多节点来提高性能和容量。</p>
+</li>
+<li><p>查询语言：InfluxDB提供了InfluxQL和Flux两种查询语言。InfluxQL是类似于SQL的查询语言，专门用于时间序列数据的查询和聚合操作。Flux是一种功能更强大和灵活的查询语言，它支持更复杂的数据处理和转换操作，并具有扩展性更好的能力。</p>
+</li>
+<li><p>数据保留策略：InfluxDB允许定义数据保留策略，以指定数据在数据库中的保存期限和存储策略。这样可以根据数据的时效性需求和存储资源限制来管理数据的保留和清理。</p>
+</li>
+<li><p>数据一致性和持久性：InfluxDB采用了写时复制（Write Ahead Log）的机制，确保数据的一致性和持久性。它使用持久化引擎来保证数据在故障情况下的可靠性，同时提供数据备份和恢复的功能。</p>
+</li>
+<li><p>整合生态系统：InfluxDB具有丰富的整合生态系统，可以与各种数据源和工具集成。它支持与Telegraf等数据收集代理的无缝集成，以及与Grafana等数据可视化工具的联合使用，提供完整的监控和数据处理解决方案。</p>
+</li>
+</ul>
+<h2 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana"></a>Grafana</h2><p>Grafana是一个开源的数据可视化和监控平台，用于创建、展示和分析实时指标和数据的交互式仪表板。它提供了丰富的可视化选项和灵活的配置，使用户能够轻松地创建各种类型的仪表板，并实时监控和分析数据，具有以下关键特点和功能：</p>
+<ul>
+<li><p>数据源支持：Grafana支持广泛的数据源，包括各种数据库（如MySQL、PostgreSQL、InfluxDB）、时序数据库（如Prometheus、Graphite）、日志文件、API等。它提供了内置的数据源插件和API接口，以便与不同的数据源进行集成和数据获取。</p>
+</li>
+<li><p>丰富的可视化选项：Grafana提供多种可视化选项，如折线图、柱状图、仪表盘、热力图等，可以根据数据的特点选择适合的图表类型。它还支持动态图表、图表注释、数据标记等功能，以增强数据的可视化效果和交互性。</p>
+</li>
+<li><p>交互式仪表板：Grafana的仪表板具有交互式的功能，用户可以自由地缩放、选择时间范围、过滤数据等。它还支持实时数据更新和自动刷新，以确保仪表板上的数据保持最新。</p>
+</li>
+<li><p>告警和通知：Grafana提供了强大的告警功能，用户可以根据自定义的条件设置告警规则，并通过电子邮件、Slack等渠道接收告警通知。这样可以及时发现数据异常或重要指标的变化。</p>
+</li>
+<li><p>用户管理和权限控制：Grafana支持多用户和团队管理，可以设置不同的用户角色和权限，以控制对仪表板和数据的访问和操作。它还提供了LDAP、OAuth等身份验证和单点登录功能，与企业的用户管理系统集成更加便捷。</p>
+</li>
+<li><p>社区支持和插件生态系统：Grafana拥有庞大的开源社区支持和活跃的插件生态系统。用户可以从社区中获取各种主题、模板和插件，以扩展和定制Grafana的功能和外观。</p>
+</li>
+</ul>
+<h1 id="Grafana仪表板展示"><a href="#Grafana仪表板展示" class="headerlink" title="Grafana仪表板展示"></a>Grafana仪表板展示</h1><p>说实话第一次看到Grafana仪表板还是挺震撼的，展示的信息很多，可以帮助服务器维护人员分析很多问题，下面来展示一些主要的面板。</p>
+<h2 id="服务器资源总览"><a href="#服务器资源总览" class="headerlink" title="服务器资源总览"></a>服务器资源总览</h2><p><img src="https://img-blog.csdnimg.cn/2baa1c032a6c48d6b6ff0ee634c4268f.png" alt="服务器总览"></p>
+<h2 id="负载和内存使用"><a href="#负载和内存使用" class="headerlink" title="负载和内存使用"></a>负载和内存使用</h2><p><img src="https://img-blog.csdnimg.cn/f622fa54e73a400c857d697d047dd031.png" alt="负载和内存"></p>
+<h2 id="网络带宽"><a href="#网络带宽" class="headerlink" title="网络带宽"></a>网络带宽</h2><p><img src="https://img-blog.csdnimg.cn/bf5f90b7524b43449ff26d01057ce636.png" alt="网络带宽"></p>
+<h2 id="磁盘IO"><a href="#磁盘IO" class="headerlink" title="磁盘IO"></a>磁盘IO</h2><p><img src="https://img-blog.csdnimg.cn/fc2d904cb3684df380f84ec5d19e7d48.png" alt="磁盘IO"></p>
+<h2 id="IO延迟"><a href="#IO延迟" class="headerlink" title="IO延迟"></a>IO延迟</h2><p><img src="https://img-blog.csdnimg.cn/3a4a5c9b3860410a8776a89a2326c86f.png" alt="IO延迟"></p>
+<h2 id="其他指标"><a href="#其他指标" class="headerlink" title="其他指标"></a>其他指标</h2><p><img src="https://img-blog.csdnimg.cn/9d22f9db6a76477e981a81d8ac90135d.png" alt="其他指标"></p>
+<h2 id="进程信息"><a href="#进程信息" class="headerlink" title="进程信息"></a>进程信息</h2><p><img src="https://img-blog.csdnimg.cn/986fefd7d3464d6eb3919b7e67ecdf9b.png" alt="进程信息"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>Telegraf、Grafana和InfluxDB通常被称为”铁三角”，因为它们经常一起使用，形成一个完整的监控和数据可视化解决方案</li>
+<li>Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置</li>
+<li>InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据</li>
+<li>Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来</li>
+<li>Grafana的仪表板真的挺漂亮的</li>
+</ul>
+<center><a href="https://blog.csdn.net/albertsh/article/details/130569748" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>把烦恼痛了吞了认了算了<br>不对别人讲<br>谁还没有辜负几段 昂贵的时光</p>
+<p>2023-6-17 19:39:56</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/" title="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">http://AlbertGithubHome.github.io/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/服务器/" rel="tag"><i class="fa fa-tag"></i> 服务器</a>
+          
+            <a href="/blog/tags/Telegraf/" rel="tag"><i class="fa fa-tag"></i> Telegraf</a>
+          
+            <a href="/blog/tags/InfluxDB/" rel="tag"><i class="fa fa-tag"></i> InfluxDB</a>
+          
+            <a href="/blog/tags/Grafana/" rel="tag"><i class="fa fa-tag"></i> Grafana</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/05/26/linux环境下熟悉又陌生的sudo命令/" rel="next" title="linux环境下熟悉又陌生的sudo命令">
+                <i class="fa fa-chevron-left"></i> linux环境下熟悉又陌生的sudo命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">209</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">497</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原始的监控靠人盯"><span class="nav-number">2.</span> <span class="nav-text">原始的监控靠人盯</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进化的监控靠批处理脚本"><span class="nav-number">3.</span> <span class="nav-text">进化的监控靠批处理脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#高端的监控靠完整的可视化解决方案"><span class="nav-number">4.</span> <span class="nav-text">高端的监控靠完整的可视化解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Telegraf、InfluxDB和Grafana铁三角"><span class="nav-number">5.</span> <span class="nav-text">Telegraf、InfluxDB和Grafana铁三角</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Telegraf"><span class="nav-number">5.1.</span> <span class="nav-text">Telegraf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InfluxDB"><span class="nav-number">5.2.</span> <span class="nav-text">InfluxDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Grafana"><span class="nav-number">5.3.</span> <span class="nav-text">Grafana</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Grafana仪表板展示"><span class="nav-number">6.</span> <span class="nav-text">Grafana仪表板展示</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器资源总览"><span class="nav-number">6.1.</span> <span class="nav-text">服务器资源总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#负载和内存使用"><span class="nav-number">6.2.</span> <span class="nav-text">负载和内存使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络带宽"><span class="nav-number">6.3.</span> <span class="nav-text">网络带宽</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘IO"><span class="nav-number">6.4.</span> <span class="nav-text">磁盘IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO延迟"><span class="nav-number">6.5.</span> <span class="nav-text">IO延迟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他指标"><span class="nav-number">6.6.</span> <span class="nav-text">其他指标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程信息"><span class="nav-number">6.7.</span> <span class="nav-text">进程信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -84,7 +84,7 @@
 <link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="linux,git,centos,rpm,yum," />
 
 
 
@@ -102,16 +102,18 @@
 
 
 
-<meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/关闭自动更新，自动更新，service/index.html">
+<meta name="description" content="前言如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。">
+<meta name="keywords" content="linux,git,centos,rpm,yum">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7通过rpm包离线安装git">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/03/21/CentOS7通过rpm包离线安装git/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
+<meta property="og:description" content="前言如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2023-06-18T07:37:52.709Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Albert World">
-<meta name="twitter:description" content="阳光总在风雨后，大雨过后是冰雹">
+<meta name="twitter:title" content="CentOS7通过rpm包离线安装git">
+<meta name="twitter:description" content="前言如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。">
 
 
 
@@ -140,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/关闭自动更新，自动更新，service/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/03/21/CentOS7通过rpm包离线安装git/"/>
 
 
 
 
 
-  <title>标签: 关闭自动更新，自动更新，service | Albert World</title>
+  <title>CentOS7通过rpm包离线安装git | Albert World</title>
   
 
 
@@ -181,7 +183,7 @@
     
   
 
-  <div class="container sidebar-position-left  ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
       <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
@@ -330,54 +332,382 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>关闭自动更新，自动更新，service<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/03/21/CentOS7通过rpm包离线安装git/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/blog/2023/02/05/Windows10彻底关闭自动更新/" itemprop="url">
-              
-                <span itemprop="name">Windows10彻底关闭自动更新</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">CentOS7通过rpm包离线安装git</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2023-02-05T16:53:53+08:00"
-              content="2023-02-05" >
-          02-05
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-21T23:11:12+08:00">
+                2023-03-21
+              </time>
+            
 
-    </header>
-  </article>
+            
+              <span class="post-meta-divider">|</span>
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:37:52+08:00">
+                2023-06-18
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/03/21/CentOS7通过rpm包离线安装git/" class="leancloud_visitors" data-flag-title="CentOS7通过rpm包离线安装git">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,177(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">9(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。</p>
+<a id="more"></a>
+<h1 id="初次安装失败"><a href="#初次安装失败" class="headerlink" title="初次安装失败"></a>初次安装失败</h1><p>开始觉得挺顺利的，如果能升级就直接升级，不能升级就直接移除掉然后安装就行了，然后我就直接通过 <code>sudo yum remove git</code> 删除了git，刷的一下很快啊。</p>
+<p>据说在 CentOS 7 上安装新版本 git 最快的方法是通过 End Point 库，所以我跟着找到的教程输入下面的命令企图添加 “End Point Package Repository”，但是报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm</span><br><span class="line">yum install git</span><br></pre></td></tr></table></figure>
+<p>官网 <a href="https://packages.endpointdev.com/" target="_blank" rel="noopener">packages.endpointdev.com/</a>有专门讲解安装git 2.x的<a href="https://www.endpointdev.com/blog/2021/12/installing-git-2-on-centos-7/" target="_blank" rel="noopener">帖子</a>，看起来很轻松，但是这条路我可能走不通了</p>
+<p>我这里提示 “curl:(6) Could resolve host: packages.endpointdev.com; Unknown error”，我的天，难道这台机器不能访问外网？</p>
+<h1 id="尝试修改软件源"><a href="#尝试修改软件源" class="headerlink" title="尝试修改软件源"></a>尝试修改软件源</h1><p>然后我尝试ping了几个常见的域名均已失败告终，所以我只能离线安装了？后来我发现它不是不能访问外网，只是不能访问域名，所以我自作聪明的把软件源<code>/etc/yum.repos.d/CentOS-Base.repo</code>里的域名都改成了IP:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#mirrors.cloud.aliyuncs.com被我改成了100.100.2.148</span></span><br><span class="line"></span><br><span class="line">enabled=1</span><br><span class="line">failovermethod=priority</span><br><span class="line">baseurl=http://mirrors.cloud.aliyuncs.com/centos/<span class="variable">$releasever</span>/os/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span></span><br><span class="line">enabled=1</span><br><span class="line">failovermethod=priority</span><br><span class="line">baseurl=http://mirrors.cloud.aliyuncs.com/centos/<span class="variable">$releasever</span>/updates/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span></span><br><span class="line">enabled=1</span><br><span class="line">failovermethod=priority</span><br><span class="line">baseurl=http://mirrors.cloud.aliyuncs.com/centos/<span class="variable">$releasever</span>/extras/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
+<p>接着我就发现这样是无法使用的，这个域名的IP一直在变，然后我又找了公司内部的软件源直接把IP替换上去，发现访问超时，看来得解决无法解析域名的问题，后来查到的修改 <code>/etc/resolv.conf</code>，于是在文件中添加一下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nameserver 114.114.114.114</span><br><span class="line">nameserver 8.8.8.8</span><br></pre></td></tr></table></figure>
+<p>保存之后可以解析域名了，将软件源修改为域名的形式依旧访问超时，这条路彻底走不通了。</p>
+<h2 id="离线安装git"><a href="#离线安装git" class="headerlink" title="离线安装git"></a>离线安装git</h2><p>离线安装类似于Window上安装一个<code>.msi</code>文件，不过git貌似没有特别方便的安装包，看看Linux下这些安装方式，基本都是需要联网下载的，其中CentOS还是最麻烦的，需要编译安装。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Debian/Ubuntu</span><br><span class="line">For the latest stable version <span class="keyword">for</span> your release of Debian/Ubuntu</span><br><span class="line"></span><br><span class="line"><span class="meta"># apt-get install git</span></span><br><span class="line">For Ubuntu, <span class="keyword">this</span> PPA provides the latest stable upstream Git version</span><br><span class="line"></span><br><span class="line"><span class="meta"># add-apt-repository ppa:git-core/ppa # apt update; apt install git</span></span><br><span class="line">Fedora</span><br><span class="line"><span class="meta"># yum install git (up to Fedora 21)</span></span><br><span class="line"><span class="meta"># dnf install git (Fedora 22 and later)</span></span><br><span class="line">Gentoo</span><br><span class="line"><span class="meta"># emerge --ask --verbose dev-vcs/git</span></span><br><span class="line">Arch Linux</span><br><span class="line"><span class="meta"># pacman -S git</span></span><br><span class="line">openSUSE</span><br><span class="line"><span class="meta"># zypper install git</span></span><br><span class="line">Mageia</span><br><span class="line"><span class="meta"># urpmi git</span></span><br><span class="line">Nix/NixOS</span><br><span class="line"><span class="meta"># nix-env -i git</span></span><br><span class="line">FreeBSD</span><br><span class="line"><span class="meta"># pkg install git</span></span><br><span class="line">Solaris <span class="number">9</span>/<span class="number">10</span>/<span class="number">11</span> (OpenCSW)</span><br><span class="line"><span class="meta"># pkgutil -i git</span></span><br><span class="line">Solaris <span class="number">11</span> Express</span><br><span class="line"><span class="meta"># pkg install developer/versioning/git</span></span><br><span class="line">OpenBSD</span><br><span class="line"># pkg_add git</span><br><span class="line">Alpine</span><br><span class="line">$ apk add git</span><br><span class="line">Red Hat Enterprise Linux, Oracle Linux, CentOS, Scientific Linux, et al.</span><br><span class="line">RHEL <span class="keyword">and</span> derivatives typically ship older versions of git. You can download a tarball <span class="keyword">and</span> build from source, <span class="keyword">or</span> use a <span class="number">3</span>rd-party repository such as the IUS Community Project to obtain a more recent version of git.</span><br><span class="line"></span><br><span class="line">Slitaz</span><br><span class="line">$ tazpkg get-install git</span><br></pre></td></tr></table></figure>
+<p>但是编译git需要有依赖项，还好它依赖的不多，很多教程上来就装一堆，不管有用没有了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel gcc perl-ExtUtils-MakeMaker package</span><br></pre></td></tr></table></figure>
+<p>但是我的机器上 <code>yum</code> 命令已经废了，无法联网安装新的东西，所以这些依赖项我必须找到安装包来离线安装，这就要用到rpm包了。</p>
+<h2 id="什么是rpm"><a href="#什么是rpm" class="headerlink" title="什么是rpm"></a>什么是rpm</h2><p><code>rpm</code>（redhat package manager） 原本是 Red Hat Linux 发行版专门用来管理 Linux 各项套件的程序，由于它遵循 GPL 规则且功能强大方便，因而广受欢迎，逐渐受到其他发行版的采用。RPM 套件管理方式的出现，让 Linux 上的软件易于安装和升级，说白了就是可以通过它来安装软件包。</p>
+<p>RPM包里面包含可执行的二进制程序，还包括程序运行时所需要的文件有时除了自身所带的附加文件保证其正常以外，还需要其它特定版本文件，这就是软件包的依赖关系，这和Windows的软件包结构类似。</p>
+<h2 id="安装准备"><a href="#安装准备" class="headerlink" title="安装准备"></a>安装准备</h2><ul>
+<li>下载指定版本git源码 <a href="https://github.com/git/git/tags" target="_blank" rel="noopener">source code</a></li>
+<li>下载zlib-devel-1.2.7-15.el7.x86_64.rpm <a href="http://mirror.centos.org/centos/7/os/x86_64/Packages/" target="_blank" rel="noopener">RPM库</a></li>
+<li>机器上本来有gcc，如果没有自己想办法装吧<!-- https://zhuanlan.zhihu.com/p/352955774 --></li>
+</ul>
+<p>幸运的是我的机器上有gcc，并且经过实践发现只要成功安装了zlib-devel就可以完成git的编译，如果没安装会报编译错误：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cache.h:<span class="number">21</span>:<span class="number">18</span>: fatal error: zlib.h: No such file <span class="keyword">or</span> directory</span><br><span class="line"> <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;zlib.h&gt;</span></span></span><br><span class="line">                  ^</span><br><span class="line">compilation terminated.</span><br><span class="line">make: *** [fuzz-commit-graph.o] Error <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>在有网的情况下，CentOS使用 <code>yum install zlib-devel</code>  解决，Ubuntu安装 <code>apt-get install zlib1g-dev</code> 解决</p>
+<h2 id="安装zlib-devel"><a href="#安装zlib-devel" class="headerlink" title="安装zlib-devel"></a>安装zlib-devel</h2><p>如果版本正确通过rpm安装还是挺快的，但是我一开始下载了另一个版本 zlib-devel-1.2.7-18.el7.x86_64.rpm，安装时提示我：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@demo software]<span class="comment"># rpm -i zlib-devel-1.2.7-18.el7.x86_64.rpm</span></span><br><span class="line">error: Failed dependencies:</span><br><span class="line">        zlib = 1.2.7-18.el7 is needed by zlib-devel-1.2.7-18.el7.x86_64</span><br></pre></td></tr></table></figure>
+<p>我又去下载了 zlib-1.2.7-18.el7.x86_64.rpm ，结果安装时出现冲突：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@demo software]<span class="comment"># rpm -i zlib-1.2.7-18.el7.x86_64.rpm</span></span><br><span class="line">        file /usr/lib64/libz.so.1.2.7 from install of zlib-1.2.7-18.el7.x86_64 conflicts with file from package zlib-1.2.7-15.el7.x86_64</span><br></pre></td></tr></table></figure>
+<p>最后找了兼容的版本 <code>rpm -i zlib-devel-1.2.7-15.el7.x86_64.rpm</code> 解决了这个问题。</p>
+<h2 id="编译git"><a href="#编译git" class="headerlink" title="编译git"></a>编译git</h2><ul>
+<li>解压git源码 <code>tar -zxf git-2.28.0.tar.gz</code></li>
+<li>进入解压后的目录，执行安装前检查 <code>make configure</code></li>
+<li>指定安装目录 <code>./configure --prefix=/usr/local</code></li>
+<li>执行编译安装 <code>make install</code></li>
+<li>查看git版本 <code>git --version</code></li>
+</ul>
+<p>终于装完了，呼~</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>服务端和客户端的git版本差距过大时可能导致无法验证密钥的问题</li>
+<li>在CentOS上git可以采用yum安装，也可以使用 “End Point Package Repository” 来安装</li>
+<li>如果想通过编译安装git需要有gcc，还要能安装上zlib-devel依赖项</li>
+<li>参考文档：<a href="https://zhuanlan.zhihu.com/p/352955774" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/352955774</a></li>
+</ul>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="yum失败"><a href="#yum失败" class="headerlink" title="yum失败"></a>yum失败</h2><p>终于找到了我的yum更新源一直超时的原因，是因为我通过 <code>Wandisco GIT存储库</code> 方式尝试安装过 git，步骤如下：</p>
+<ul>
+<li>先写入新yum存储库配置文件启用Wandisco GIT存储库，在终端输入 <code>vim /etc/yum.repos.d/wandisco-git.repo</code></li>
+<li><p>文件中加入如下内容，保存退出</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[wandisco-git]</span><br><span class="line">name=Wandisco GIT Repository</span><br><span class="line">baseurl=http://opensource.wandisco.com/centos/7/git/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>导入存储库GPG密钥 <code>sudo rpm --import http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco</code></p>
+</li>
+<li>安装Git <code>yum install git</code></li>
+</ul>
+<p>结果 opensource.wandisco.com 无法正常访问，导致 <code>yum update</code> 报错，把 wandisco-git.repo 文件删掉就好了</p>
+<h2 id="rpm-和-yum-的关系"><a href="#rpm-和-yum-的关系" class="headerlink" title="rpm 和 yum 的关系"></a>rpm 和 yum 的关系</h2><p>之前讲到rpm是由Red Hat公司开发的软件包管理方式，使用它可以方便的进行软件的安装、查询、卸载、升级等工作。但处理rpm软件包之间的依赖性问题往往会很繁琐，尤其是当软件由多个rpm包组成时，比如我们在离线安装git时遭遇到的问题。</p>
+<p>Yum（Yellow dog Updater, Modified）是一个在Fedora和RedHat等系统上基于RPM包管理前端软件包管理软件，能够从指定的服务器自动下载RPM包并且安装，并自动处理软件包的依赖关系，可以一次安装所有依赖的软体包。</p>
+<p>总结来说就是, rpm命令只能安装已经下载到本地机器上的rpm包，并且自己解决依赖问题，yum能在线下载并安装rpm包、更新内核、并自动处理包与包之间的依赖问题。</p>
+<center><a href="https://blog.csdn.net/albertsh/article/details/129629916" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>死去元知万事空，但悲不见九州同~</p>
+<p>2023-3-21 23:11:12</p>
+</blockquote>
 
       
     </div>
+    
+    
+    
 
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/03/21/CentOS7通过rpm包离线安装git/" title="CentOS7通过rpm包离线安装git">http://AlbertGithubHome.github.io/blog/2023/03/21/CentOS7通过rpm包离线安装git/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/git/" rel="tag"><i class="fa fa-tag"></i> git</a>
+          
+            <a href="/blog/tags/centos/" rel="tag"><i class="fa fa-tag"></i> centos</a>
+          
+            <a href="/blog/tags/rpm/" rel="tag"><i class="fa fa-tag"></i> rpm</a>
+          
+            <a href="/blog/tags/yum/" rel="tag"><i class="fa fa-tag"></i> yum</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/" rel="next" title="linux环境下利用rsync+find实现同步指定时间段文件">
+                <i class="fa fa-chevron-left"></i> linux环境下利用rsync+find实现同步指定时间段文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2023/04/03/简单谈谈图形界面和命令行的区别/" rel="prev" title="简单谈谈图形界面和命令行的区别">
+                简单谈谈图形界面和命令行的区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
 
 
           </div>
@@ -385,6 +715,12 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
 
         </div>
         
@@ -405,8 +741,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/blog/uploads/avatar.png"
@@ -421,7 +766,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">199</span>
+                <span class="site-state-item-count">209</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -443,7 +788,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">470</span>
+                <span class="site-state-item-count">497</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -573,6 +918,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#初次安装失败"><span class="nav-number">2.</span> <span class="nav-text">初次安装失败</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#尝试修改软件源"><span class="nav-number">3.</span> <span class="nav-text">尝试修改软件源</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#离线安装git"><span class="nav-number">3.1.</span> <span class="nav-text">离线安装git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是rpm"><span class="nav-number">3.2.</span> <span class="nav-text">什么是rpm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装准备"><span class="nav-number">3.3.</span> <span class="nav-text">安装准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装zlib-devel"><span class="nav-number">3.4.</span> <span class="nav-text">安装zlib-devel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译git"><span class="nav-number">3.5.</span> <span class="nav-text">编译git</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充"><span class="nav-number">5.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#yum失败"><span class="nav-number">5.1.</span> <span class="nav-text">yum失败</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpm-和-yum-的关系"><span class="nav-number">5.2.</span> <span class="nav-text">rpm 和 yum 的关系</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -720,10 +1081,10 @@
   
 
   
-    <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
 
-  
+
 
   
 

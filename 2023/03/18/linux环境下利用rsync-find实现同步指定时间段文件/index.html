@@ -84,7 +84,7 @@
 <link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="find,shell,linux,sed,rsync," />
+  <meta name="keywords" content="find,linux,shell,sed,rsync," />
 
 
 
@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该">
-<meta name="keywords" content="find,shell,linux,sed,rsync">
+<meta name="description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。">
+<meta name="keywords" content="find,linux,shell,sed,rsync">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux环境下利用rsync+find实现同步指定时间段文件">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该">
+<meta property="og:description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2023-03-19T13:02:13.193Z">
+<meta property="og:updated_time" content="2023-06-18T04:06:59.637Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux环境下利用rsync+find实现同步指定时间段文件">
-<meta name="twitter:description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该">
+<meta name="twitter:description" content="前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。">
 
 
 
@@ -391,8 +391,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-03-19T21:02:13+08:00">
-                2023-03-19
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T12:06:59+08:00">
+                2023-06-18
               </time>
             
           </span>
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,796(字)</span>
+            <span class="post-count">1,806(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -481,6 +481,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 <code>find</code>、<code>rsync</code>、<code>sed</code> 等，之前也写过一篇 <a href="https://blog.csdn.net/albertsh/article/details/127840091" target="_blank" rel="noopener">《linux环境下使用rsync命令完成数据同步》</a>，不过这次有新的需求了。</p>
+<a id="more"></a>
 <h1 id="插曲"><a href="#插曲" class="headerlink" title="插曲"></a>插曲</h1><p>前段时间发现通过 <code>rysnc</code> 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该是 <code>rsync</code> 的 <code>-c</code> 参数导致的，参数全称是 <code>--checksum</code> 打开校验开关，强制对文件传输进行校验，多次实验后发现只要把 <code>-c</code> 参数省略，这个检验所花的4分钟就能省掉，同步前校验只会根据修改的时间戳和文件大小来判断，这在大多数情况下足够了。</p>
 <h1 id="根据时间段同步"><a href="#根据时间段同步" class="headerlink" title="根据时间段同步"></a>根据时间段同步</h1><p>现在想同步日志文件，因为日志文件是每小时产生一个，之前的日志文件绝大多数情况也不会改动，所以再同步时没必要检测所有的日志文件，只需要同步最近一段时间的就可以了，这样可以减少文件比对的时间。</p>
 <p>查询了 <code>sync</code> 命令的所有参数，没有找到指定同步时间段的参数，但是有个 <code>--files-from=FILE</code> 看起来能实现这个需求，man手册中是这样写的：</p>
@@ -517,7 +518,7 @@
 <li>假设变量 KEY=birthday、FILE=myfile.log，查找KEY所在的行号可以使用 <code>grep -rn $KEY&quot; $FILE | awk -F &#39;:&#39; &#39;{print $1}&#39;</code></li>
 <li>还是在上面的假设 <code>sed -n &#39;/${KEY}=/&#39; $FILE</code> 无法获得行号，使用 <code>sed -n &#39;/birthday=/&#39; $FILE</code> 就可以</li>
 <li>上面这种sed命令中使用变量不生效的问题目前还没找到解决方法，有解决方案的大佬请指教</li>
-<li>不过 <code>sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE</code> 这种替换命令就支持变量，目前有点迷糊，还在探索中</li>
+<li>不过 <code>sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE</code> 这种替换命令就支持变量，但sed不支持非贪婪模式，目前有点迷糊，还在探索中</li>
 </ul>
 <center><a href="https://blog.csdn.net/albertsh/article/details/129629916" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
 
@@ -612,9 +613,9 @@
           
             <a href="/blog/tags/find/" rel="tag"><i class="fa fa-tag"></i> find</a>
           
-            <a href="/blog/tags/shell/" rel="tag"><i class="fa fa-tag"></i> shell</a>
-          
             <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/shell/" rel="tag"><i class="fa fa-tag"></i> shell</a>
           
             <a href="/blog/tags/sed/" rel="tag"><i class="fa fa-tag"></i> sed</a>
           
@@ -640,6 +641,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2023/03/21/CentOS7通过rpm包离线安装git/" rel="prev" title="CentOS7通过rpm包离线安装git">
+                CentOS7通过rpm包离线安装git <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -741,7 +746,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">199</span>
+                <span class="site-state-item-count">209</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -763,7 +768,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">470</span>
+                <span class="site-state-item-count">497</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

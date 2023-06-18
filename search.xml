@@ -1,16 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案]]></title>
+    <url>%2Fblog%2F2023%2F06%2F17%2F%E5%88%9D%E8%AF%86Telegraf%E3%80%81InfluxDB%E5%92%8CGrafana%E9%93%81%E4%B8%89%E8%A7%92%E5%BD%A2%E6%88%90%E7%9A%84%E7%9B%91%E6%8E%A7%E5%8F%AF%E8%A7%86%E5%8C%96%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%2F</url>
+    <content type="text"><![CDATA[@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。 原始的监控靠人盯如果服务器只有一台或者很少，可以每隔一段时间去服务器上看看，top 看一下整体运行情况，free 查一下内存详情，df 看一下硬盘还够不够，iftop 看一下网络带宽情况，不要觉得不可能，有次测试我真的就是开了好几个远程窗口来盯着各个指标，不过人的精力有限，这样做毕竟不是长久之计。 进化的监控靠批处理脚本随着服务器的增多，靠人盯的方式的已经达不到要求了，看看上面的这些命令都是已知的，并且只需要定期得到这些值就可以了，完全可以使用脚本定期执行来做呀，把上面提到的命令封装成脚本然后定期执行得到结果列表，然后发送到指定的地址，我们就可以只分析这些结果，没必要登录到各个服务器上去查询了。 高端的监控靠完整的可视化解决方案懒惰是科学发展的推动力，使用脚本收集数据就不用登录服务器去实时查询了，那能不能帮我自动分析结果，或者在异常时直接给出提醒，因为我连分析的操作都不想做，肯定有人这样想当然也有人这样做了，并且形成了成熟的解决方案，我们只需要简单搭建和配置就可以早点下班了，半夜收到服务器报警电话时起来解决就可以了。 Telegraf、InfluxDB和Grafana铁三角Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置。 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据。 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来。 通过将Telegraf用作数据收集代理，将数据发送到InfluxDB中存储，然后使用Grafana从InfluxDB中提取数据进行可视化，这个铁三角组合提供了一个强大的监控和数据可视化解决方案。 TelegrafTelegraf是一个开源的代理程序，用于收集、处理和发送指标数据。它设计用于高效地收集各种类型的数据，并将其发送到不同的目标位置，如时序数据库、消息队列等，具有以下是关键特点和功能： 插件架构：Telegraf采用模块化的插件架构，具有丰富的输入和输出插件。它支持多种输入插件，如系统性能指标、日志文件、数据库查询、API调用等，以便从不同的数据源中收集数据。同样，Telegraf还支持多种输出插件，如InfluxDB、Elasticsearch、Kafka等，用于将收集到的数据发送到不同的目标位置。 多平台支持：Telegraf可在多个操作系统上运行，包括Linux、Windows和macOS，以适应不同的部署环境和需求。 轻量级和高性能：Telegraf被设计为轻量级和高性能的代理程序，可以在资源受限的环境中高效运行。它使用Golang编写，具有低的内存和CPU占用，并能够处理高并发的数据收集和处理任务。 数据转换和处理：Telegraf提供了灵活的数据转换和处理功能，可以对收集到的数据进行过滤、转换、聚合等操作。它支持各种数据处理任务，如标签添加、数据格式转换、聚合计算等，以便对数据进行预处理和清洗，使其适应目标存储或分析平台的要求。 插件生态系统：Telegraf拥有一个活跃的插件生态系统，用户可以根据自己的需求选择和配置适当的插件。社区提供了大量的插件，覆盖了各种数据源和目标位置，使得Telegraf具备广泛的适用性和灵活性。 InfluxDBInfluxDB是一个开源的高性能时序数据库，专门用于存储和处理时间序列数据。它被设计为能够高效地处理大规模的时间相关数据，并提供快速的数据插入、查询和聚合能力，具有关键特点和功能： 时序数据存储：InfluxDB专注于存储和管理时间序列数据，如传感器数据、监控指标、日志事件等。它使用特定的数据结构和索引机制，以优化对时间序列数据的写入和查询操作。 高性能和可扩展性：InfluxDB被设计为具有高吞吐量和低延迟的数据库系统。它采用了一系列的优化策略，包括压缩算法、分片存储、数据分区等，以实现高效的数据处理和查询性能。此外，InfluxDB还支持水平扩展，可以通过添加更多节点来提高性能和容量。 查询语言：InfluxDB提供了InfluxQL和Flux两种查询语言。InfluxQL是类似于SQL的查询语言，专门用于时间序列数据的查询和聚合操作。Flux是一种功能更强大和灵活的查询语言，它支持更复杂的数据处理和转换操作，并具有扩展性更好的能力。 数据保留策略：InfluxDB允许定义数据保留策略，以指定数据在数据库中的保存期限和存储策略。这样可以根据数据的时效性需求和存储资源限制来管理数据的保留和清理。 数据一致性和持久性：InfluxDB采用了写时复制（Write Ahead Log）的机制，确保数据的一致性和持久性。它使用持久化引擎来保证数据在故障情况下的可靠性，同时提供数据备份和恢复的功能。 整合生态系统：InfluxDB具有丰富的整合生态系统，可以与各种数据源和工具集成。它支持与Telegraf等数据收集代理的无缝集成，以及与Grafana等数据可视化工具的联合使用，提供完整的监控和数据处理解决方案。 GrafanaGrafana是一个开源的数据可视化和监控平台，用于创建、展示和分析实时指标和数据的交互式仪表板。它提供了丰富的可视化选项和灵活的配置，使用户能够轻松地创建各种类型的仪表板，并实时监控和分析数据，具有以下关键特点和功能： 数据源支持：Grafana支持广泛的数据源，包括各种数据库（如MySQL、PostgreSQL、InfluxDB）、时序数据库（如Prometheus、Graphite）、日志文件、API等。它提供了内置的数据源插件和API接口，以便与不同的数据源进行集成和数据获取。 丰富的可视化选项：Grafana提供多种可视化选项，如折线图、柱状图、仪表盘、热力图等，可以根据数据的特点选择适合的图表类型。它还支持动态图表、图表注释、数据标记等功能，以增强数据的可视化效果和交互性。 交互式仪表板：Grafana的仪表板具有交互式的功能，用户可以自由地缩放、选择时间范围、过滤数据等。它还支持实时数据更新和自动刷新，以确保仪表板上的数据保持最新。 告警和通知：Grafana提供了强大的告警功能，用户可以根据自定义的条件设置告警规则，并通过电子邮件、Slack等渠道接收告警通知。这样可以及时发现数据异常或重要指标的变化。 用户管理和权限控制：Grafana支持多用户和团队管理，可以设置不同的用户角色和权限，以控制对仪表板和数据的访问和操作。它还提供了LDAP、OAuth等身份验证和单点登录功能，与企业的用户管理系统集成更加便捷。 社区支持和插件生态系统：Grafana拥有庞大的开源社区支持和活跃的插件生态系统。用户可以从社区中获取各种主题、模板和插件，以扩展和定制Grafana的功能和外观。 Grafana仪表板展示说实话第一次看到Grafana仪表板还是挺震撼的，展示的信息很多，可以帮助服务器维护人员分析很多问题，下面来展示一些主要的面板。 服务器资源总览 负载和内存使用 网络带宽 磁盘IO IO延迟 其他指标 进程信息 总结 Telegraf、Grafana和InfluxDB通常被称为”铁三角”，因为它们经常一起使用，形成一个完整的监控和数据可视化解决方案 Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来 Grafana的仪表板真的挺漂亮的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 把烦恼痛了吞了认了算了不对别人讲谁还没有辜负几段 昂贵的时光 2023-6-17 19:39:56]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>服务器</tag>
+        <tag>Telegraf</tag>
+        <tag>InfluxDB</tag>
+        <tag>Grafana</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下熟悉又陌生的sudo命令]]></title>
+    <url>%2Fblog%2F2023%2F05%2F26%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%86%9F%E6%82%89%E5%8F%88%E9%99%8C%E7%94%9F%E7%9A%84sudo%E5%91%BD%E4%BB%A4%2F</url>
+    <content type="text"><![CDATA[@[TOC] 前言sudo命令应该是任何一个服务器使用人员都绕不开的命令，比如那个大名鼎鼎的删库跑路命令 sudo rm -rf /*，虽然经常使用，也知道用它能做一些普通用户无法完成的事情，那么它究竟是什么意思，有什么作用和好处，和超级无敌的 root 用户又有什么关系呢？接下来我们来简单梳理一下。 关于sudo的一些疑问sudo是什么sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令。它是 “Super User Do” 的缩写。超级用户通常是系统管理员，具有对操作系统的完全控制权。 当你以普通用户的身份登录到系统时，可能没有足够的权限来执行某些敏感的系统操作或访问某些文件。在这种情况下，可以使用 sudo 命令在临时提升权限的情况下执行特定命令。 使用 sudo 命令时，需要输入管理员密码以验证你的身份。一旦验证成功，就可以以超级用户的权限执行命令。这样可以确保系统安全，因为只有经过授权的用户才能执行特权操作。 例如，如果想要安装软件包或修改系统设置，但这些操作需要超级用户权限，你可以在命令前加上 sudo，然后输入密码以执行该命令。 以下是一个sudo命令使用的示例：1sudo apt-get install git 这个命令将使用 apt-get 工具安装一个软件包，由于它需要对系统进行修改，所以需要超级用户权限。通过使用 sudo，可以在普通用户的身份下临时获取这些权限来执行该操作。 sudo 和 root 的区别和联系sudo 和 root 在类 Unix 系统中具有不同的角色和功能。以下是它们之间的区别和联系： 权限级别： root 是超级用户，也称为系统管理员。拥有 root 权限意味着拥有对整个系统的完全控制权，可以执行所有操作并访问所有文件。相比之下，sudo 是一个命令，允许普通用户在需要时以超级用户的身份执行特定的命令。 使用方式： root 用户可以直接登录到系统并拥有持久的超级用户权限。而 sudo 是一种临时提升权限的机制，允许普通用户在需要时以超级用户的身份执行特定命令。普通用户可以使用 sudo 命令来运行特权命令，但在执行时需要输入管理员密码进行身份验证。 安全性： sudo 的使用可以提高系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少意外或恶意操作造成的潜在风险。相比之下，root 用户拥有系统的完全权限，因此使用 root 用户执行命令时需要格外小心，以免对系统造成损坏。 日常操作： 为了提高系统安全性，通常建议使用 sudo 来执行需要特权的命令，而不是直接使用 root 用户。使用 sudo 可以在普通用户的身份下执行特权命令，并避免了在常规操作中长时间保持 root 权限，从而减少了潜在的错误或安全风险。 总结来说，root 是系统的超级用户，拥有完全的权限，而 sudo 是一种临时提升权限的机制，允许普通用户以超级用户的身份执行特定命令。使用 sudo 可以提高系统的安全性，同时避免在日常操作中过多使用 root 用户带来的潜在风险。 使用 sudo 的好处使用 sudo 有以下几个好处： 安全性： sudo 增加了系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少潜在的错误或恶意操作对系统造成的风险。普通用户在执行需要特权的命令时需要输入管理员密码，这种身份验证确保只有经过授权的用户才能执行特权操作。 权限控制： sudo 允许系统管理员细粒度地控制用户对系统资源和命令的访问权限。管理员可以通过配置 sudo 的策略文件，精确地指定哪些用户可以执行哪些命令以及以何种方式执行。这种权限控制有助于实施最小权限原则，即用户只能以最低权限执行任务，从而降低了潜在的安全风险。 审计和日志记录： sudo 提供了审计和日志记录功能，可以记录执行特权操作的用户、时间和执行的命令。这对于追踪系统中的活动、故障排查和安全审计非常有价值。通过审计和日志记录，管理员可以了解特权操作的细节，以及哪些用户在何时执行了哪些命令。 限制特权操作： 使用 sudo 可以限制特权操作的范围。普通用户只有在需要执行特定命令时才能使用 sudo 提升权限。这种限制可以避免用户误操作或滥用超级用户权限，从而减少了对系统的潜在风险。 总而言之，使用 sudo 可以提高系统的安全性、实施最小权限原则、提供审计和日志记录功能，并限制特权操作的范围。这使得系统管理员能够更好地管理用户权限并降低潜在的风险。 怎样查看sudo命令日志可以使用适当的文本编辑器打开 sudo 日志文件：选择适用于你的系统的文本编辑器（如 nano、vim、或者其他）以超级用户权限打开 sudo 日志文件。日志文件的位置和名称可能会因操作系统的不同而异。下面是一些常见的 sudo 日志文件路径： Ubuntu、Debian 等基于 Debian 的系统： 1sudo nano /var/log/auth.log CentOS、Fedora、Red Hat 等基于 Red Hat 的系统： 1sudo nano /var/log/secure macOS： 1sudo nano /var/log/system.log 查看 sudo 日志文件通常需要管理员或超级用户权限。确保你具有足够的权限才能访问和查看日志文件。此外，一些操作系统可能还提供了特定的命令或工具来查看系统日志，例如 journalctl 命令在某些 Linux 发行版中可用于查看系统日志。你可以根据你的操作系统和日志管理方式来选择适合的方法来查看 sudo 日志。 修改sudo配置sudo的配置文件是 /etc/sudoers 但是不建议直接用文本工具打开它，一旦修改出错可能导致很多严重问题，可以使用 visudo 命令进行打开编辑，使用 visudo 命令编辑 sudoers 文件时，系统会执行语法检查以确保配置的正确性，以避免可能的权限问题，下面展示一个简单配置样例： 简单样例1234567891011# User privilege specificationroot ALL=(ALL:ALL) ALL# Allow members of group sudo to execute any command%sudo ALL=(ALL:ALL) ALL# Allow members of group admin to execute any command%admin ALL=(ALL:ALL) ALL# Allow specific user to run specific command as another userjohndoe ALL=(appuser) /usr/local/bin/git visudo 是一个用于编辑 sudoers 文件的命令，该文件包含了与 sudo（以管理员权限执行命令）相关的配置信息。在 sudoers 文件中，每一行都由多个列组成，其中包含不同的字段和含义。以下是 sudoers 文件中各列的一般含义： 列1：用户列表 该列指定了可以使用 sudo 命令的用户或用户组。 可以是单个用户名，如 “bob”。 可以是用户组前缀 “%” 后跟用户组名，如 “%admin”。 列2：主机列表 该列指定了可以在哪些主机上使用 sudo 命令。 可以是单个主机名，如 “localhost”。 可以是主机名前缀 “ALL”，表示适用于所有主机。 列3：=(运行 as) 列表 该列指定了可以以哪个用户身份来运行命令。 可以是单个用户名，如 “root”。 可以是用户组前缀 “ALL”，表示可以以任何用户身份运行命令。 =(ALL:ALL)：表示可以以任何用户身份 (ALL) 在任何终端 (ALL) 上运行命令。 列4：NOPASSWD: 标志 该列指定了是否需要输入密码才能使用 sudo 命令。 如果列中包含 “NOPASSWD:”，则表示不需要密码。 如果列为空或未包含 “NOPASSWD:”，则需要输入密码。 列5及以后：命令列表 该列指定了可以使用 sudo 命令执行的具体命令。 可以是完整的命令路径，如 “/usr/bin/apt-get”。 可以是通配符，如 “/usr/bin/*” 表示该目录下的所有命令。 复杂样例及解释下面是一个复杂一些的 visudo 配置示例，其中包含了多个用户、用户组和命令的授权规则： 1234567891011121314151617181920212223242526272829# User privilege specification## Allow root to run any commands on all hostsroot ALL=(ALL:ALL) ALL## Allow members of the admin group to run any commands on all hosts%admin ALL=(ALL:ALL) ALL## Allow specific user to run specific commands as root without passwordjohndoe ALL=(root) NOPASSWD: /bin/ls, /usr/bin/apt-get## Allow specific user to run commands in specific directories as another userjohndoe ALL=(appuser) /opt/app/bin/*johndoe ALL=(backupuser) /var/backup/scripts/*## Allow specific user to run specific command with arguments as rootjohndoe ALL=(root) /usr/sbin/usermod [a-z]*## Deny specific user to run any commandbanneduser ALL=(ALL:ALL) ALL, !/usr/bin/*## Allow members of the wheel group to run any commands on localhost without password%wheel localhost=(ALL:ALL) NOPASSWD: ALL## Allow users in the developer group to run specific commands with arguments%developer ALL=(ALL:ALL) /usr/bin/git *, /usr/bin/make clean## Allow users in the support group to restart specific services%support ALL=(root) /usr/sbin/service apache2 restart, /usr/sbin/service nginx restart 上述配置说明不考虑注释行，含义如下： 第1行表示允许 root 用户在所有主机上以任何用户身份执行任何命令。 第3行表示允许 johndoe 用户作为 root 用户以无需密码的方式执行 /bin/ls 和 /usr/bin/apt-get 命令。 第4行和第5行表示允许 johndoe 用户作为 appuser 用户或 backupuser 用户在特定目录下执行命令。 第6行表示允许 johndoe 用户作为 root 用户执行带有特定参数的 /usr/sbin/usermod 命令。 第7行表示禁止 banneduser 用户执行除 /usr/bin/* 之外的所有命令。 第8行表示允许 wheel 组的用户在 localhost 主机上以任何用户身份执行任何命令，且无需密码。 第9行表示允许 developer 组的用户执行带有特定参数的 /usr/bin/git 和 /usr/bin/make 命令。 第10行表示允许 support 组的用户作为 root 用户重启特定服务。 使用sudo用户创建用户并添加到 sudo 组在 Linux 上创建用户并将其添加到 sudo 组，可以按照以下步骤进行操作： 打开终端：在操作系统中打开终端或命令行界面。 使用 adduser 命令创建新用户： 1sudo adduser newuser 这将提示你输入新用户的密码和其他详细信息。 将新用户添加到 sudo 组。可以使用 usermod 命令执行此操作： 1sudo usermod -aG sudo newuser 这将将新用户 newuser 添加到 sudo 组中。 验证用户是否成功添加到 sudo 组。你可以通过执行以下命令来检查用户所属的组： 1groups newuser 如果 sudo 组在列表中显示，表示用户已成功添加到 sudo 组。 现在，新创建的用户已经添加到 sudo 组，拥有 sudo 权限。他们可以使用 sudo 命令以管理员权限执行特权操作。请确保将适当的权限授予新用户，以确保系统的安全性和合规性。 查看是否有sudo权限可以通过id命令查看指定用户是否在 sudo 组内，比如下面的用户就在27(sudo)这个组内： 12root@jenkins1604:~# id gyeeuid=1004(gyee) gid=1004(gyee) groups=1004(gyee),27(sudo) 也可以查看(sudo)组内是否包含当前用户：12root@jenkins1604:~# getent group sudosudo:x:27:admin,gyee getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息。它可以用于检索和显示与系统用户、组、网络服务和其他系统资源相关的信息 ，getent 命令的基本语法如下： 1getent database entry 其中，database 表示要查询的数据库，而 entry 则表示要获取的数据库条目。 以下是一些常见的 getent 命令示例： 获取系统中所有用户的信息： 1getent passwd 获取特定用户的信息： 1getent passwd &lt;username&gt; 获取系统中所有组的信息： 1getent group 获取特定组的信息： 1getent group &lt;groupname&gt; 获取系统中所有网络服务的信息（/etc/services 文件中定义的服务）： 1getent services 没有sudo权限时执行会被记录当没有sudo权限时，执行命令会输出以下信息，显示此操作被记录在案： 123gyee@jenkins1604:/root$ sudo usermod -aG sudo gyee[sudo] password for gyee:gyee is not in the sudoers file. This incident will be reported. 可以查询系统安全日志 12root@jenkins1604:~# cat /var/log/auth.log | grep gyeeMay 26 22:07:13 machine sudo: gyee : user NOT in sudoers ; TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/sbin/usermod -aG sudo gyee 总结 sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令 root 是超级用户，拥有对整个系统的完全控制权，sudo 是一个允许普通用户在需要时以超级用户的身份执行特定的命令 adduser 和 useradd 都是在 Linux 系统上用于创建用户的命令，但 adduser命令更方便友好，尤其适用于交互式的用户创建 getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 大家所谓的不满，是不满自己没成为人上人吧，至于温饱，很多人已经绰绰有余了~ 2023-5-26 22:08:38]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>服务器</tag>
+        <tag>sudo</tag>
+        <tag>adduser</tag>
+        <tag>getent</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下使用daemon函数实现守护进程]]></title>
+    <url>%2Fblog%2F2023%2F05%2F12%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8daemon%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[前言daemon进程是后台守护进程，比如linux 下server都是daemon进程，像httpd、sshd等这些服务你肯定听说过，如果我们想写一个后台运行程序应该怎么做呢？其实非常容易，只要添加头文件 #include &lt;unistd.h&gt;，然后在调用 daemon(1, 0)函数即可。 daemon函数说明12345/* Put the program in the background, and dissociate from the controlling terminal. If NOCHDIR is zero, do `chdir ("/")'. If NOCLOSE is zero, redirects stdin, stdout, and stderr to /dev/null. */extern int daemon (int __nochdir, int __noclose) __THROW __wur;#endif /* Use misc. */ 头文件中已经说得很清楚了，当 nochdir为零时，将当前目录变为根目录，否则不变，当 noclose为零时，标准输入、标准输出和错误输出重导向为/dev/null不输出任何信息，否则照样输出。 daemon函数的实现关于找daemon函数的实现还是费了一些功夫的，我发现我根本不会在github上查代码，一开始以为是linux源码所以去翻了Linus Torvalds的Linux源码结果没找到，最后还是在google收到了一些，整理如下： 安卓源码 https://android.googlesource.com/platform/bionic.git/+/donut-release/libc/unistd/daemon.c 123456789101112131415161718192021222324252627282930313233#include &lt;stdlib.h&gt;#include &lt;unistd.h&gt;#include &lt;fcntl.h&gt;int daemon( int nochdir, int noclose )&#123; pid_t pid; if ( !nochdir &amp;&amp; chdir("/") != 0 ) return -1; if ( !noclose ) &#123; int fd = open("/dev/null", O_RDWR); if ( fd &lt; 0 ) return -1; if ( dup2( fd, 0 ) &lt; 0 || dup2( fd, 1 ) &lt; 0 || dup2( fd, 2 ) &lt; 0 ) &#123; close(fd); return -1; &#125; close(fd); &#125; pid = fork(); if (pid &lt; 0) return -1; if (pid &gt; 0) _exit(0); if ( setsid() &lt; 0 ) return -1; return 0;&#125; 苹果源码 https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/daemon.c.auto.html 12345678910111213141516171819202122232425262728293031323334#include &lt;fcntl.h&gt;#include &lt;paths.h&gt;#include &lt;unistd.h&gt;intdaemon(nochdir, noclose) int nochdir, noclose;&#123; int fd; switch (fork()) &#123; case -1: return (-1); case 0: break; default: _exit(0); &#125; if (setsid() == -1) return (-1); if (!nochdir) (void)chdir("/"); if (!noclose &amp;&amp; (fd = open(_PATH_DEVNULL, O_RDWR, 0)) != -1) &#123; (void)dup2(fd, STDIN_FILENO); (void)dup2(fd, STDOUT_FILENO); (void)dup2(fd, STDERR_FILENO); if (fd &gt; 2) (void)close (fd); &#125; return (0);&#125; glibc源码 https://elixir.bootlin.com/glibc/glibc-2.37/source/misc/daemon.c 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#if defined(LIBC_SCCS) &amp;&amp; !defined(lint)static char sccsid[] = "@(#)daemon.c 8.1 (Berkeley) 6/4/93";#endif /* LIBC_SCCS and not lint */#include &lt;errno.h&gt;#include &lt;fcntl.h&gt;#include &lt;paths.h&gt;#include &lt;unistd.h&gt;#include &lt;sys/stat.h&gt;#include &lt;device-nrs.h&gt;#include &lt;not-cancel.h&gt;intdaemon (int nochdir, int noclose)&#123; int fd; switch (__fork()) &#123; case -1: return (-1); case 0: break; default: _exit(0); &#125; if (__setsid() == -1) return (-1); if (!nochdir) (void)__chdir("/"); if (!noclose) &#123; struct __stat64_t64 st; if ((fd = __open_nocancel(_PATH_DEVNULL, O_RDWR, 0)) != -1 &amp;&amp; __glibc_likely (__fstat64_time64 (fd, &amp;st) == 0)) &#123; if (__builtin_expect (S_ISCHR (st.st_mode), 1) != 0#if defined DEV_NULL_MAJOR &amp;&amp; defined DEV_NULL_MINOR &amp;&amp; (st.st_rdev == makedev (DEV_NULL_MAJOR, DEV_NULL_MINOR))#endif ) &#123; (void)__dup2(fd, STDIN_FILENO); (void)__dup2(fd, STDOUT_FILENO); (void)__dup2(fd, STDERR_FILENO); if (fd &gt; 2) (void)__close (fd); &#125; else &#123; /* We must set an errno value since no function call actually failed. */ __close_nocancel_nostatus (fd); __set_errno (ENODEV); return -1; &#125; &#125; else &#123; __close_nocancel_nostatus (fd); return -1; &#125; &#125; return (0);&#125; glibc github地址 https://github.com/lattera/glibc/blob/master/misc/daemon.c 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364#if defined(LIBC_SCCS) &amp;&amp; !defined(lint)static char sccsid[] = "@(#)daemon.c 8.1 (Berkeley) 6/4/93";#endif /* LIBC_SCCS and not lint */#include &lt;errno.h&gt;#include &lt;fcntl.h&gt;#include &lt;paths.h&gt;#include &lt;unistd.h&gt;#include &lt;sys/stat.h&gt;#include &lt;device-nrs.h&gt;#include &lt;not-cancel.h&gt;intdaemon (int nochdir, int noclose)&#123; int fd; switch (__fork()) &#123; case -1: return (-1); case 0: break; default: _exit(0); &#125; if (__setsid() == -1) return (-1); if (!nochdir) (void)__chdir("/"); if (!noclose) &#123; struct stat64 st; if ((fd = __open_nocancel(_PATH_DEVNULL, O_RDWR, 0)) != -1 &amp;&amp; (__builtin_expect (__fxstat64 (_STAT_VER, fd, &amp;st), 0) == 0)) &#123; if (__builtin_expect (S_ISCHR (st.st_mode), 1) != 0#if defined DEV_NULL_MAJOR &amp;&amp; defined DEV_NULL_MINOR &amp;&amp; (st.st_rdev == makedev (DEV_NULL_MAJOR, DEV_NULL_MINOR))#endif ) &#123; (void)__dup2(fd, STDIN_FILENO); (void)__dup2(fd, STDOUT_FILENO); (void)__dup2(fd, STDERR_FILENO); if (fd &gt; 2) (void)__close (fd); &#125; else &#123; /* We must set an errno value since no function call actually failed. */ __close_nocancel_nostatus (fd); __set_errno (ENODEV); return -1; &#125; &#125; else &#123; __close_nocancel_nostatus (fd); return -1; &#125; &#125; return (0);&#125; 挺有意思的写法 https://github.com/bmc/daemonize/blob/master/daemon.c 1234567891011121314151617181920212223242526272829303132333435363738int daemon(int nochdir, int noclose)&#123; int status = 0; openlog("daemonize", LOG_PID, LOG_DAEMON); /* Fork once to go into the background. */ if((status = do_fork()) &lt; 0 ) ; /* Create new session */ else if(setsid() &lt; 0) /* shouldn't fail */ status = -1; /* Fork again to ensure that daemon never reacquires a control terminal. */ else if((status = do_fork()) &lt; 0 ) ; else &#123; /* clear any inherited umask(2) value */ umask(0); /* We're there. */ if(! nochdir) &#123; /* Go to a neutral corner. */ chdir("/"); &#125; if(! noclose) redirect_fds(); &#125; return status;&#125; nginx中实现 https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_daemon.c 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960ngx_int_tngx_daemon(ngx_log_t *log)&#123; int fd; switch (fork()) &#123; case -1: ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed"); return NGX_ERROR; case 0: break; default: exit(0); &#125; ngx_parent = ngx_pid; ngx_pid = ngx_getpid(); if (setsid() == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "setsid() failed"); return NGX_ERROR; &#125; umask(0); fd = open("/dev/null", O_RDWR); if (fd == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "open(\"/dev/null\") failed"); return NGX_ERROR; &#125; if (dup2(fd, STDIN_FILENO) == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "dup2(STDIN) failed"); return NGX_ERROR; &#125; if (dup2(fd, STDOUT_FILENO) == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "dup2(STDOUT) failed"); return NGX_ERROR; &#125;#if 0 if (dup2(fd, STDERR_FILENO) == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "dup2(STDERR) failed"); return NGX_ERROR; &#125;#endif if (fd &gt; STDERR_FILENO) &#123; if (close(fd) == -1) &#123; ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "close() failed"); return NGX_ERROR; &#125; &#125; return NGX_OK;&#125; chatgpt生成123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;unistd.h&gt;#include &lt;sys/types.h&gt;#include &lt;sys/stat.h&gt;#include &lt;fcntl.h&gt;int daemon(int nochdir, int noclose)&#123; pid_t pid; // 创建子进程并退出父进程 if ((pid = fork()) &lt; 0) &#123; return -1; &#125; else if (pid != 0) &#123; exit(0); &#125; // 创建新的会话 if (setsid() &lt; 0) &#123; return -1; &#125; // 忽略 SIGHUP 信号 signal(SIGHUP, SIG_IGN); // 再次创建子进程并退出父进程 if ((pid = fork()) &lt; 0) &#123; return -1; &#125; else if (pid != 0) &#123; exit(0); &#125; // 更改当前工作目录 if (!nochdir) &#123; if (chdir("/") &lt; 0) &#123; return -1; &#125; &#125; // 关闭文件描述符 if (!noclose) &#123; int fd; if ((fd = open("/dev/null", O_RDWR, 0)) != -1) &#123; dup2(fd, STDIN_FILENO); dup2(fd, STDOUT_FILENO); dup2(fd, STDERR_FILENO); if (fd &gt; STDERR_FILENO) &#123; close(fd); &#125; &#125; &#125; return 0;&#125; daemon函数fork两次的原因以上这些开源实现中，有的fork一次，有的fork两次，不过fork一次的多一些，对于这个问题我还查了不少资料 http://www.cppblog.com/justin-shi/archive/2014/10/10/208530.htmlhttps://blog.csdn.net/shaoye_csdn1/article/details/94599271https://m.xp.cn/b.php/75000.html 关于为什么要fork两次，我找到了上面几篇相关的解释，总结如下： 第一次fork使父进程终止，让子进程中进入后台执行，同时保证了会话id与当前子进程id不同，可以调用setsid函数创建新的会话，保证了子进程是会话组长(sid==pid)，也是进程组组长(pgid == pid)。 第二次fork目的是防止进程再次打开一个控制终端，因为打开一个控制终端的前提条件是该进程必须是会话组长，再fork一次可以保证子进程pid != sid（sid是进程父进程的sid），所以也无法打开新的控制终端。 关于第一次fork我是理解的，第二次fork我也做过实验，无论fork一次还是两次，都可以再次打开新的终端，也就是说即使保证了pid != sid，一样可以打开新的终端，而有很多daemon函数的开源的实现中也只是调用了一次fork，包括我使用的Ubuntu20.04实验结果也是调用了一次fork，所以调用两次fork的原因成谜。 https://www.cntofu.com/book/46/linux_system/153.md 而这篇文章总结了两次fork技巧，不过和我们本文中所说的daemon两次fork前提不一样，在父进程不退出时会使用两次fork技巧避免出现僵尸进程，但时在daemon函数中fork只之后的父进程都是直接退出的，所以应该不是这个原因。 关于这个疑问我还专门去ChatGPT上问了一下，它给的答案如下： 在早期的Unix系统中，使用 daemon() 函数通常需要调用两次 fork() 函数，以确保子进程成为孤儿进程（orphan process），即与任何终端无关联，并且不会收到终端信号。孤儿进程通常是由父进程创建的子进程，但父进程已经退出或被杀死。 以下是调用两次 fork() 函数的工作原理： 调用第一次 fork() 函数：创建子进程1。父进程退出，子进程1成为孤儿进程，也就是没有父进程的进程。此时，子进程1仍然与原来的控制终端相关联。 子进程1调用 setsid() 函数创建一个新的会话，并成为新会话的领头进程和新进程组的组长进程。由于孤儿进程已经成为新会话的领头进程，因此它无法再重新关联到终端。此时，子进程1仍然是当前进程组的组长进程，并且与新的控制终端相关联。 调用第二次 fork() 函数：创建子进程2。由于子进程1是新会话的领头进程，因此子进程2不再与任何控制终端相关联。此时，子进程2成为孤儿进程，并与新会话和新进程组分离。 子进程2关闭不需要的文件描述符，改变工作目录和文件掩码，最后运行守护进程。 &gt; 需要注意的是，在现代的Linux系统中，使用 daemon() 函数只需要调用一次 fork() 函数和一些必要的操作（如 setsid()、关闭文件描述符等），就可以将进程变成守护进程，而不需要调用两次 fork() 函数。 自己做实验的代码自己在测试 daemon 函数的时候写了一些代码，记录一下方便再次拿来用，请原谅我c/c++混用，为了验证某个问题我已经各种尝试了。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;unistd.h&gt;#include &lt;limits.h&gt;#include &lt;fcntl.h&gt; //open O_RDWR#include &lt;sys/stat.h&gt; //umask#include &lt;iostream&gt;int my_daemon (int nochdir, int noclose)&#123; pid_t pid; /* Fork and exit parent process. */ if ((pid = fork ()) &lt; 0) return -1; else if (pid != 0) _exit (0); /* Detach ourselves from the parent process group. */ if (setsid () &lt; 0) return -1; /* Fork again to ensure we are not session leader. */ if ((pid = fork ()) &lt; 0) return -1; else if (pid != 0) _exit (0); /* Change the file mode mask. */ umask (022); /* If nochdir is zero, change to the root directory. */ if (!nochdir) chdir ("/"); /* If noclose is zero, redirect standard input, standard output, and standard error to /dev/null. */ if (!noclose) &#123; int fd; fd = open ("/dev/null", O_RDWR, 0); if (fd != -1) &#123; dup2 (fd, STDIN_FILENO); dup2 (fd, STDOUT_FILENO); dup2 (fd, STDERR_FILENO); if (fd &gt; 2) close (fd); &#125; &#125; return 0;&#125;void showpidinfo(const char* info)&#123; std::cout &lt;&lt; info &lt;&lt; "\n" &lt;&lt; "getpid=" &lt;&lt; getpid() &lt;&lt; "\n" &lt;&lt; "getppid=" &lt;&lt; getppid() &lt;&lt; "\n" &lt;&lt; "getpgrp=" &lt;&lt; getpgrp() &lt;&lt; "\n" &lt;&lt; "getpgid(pid)=" &lt;&lt; getpgid(getpid()) &lt;&lt; "\n" &lt;&lt; "getsid(pid)=" &lt;&lt; getsid(getpid()) &lt;&lt; "\n" &lt;&lt; "getuid=" &lt;&lt; getuid() &lt;&lt; "\n" &lt;&lt; "geteuid=" &lt;&lt; geteuid() &lt;&lt; "\n" &lt;&lt; "getgid=" &lt;&lt; getgid() &lt;&lt; "\n" &lt;&lt; "getegid=" &lt;&lt; getegid() &lt;&lt; "\n" &lt;&lt; "ttyname(0)=" &lt;&lt; ttyname(0) &lt;&lt; "\n" &lt;&lt; std::endl;&#125;void open_new_terminal()&#123; system("gnome-terminal -- /bin/bash -c 'date; exec bash'"); //system("konsole -e './v'"); //system("xterm -e './v'");&#125;;int main(int argc, char *argv[])&#123; char strCurPath[PATH_MAX]; showpidinfo("===before daemon:"); //while(1); int n = daemon(0, 1); //int n = my_daemon(0, 1); open_new_terminal(); printf("daemon result %d\n", n); showpidinfo("===after daemon:"); if(n &lt; 0) &#123; perror("error daemon.../n"); exit(1); &#125; sleep(2); if(getcwd(strCurPath, PATH_MAX) == NULL) &#123; perror("error getcwd"); exit(1); &#125; printf("cur path [%s]\n", strCurPath); //打印当前目录 return 0;&#125; showpidinfo 函数用于输出进程id相关信息 open_new_terminal 函数用于打开一个新的控制台 my_daemon 函数是自定义的daemon实现，采用fork两次的形式 perror 可以输出详细的报错信息 12345678910111213141516171819202122232425262728293031# demo @ ThinkPad-X390 in ~/cpp/daemontest [23:30:53]$ g++ a.cpp$ ./a.out===before daemon:getpid=352638getppid=62351getpgrp=352638getpgid(pid)=352638getsid(pid)=62351getuid=1000geteuid=1000getgid=1000getegid=1000ttyname(0)=/dev/pts/15# demo @ ThinkPad-X390 in ~/cpp/daemontest [23:30:57]$ Unable to init server: Could not connect: Connection refused# Failed to parse arguments: Cannot open display:daemon result 0===after daemon:getpid=352639getppid=1getpgrp=352639getpgid(pid)=352639getsid(pid)=352639getuid=1000geteuid=1000getgid=1000getegid=1000ttyname(0)=/dev/pts/15cur path [/] 试验结果不论是fork一次还是两次，都可以打开新的控制台，这与网络上很多文章是相悖的，真相还需继续检验。运行结果中的报错”Unable to init server: Could not connect: Connection refused” 是因为我远程连接无法打开GUI。 总结 想实现后台守护进程，只需添加头文件 #include &lt;unistd.h&gt;，然后在调用 daemon(1, 0)函数即可 daemon 的开源实现有很多种，早期很多说是fork两次，但是查了很多最新的版本都是fork一次 c/c++代码中打开控制台可以使用 system(&quot;gnome-terminal -- /bin/bash -c &#39;date; exec bash&#39;&quot;); 前提是可以正常打开用户界面的电脑，远程操作是不可以的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 除了死亡，都是擦伤~ 2023-5-12 22:38:40]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>服务器</tag>
+        <tag>daemon</tag>
+        <tag>gnome-terminal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux下使用dd命令测试磁盘的读写速度]]></title>
+    <url>%2Fblog%2F2023%2F04%2F26%2Flinux%E4%B8%8B%E4%BD%BF%E7%94%A8dd%E5%91%BD%E4%BB%A4%E6%B5%8B%E8%AF%95%E7%A3%81%E7%9B%98%E7%9A%84%E8%AF%BB%E5%86%99%E9%80%9F%E5%BA%A6%2F</url>
+    <content type="text"><![CDATA[前言最近打包更新总是特别慢，其中有一步使用md5sum命令计算MD5值的操作有时居然要卡一个小时，虽说计算MD5比较耗时，但通常计算5个G数据的md5值也就1分多钟，卡一个多小时有点说不过去了，所以在卡顿时使用 top 命令查看了进程情况，发现md5sum进程在卡顿时总是处于 D 状态，这个还是第一次遇到，所以查了些资料记录一下。 D状态进程D 状态进程(TASK_UNINTERRUPTIBLE)，处于不可中断的睡眠状态，指进程不响应异步信号。绝大多数情况下，进程处在睡眠状态时，总是应该能够响应异步信号的。而D状态存在的意义就在于，内核的某些处理流程是不能被打断，比如进程调用read系统调用对某个设备文件进行读操作，一般需要使用D状态对进程进行保护，以避免进程与设备交互的过程被打断，造成设备陷入不可控的状态。这种情况下的D状态总是非常短暂的，通过ps命令基本上不可能捕捉到。 但是我捉到了，在执行md5sum命令时经常捉到，D状态往往是由于 I/O 资源得不到满足，而引发等待~ 这是个关键点，既然IO得不到满足就查一下IO，计算md5也就从磁盘上读一些文件，所以怀疑问题出现在磁盘的读写上，进而想测一些磁盘的读写速度，这就用到了今天想说的 dd 命令。 dd命令磁盘的读写速度需要通过实际读写文件来测试，dd 命令就可以完成这种测试，配合 time 命令可以统计命令执行时间 仅测读取速度 12345678# time dd if=/tmp/test of=/dev/null bs=16k1000000+0 records in1000000+0 records out16384000000 bytes (16 GB) copied, 42.7044 s, 384 MB/sreal 0m42.718suser 0m0.387ssys 0m8.951s 仅测写入速度 12345678# time dd if=/dev/zero of=/tmp/test bs=16k count=10000001000000+0 records in1000000+0 records out16384000000 bytes (16 GB) copied, 35.7006 s, 459 MB/sreal 0m38.428suser 0m0.356ssys 0m12.608s 测试读写速度 12345678# time dd if=/tmp/test of=/tmp/test2 bs=16k1000000+0 records in1000000+0 records out16384000000 bytes (16 GB) copied, 87.3214 s, 188 MB/sreal 1m27.331suser 0m0.430ssys 0m15.799s 问题原因最后测试发现硬盘读写速度不是很稳定，找运维沟通发现这台服务器使用的网络硬盘，存储带宽有限，当执行太多磁盘任务时，存储带宽会被占满，会造成硬盘读写缓慢，进而影响了之前提到的计算MD5的操作步骤，换了块本地硬盘就好了。 总结 进程显示D状态时处于不可中断的睡眠状态，往是由于 I/O 资源得不到满足而引发了等待 仅测试写入速度 time dd if=/dev/zero of=/tmp/test bs=16k count=1000000 仅测试读取速度 time dd if=/tmp/test of=/dev/null bs=16k 测试读写速度 time dd if=/tmp/test of=/tmp/test2 bs=16k /dev/zero 是一个特殊的文件，当你读它的时候会得到无限的空字符，可用来初始化文件，不产生IO /dev/null 也是一个特殊的文件，它丢弃一切写入其中的数据，被称为黑洞，也不产生IO 网络硬盘受存储带宽的影响，一旦带宽被打满，硬盘读写速度也就慢了 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 好像遥不可及，但突然有那么一瞬间又感觉触手可及，貌似也没什么退路，只有往前冲了 2023-4-26 22:28:10]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>运维</tag>
+        <tag>服务器</tag>
+        <tag>硬盘读写</tag>
+        <tag>dd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Nginx返回静态的json字符串]]></title>
+    <url>%2Fblog%2F2023%2F04%2F24%2FNginx%E8%BF%94%E5%9B%9E%E9%9D%99%E6%80%81%E7%9A%84json%E5%AD%97%E7%AC%A6%E4%B8%B2%2F</url>
+    <content type="text"><![CDATA[前言自从上次安装完nginx我把服务器对外开发的端口都通过它来转发了，真香，最近要加一个获取最新版本号的功能，一开始还想写在服务器里，后来想想可不可以直接通过nginx配置呢？经过一番尝试果然是可以的，这样就不用单独编写代码来响应请求了，并且可以减少服务器资源占用，同时响应性能也非常快。 修改配置文件还是在上次《记录一下第一次安装和配置Nginx》的配置文件 project.conf基础上改吧，修改下面这一段 123456789101112server &#123; listen 4100; server_name localhost; location / &#123; proxy_pass http://login_entrance; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; &#125;&#125; 返回简单json字符串如果是简单的json字符串，可以直接写在配置文件中，比较方便： 1234location /version/en &#123; default_type application/json; return 200 '&#123;"code":0, "version":"1.6"&#125;';&#125; 返回json文件内容如果json内容较多，，是无法完全放到配置中的，因为 nginx 的 config buffer 有4kb大小限制，这时就可以将json内容放到文件中： 1234location /version/cn &#123; default_type application/json; alias /data/update/cn_version.json;&#125; 综合到一起的配置文件就变成了： 12345678910111213141516171819202122server &#123; listen 4100; server_name localhost; location /version/en &#123; default_type application/json; return 200 &apos;&#123;&quot;code&quot;:0, &quot;version&quot;:&quot;1.6&quot;&#125;&apos;; &#125; location /version/cn &#123; default_type application/json; alias /data/update/cn_version.json; &#125; location / &#123; proxy_pass http://login_entrance; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; &#125;&#125; 总结 通过nginx可以直接配置返回一些静态文本或json信息，这样不用写额外的处理逻辑，同时效率比较高 在返回json内容时如果数据比较多，可以保存到文件中直接在配置文件中引用文件名即可 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 好汉不提当年勇，如今落寞谁能懂，唯有鹤立鸡群中，任他必敬又必恭。 2023-4-24 22:40:16]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>配置文件</tag>
+        <tag>json</tag>
+        <tag>静态文本</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[SVN通过备份、过滤、再导入的方式彻底删除废弃目录]]></title>
+    <url>%2Fblog%2F2023%2F04%2F21%2FSVN%E9%80%9A%E8%BF%87%E5%A4%87%E4%BB%BD%E3%80%81%E8%BF%87%E6%BB%A4%E3%80%81%E5%86%8D%E5%AF%BC%E5%85%A5%E7%9A%84%E6%96%B9%E5%BC%8F%E5%BD%BB%E5%BA%95%E5%88%A0%E9%99%A4%E5%BA%9F%E5%BC%83%E7%9B%AE%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[前言SVN占用的空间随着项目版本迭代越来越大，因为保存了历史记录中的各个版本，所以即使本地把废弃的目录删掉提交，也不会释放出多余的空间，大概率因为操作删除增加了一个版本号，使得占用的空间更大了。 怎么才能让它的空间变小的，最简单粗暴的方式就是丢弃历史记录，在最新的版本中剔除的废弃的目录直接上传创建一个新的仓库，这样操作后所有的人需要重新下载才行，如果想保留历史记录，就要用到今天说的这种备份、过滤、再导入的方式了。 简要步骤假设svn库A在服务器上的路径是：/data/svndata/repos/A，需要删除的文件路径为 /arts/tmp/pictures，注意要过滤的文件夹路径以 / 开头，其实代指起始目录 A。 操作的步骤如下： 1234567891011121314151617//1.备份svnadmin dump /data/svndata/repos/A &gt; A.dump//2.过滤掉废弃目录cat A.dump | svndumpfilter exclude /arts/tmp/pictures &gt; B.dump//3.创建新的库svnadmin create /data/svndata/repos/B//4.导入新库svnadmin load /data/svndata/repos/B &lt; B.dump//5.重命名老库mv A A_backup//6.重命名新库代替老库mv B A 操作示例操作过程使用的是一个真实的SVN仓库，就是按照上面的步骤试了一次，主要想看下是不是传说中的那么耗时，仓库名为R，数据量115G，共10843个版本。 导出备份文件 12345# svnadmin dump/data/svndata/repos/R &gt; r.dump* Dumped revision 0.* Dumped revision 1.* Dumped revision 2.... 完整导出用了2小时40分钟，导出文件大小为514G，数据量翻了近5倍。 过滤掉指定目录 12345678910# cat r.dump | svndumpfilter exclude /arts/tmp/pictures &gt; r-exclude.dumpExcluding prefixes: &apos;/arts/tmp/pictures&apos;Revision 0 committed as 0.Revision 1 committed as 1.Revision 2 committed as 2.Revision 3 committed as 3.Revision 4 committed as 4.... 将/arts/tmp/pictures目录过滤掉，总共用时58分钟，过滤后的备份文件大小442G 创建新的临时仓库 1# svnadmin create r-new 将过滤后的备份文件导入新库 12345678910111213# svnadmin load ./r-new &lt; r-exclude.dump&lt;&lt;&lt; Started new transaction, based on original revision 1 * editing path : arts ... done. * editing path : develop ... done.------- Committed revision 1 &gt;&gt;&gt;&lt;&lt;&lt; Started new transaction, based on original revision 2 * editing path : develop/client ... done. * editing path : develop/server ... done.------- Committed revision 2 &gt;&gt;&gt;... 导入工作从第一个版本依次应用，总共用时4小时。 这个过程真的是很慢，完整用时近8小时，并且对磁盘空间要求很大，另外还有个接近1万个版本号大小为800G的库，在24核机器上仅导出就花了41小时，备份文件大小4.5T，后面我就没试了，磁盘快满了。 总结 备份 svnadmin dump /data/svndata/repos/A &gt; A.dump 过滤 cat A.dump | svndumpfilter exclude /arts/tmp/pictures &gt; B.dump 建新 svnadmin create /data/svndata/repos/B 导入 svnadmin load /data/svndata/repos/B &lt; B.dump ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 朝气蓬勃的孩子真的可爱，可是我还是想长大，这样才有机会掌控节奏，虽然现在看起来像个提线木偶，但正在尝试突破束缚~ 2023-4-21 21:56:28]]></content>
+      <categories>
+        <category>SVN</category>
+      </categories>
+      <tags>
+        <tag>SVN</tag>
+        <tag>备份</tag>
+        <tag>运维</tag>
+        <tag>服务器</tag>
+        <tag>数据清理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C++代码使用 gperftools 工具进行性能分析]]></title>
+    <url>%2Fblog%2F2023%2F04%2F19%2FC-%E4%BB%A3%E7%A0%81%E4%BD%BF%E7%94%A8-gperftools-%E5%B7%A5%E5%85%B7%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%2F</url>
+    <content type="text"><![CDATA[前言一直想用 gperftools 做一下性能方面的尝试，之前一直忙着开发，目前已经到了后期，忙里抽闲亲自操作一遍，从安装到分析做个简单的记录，以便后续拿来直接用。 gperftools 是什么gperftools 是Google开发的用来进行代码性能分析工具，其实他是一系列高性能多线程 malloc() 实现的集合，同时添加了一些精巧的性能分析工具。 使用gperftools工具可以通过采样的方式生成上面这种图形化的代码性能分析结果，便于我们分析程序性能瓶颈。 使用方法C++程序按照代码插桩的方式引入了gperftools工具，不过这个工具需要单独安装，为了生成图形化的分析结果，还需要安装一些依赖库，下面简述以下使用功能步骤。 安装工具 安装编译所需基础软件 1sudo apt install autoconf automake libtool 安装graphviz，用于图形化显示分析结果 1sudo apt install graphviz 安装libunwind, 这个库提供了可用于分析程序调用栈的 API 123456789cd /tmpwget https://github.com/libunwind/libunwind/releases/download/v1.6.2/libunwind-1.6.2.tar.gztar -zxvf libunwind-1.6.2.tar.gzcd libunwind-1.6.2./configuremake -j4sudo make installcd /tmprm -rf libunwind-1.6.2.tar.gz libunwind-1.6.2 安装gperftools 123456789cd /tmpwget https://github.com/gperftools/gperftools/releases/download/gperftools-2.10/gperftools-2.10.tar.gztar -zxvf gperftools-2.10.tar.gzcd gperftools-2.10./configuremake -j4sudo make installcd ~rm -rf gperftools-2.10.tar.gz gperftools-2.10 刷新动态装入程序所需的链接和缓存文件 1sudo ldconfig 代码插桩引入工具代码修改主要在源程序中引入头文件，并且在待测试逻辑前后添加启动分析和结束分析的语句就行了，对于服务类程序，因为要一直运行，可以通过kill信号通知来开启和关闭性能分析。 关键代码123456#include &lt;gperftools/profiler.h&gt; // 引入头文件...ProfilerStart("cpp_demo.prof"); // 启动分析...ProfilerStop(); // 结束分析... 完整示例12345678910111213141516171819202122232425262728#include &lt;iostream&gt;#include &lt;gperftools/profiler.h&gt;static void sig(int sig) // kill -10 pid to trigger&#123; static bool b = false; if (!b) ProfilerStart("cpp_demo.prof"); else ProfilerStop(); b= !b;&#125;int main(int argc, char* argv[])&#123; signal(SIGUSR1, sig); while (true) &#123; std::this_thread::sleep_for(std::chrono::milliseconds(1)); //.. std::cout &lt;&lt; std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;( std::chrono::system_clock::now().time_since_epoch()).count() &lt;&lt; std::endl; &#125; return 0;&#125; 编译链接编译时我们需要将 profiler 库和 libunwind 库链接到可执行程序，如果使用 cmake来构建，那么 CMakeLists 文件中的语句为： 1target_link_libraries($&#123;PROJECT_NAME&#125; profiler unwind) 启动分析程序 正常启动游戏服务器，通过ps命令查找到要分析的进程id，比如查找到demoserver的进程是 7217 12$ ps -ef | grep demoserverdemo 7217 1 22 21:51 ? 00:00:18 ./demoserver-d 通过kill命令传递自定义信号10的方式启动和关闭分析程序，第一次运行命令是启动，第二次运行相同的命令是关闭，两次命令之间是分析的时间段 1$ kill -10 7217 关闭分析程序之后，会在可执行程序所在目录生成 cpp_demo.porf 文件，可以使用下面命令将结果图形化 1234$ pprof --pdf demoserver cpp_demo.prof &gt; demoserver.pdfUsing local file demoserver.Using local file cpp_demo.prof.Dropping nodes with &lt;= 1 samples; edges with &lt;= 0 abs(samples) 最终生成的 demoserver.pdf 文件就是我们要用的分析结果，如文章开头所示。 数据分析上面提到了生成pdf图，其实可以生成txt文本的，只要修改生成选项就可以，比如像这样： 123456789# pprof --text demoserver cpp_demo.profUsing local file demoserver.Using local file cpp_demo.prof.Total: 13 samples 3 21.4% 21.4% 3 21.4% SpinLock::Unlock (inline) 3 21.4% 42.9% 3 21.4% __GI_madvise 2 14.3% 57.1% 2 14.3% SpinLock::Lock (inline) 1 7.1% 64.3% 1 7.1% TCMalloc_PageMap2::get (inline) ... 上述文本数据每行包含6列数据，依次为: 分析样本数量（不包含其他函数调用） 分析样本百分比（不包含其他函数调用） 目前为止的分析样本百分比（不包含其他函数调用） 分析样本数量（包含其他函数调用） 分析样本百分比（包含其他函数调用） 函数名(或者类名+方法名) 样本数量相当于消耗的CPU时间，整个函数消耗的CPU时间相当于包括函数内部其他函数调用所消耗的CPU时间，如果是分析最上面的pdf图，每个节点代表一个函数，包含2~3行数据： 函数名(或者类名+方法名) 不包含内部函数调用的样本数 (百分比) of 包含内部函数调用的样本数 (百分比) #如果没有内部调用函数则不显示总结 gperftools 是可以通过采样的方式进行代码性能分析工具，可生成图形化结果便于我们分析程序性能瓶颈 待分析程序中引入gperftools非常方便，但是需要单独安装这个工具 程序引入时只需要添加头文件，在目标位置插入 ProfilerStart(&quot;cpp_demo.prof&quot;); 和 ProfilerStop(); 语句即可 对于服务类程序通常不会直接结束，可以通过 kill 命令传递信号的方式来启动和关闭分析程序 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 可能终于有一天 刚好遇见爱情可能永远在路上 有人奋斗前行可能一切的可能 相信才有可能可能拥有过梦想 才能叫做青春 2023-4-19 23:22:53]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>服务器调优</tag>
+        <tag>linux</tag>
+        <tag>gperftools</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下查看因内存占用过大被杀掉的进程]]></title>
+    <url>%2Fblog%2F2023%2F04%2F04%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E7%9C%8B%E5%9B%A0%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8%E8%BF%87%E5%A4%A7%E8%A2%AB%E6%9D%80%E6%8E%89%E7%9A%84%E8%BF%9B%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[前言最近发生两次游戏服务器进程突然消失的事件，查询日志上下文没有找到有用的信息，日志显示运行到某处戛然而止，此处代码逻辑简单，排除异常逻辑导致的服务器进程崩溃，所以联想到之前同一台服务器上部署多个进程，因占用内存太大被内核杀死的情况，猜测本次也是这个原因。 查询方法通过搜索引擎找到了两种查询方法，一种是直接过滤系统日志，一种是借助 dmesg 命令，备注以下命令在 CentOS 7 上测试通过 通过系统日志查找1234[root@demo]# grep "Out of memory" /var/log/messagesApr 4 10:32:30 hk-dev kernel: Out of memory: Kill process 2434 (Game9) score 212 or sacrifice childApr 4 10:33:53 hk-dev kernel: Out of memory: Kill process 2476 (git) score 381 or sacrifice childApr 4 10:33:53 hk-dev kernel: Out of memory: Kill process 2777 (git) score 381 or sacrifice child 通过dmesg命令查找123456[root@demo]# dmesg -T | grep "Out of memory"[Mon Aug 30 12:06:25 2021] Out of memory: Kill process 22437 (git) score 400 or sacrifice child[Wed Sep 22 20:23:52 2021] Out of memory: Kill process 29780 (Game6) score 161 or sacrifice child[Wed Mar 29 15:54:31 2023] Out of memory: Kill process 29093 (git) score 388 or sacrifice child[Tue Apr 4 10:24:05 2023] Out of memory: Kill process 2434 (Game9) score 212 or sacrifice child[Tue Apr 4 10:25:29 2023] Out of memory: Kill process 2476 (git) score 381 or sacrifice child 进程被杀的原因Linux 内核有个机制叫OOM killer，全称为 Out Of Memory killer，很形象的一个名字——内存溢出杀手，这个机制会监控那些占用内存过大，尤其是瞬间占用内存很快的进程，为防止机器内存耗尽而主动把该进程杀掉。 当内核检测到系统内存不足、挑选并杀掉某个进程的过程可以参考内核源代码 linux/mm/oom_kill.c（2023-4-4 23:24:07确认了此文件存在），当系统内存不足的时候，out_of_memory() 函数被触发，然后调用 select_bad_process() 函数选择一个进程杀掉，这个选择的过程是通过调用 oom_badness() 函数实现的，挑选的算法和想法都暴力但朴实：就是找到最占用内存的进程。 源码如下: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748/** * oom_badness - heuristic function to determine which candidate task to kill * @p: task struct of which task we should calculate * @totalpages: total present RAM allowed for page allocation * * The heuristic for determining which task to kill is made to be as simple and * predictable as possible. The goal is to return the highest value for the * task consuming the most memory to avoid subsequent oom failures. */long oom_badness(struct task_struct *p, unsigned long totalpages)&#123; long points; long adj; if (oom_unkillable_task(p)) return LONG_MIN; p = find_lock_task_mm(p); if (!p) return LONG_MIN; /* * Do not even consider tasks which are explicitly marked oom * unkillable or have been already oom reaped or the are in * the middle of vfork */ adj = (long)p-&gt;signal-&gt;oom_score_adj; if (adj == OOM_SCORE_ADJ_MIN || test_bit(MMF_OOM_SKIP, &amp;p-&gt;mm-&gt;flags) || in_vfork(p)) &#123; task_unlock(p); return LONG_MIN; &#125; /* * The baseline for the badness score is the proportion of RAM that each * task's rss, pagetable and swap space use. */ points = get_mm_rss(p-&gt;mm) + get_mm_counter(p-&gt;mm, MM_SWAPENTS) + mm_pgtables_bytes(p-&gt;mm) / PAGE_SIZE; task_unlock(p); /* Normalize to oom_score_adj units */ adj *= totalpages / 1000; points += adj; return points;&#125; 总结 如果你发现运行了一段时间的进程突然不见了，那可能是内核嫉妒生恨把它给干掉了 查询内存溢出被杀掉的进程可以直接通过系统日志来查 grep &quot;Out of memory&quot; /var/log/messages 也可以通过专门的命令查找 dmesg -T | grep &quot;Out of memory&quot; 刚刚看了linus 的 linux 代码库，昨天还在提交，真的是更新无止境 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 做人一辈子 快乐没几天一条大路分两边 随你要走哪一边不怕不怕就不怕 我是年轻人风大雨大太阳大 我就是敢打拼 2023-4-4 23:31:40]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>服务器</tag>
+        <tag>dmesg</tag>
+        <tag>oom</tag>
+        <tag>centos</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[简单谈谈图形界面和命令行的区别]]></title>
+    <url>%2Fblog%2F2023%2F04%2F03%2F%E7%AE%80%E5%8D%95%E8%B0%88%E8%B0%88%E5%9B%BE%E5%BD%A2%E7%95%8C%E9%9D%A2%E5%92%8C%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
+    <content type="text"><![CDATA[前言随着总结的文章越写越多，我发现自己是一个“追求完美”的人，但同时也是一个“虎头蛇尾”的人，这两者看起来冲突，却可以融于一身。去写一个问题是总想从三皇五帝时写起，总想把各个分支情况都写清楚，这就会创造一个“虎头”，但写着写着就发现时间不允许了，或者已经触及了自己的知识边界，最后不得不退化成了“蛇尾”。 这对于总结和传播知识是不合适的，对于知识的总结应该做到详略得当，这一点上我还有很大的提升空间，推荐一本这方面做的比较好的书籍《图解HTTP》，这本书从始至终让人感觉到很丰满，没有哪一部分让人感觉是凑数的，特别的讲到电信号在同轴电缆中的传播，给人一种知识体系非常完整的体验。 言归正传，今天我要谈谈图形用户界面和命令行的区别，工作久了以后总会有点自己的心得，灵光一闪时就想记录下来，算是给今后的自己保存一点点瞬时的记忆，今天就不从三皇五帝开始讲了，我们从计算机的诞生开始说起。 世界世界上第一台电子计算机 ENIAC，是一个占地170平方米，重达30吨的庞然大物，慢慢的计算机的体积越来越小，但主要用于特定领域，并未进入寻常人家，此阶段的计算机多用于完成特定任务，也就是输入指令完成任务，我们看到的更多的是黑框框，后来随着windows系统（当然苹果系统也出现了）的普及，鼠标点点点极大的降低了入门的难度，也使得图形用于界面深入人心。 关于Windows内置的四款游戏据说每一款都有其特殊的目的与作用，纸牌希望让用户熟悉拖动和释放鼠标；扫雷是为了训练用户使用鼠标进行精准的点击，并掌握左键与右键的区别；红心大战是为了鼓励用户使用互联网与其他玩家交流；空当接龙是为了测试32位的数据处理子系统是否正确安装。这些游戏的出现让人们快速适应了图形用户界面，甚至这是他们接触电脑的第一印象，可能他们并不懂得什么是命令行。 对比图形用户界面和命令行不能说哪一种更好，只能说哪一种更合适，一些情况下图形界面会给你更直观的感受，一些情况下命令行可以代替重复性的操作。 图形用户界面图形用户界面，简称GUI，现在绝大多数的用户面对的都是图形界面，而传统意义上的命令行总被看成是上世纪的东西，图形界面首先看起来很直观，就像给你一堆散列的数据很难看出关系，但是如果画一个折线图，立马就能看出数据的走向。 命令行它的门槛要高一些，虽然使用起来不如图形界面清晰，但是在一些自动化程序中，命令行可以简化操作，省去了点点点的麻烦操作 举个例子我们以git为例，他在被Linus发明出来的时候肯定只有命令行，但是后来git的图形界面工具多到数不清，一个又一个方便的软件被创造出来，但是git命令行一直没有消失，而且我每天都在用，是因为我不会用图形界面吗？当然不是，因为在我使用的大部分需求中，我只要敲一两个命令就可以完成了，不必拿起鼠标右键菜单再去等几秒中的界面刷新。 还有一方面我需要经常编写自动化脚本，使用Jenkins部署服务器程序，这些环境下是没办法使用图形界面的，只能用命令行还编写逻辑。 适用场景图形界面适用于需要直观显示的情景，以及需要根据显示结果反复调整输入的情景，比如过滤commit，我可以在界面上不断调整和尝试过滤的关键词，而结果会随着我的调整发生改变。 命令行适用于简单命令和机械化的操作，最好是那种写完一遍可以用一辈子的逻辑，如果是类似过滤commit这种需求，我们必须不断的重新输入命令参数，也就是说命令行在我输入命令之后他的参数都确定了，绝大多数不能再调节了。 总有例外命令行的参数输入之后真的不能调吗？大多数是这样的，但总有例外，这种例外要求命令结果处于定时刷新状态，比如 top 命令，因为它的结果是可以刷新的，所以当你按下键盘上的 c 、P 等按键时，输出结果是会发生变化的。 总结 图形界面和命令行两者没有更好，只有更合适 图形界面适用于直观显示需求，可以根据用户输入随时调整输出结果 命令行更适用于自动化场景，可以将指令编写到操作逻辑中，通常来说更加高效 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 发现了一种我称之为反围城的状态：外面的人不想进去，里面的人不想出来~ 2023-4-3 22:31:29]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>图形用户界面</tag>
+        <tag>命令行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CentOS7通过rpm包离线安装git]]></title>
+    <url>%2Fblog%2F2023%2F03%2F21%2FCentOS7%E9%80%9A%E8%BF%87rpm%E5%8C%85%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85git%2F</url>
+    <content type="text"><![CDATA[前言如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。 初次安装失败开始觉得挺顺利的，如果能升级就直接升级，不能升级就直接移除掉然后安装就行了，然后我就直接通过 sudo yum remove git 删除了git，刷的一下很快啊。 据说在 CentOS 7 上安装新版本 git 最快的方法是通过 End Point 库，所以我跟着找到的教程输入下面的命令企图添加 “End Point Package Repository”，但是报错： 12yum install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpmyum install git 官网 packages.endpointdev.com/有专门讲解安装git 2.x的帖子，看起来很轻松，但是这条路我可能走不通了 我这里提示 “curl:(6) Could resolve host: packages.endpointdev.com; Unknown error”，我的天，难道这台机器不能访问外网？ 尝试修改软件源然后我尝试ping了几个常见的域名均已失败告终，所以我只能离线安装了？后来我发现它不是不能访问外网，只是不能访问域名，所以我自作聪明的把软件源/etc/yum.repos.d/CentOS-Base.repo里的域名都改成了IP: 1234567891011121314151617181920212223#mirrors.cloud.aliyuncs.com被我改成了100.100.2.148enabled=1failovermethod=prioritybaseurl=http://mirrors.cloud.aliyuncs.com/centos/$releasever/os/$basearch/gpgcheck=1gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7[updates]name=CentOS-$releaseverenabled=1failovermethod=prioritybaseurl=http://mirrors.cloud.aliyuncs.com/centos/$releasever/updates/$basearch/gpgcheck=1gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7[extras]name=CentOS-$releaseverenabled=1failovermethod=prioritybaseurl=http://mirrors.cloud.aliyuncs.com/centos/$releasever/extras/$basearch/gpgcheck=1gpgkey=http://mirrors.cloud.aliyuncs.com/centos/RPM-GPG-KEY-CentOS-7 接着我就发现这样是无法使用的，这个域名的IP一直在变，然后我又找了公司内部的软件源直接把IP替换上去，发现访问超时，看来得解决无法解析域名的问题，后来查到的修改 /etc/resolv.conf，于是在文件中添加一下内容： 12nameserver 114.114.114.114nameserver 8.8.8.8 保存之后可以解析域名了，将软件源修改为域名的形式依旧访问超时，这条路彻底走不通了。 离线安装git离线安装类似于Window上安装一个.msi文件，不过git貌似没有特别方便的安装包，看看Linux下这些安装方式，基本都是需要联网下载的，其中CentOS还是最麻烦的，需要编译安装。 1234567891011121314151617181920212223242526272829303132333435Debian/UbuntuFor the latest stable version for your release of Debian/Ubuntu# apt-get install gitFor Ubuntu, this PPA provides the latest stable upstream Git version# add-apt-repository ppa:git-core/ppa # apt update; apt install gitFedora# yum install git (up to Fedora 21)# dnf install git (Fedora 22 and later)Gentoo# emerge --ask --verbose dev-vcs/gitArch Linux# pacman -S gitopenSUSE# zypper install gitMageia# urpmi gitNix/NixOS# nix-env -i gitFreeBSD# pkg install gitSolaris 9/10/11 (OpenCSW)# pkgutil -i gitSolaris 11 Express# pkg install developer/versioning/gitOpenBSD# pkg_add gitAlpine$ apk add gitRed Hat Enterprise Linux, Oracle Linux, CentOS, Scientific Linux, et al.RHEL and derivatives typically ship older versions of git. You can download a tarball and build from source, or use a 3rd-party repository such as the IUS Community Project to obtain a more recent version of git.Slitaz$ tazpkg get-install git 但是编译git需要有依赖项，还好它依赖的不多，很多教程上来就装一堆，不管有用没有了： 1yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel gcc perl-ExtUtils-MakeMaker package 但是我的机器上 yum 命令已经废了，无法联网安装新的东西，所以这些依赖项我必须找到安装包来离线安装，这就要用到rpm包了。 什么是rpmrpm（redhat package manager） 原本是 Red Hat Linux 发行版专门用来管理 Linux 各项套件的程序，由于它遵循 GPL 规则且功能强大方便，因而广受欢迎，逐渐受到其他发行版的采用。RPM 套件管理方式的出现，让 Linux 上的软件易于安装和升级，说白了就是可以通过它来安装软件包。 RPM包里面包含可执行的二进制程序，还包括程序运行时所需要的文件有时除了自身所带的附加文件保证其正常以外，还需要其它特定版本文件，这就是软件包的依赖关系，这和Windows的软件包结构类似。 安装准备 下载指定版本git源码 source code 下载zlib-devel-1.2.7-15.el7.x86_64.rpm RPM库 机器上本来有gcc，如果没有自己想办法装吧 幸运的是我的机器上有gcc，并且经过实践发现只要成功安装了zlib-devel就可以完成git的编译，如果没安装会报编译错误： 12345cache.h:21:18: fatal error: zlib.h: No such file or directory #include &lt;zlib.h&gt; ^compilation terminated.make: *** [fuzz-commit-graph.o] Error 1 在有网的情况下，CentOS使用 yum install zlib-devel 解决，Ubuntu安装 apt-get install zlib1g-dev 解决 安装zlib-devel如果版本正确通过rpm安装还是挺快的，但是我一开始下载了另一个版本 zlib-devel-1.2.7-18.el7.x86_64.rpm，安装时提示我： 123[root@demo software]# rpm -i zlib-devel-1.2.7-18.el7.x86_64.rpmerror: Failed dependencies: zlib = 1.2.7-18.el7 is needed by zlib-devel-1.2.7-18.el7.x86_64 我又去下载了 zlib-1.2.7-18.el7.x86_64.rpm ，结果安装时出现冲突： 12[root@demo software]# rpm -i zlib-1.2.7-18.el7.x86_64.rpm file /usr/lib64/libz.so.1.2.7 from install of zlib-1.2.7-18.el7.x86_64 conflicts with file from package zlib-1.2.7-15.el7.x86_64 最后找了兼容的版本 rpm -i zlib-devel-1.2.7-15.el7.x86_64.rpm 解决了这个问题。 编译git 解压git源码 tar -zxf git-2.28.0.tar.gz 进入解压后的目录，执行安装前检查 make configure 指定安装目录 ./configure --prefix=/usr/local 执行编译安装 make install 查看git版本 git --version 终于装完了，呼~ 总结 服务端和客户端的git版本差距过大时可能导致无法验证密钥的问题 在CentOS上git可以采用yum安装，也可以使用 “End Point Package Repository” 来安装 如果想通过编译安装git需要有gcc，还要能安装上zlib-devel依赖项 参考文档：https://zhuanlan.zhihu.com/p/352955774 补充yum失败终于找到了我的yum更新源一直超时的原因，是因为我通过 Wandisco GIT存储库 方式尝试安装过 git，步骤如下： 先写入新yum存储库配置文件启用Wandisco GIT存储库，在终端输入 vim /etc/yum.repos.d/wandisco-git.repo 文件中加入如下内容，保存退出 123456[wandisco-git]name=Wandisco GIT Repositorybaseurl=http://opensource.wandisco.com/centos/7/git/$basearch/enabled=1gpgcheck=1gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco 导入存储库GPG密钥 sudo rpm --import http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco 安装Git yum install git 结果 opensource.wandisco.com 无法正常访问，导致 yum update 报错，把 wandisco-git.repo 文件删掉就好了 rpm 和 yum 的关系之前讲到rpm是由Red Hat公司开发的软件包管理方式，使用它可以方便的进行软件的安装、查询、卸载、升级等工作。但处理rpm软件包之间的依赖性问题往往会很繁琐，尤其是当软件由多个rpm包组成时，比如我们在离线安装git时遭遇到的问题。 Yum（Yellow dog Updater, Modified）是一个在Fedora和RedHat等系统上基于RPM包管理前端软件包管理软件，能够从指定的服务器自动下载RPM包并且安装，并自动处理软件包的依赖关系，可以一次安装所有依赖的软体包。 总结来说就是, rpm命令只能安装已经下载到本地机器上的rpm包，并且自己解决依赖问题，yum能在线下载并安装rpm包、更新内核、并自动处理包与包之间的依赖问题。 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 死去元知万事空，但悲不见九州同~ 2023-3-21 23:11:12]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>git</tag>
+        <tag>centos</tag>
+        <tag>rpm</tag>
+        <tag>yum</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[linux环境下利用rsync+find实现同步指定时间段文件]]></title>
     <url>%2Fblog%2F2023%2F03%2F18%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%88%A9%E7%94%A8rsync-find%E5%AE%9E%E7%8E%B0%E5%90%8C%E6%AD%A5%E6%8C%87%E5%AE%9A%E6%97%B6%E9%97%B4%E6%AE%B5%E6%96%87%E4%BB%B6%2F</url>
-    <content type="text"><![CDATA[前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该是 rsync 的 -c 参数导致的，参数全称是 --checksum 打开校验开关，强制对文件传输进行校验，多次实验后发现只要把 -c 参数省略，这个检验所花的4分钟就能省掉，同步前校验只会根据修改的时间戳和文件大小来判断，这在大多数情况下足够了。 根据时间段同步现在想同步日志文件，因为日志文件是每小时产生一个，之前的日志文件绝大多数情况也不会改动，所以再同步时没必要检测所有的日志文件，只需要同步最近一段时间的就可以了，这样可以减少文件比对的时间。 查询了 sync 命令的所有参数，没有找到指定同步时间段的参数，但是有个 --files-from=FILE 看起来能实现这个需求，man手册中是这样写的： 12345678910111213Using this option allows you to specify the exact list of files to transfer (as read from the specified FILE or - for standard input). It also tweaks the default behavior of rsync to make transferring just the specified files and directories easier: o The --relative (-R) option is implied, which preserves the path information that is specified for each item in the file (use --no-relative or --no-R if you want to turn that off). o The --dirs (-d) option is implied, which will create directories specified in the list on the destination rather than noisily skipping them (use --no-dirs or --no-d if you want to turn that off). o The --archive (-a) option’s behavior does not imply --recursive (-r), so specify it explicitly, if you want it. o These side-effects change the default state of rsync, so the position of the --files-from option on the command-line has no bearing on how other options are parsed (e.g. -a works the same before or after --files-from, as does --no-R and all other options). The filenames that are read from the FILE are all relative to the source dir -- any leading slashes are removed and no &quot;..&quot; references are allowed to go higher than the source dir. For example, take this command: rsync -a --files-from=/tmp/foo /usr remote:/backup 基于参数的描述，我只要提供一个包含指定时间段的待同步的所有文件名的文件就可以了，比如将指定时间段需要同步的文件名放到 /tmp/foo 文件中，然后以 --files-from=/tmp/foo 形式来指定就行了。 其实还有一个方便的写法，就是直接在参数后面利用 find 写过滤文件的命令，比如只同步最近3天修改过的文件就可以写成： 1rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 其中 find /var/log/ -mtime -3 命令的含义就是找出 /var/log/ 目录下最近3天修改的文件。 按时间过滤文件有了上面的基础命令，想要同步不同时间段的文件只需要修改 find 命令参数就可以了，比较常用的参数就是 mtime 了。 使用 mtime 参数查找mtime 表示文件的修改时间，用在 find 查找时是以天为单位的，最小间隔24小时，数字是几就表示几天前，带有 + 表示几天前之外，带有 - 表示今天前之内，下面举几个例子： 查找修改时间在3天之前的文件（修改时间距今大于96小时） 1find /var/log/ -mtime +3 查找修改时间在3天之内的文件（修改时间距今小于72小时） 1find /var/log/ -mtime -3 查找修改时间在3天前当天的文件（修改时间距今大于72小时，小于96小时） 1find /var/log/ -mtime 3 如果对mtime参数的使用有点疑惑，可以看一下下面的示意图： 除了上面提到的 -mtime 参数，还有类似的 -atime 和 -ctime 参数，这三个参数的含义如下，使用时可根据定义来选择： 123-atime：文件访问时间，文件被读取或执行的时间。-ctime：属性改变时间，文件的inode被修改的时间-mtime：内容修改时间 使用 newermt 进行更精确查找find -newermt 的通用形式是find -newerXY reference，目的是找到一些X属性比variable的Y属性更早的文件，其中X代表find的目标文件属性，Y代表参照属性。X可选a,c,m，Y可选a,c,m,t，其中t代表客观绝对时间，只作为参照属性存在，具体详细的用法参照man手册： 12345678910-newerXY reference Compares the timestamp of the current file with reference. The reference argument is normally the name of a file (and one of its timestamps is used for the comparison) but it may also be a string describing an absolute time. X and Y are placeholders for other letters, and these letters select which time belonging to how reference is used for the comparison. a The access time of the file reference B The birth time of the file reference c The inode status change time of reference m The modification time of the file reference t reference is interpreted directly as a time Some combinations are invalid; for example, it is invalid for X to be t. Some combinations are not implemented on all systems; for example B is not supported on all sys‐tems. If an invalid or unsupported combination of XY is specified, a fatal error results. Time specifications are interpreted as for the argument to the -d option of GNU date. If you try to use the birth time of a reference file, and the birth time cannot be determined, a fatal error message results. If you specify a test which refers to the birth time of files being examined, this test will fail for any files where the birth time is unknown. 如果要找到修改时间在2023-3-18 20:00:00 和 2023-3-18 22:00:00 之间的文件可以写成： 1find /var/log -newermt '2023-3-18 20:00:00' ! -newermt '2023-3-18 22:00:00' 总结 rsync 命令本身不能指定同步的时间段，可搭配 find 命令来同步指定时间段的文件 rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 同步修改时间在3天内的文件 使用 newermt 可按时间精确查找，形式如 find /var/log -newermt &#39;2023-3-18 20:00:00&#39; ! -newermt &#39;2023-3-18 22:00:00&#39; 假设变量 KEY=birthday、FILE=myfile.log，查找KEY所在的行号可以使用 grep -rn $KEY&quot; $FILE | awk -F &#39;:&#39; &#39;{print $1}&#39; 还是在上面的假设 sed -n &#39;/${KEY}=/&#39; $FILE 无法获得行号，使用 sed -n &#39;/birthday=/&#39; $FILE 就可以 上面这种sed命令中使用变量不生效的问题目前还没找到解决方法，有解决方案的大佬请指教 不过 sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE 这种替换命令就支持变量，目前有点迷糊，还在探索中 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不要规划孩子必须在哪一个领域取得成就，但只要她喜欢，就提供一个舞台，让她尽情去发挥~ 2023-3-19 21:01:51]]></content>
+    <content type="text"><![CDATA[前言这几天一直在处理shell脚本，作为服务器开发人员免不了要部署一些环境，数据备份和同步工作也是家常便饭，最近常搞的几个命令有 find、rsync、sed 等，之前也写过一篇 《linux环境下使用rsync命令完成数据同步》，不过这次有新的需求了。 插曲前段时间发现通过 rysnc 同步游戏版本数据时，在数据同步前有一个较长的等待时间，大概12G数据需要等待4分钟，多方面查找原因后定位到应该是 rsync 的 -c 参数导致的，参数全称是 --checksum 打开校验开关，强制对文件传输进行校验，多次实验后发现只要把 -c 参数省略，这个检验所花的4分钟就能省掉，同步前校验只会根据修改的时间戳和文件大小来判断，这在大多数情况下足够了。 根据时间段同步现在想同步日志文件，因为日志文件是每小时产生一个，之前的日志文件绝大多数情况也不会改动，所以再同步时没必要检测所有的日志文件，只需要同步最近一段时间的就可以了，这样可以减少文件比对的时间。 查询了 sync 命令的所有参数，没有找到指定同步时间段的参数，但是有个 --files-from=FILE 看起来能实现这个需求，man手册中是这样写的： 12345678910111213Using this option allows you to specify the exact list of files to transfer (as read from the specified FILE or - for standard input). It also tweaks the default behavior of rsync to make transferring just the specified files and directories easier: o The --relative (-R) option is implied, which preserves the path information that is specified for each item in the file (use --no-relative or --no-R if you want to turn that off). o The --dirs (-d) option is implied, which will create directories specified in the list on the destination rather than noisily skipping them (use --no-dirs or --no-d if you want to turn that off). o The --archive (-a) option’s behavior does not imply --recursive (-r), so specify it explicitly, if you want it. o These side-effects change the default state of rsync, so the position of the --files-from option on the command-line has no bearing on how other options are parsed (e.g. -a works the same before or after --files-from, as does --no-R and all other options). The filenames that are read from the FILE are all relative to the source dir -- any leading slashes are removed and no &quot;..&quot; references are allowed to go higher than the source dir. For example, take this command: rsync -a --files-from=/tmp/foo /usr remote:/backup 基于参数的描述，我只要提供一个包含指定时间段的待同步的所有文件名的文件就可以了，比如将指定时间段需要同步的文件名放到 /tmp/foo 文件中，然后以 --files-from=/tmp/foo 形式来指定就行了。 其实还有一个方便的写法，就是直接在参数后面利用 find 写过滤文件的命令，比如只同步最近3天修改过的文件就可以写成： 1rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 其中 find /var/log/ -mtime -3 命令的含义就是找出 /var/log/ 目录下最近3天修改的文件。 按时间过滤文件有了上面的基础命令，想要同步不同时间段的文件只需要修改 find 命令参数就可以了，比较常用的参数就是 mtime 了。 使用 mtime 参数查找mtime 表示文件的修改时间，用在 find 查找时是以天为单位的，最小间隔24小时，数字是几就表示几天前，带有 + 表示几天前之外，带有 - 表示今天前之内，下面举几个例子： 查找修改时间在3天之前的文件（修改时间距今大于96小时） 1find /var/log/ -mtime +3 查找修改时间在3天之内的文件（修改时间距今小于72小时） 1find /var/log/ -mtime -3 查找修改时间在3天前当天的文件（修改时间距今大于72小时，小于96小时） 1find /var/log/ -mtime 3 如果对mtime参数的使用有点疑惑，可以看一下下面的示意图： 除了上面提到的 -mtime 参数，还有类似的 -atime 和 -ctime 参数，这三个参数的含义如下，使用时可根据定义来选择： 123-atime：文件访问时间，文件被读取或执行的时间。-ctime：属性改变时间，文件的inode被修改的时间-mtime：内容修改时间 使用 newermt 进行更精确查找find -newermt 的通用形式是find -newerXY reference，目的是找到一些X属性比variable的Y属性更早的文件，其中X代表find的目标文件属性，Y代表参照属性。X可选a,c,m，Y可选a,c,m,t，其中t代表客观绝对时间，只作为参照属性存在，具体详细的用法参照man手册： 12345678910-newerXY reference Compares the timestamp of the current file with reference. The reference argument is normally the name of a file (and one of its timestamps is used for the comparison) but it may also be a string describing an absolute time. X and Y are placeholders for other letters, and these letters select which time belonging to how reference is used for the comparison. a The access time of the file reference B The birth time of the file reference c The inode status change time of reference m The modification time of the file reference t reference is interpreted directly as a time Some combinations are invalid; for example, it is invalid for X to be t. Some combinations are not implemented on all systems; for example B is not supported on all sys‐tems. If an invalid or unsupported combination of XY is specified, a fatal error results. Time specifications are interpreted as for the argument to the -d option of GNU date. If you try to use the birth time of a reference file, and the birth time cannot be determined, a fatal error message results. If you specify a test which refers to the birth time of files being examined, this test will fail for any files where the birth time is unknown. 如果要找到修改时间在2023-3-18 20:00:00 和 2023-3-18 22:00:00 之间的文件可以写成： 1find /var/log -newermt '2023-3-18 20:00:00' ! -newermt '2023-3-18 22:00:00' 总结 rsync 命令本身不能指定同步的时间段，可搭配 find 命令来同步指定时间段的文件 rsync -avz --files-from=&lt;(find /var/log/ -mtime -3) /usr remote:/backup 同步修改时间在3天内的文件 使用 newermt 可按时间精确查找，形式如 find /var/log -newermt &#39;2023-3-18 20:00:00&#39; ! -newermt &#39;2023-3-18 22:00:00&#39; 假设变量 KEY=birthday、FILE=myfile.log，查找KEY所在的行号可以使用 grep -rn $KEY&quot; $FILE | awk -F &#39;:&#39; &#39;{print $1}&#39; 还是在上面的假设 sed -n &#39;/${KEY}=/&#39; $FILE 无法获得行号，使用 sed -n &#39;/birthday=/&#39; $FILE 就可以 上面这种sed命令中使用变量不生效的问题目前还没找到解决方法，有解决方案的大佬请指教 不过 sed -e &quot;${LINE},${LINE}s%$OLD_VAL%$NEW_VAL%g&quot; $FILE 这种替换命令就支持变量，但sed不支持非贪婪模式，目前有点迷糊，还在探索中 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不要规划孩子必须在哪一个领域取得成就，但只要她喜欢，就提供一个舞台，让她尽情去发挥~ 2023-3-19 21:01:51]]></content>
       <categories>
         <category>linux</category>
       </categories>
       <tags>
         <tag>find</tag>
-        <tag>shell</tag>
         <tag>linux</tag>
+        <tag>shell</tag>
         <tag>sed</tag>
         <tag>rsync</tag>
       </tags>
@@ -93,7 +238,9 @@
       <tags>
         <tag>Win10</tag>
         <tag>update</tag>
-        <tag>关闭自动更新，自动更新，service</tag>
+        <tag>关闭自动更新</tag>
+        <tag>自动更新</tag>
+        <tag>service</tag>
       </tags>
   </entry>
   <entry>
@@ -233,9 +380,9 @@
       <tags>
         <tag>linux</tag>
         <tag>nohup</tag>
+        <tag>daemon</tag>
         <tag>setsid</tag>
         <tag>后台</tag>
-        <tag>daemon</tag>
       </tags>
   </entry>
   <entry>
@@ -290,8 +437,8 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>linux</tag>
+        <tag>SVN</tag>
         <tag>XAMPP</tag>
         <tag>svnmanager</tag>
         <tag>ntp</tag>
@@ -348,9 +495,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
+        <tag>log</tag>
         <tag>历史记录</tag>
       </tags>
   </entry>
@@ -407,9 +554,9 @@
       </categories>
       <tags>
         <tag>git</tag>
+        <tag>服务器</tag>
         <tag>gitlab</tag>
         <tag>数据迁移</tag>
-        <tag>服务器</tag>
       </tags>
   </entry>
   <entry>
@@ -505,8 +652,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>locate</tag>
         <tag>which</tag>
         <tag>grep</tag>
@@ -621,8 +768,8 @@
       <tags>
         <tag>commit</tag>
         <tag>git</tag>
-        <tag>stash</tag>
         <tag>branch</tag>
+        <tag>stash</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -831,9 +978,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -845,9 +992,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1002,8 +1149,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>chmod</tag>
+        <tag>文件</tag>
         <tag>权限</tag>
       </tags>
   </entry>
@@ -1088,10 +1235,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>log</tag>
+        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>branch</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1297,8 +1444,8 @@
       </categories>
       <tags>
         <tag>sort</tag>
-        <tag>排序</tag>
         <tag>linux</tag>
+        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -1324,8 +1471,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1351,8 +1498,8 @@
       </categories>
       <tags>
         <tag>sort</tag>
-        <tag>排序</tag>
         <tag>linux</tag>
+        <tag>排序</tag>
       </tags>
   </entry>
   <entry>
@@ -1524,8 +1671,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>source</tag>
         <tag>linux</tag>
+        <tag>source</tag>
         <tag>gdb</tag>
         <tag>dir</tag>
         <tag>path</tag>
@@ -1624,10 +1771,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -1796,8 +1943,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>reset</tag>
         <tag>checkout</tag>
+        <tag>reset</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1811,8 +1958,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2096,9 +2243,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2426,8 +2573,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>grep</tag>
       </tags>
@@ -2468,8 +2615,8 @@
         <category>gdb</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
         <tag>linux</tag>
+        <tag>实用工具</tag>
         <tag>gdb</tag>
         <tag>ps</tag>
       </tags>
