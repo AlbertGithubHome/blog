@@ -102,13 +102,13 @@
 
 
 
-<meta name="description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta name="description" content="前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
 <meta name="keywords" content="linux,服务器,Telegraf,InfluxDB,Grafana">
 <meta property="og:type" content="article">
 <meta property="og:title" content="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta property="og:description" content="前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2baa1c032a6c48d6b6ff0ee634c4268f.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/f622fa54e73a400c857d697d047dd031.png">
@@ -117,10 +117,10 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/3a4a5c9b3860410a8776a89a2326c86f.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/9d22f9db6a76477e981a81d8ac90135d.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/986fefd7d3464d6eb3919b7e67ecdf9b.png">
-<meta property="og:updated_time" content="2023-06-18T07:29:48.091Z">
+<meta property="og:updated_time" content="2023-06-18T12:45:34.539Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案">
-<meta name="twitter:description" content="@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
+<meta name="twitter:description" content="前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/2baa1c032a6c48d6b6ff0ee634c4268f.png">
 
 
@@ -399,7 +399,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:29:48+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T20:45:34+08:00">
                 2023-06-18
               </time>
             
@@ -453,7 +453,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,716(字)</span>
+            <span class="post-count">2,715(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -488,8 +488,7 @@
       
 
       
-        <p>@[toc]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。</p>
 <a id="more"></a>
 <h1 id="原始的监控靠人盯"><a href="#原始的监控靠人盯" class="headerlink" title="原始的监控靠人盯"></a>原始的监控靠人盯</h1><p>如果服务器只有一台或者很少，可以每隔一段时间去服务器上看看，<code>top</code> 看一下整体运行情况，<code>free</code> 查一下内存详情，<code>df</code> 看一下硬盘还够不够，<code>iftop</code> 看一下网络带宽情况，不要觉得不可能，有次测试我真的就是开了好几个远程窗口来盯着各个指标，不过人的精力有限，这样做毕竟不是长久之计。</p>
 <h1 id="进化的监控靠批处理脚本"><a href="#进化的监控靠批处理脚本" class="headerlink" title="进化的监控靠批处理脚本"></a>进化的监控靠批处理脚本</h1><p>随着服务器的增多，靠人盯的方式的已经达不到要求了，看看上面的这些命令都是已知的，并且只需要定期得到这些值就可以了，完全可以使用脚本定期执行来做呀，把上面提到的命令封装成脚本然后定期执行得到结果列表，然后发送到指定的地址，我们就可以只分析这些结果，没必要登录到各个服务器上去查询了。</p>
@@ -678,6 +677,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/blog/2023/06/18/试试InsCode这个在线跑项目代码的平台/" rel="prev" title="试试InsCode这个在线跑项目代码的平台">
+                试试InsCode这个在线跑项目代码的平台 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -778,7 +781,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">209</span>
+                <span class="site-state-item-count">211</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -789,7 +792,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -800,7 +803,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">497</span>
+                <span class="site-state-item-count">502</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

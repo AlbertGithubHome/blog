@@ -346,6 +346,438 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/06/23/C-访问std-variant类型数据的几种方式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2023/06/23/C-访问std-variant类型数据的几种方式/" itemprop="url">C++访问std::variant类型数据的几种方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-06-23T11:59:10+08:00">
+                2023-06-23
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-23T21:18:24+08:00">
+                2023-06-23
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/06/23/C-访问std-variant类型数据的几种方式/" class="leancloud_visitors" data-flag-title="C++访问std::variant类型数据的几种方式">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,902(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">13(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>std::variant</code>（可变体） 是 <code>C++17</code> 中引入的一个新的类模板，提供了一种存储不同类型的值的方式，类似于之前版本中的 <code>union</code>（联合体），但可以存储非 <code>POD</code> 类型和类对象，能够在运行时进行类型检查和转换，但具有更多的功能和更高的类型安全性，今天来看一下存储在<code>std::variant</code>中的数据要怎么读取。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2023/06/23/C-访问std-variant类型数据的几种方式/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/06/18/试试InsCode这个在线跑项目代码的平台/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2023/06/18/试试InsCode这个在线跑项目代码的平台/" itemprop="url">试试InsCode这个在线跑项目代码的平台</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-06-18T21:47:24+08:00">
+                2023-06-18
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T23:43:18+08:00">
+                2023-06-18
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Platform/" itemprop="url" rel="index">
+                    <span itemprop="name">Platform</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/06/18/试试InsCode这个在线跑项目代码的平台/" class="leancloud_visitors" data-flag-title="试试InsCode这个在线跑项目代码的平台">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">789(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">3(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近看CSDN上线了InsCode这个在线跑项目代码的平台，放在了主菜单主推位置，上次这个位置好像是Gitee，在上次应该是代码片，CSDN 作为我一直使用的产品，最近十年我经历了他所有的变革，就像我刚刚提到的这些主菜单的变化，很多的东西已经被抛弃了，希望这次的InsCode能长久的支持下去。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2023/06/18/试试InsCode这个在线跑项目代码的平台/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,7 +825,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:29:48+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T20:45:34+08:00">
                 2023-06-18
               </time>
             
@@ -447,7 +879,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,716(字)</span>
+            <span class="post-count">2,715(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -478,8 +910,7 @@
 
       
         
-          <p>@[toc]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/blog/2023/06/17/初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案/#more" rel="contents">
@@ -610,7 +1041,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:26:33+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T20:47:10+08:00">
                 2023-06-18
               </time>
             
@@ -664,7 +1095,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,739(字)</span>
+            <span class="post-count">3,738(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -695,166 +1126,14 @@
 
       
         
-          
-            <p>@[TOC]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>sudo</code>命令应该是任何一个服务器使用人员都绕不开的命令，比如那个大名鼎鼎的删库跑路命令 <code>sudo rm -rf /*</code>，虽然经常使用，也知道用它能做一些普通用户无法完成的事情，那么它究竟是什么意思，有什么作用和好处，和超级无敌的 <code>root</code> 用户又有什么关系呢？接下来我们来简单梳理一下。</p>
-<h1 id="关于sudo的一些疑问"><a href="#关于sudo的一些疑问" class="headerlink" title="关于sudo的一些疑问"></a>关于sudo的一些疑问</h1><h2 id="sudo是什么"><a href="#sudo是什么" class="headerlink" title="sudo是什么"></a>sudo是什么</h2><p><code>sudo</code> 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令。它是 “Super User Do” 的缩写。超级用户通常是系统管理员，具有对操作系统的完全控制权。</p>
-<p>当你以普通用户的身份登录到系统时，可能没有足够的权限来执行某些敏感的系统操作或访问某些文件。在这种情况下，可以使用 <code>sudo</code> 命令在临时提升权限的情况下执行特定命令。</p>
-<p>使用 <code>sudo</code> 命令时，需要输入管理员密码以验证你的身份。一旦验证成功，就可以以超级用户的权限执行命令。这样可以确保系统安全，因为只有经过授权的用户才能执行特权操作。</p>
-<p>例如，如果想要安装软件包或修改系统设置，但这些操作需要超级用户权限，你可以在命令前加上 <code>sudo</code>，然后输入密码以执行该命令。</p>
-<p>以下是一个sudo命令使用的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install git</span><br></pre></td></tr></table></figure></p>
-<p>这个命令将使用 <code>apt-get</code> 工具安装一个软件包，由于它需要对系统进行修改，所以需要超级用户权限。通过使用 <code>sudo</code>，可以在普通用户的身份下临时获取这些权限来执行该操作。</p>
-<h2 id="sudo-和-root-的区别和联系"><a href="#sudo-和-root-的区别和联系" class="headerlink" title="sudo 和 root 的区别和联系"></a>sudo 和 root 的区别和联系</h2><p><code>sudo</code> 和 <code>root</code> 在类 Unix 系统中具有不同的角色和功能。以下是它们之间的区别和联系：</p>
-<ol>
-<li><p><strong>权限级别：</strong> <code>root</code> 是超级用户，也称为系统管理员。拥有 <code>root</code> 权限意味着拥有对整个系统的完全控制权，可以执行所有操作并访问所有文件。相比之下，<code>sudo</code> 是一个命令，允许普通用户在需要时以超级用户的身份执行特定的命令。</p>
-</li>
-<li><p><strong>使用方式：</strong> <code>root</code> 用户可以直接登录到系统并拥有持久的超级用户权限。而 <code>sudo</code> 是一种临时提升权限的机制，允许普通用户在需要时以超级用户的身份执行特定命令。普通用户可以使用 <code>sudo</code> 命令来运行特权命令，但在执行时需要输入管理员密码进行身份验证。</p>
-</li>
-<li><p><strong>安全性：</strong> <code>sudo</code> 的使用可以提高系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少意外或恶意操作造成的潜在风险。相比之下，<code>root</code> 用户拥有系统的完全权限，因此使用 <code>root</code> 用户执行命令时需要格外小心，以免对系统造成损坏。</p>
-</li>
-<li><p><strong>日常操作：</strong> 为了提高系统安全性，通常建议使用 <code>sudo</code> 来执行需要特权的命令，而不是直接使用 <code>root</code> 用户。使用 <code>sudo</code> 可以在普通用户的身份下执行特权命令，并避免了在常规操作中长时间保持 <code>root</code> 权限，从而减少了潜在的错误或安全风险。</p>
-</li>
-</ol>
-<p>总结来说，<code>root</code> 是系统的超级用户，拥有完全的权限，而 <code>sudo</code> 是一种临时提升权限的机制，允许普通用户以超级用户的身份执行特定命令。使用 <code>sudo</code> 可以提高系统的安全性，同时避免在日常操作中过多使用 <code>root</code> 用户带来的潜在风险。</p>
-<h2 id="使用-sudo-的好处"><a href="#使用-sudo-的好处" class="headerlink" title="使用 sudo 的好处"></a>使用 sudo 的好处</h2><p>使用 <code>sudo</code> 有以下几个好处：</p>
-<ol>
-<li><p><strong>安全性：</strong> <code>sudo</code> 增加了系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少潜在的错误或恶意操作对系统造成的风险。普通用户在执行需要特权的命令时需要输入管理员密码，这种身份验证确保只有经过授权的用户才能执行特权操作。</p>
-</li>
-<li><p><strong>权限控制：</strong> <code>sudo</code> 允许系统管理员细粒度地控制用户对系统资源和命令的访问权限。管理员可以通过配置 <code>sudo</code> 的策略文件，精确地指定哪些用户可以执行哪些命令以及以何种方式执行。这种权限控制有助于实施最小权限原则，即用户只能以最低权限执行任务，从而降低了潜在的安全风险。</p>
-</li>
-<li><p><strong>审计和日志记录：</strong> <code>sudo</code> 提供了审计和日志记录功能，可以记录执行特权操作的用户、时间和执行的命令。这对于追踪系统中的活动、故障排查和安全审计非常有价值。通过审计和日志记录，管理员可以了解特权操作的细节，以及哪些用户在何时执行了哪些命令。</p>
-</li>
-<li><p><strong>限制特权操作：</strong> 使用 <code>sudo</code> 可以限制特权操作的范围。普通用户只有在需要执行特定命令时才能使用 <code>sudo</code> 提升权限。这种限制可以避免用户误操作或滥用超级用户权限，从而减少了对系统的潜在风险。</p>
-</li>
-</ol>
-<p>总而言之，使用 <code>sudo</code> 可以提高系统的安全性、实施最小权限原则、提供审计和日志记录功能，并限制特权操作的范围。这使得系统管理员能够更好地管理用户权限并降低潜在的风险。</p>
-<h2 id="怎样查看sudo命令日志"><a href="#怎样查看sudo命令日志" class="headerlink" title="怎样查看sudo命令日志"></a>怎样查看sudo命令日志</h2><p>可以使用适当的文本编辑器打开 sudo 日志文件：选择适用于你的系统的文本编辑器（如 nano、vim、或者其他）以超级用户权限打开 sudo 日志文件。日志文件的位置和名称可能会因操作系统的不同而异。下面是一些常见的 sudo 日志文件路径：</p>
-<ul>
-<li><p>Ubuntu、Debian 等基于 Debian 的系统：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /var/log/auth.log</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>CentOS、Fedora、Red Hat 等基于 Red Hat 的系统：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /var/log/secure</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>macOS：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /var/log/system.log</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>查看 sudo 日志文件通常需要管理员或超级用户权限。确保你具有足够的权限才能访问和查看日志文件。此外，一些操作系统可能还提供了特定的命令或工具来查看系统日志，例如 <code>journalctl</code> 命令在某些 Linux 发行版中可用于查看系统日志。你可以根据你的操作系统和日志管理方式来选择适合的方法来查看 sudo 日志。</p>
-<h1 id="修改sudo配置"><a href="#修改sudo配置" class="headerlink" title="修改sudo配置"></a>修改sudo配置</h1><p>sudo的配置文件是 <code>/etc/sudoers</code> 但是不建议直接用文本工具打开它，一旦修改出错可能导致很多严重问题，可以使用 <code>visudo</code> 命令进行打开编辑，使用 <code>visudo</code> 命令编辑 sudoers 文件时，系统会执行语法检查以确保配置的正确性，以避免可能的权限问题，下面展示一个简单配置样例：</p>
-<h2 id="简单样例"><a href="#简单样例" class="headerlink" title="简单样例"></a>简单样例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># User privilege specification</span><br><span class="line">root    ALL=(ALL:ALL) ALL</span><br><span class="line"></span><br><span class="line"># Allow members of group sudo to execute any command</span><br><span class="line">%sudo   ALL=(ALL:ALL) ALL</span><br><span class="line"></span><br><span class="line"># Allow members of group admin to execute any command</span><br><span class="line">%admin  ALL=(ALL:ALL) ALL</span><br><span class="line"></span><br><span class="line"># Allow specific user to run specific command as another user</span><br><span class="line">johndoe ALL=(appuser) /usr/local/bin/git</span><br></pre></td></tr></table></figure>
-<p><code>visudo</code> 是一个用于编辑 sudoers 文件的命令，该文件包含了与 sudo（以管理员权限执行命令）相关的配置信息。在 sudoers 文件中，每一行都由多个列组成，其中包含不同的字段和含义。以下是 sudoers 文件中各列的一般含义：</p>
-<ol>
-<li><p>列1：用户列表</p>
-<ul>
-<li>该列指定了可以使用 sudo 命令的用户或用户组。</li>
-<li>可以是单个用户名，如 “bob”。</li>
-<li>可以是用户组前缀 “%” 后跟用户组名，如 “%admin”。</li>
-</ul>
-</li>
-<li><p>列2：主机列表</p>
-<ul>
-<li>该列指定了可以在哪些主机上使用 sudo 命令。</li>
-<li>可以是单个主机名，如 “localhost”。</li>
-<li>可以是主机名前缀 “ALL”，表示适用于所有主机。</li>
-</ul>
-</li>
-<li><p>列3：=(运行 as) 列表</p>
-<ul>
-<li>该列指定了可以以哪个用户身份来运行命令。</li>
-<li>可以是单个用户名，如 “root”。</li>
-<li>可以是用户组前缀 “ALL”，表示可以以任何用户身份运行命令。</li>
-<li>=(ALL:ALL)：表示可以以任何用户身份 (ALL) 在任何终端 (ALL) 上运行命令。</li>
-</ul>
-</li>
-<li><p>列4：NOPASSWD: 标志</p>
-<ul>
-<li>该列指定了是否需要输入密码才能使用 sudo 命令。</li>
-<li>如果列中包含 “NOPASSWD:”，则表示不需要密码。</li>
-<li>如果列为空或未包含 “NOPASSWD:”，则需要输入密码。</li>
-</ul>
-</li>
-<li><p>列5及以后：命令列表</p>
-<ul>
-<li>该列指定了可以使用 sudo 命令执行的具体命令。</li>
-<li>可以是完整的命令路径，如 “/usr/bin/apt-get”。</li>
-<li>可以是通配符，如 “/usr/bin/*” 表示该目录下的所有命令。</li>
-</ul>
-</li>
-</ol>
-<h2 id="复杂样例及解释"><a href="#复杂样例及解释" class="headerlink" title="复杂样例及解释"></a>复杂样例及解释</h2><p>下面是一个复杂一些的 visudo 配置示例，其中包含了多个用户、用户组和命令的授权规则：</p>
-<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># User privilege specification</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow root to run any commands on all hosts</span></span><br><span class="line">root    ALL=(ALL:ALL) ALL</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow members of the admin group to run any commands on all hosts</span></span><br><span class="line">%admin  ALL=(ALL:ALL) ALL</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow specific user to run specific commands as root without password</span></span><br><span class="line">johndoe ALL=(root) NOPASSWD: /bin/ls, /usr/bin/apt-get</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow specific user to run commands in specific directories as another user</span></span><br><span class="line">johndoe ALL=(appuser) /opt/app/bin/*</span><br><span class="line">johndoe ALL=(backupuser) /var/backup/scripts/*</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow specific user to run specific command with arguments as root</span></span><br><span class="line">johndoe ALL=(root) /usr/sbin/usermod [a-z]*</span><br><span class="line"></span><br><span class="line"><span class="comment">## Deny specific user to run any command</span></span><br><span class="line">banneduser ALL=(ALL:ALL) ALL, !/usr/bin/*</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow members of the wheel group to run any commands on localhost without password</span></span><br><span class="line">%wheel  localhost=(ALL:ALL) NOPASSWD: ALL</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow users in the developer group to run specific commands with arguments</span></span><br><span class="line">%developer ALL=(ALL:ALL) /usr/bin/git *, /usr/bin/make clean</span><br><span class="line"></span><br><span class="line"><span class="comment">## Allow users in the support group to restart specific services</span></span><br><span class="line">%support ALL=(root) /usr/sbin/service apache2 restart, /usr/sbin/service nginx restart</span><br></pre></td></tr></table></figure>
-<p>上述配置说明不考虑注释行，含义如下：</p>
-<ul>
-<li>第1行表示允许 root 用户在所有主机上以任何用户身份执行任何命令。</li>
-<li>第3行表示允许 johndoe 用户作为 root 用户以无需密码的方式执行 <code>/bin/ls</code> 和 <code>/usr/bin/apt-get</code> 命令。</li>
-<li>第4行和第5行表示允许 johndoe 用户作为 appuser 用户或 backupuser 用户在特定目录下执行命令。</li>
-<li>第6行表示允许 johndoe 用户作为 root 用户执行带有特定参数的 <code>/usr/sbin/usermod</code> 命令。</li>
-<li>第7行表示禁止 banneduser 用户执行除 <code>/usr/bin/*</code> 之外的所有命令。</li>
-<li>第8行表示允许 wheel 组的用户在 localhost 主机上以任何用户身份执行任何命令，且无需密码。</li>
-<li>第9行表示允许 developer 组的用户执行带有特定参数的 <code>/usr/bin/git</code> 和 <code>/usr/bin/make</code> 命令。</li>
-<li>第10行表示允许 support 组的用户作为 root 用户重启特定服务。</li>
-</ul>
-<h1 id="使用sudo用户"><a href="#使用sudo用户" class="headerlink" title="使用sudo用户"></a>使用sudo用户</h1><h2 id="创建用户并添加到-sudo-组"><a href="#创建用户并添加到-sudo-组" class="headerlink" title="创建用户并添加到 sudo 组"></a>创建用户并添加到 sudo 组</h2><p>在 Linux 上创建用户并将其添加到 <code>sudo</code> 组，可以按照以下步骤进行操作：</p>
-<ol>
-<li><p>打开终端：在操作系统中打开终端或命令行界面。</p>
-</li>
-<li><p>使用 <code>adduser</code> 命令创建新用户：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo adduser newuser</span><br></pre></td></tr></table></figure>
-<p>这将提示你输入新用户的密码和其他详细信息。</p>
-</li>
-<li><p>将新用户添加到 <code>sudo</code> 组。可以使用 <code>usermod</code> 命令执行此操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG sudo newuser</span><br></pre></td></tr></table></figure>
-<p>这将将新用户 <code>newuser</code> 添加到 <code>sudo</code> 组中。</p>
-</li>
-<li><p>验证用户是否成功添加到 <code>sudo</code> 组。你可以通过执行以下命令来检查用户所属的组：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groups newuser</span><br></pre></td></tr></table></figure>
-<p>如果 <code>sudo</code> 组在列表中显示，表示用户已成功添加到 <code>sudo</code> 组。</p>
-</li>
-</ol>
-<p>现在，新创建的用户已经添加到 <code>sudo</code> 组，拥有 sudo 权限。他们可以使用 <code>sudo</code> 命令以管理员权限执行特权操作。请确保将适当的权限授予新用户，以确保系统的安全性和合规性。</p>
-<h2 id="查看是否有sudo权限"><a href="#查看是否有sudo权限" class="headerlink" title="查看是否有sudo权限"></a>查看是否有sudo权限</h2><p>可以通过id命令查看指定用户是否在 <code>sudo</code> 组内，比如下面的用户就在27(sudo)这个组内：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@jenkins1604:~# id gyee</span><br><span class="line">uid=1004(gyee) gid=1004(gyee) groups=1004(gyee),27(sudo)</span><br></pre></td></tr></table></figure>
-<p>也可以查看(sudo)组内是否包含当前用户：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@jenkins1604:~# getent group sudo</span><br><span class="line">sudo:x:27:admin,gyee</span><br></pre></td></tr></table></figure></p>
-<p><code>getent</code> 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息。它可以用于检索和显示与系统用户、组、网络服务和其他系统资源相关的信息 ，<code>getent</code> 命令的基本语法如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent database entry</span><br></pre></td></tr></table></figure>
-<p>其中，<code>database</code> 表示要查询的数据库，而 <code>entry</code> 则表示要获取的数据库条目。 以下是一些常见的 <code>getent</code> 命令示例：</p>
-<ul>
-<li><p>获取系统中所有用户的信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent passwd</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取特定用户的信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent passwd &lt;username&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取系统中所有组的信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent group</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取特定组的信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent group &lt;groupname&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取系统中所有网络服务的信息（/etc/services 文件中定义的服务）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getent services</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="没有sudo权限时执行会被记录"><a href="#没有sudo权限时执行会被记录" class="headerlink" title="没有sudo权限时执行会被记录"></a>没有sudo权限时执行会被记录</h2><p>当没有sudo权限时，执行命令会输出以下信息，显示此操作被记录在案：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gyee@jenkins1604:/root$ sudo usermod -aG sudo gyee</span><br><span class="line">[sudo] password for gyee:</span><br><span class="line">gyee is not in the sudoers file.  This incident will be reported.</span><br></pre></td></tr></table></figure>
-<p>可以查询系统安全日志</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@jenkins1604:~# cat /var/log/auth.log | grep gyee</span><br><span class="line">May 26 22:07:13 machine sudo:     gyee : user NOT in sudoers ; TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/sbin/usermod -aG sudo gyee</span><br></pre></td></tr></table></figure>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li><code>sudo</code> 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令</li>
-<li><code>root</code> 是超级用户，拥有对整个系统的完全控制权，<code>sudo</code> 是一个允许普通用户在需要时以超级用户的身份执行特定的命令</li>
-<li><code>adduser</code> 和 <code>useradd</code> 都是在 Linux 系统上用于创建用户的命令，但 <code>adduser</code>命令更方便友好，尤其适用于交互式的用户创建</li>
-<li><code>getent</code> 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息</li>
-</ul>
-<center><a href="https://blog.csdn.net/albertsh/article/details/130569748" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
-
-<hr>
-<blockquote>
-<p>大家所谓的不满，是不满自己没成为人上人吧，至于温饱，很多人已经绰绰有余了~</p>
-<p>2023-5-26 22:08:38</p>
-</blockquote>
-
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>sudo</code>命令应该是任何一个服务器使用人员都绕不开的命令，比如那个大名鼎鼎的删库跑路命令 <code>sudo rm -rf /*</code>，虽然经常使用，也知道用它能做一些普通用户无法完成的事情，那么它究竟是什么意思，有什么作用和好处，和超级无敌的 <code>root</code> 用户又有什么关系呢？接下来我们来简单梳理一下。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2023/05/26/linux环境下熟悉又陌生的sudo命令/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2214,443 +2493,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/04/03/简单谈谈图形界面和命令行的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2023/04/03/简单谈谈图形界面和命令行的区别/" itemprop="url">简单谈谈图形界面和命令行的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-03T22:31:29+08:00">
-                2023-04-03
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:32:12+08:00">
-                2023-06-18
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2023/04/03/简单谈谈图形界面和命令行的区别/" class="leancloud_visitors" data-flag-title="简单谈谈图形界面和命令行的区别">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,497(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着总结的文章越写越多，我发现自己是一个“追求完美”的人，但同时也是一个“虎头蛇尾”的人，这两者看起来冲突，却可以融于一身。去写一个问题是总想从三皇五帝时写起，总想把各个分支情况都写清楚，这就会创造一个“虎头”，但写着写着就发现时间不允许了，或者已经触及了自己的知识边界，最后不得不退化成了“蛇尾”。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2023/04/03/简单谈谈图形界面和命令行的区别/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/03/21/CentOS7通过rpm包离线安装git/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2023/03/21/CentOS7通过rpm包离线安装git/" itemprop="url">CentOS7通过rpm包离线安装git</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-21T23:11:12+08:00">
-                2023-03-21
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2023-06-18T15:37:52+08:00">
-                2023-06-18
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2023/03/21/CentOS7通过rpm包离线安装git/" class="leancloud_visitors" data-flag-title="CentOS7通过rpm包离线安装git">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,177(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如果能连接外网，谁甘愿在离线状态下折腾，重新安装git的起因是服务器上的git版本(1.8.3.1)过低，Mac客户端升级后git版本(2.40.0)太高，导致无法验证密钥来进行拉取操作，所以要把服务器上的git升级一下，而git的1.8.3.1版本貌似是CentOS7的默认版本，我在多篇文章中看到了这个版本号，本来以为分分钟搞定，结果的折腾到半夜。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2023/03/21/CentOS7通过rpm包离线安装git/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/21/">21</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/22/">22</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2696,7 +2543,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">209</span>
+                <span class="site-state-item-count">211</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2707,7 +2554,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2718,7 +2565,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">497</span>
+                <span class="site-state-item-count">502</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

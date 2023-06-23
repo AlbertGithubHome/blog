@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[C++访问std::variant类型数据的几种方式]]></title>
+    <url>%2Fblog%2F2023%2F06%2F23%2FC-%E8%AE%BF%E9%97%AEstd-variant%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[前言std::variant（可变体） 是 C++17 中引入的一个新的类模板，提供了一种存储不同类型的值的方式，类似于之前版本中的 union（联合体），但可以存储非 POD 类型和类对象，能够在运行时进行类型检查和转换，但具有更多的功能和更高的类型安全性，今天来看一下存储在std::variant中的数据要怎么读取。 variant的简单使用可以参考cppreference网站的使用示例，也可以看看下面这个例子： 12345678910111213141516171819202122#include &lt;iostream&gt;#include &lt;variant&gt;#include &lt;string&gt;int main()&#123; std::variant&lt;int, double, std::string&gt; value; value = 110; std::cout &lt;&lt; "The value is an integer: " &lt;&lt; std::get&lt;int&gt;(value) &lt;&lt; std::endl; value = 0.618; std::cout &lt;&lt; "The value is a double: " &lt;&lt; std::get&lt;double&gt;(value) &lt;&lt; std::endl; value = "hello world"; std::cout &lt;&lt; "The value is a string: " &lt;&lt; std::get&lt;std::string&gt;(value) &lt;&lt; std::endl; // value = true; // Compilation error: cannot convert type bool to any of the alternative types // std::get&lt;int&gt;(value) // std::bad_variant_access exception: value holds a different type return 0;&#125; 在示例程序中，定义了一个 std::variant 对象 value 来存储整型、浮点型和字符串类型中的任意一种，然后分别将 value 赋值为整型、浮点型和字符串类型，并使用 std::get 来获取对应的值，此时可以正常打印 value 对象中存储的值 当我们试图将 value 赋值为其它未在定义变量时指定的类型时，编译器将会报编译错误，而当我我们试图获取 value 中不存在的类型的值时，程序将会抛出 std::bad_variant_access 异常，可以使用 try-catch 已经捕获。 通过这段代码我们可以得知，使用std::variant可以方便地存储多种类型的数据，并且能够在运行时进行类型检查和转换，这使得代码更加清晰易读，便于维护。 variant相关函数和类 成员函数 index：返回 variant 中保存用类型的索引下标 valueless_by_exception：返回 variant 是否处于因异常导致的无值状态 emplace：原位构造 variant 中的值 非成员函数 visit：通过调用variant保存类型值所提供的函数对象获取具体值 holds_alternative：检查某个 variant 是否当前持有某个给定类型 std::get：以给定索引或类型读取 variant 的值，错误时抛出异常 get_if：以给定索引或类型，获得指向被指向的 variant 的值的指针，错误时返回空指针 辅助类 monostate：用作非可默认构造类型的 variant 的首个可选项的占位符类型（预防一些类型不提供无参构造函数） bad_variant_access：非法地访问 variant 的值时抛出的异常 variant_npos：非法状态的 variant 的下标 访问std::variant数据从前面提到的例子和函数说明，我们可以看到有多种方式来访问std::variant数据，接一下来一起总结一下： std::get搭配index函数使用123456789101112#include &lt;iostream&gt;#include &lt;variant&gt;int main()&#123; std::variant&lt;double, int&gt; value = 119; if (1 == value.index()) std::cout &lt;&lt; "The value is: " &lt;&lt; std::get&lt;1&gt;(value) &lt;&lt; std::endl; return 0;&#125; 先用 index() 查询 variant保存的类型索引，然后在通过 std::get&lt;NUMBER&gt;() 获取其中的值 std::get搭配std::holds_alternative函数使用123456789101112#include &lt;iostream&gt;#include &lt;variant&gt;int main()&#123; std::variant&lt;double, int&gt; value = 119; if (std::holds_alternative&lt;int&gt;(value)) std::cout &lt;&lt; "The value is: " &lt;&lt; std::get&lt;int&gt;(value) &lt;&lt; std::endl; return 0;&#125; 先通过 std::holds_alternative() 查询 variant保存的类型，然后在通过 std::get&lt;TYPE&gt;() 获取其中的值 std::get_if函数123456789101112#include &lt;iostream&gt;#include &lt;variant&gt;int main()&#123; std::variant&lt;double, int&gt; value = 119; if (auto p = std::get_if&lt;int&gt;(&amp;value)) std::cout &lt;&lt; "The value is: " &lt;&lt; *p &lt;&lt; std::endl; return 0;&#125; 直接使用 std::get_if 函数获取对应值的指针，如果类型不匹配会返回空指针 std::visit函数使用函数visit函数访问时，有点像使用std::sort这类函数，可以搭配自定义的结构（排序）重写operator()，让其变成可以被调用的函数对象，也可以定义lambda自带可执行特性。 自定义访问结构的写法1234567891011121314151617#include &lt;iostream&gt;#include &lt;variant&gt;int main()&#123; std::variant&lt;double, int&gt; value = 119; struct VisitPackage &#123; auto operator()(const double&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125; auto operator()(const int&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125; &#125;; std::visit(VisitPackage(), value); return 0;&#125; 定义lambda函数组重载1234567891011121314151617#include &lt;iostream&gt;#include &lt;variant&gt;template&lt;class... Ts&gt; struct overloaded : Ts... &#123; using Ts::operator()...; &#125;;template&lt;class... Ts&gt; overloaded(Ts...) -&gt; overloaded&lt;Ts...&gt;;int main()&#123; std::variant&lt;double, int&gt; value = 119; std::visit(overloaded &#123; [] (const double&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125;, [] (const int&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125; &#125;, value); return 0;&#125; 这种方式将多个lambda放到一起形成重载，进而达到了访问variant数据的目的。 overloaded是什么上文例子中的最后一个中使用到了 overloaded，这令人眼花缭乱的写法着实很诡异，不过我们可以从头来分析一下，最后两个例子中等价的两部分是 1234567struct VisitPackage&#123; auto operator()(const double&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125; auto operator()(const int&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125;&#125;;VisitPackage() 与 1234567template&lt;class... Ts&gt; struct overloaded : Ts... &#123; using Ts::operator()...; &#125;;template&lt;class... Ts&gt; overloaded(Ts...) -&gt; overloaded&lt;Ts...&gt;;overloaded &#123; [] (const double&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125;, [] (const int&amp; v) &#123; std::cout &lt;&lt; "The value is: " &lt;&lt; v &lt;&lt; std::endl; &#125;&#125; 要想理解它们为什么等价，我们首先的得弄清楚lambda表达式是什么，在剖析lambda之前先来看看 std::visit 函数需要的参数是什么，分析std::visit的参数，先看 struct VisitPackage 结构更容易一些。 std::visit的第一个参数通俗的来说std::visit的第一个参数需要的是一个可执行的对象，如果对象能被执行就需要实现 operator() 这个操作符，看起来像函数一样，这就是为什么在 struct VisitPackage 中定义了 operator()，并且定义了两个形成了参数不同的静态重载，作用就是为了在访问 variant 对象时适配不同的类型，在访问variant 对象时会选择最匹配的 operator() 函数，进而实现了访问variant中不同类型值行为不同的目的。 那lambda表达式能实现这个目的吗？我们接着往下看 lambda 是什么自从 C++11 引入lambda之后，对它赞美的声音不绝于耳，那lambda表达式究竟是怎样实现的呢？真的就是一个普通的函数吗？我们看一个小例子： 1234567891011int main() &#123; int x = 5, y = 6; auto func = [&amp;](int n) &#123; return x + n; &#125;; func(7); return 0;&#125; 这是一个使用lambda表达式简单的例子，代码中定义了一个int类型参数的返回值也是int的lambda函数，作用就是将外部变量x与函数参数的和返回，我们使用 cppinsights.io 网站来将此段代码展开 1234567891011121314151617181920212223242526int main()&#123; int x = 5; int y = 6; class __lambda_4_15 &#123; public: inline /*constexpr */ int operator()(int n) const &#123; return x + n; &#125; private: int &amp; x; public: __lambda_4_15(int &amp; _x) : x&#123;_x&#125; &#123;&#125; &#125;; __lambda_4_15 func = __lambda_4_15&#123;x&#125;; func.operator()(7); return 0;&#125; 可以发现我们虽然定义了一个lambda函数，但是编译器为它生成了一个类 __lambda_4_15，生成了 int&amp; 类型的构造函数，并实现了 operator操作符，再调用lambda函数时先生成了 __lambda_4_15类的对象，再调用类的 operator()函数 func.operator()(7);，看到这里是不是似曾相识，虽然还不是很明白，但是和struct VisitPackage的定义总是有种说不清道不明的血缘关系。 弄清楚了lambda函数的本质，现在要实现的是怎么把多个lambda函数合成一个对象，并且让他们形成重载，因为lambda函数本质上存在一个类，只需要定义一个子类，继承多个lambda表达式就可以了，其实 overloaded 这个模板类就是为了实现这个目的。 overloaded剖析12template&lt;class... Ts&gt; struct overloaded : Ts... &#123; using Ts::operator()...; &#125;;template&lt;class... Ts&gt; overloaded(Ts...) -&gt; overloaded&lt;Ts...&gt;; 一时间看起来很难理解，它来自 en.cppreference.com 中介绍 std::visit 访问 std::variant 的例子，可以换行看得更清楚一点： 123456// helper type for the visitor #4template&lt;class... Ts&gt;struct overloaded : Ts... &#123; using Ts::operator()...; &#125;;// explicit deduction guide (not needed as of C++20)template&lt;class... Ts&gt;overloaded(Ts...) -&gt; overloaded&lt;Ts...&gt;; template struct overloaded : Ts… { using Ts::operator()…; }; 这是一个类模板的声明，模板的名字是overloaded 分步拆解来看： template struct overloaded 表示类的模板参数为可变长的参数包 Ts假设 Ts 包含 T1, T2, … , TN，那么这一句声明可以展开为：template struct overloaded struct overloaded : Ts…表示类的基类为参数包 Ts 内所有的参数类型假设 Ts 包含 T1, T2, … , TN，那么这一句声明可以展开为：struct overloaded : T1, T2, …, TN { using Ts::operator()…; }; 这是一个函数体内的变长 using 声明假设 Ts 包含 T1, T2, … , TN，那么这一句声明可以展开为：{ using T1::operator(), T1::operator(), …, TN::operator(); }经过这步声明，overloaded 类的参数包 Ts 内所有的参数作为基类的成员函数operator()均被 overloaded 类引入了自己的作用域 template overloaded(Ts…) -&gt; overloaded; 这是一个自动推断向导说明，用于帮助编译器根据 overloaded 构造器参数的类型来推导 overloaded 的模板参数类型，C++17需要，C++20已不必写它告诉编译器，如果 overloaded 构造器所有参数的类型的集合为Ts，那么 overloaded 的模板参数类型就是 Ts 所包含的所有类型如果表达式a1, a2, …, an的类型分别为T1, T2, …, TN，那么构造器表达式overloaded x{a1, a2, …, an} 推导出，overloaded的类型就是 overloaded 经过这些解释，我们可以认为在最后一个例子中可能产生了类似这样的代码： 1234567891011121314151617181920212223242526272829303132333435363738#include &lt;iostream&gt;#include &lt;variant&gt;class __lambda_12_7&#123;public: inline /*constexpr */ void operator()(const double &amp; v) const &#123; std::operator&lt;&lt;(std::cout, "The value is: ").operator&lt;&lt;(v).operator&lt;&lt;(std::endl); &#125;&#125;;class __lambda_13_7&#123;public: inline /*constexpr */ void operator()(const int &amp; v) const &#123; std::operator&lt;&lt;(std::cout, "The value is: ").operator&lt;&lt;(v).operator&lt;&lt;(std::endl); &#125;&#125;;template&lt;&gt;struct overloaded&lt;__lambda_12_7, __lambda_13_7&gt; : public __lambda_12_7, public __lambda_13_7&#123; using __lambda_12_7::operator(); // inline /*constexpr */ void ::operator()(const double &amp; v) const; using __lambda_13_7::operator(); // inline /*constexpr */ void ::operator()(const int &amp; v) const;&#125;;int main()&#123; std::variant&lt;double, int&gt; value = std::variant&lt;double, int&gt;(119); std::visit(overloaded&#123;__lambda_12_7(__lambda_12_7&#123;&#125;), __lambda_13_7(__lambda_13_7&#123;&#125;)&#125;, value); return 0;&#125; 总结 std::variant 可以存储多个类型的值，并且它会自动处理类型转换和内存分配 std::variant 可以存储非 POD 类型和类对象，能够在运行时进行类型检查和转换，具有更高的类型安全性 可以使用 std::visit 全局函数来访问 std::variant 中存储的值，该函数根据存储的值的类型自动选择调用哪个函数对象 可以使用 std::holds_alternative 函数来检查变量中是否存储了特定的类型 定义lambda函数时，编译器会为其生成一个类 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 代码是程序世界的运行规则，一个个字母的敲击正在规定着程序世界的运行秩序，无论代码写的天花乱坠，究其本质还是规定这一步要做什么，下一步继续做什么而已~ 2023-6-23 21:13:04]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>variant</tag>
+        <tag>Union</tag>
+        <tag>visit</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[试试InsCode这个在线跑项目代码的平台]]></title>
+    <url>%2Fblog%2F2023%2F06%2F18%2F%E8%AF%95%E8%AF%95InsCode%E8%BF%99%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%B7%91%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E7%9A%84%E5%B9%B3%E5%8F%B0%2F</url>
+    <content type="text"><![CDATA[前言最近看CSDN上线了InsCode这个在线跑项目代码的平台，放在了主菜单主推位置，上次这个位置好像是Gitee，在上次应该是代码片，CSDN 作为我一直使用的产品，最近十年我经历了他所有的变革，就像我刚刚提到的这些主菜单的变化，很多的东西已经被抛弃了，希望这次的InsCode能长久的支持下去。 代码开源平台并不好做，Github最大最活跃但访问并不顺畅，国内最早用的TaoCode在2018年关闭，后来Gitee用的比较多，但审查严格时候有多个开源项目被隐藏，CSDN现在主推的是GitCode，希望也能长久的支持下去，我并不太可能做出轰轰烈烈的开源项目分享，但分享一些代码世界的只言片语也是我的愿望，但愿能帮助一些恰好需要的人。 先了解一下InsCodeInsCode服务是一个在线编程工具，旨在为开发者提供一个便捷的编写、运行和分享代码的环境，让开发者无需在本地搭建编程环境，即可快速编写和运行代码。 InsCode支持多种编程语言，包括Java、Python、C++、JavaScript等代码，支持一些方便的项目模板，但目前还不支持C++模板希望后面能补充上。它提供了完整的运行环境，让代码在网页上直接运行并输出结果，即时调试，方便快捷，并且还提供了现实免费的InsCode AI Chat，帮助我们快速实现功能。同时，Inscode还提供了分享功能，可以轻松地将代码分享给其他人。 写一个Python示例本来想写一段C++示例的，但是因为目前还不支持C++模板，所以先写个Python的例子展示一下使用方式吧，比如想打印本机IP地址，可以借助 InsCode AI Chat 生成，直接点击插入即可。 直接点击运行按钮查看效果，打印出外网IP是116.198.41.215 整个过程我真的是一行代码都不用写了，最终还可以将作品打包放到博客中展示，因为这个示例项目还在审核中，等审核通过后我会把效果贴上来。 总结 InsCode服务是一个在线编程工具，旨在为开发者提供一个便捷的编写、运行和分享代码的环境 InsCode支持多种编程语言，包括Java、Python、C++、JavaScript等代码，并支持一些方便的项目模板 使用InsCode真的可以做到不写一行代码来发布自己的产品，虽然不是很完善，但应该会越来越好 各大平台都在AI赛道里竞争起来，真正做出相关产品的并不多，我们一起期待吧 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 三个人确实就比两个人好看，这其中隐含的就是团圆的情感~ 2023-06-18 23:26:00]]></content>
+      <categories>
+        <category>Platform</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>InsCode</tag>
+        <tag>在线运行</tag>
+        <tag>CSDN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[初识Telegraf、InfluxDB和Grafana铁三角形成的监控可视化解决方案]]></title>
     <url>%2Fblog%2F2023%2F06%2F17%2F%E5%88%9D%E8%AF%86Telegraf%E3%80%81InfluxDB%E5%92%8CGrafana%E9%93%81%E4%B8%89%E8%A7%92%E5%BD%A2%E6%88%90%E7%9A%84%E7%9B%91%E6%8E%A7%E5%8F%AF%E8%A7%86%E5%8C%96%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%2F</url>
-    <content type="text"><![CDATA[@[toc] 前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。 原始的监控靠人盯如果服务器只有一台或者很少，可以每隔一段时间去服务器上看看，top 看一下整体运行情况，free 查一下内存详情，df 看一下硬盘还够不够，iftop 看一下网络带宽情况，不要觉得不可能，有次测试我真的就是开了好几个远程窗口来盯着各个指标，不过人的精力有限，这样做毕竟不是长久之计。 进化的监控靠批处理脚本随着服务器的增多，靠人盯的方式的已经达不到要求了，看看上面的这些命令都是已知的，并且只需要定期得到这些值就可以了，完全可以使用脚本定期执行来做呀，把上面提到的命令封装成脚本然后定期执行得到结果列表，然后发送到指定的地址，我们就可以只分析这些结果，没必要登录到各个服务器上去查询了。 高端的监控靠完整的可视化解决方案懒惰是科学发展的推动力，使用脚本收集数据就不用登录服务器去实时查询了，那能不能帮我自动分析结果，或者在异常时直接给出提醒，因为我连分析的操作都不想做，肯定有人这样想当然也有人这样做了，并且形成了成熟的解决方案，我们只需要简单搭建和配置就可以早点下班了，半夜收到服务器报警电话时起来解决就可以了。 Telegraf、InfluxDB和Grafana铁三角Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置。 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据。 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来。 通过将Telegraf用作数据收集代理，将数据发送到InfluxDB中存储，然后使用Grafana从InfluxDB中提取数据进行可视化，这个铁三角组合提供了一个强大的监控和数据可视化解决方案。 TelegrafTelegraf是一个开源的代理程序，用于收集、处理和发送指标数据。它设计用于高效地收集各种类型的数据，并将其发送到不同的目标位置，如时序数据库、消息队列等，具有以下是关键特点和功能： 插件架构：Telegraf采用模块化的插件架构，具有丰富的输入和输出插件。它支持多种输入插件，如系统性能指标、日志文件、数据库查询、API调用等，以便从不同的数据源中收集数据。同样，Telegraf还支持多种输出插件，如InfluxDB、Elasticsearch、Kafka等，用于将收集到的数据发送到不同的目标位置。 多平台支持：Telegraf可在多个操作系统上运行，包括Linux、Windows和macOS，以适应不同的部署环境和需求。 轻量级和高性能：Telegraf被设计为轻量级和高性能的代理程序，可以在资源受限的环境中高效运行。它使用Golang编写，具有低的内存和CPU占用，并能够处理高并发的数据收集和处理任务。 数据转换和处理：Telegraf提供了灵活的数据转换和处理功能，可以对收集到的数据进行过滤、转换、聚合等操作。它支持各种数据处理任务，如标签添加、数据格式转换、聚合计算等，以便对数据进行预处理和清洗，使其适应目标存储或分析平台的要求。 插件生态系统：Telegraf拥有一个活跃的插件生态系统，用户可以根据自己的需求选择和配置适当的插件。社区提供了大量的插件，覆盖了各种数据源和目标位置，使得Telegraf具备广泛的适用性和灵活性。 InfluxDBInfluxDB是一个开源的高性能时序数据库，专门用于存储和处理时间序列数据。它被设计为能够高效地处理大规模的时间相关数据，并提供快速的数据插入、查询和聚合能力，具有关键特点和功能： 时序数据存储：InfluxDB专注于存储和管理时间序列数据，如传感器数据、监控指标、日志事件等。它使用特定的数据结构和索引机制，以优化对时间序列数据的写入和查询操作。 高性能和可扩展性：InfluxDB被设计为具有高吞吐量和低延迟的数据库系统。它采用了一系列的优化策略，包括压缩算法、分片存储、数据分区等，以实现高效的数据处理和查询性能。此外，InfluxDB还支持水平扩展，可以通过添加更多节点来提高性能和容量。 查询语言：InfluxDB提供了InfluxQL和Flux两种查询语言。InfluxQL是类似于SQL的查询语言，专门用于时间序列数据的查询和聚合操作。Flux是一种功能更强大和灵活的查询语言，它支持更复杂的数据处理和转换操作，并具有扩展性更好的能力。 数据保留策略：InfluxDB允许定义数据保留策略，以指定数据在数据库中的保存期限和存储策略。这样可以根据数据的时效性需求和存储资源限制来管理数据的保留和清理。 数据一致性和持久性：InfluxDB采用了写时复制（Write Ahead Log）的机制，确保数据的一致性和持久性。它使用持久化引擎来保证数据在故障情况下的可靠性，同时提供数据备份和恢复的功能。 整合生态系统：InfluxDB具有丰富的整合生态系统，可以与各种数据源和工具集成。它支持与Telegraf等数据收集代理的无缝集成，以及与Grafana等数据可视化工具的联合使用，提供完整的监控和数据处理解决方案。 GrafanaGrafana是一个开源的数据可视化和监控平台，用于创建、展示和分析实时指标和数据的交互式仪表板。它提供了丰富的可视化选项和灵活的配置，使用户能够轻松地创建各种类型的仪表板，并实时监控和分析数据，具有以下关键特点和功能： 数据源支持：Grafana支持广泛的数据源，包括各种数据库（如MySQL、PostgreSQL、InfluxDB）、时序数据库（如Prometheus、Graphite）、日志文件、API等。它提供了内置的数据源插件和API接口，以便与不同的数据源进行集成和数据获取。 丰富的可视化选项：Grafana提供多种可视化选项，如折线图、柱状图、仪表盘、热力图等，可以根据数据的特点选择适合的图表类型。它还支持动态图表、图表注释、数据标记等功能，以增强数据的可视化效果和交互性。 交互式仪表板：Grafana的仪表板具有交互式的功能，用户可以自由地缩放、选择时间范围、过滤数据等。它还支持实时数据更新和自动刷新，以确保仪表板上的数据保持最新。 告警和通知：Grafana提供了强大的告警功能，用户可以根据自定义的条件设置告警规则，并通过电子邮件、Slack等渠道接收告警通知。这样可以及时发现数据异常或重要指标的变化。 用户管理和权限控制：Grafana支持多用户和团队管理，可以设置不同的用户角色和权限，以控制对仪表板和数据的访问和操作。它还提供了LDAP、OAuth等身份验证和单点登录功能，与企业的用户管理系统集成更加便捷。 社区支持和插件生态系统：Grafana拥有庞大的开源社区支持和活跃的插件生态系统。用户可以从社区中获取各种主题、模板和插件，以扩展和定制Grafana的功能和外观。 Grafana仪表板展示说实话第一次看到Grafana仪表板还是挺震撼的，展示的信息很多，可以帮助服务器维护人员分析很多问题，下面来展示一些主要的面板。 服务器资源总览 负载和内存使用 网络带宽 磁盘IO IO延迟 其他指标 进程信息 总结 Telegraf、Grafana和InfluxDB通常被称为”铁三角”，因为它们经常一起使用，形成一个完整的监控和数据可视化解决方案 Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来 Grafana的仪表板真的挺漂亮的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 把烦恼痛了吞了认了算了不对别人讲谁还没有辜负几段 昂贵的时光 2023-6-17 19:39:56]]></content>
+    <content type="text"><![CDATA[前言数据监控目前用于各行各业，服务器开发也不例外，进程什么时候被杀死了？内存占用已经达到98%了怎么早点没发现，网络带宽已经占满了怪不得玩家反馈说登录不上去了，这些都是服务器开发人员常常听到的“抱怨”，他们都涉及到服务器资源的使用情况，如果有一种方便的途径可以高效的监控各个服务器的情况就好了，单靠人去各个服务器查看是不现实的，今天就来简单介绍一种我刚刚学到的方案。 原始的监控靠人盯如果服务器只有一台或者很少，可以每隔一段时间去服务器上看看，top 看一下整体运行情况，free 查一下内存详情，df 看一下硬盘还够不够，iftop 看一下网络带宽情况，不要觉得不可能，有次测试我真的就是开了好几个远程窗口来盯着各个指标，不过人的精力有限，这样做毕竟不是长久之计。 进化的监控靠批处理脚本随着服务器的增多，靠人盯的方式的已经达不到要求了，看看上面的这些命令都是已知的，并且只需要定期得到这些值就可以了，完全可以使用脚本定期执行来做呀，把上面提到的命令封装成脚本然后定期执行得到结果列表，然后发送到指定的地址，我们就可以只分析这些结果，没必要登录到各个服务器上去查询了。 高端的监控靠完整的可视化解决方案懒惰是科学发展的推动力，使用脚本收集数据就不用登录服务器去实时查询了，那能不能帮我自动分析结果，或者在异常时直接给出提醒，因为我连分析的操作都不想做，肯定有人这样想当然也有人这样做了，并且形成了成熟的解决方案，我们只需要简单搭建和配置就可以早点下班了，半夜收到服务器报警电话时起来解决就可以了。 Telegraf、InfluxDB和Grafana铁三角Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置。 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据。 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来。 通过将Telegraf用作数据收集代理，将数据发送到InfluxDB中存储，然后使用Grafana从InfluxDB中提取数据进行可视化，这个铁三角组合提供了一个强大的监控和数据可视化解决方案。 TelegrafTelegraf是一个开源的代理程序，用于收集、处理和发送指标数据。它设计用于高效地收集各种类型的数据，并将其发送到不同的目标位置，如时序数据库、消息队列等，具有以下是关键特点和功能： 插件架构：Telegraf采用模块化的插件架构，具有丰富的输入和输出插件。它支持多种输入插件，如系统性能指标、日志文件、数据库查询、API调用等，以便从不同的数据源中收集数据。同样，Telegraf还支持多种输出插件，如InfluxDB、Elasticsearch、Kafka等，用于将收集到的数据发送到不同的目标位置。 多平台支持：Telegraf可在多个操作系统上运行，包括Linux、Windows和macOS，以适应不同的部署环境和需求。 轻量级和高性能：Telegraf被设计为轻量级和高性能的代理程序，可以在资源受限的环境中高效运行。它使用Golang编写，具有低的内存和CPU占用，并能够处理高并发的数据收集和处理任务。 数据转换和处理：Telegraf提供了灵活的数据转换和处理功能，可以对收集到的数据进行过滤、转换、聚合等操作。它支持各种数据处理任务，如标签添加、数据格式转换、聚合计算等，以便对数据进行预处理和清洗，使其适应目标存储或分析平台的要求。 插件生态系统：Telegraf拥有一个活跃的插件生态系统，用户可以根据自己的需求选择和配置适当的插件。社区提供了大量的插件，覆盖了各种数据源和目标位置，使得Telegraf具备广泛的适用性和灵活性。 InfluxDBInfluxDB是一个开源的高性能时序数据库，专门用于存储和处理时间序列数据。它被设计为能够高效地处理大规模的时间相关数据，并提供快速的数据插入、查询和聚合能力，具有关键特点和功能： 时序数据存储：InfluxDB专注于存储和管理时间序列数据，如传感器数据、监控指标、日志事件等。它使用特定的数据结构和索引机制，以优化对时间序列数据的写入和查询操作。 高性能和可扩展性：InfluxDB被设计为具有高吞吐量和低延迟的数据库系统。它采用了一系列的优化策略，包括压缩算法、分片存储、数据分区等，以实现高效的数据处理和查询性能。此外，InfluxDB还支持水平扩展，可以通过添加更多节点来提高性能和容量。 查询语言：InfluxDB提供了InfluxQL和Flux两种查询语言。InfluxQL是类似于SQL的查询语言，专门用于时间序列数据的查询和聚合操作。Flux是一种功能更强大和灵活的查询语言，它支持更复杂的数据处理和转换操作，并具有扩展性更好的能力。 数据保留策略：InfluxDB允许定义数据保留策略，以指定数据在数据库中的保存期限和存储策略。这样可以根据数据的时效性需求和存储资源限制来管理数据的保留和清理。 数据一致性和持久性：InfluxDB采用了写时复制（Write Ahead Log）的机制，确保数据的一致性和持久性。它使用持久化引擎来保证数据在故障情况下的可靠性，同时提供数据备份和恢复的功能。 整合生态系统：InfluxDB具有丰富的整合生态系统，可以与各种数据源和工具集成。它支持与Telegraf等数据收集代理的无缝集成，以及与Grafana等数据可视化工具的联合使用，提供完整的监控和数据处理解决方案。 GrafanaGrafana是一个开源的数据可视化和监控平台，用于创建、展示和分析实时指标和数据的交互式仪表板。它提供了丰富的可视化选项和灵活的配置，使用户能够轻松地创建各种类型的仪表板，并实时监控和分析数据，具有以下关键特点和功能： 数据源支持：Grafana支持广泛的数据源，包括各种数据库（如MySQL、PostgreSQL、InfluxDB）、时序数据库（如Prometheus、Graphite）、日志文件、API等。它提供了内置的数据源插件和API接口，以便与不同的数据源进行集成和数据获取。 丰富的可视化选项：Grafana提供多种可视化选项，如折线图、柱状图、仪表盘、热力图等，可以根据数据的特点选择适合的图表类型。它还支持动态图表、图表注释、数据标记等功能，以增强数据的可视化效果和交互性。 交互式仪表板：Grafana的仪表板具有交互式的功能，用户可以自由地缩放、选择时间范围、过滤数据等。它还支持实时数据更新和自动刷新，以确保仪表板上的数据保持最新。 告警和通知：Grafana提供了强大的告警功能，用户可以根据自定义的条件设置告警规则，并通过电子邮件、Slack等渠道接收告警通知。这样可以及时发现数据异常或重要指标的变化。 用户管理和权限控制：Grafana支持多用户和团队管理，可以设置不同的用户角色和权限，以控制对仪表板和数据的访问和操作。它还提供了LDAP、OAuth等身份验证和单点登录功能，与企业的用户管理系统集成更加便捷。 社区支持和插件生态系统：Grafana拥有庞大的开源社区支持和活跃的插件生态系统。用户可以从社区中获取各种主题、模板和插件，以扩展和定制Grafana的功能和外观。 Grafana仪表板展示说实话第一次看到Grafana仪表板还是挺震撼的，展示的信息很多，可以帮助服务器维护人员分析很多问题，下面来展示一些主要的面板。 服务器资源总览 负载和内存使用 网络带宽 磁盘IO IO延迟 其他指标 进程信息 总结 Telegraf、Grafana和InfluxDB通常被称为”铁三角”，因为它们经常一起使用，形成一个完整的监控和数据可视化解决方案 Telegraf是一个用于收集、处理和发送指标数据的代理，它可以与各种数据源和监控系统集成，定期收集数据并将其发送到目标位置 InfluxDB是一个开源的时间序列数据库，用于存储和查询大量时间序列数据。它被广泛用于存储来自Telegraf等数据收集器的指标数据 Grafana用于创建交互式仪表板，从各种数据源中提取数据，并将数据以图表、图形和表格等形式展示出来 Grafana的仪表板真的挺漂亮的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 把烦恼痛了吞了认了算了不对别人讲谁还没有辜负几段 昂贵的时光 2023-6-17 19:39:56]]></content>
       <categories>
         <category>linux</category>
       </categories>
@@ -18,7 +46,7 @@
   <entry>
     <title><![CDATA[linux环境下熟悉又陌生的sudo命令]]></title>
     <url>%2Fblog%2F2023%2F05%2F26%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%86%9F%E6%82%89%E5%8F%88%E9%99%8C%E7%94%9F%E7%9A%84sudo%E5%91%BD%E4%BB%A4%2F</url>
-    <content type="text"><![CDATA[@[TOC] 前言sudo命令应该是任何一个服务器使用人员都绕不开的命令，比如那个大名鼎鼎的删库跑路命令 sudo rm -rf /*，虽然经常使用，也知道用它能做一些普通用户无法完成的事情，那么它究竟是什么意思，有什么作用和好处，和超级无敌的 root 用户又有什么关系呢？接下来我们来简单梳理一下。 关于sudo的一些疑问sudo是什么sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令。它是 “Super User Do” 的缩写。超级用户通常是系统管理员，具有对操作系统的完全控制权。 当你以普通用户的身份登录到系统时，可能没有足够的权限来执行某些敏感的系统操作或访问某些文件。在这种情况下，可以使用 sudo 命令在临时提升权限的情况下执行特定命令。 使用 sudo 命令时，需要输入管理员密码以验证你的身份。一旦验证成功，就可以以超级用户的权限执行命令。这样可以确保系统安全，因为只有经过授权的用户才能执行特权操作。 例如，如果想要安装软件包或修改系统设置，但这些操作需要超级用户权限，你可以在命令前加上 sudo，然后输入密码以执行该命令。 以下是一个sudo命令使用的示例：1sudo apt-get install git 这个命令将使用 apt-get 工具安装一个软件包，由于它需要对系统进行修改，所以需要超级用户权限。通过使用 sudo，可以在普通用户的身份下临时获取这些权限来执行该操作。 sudo 和 root 的区别和联系sudo 和 root 在类 Unix 系统中具有不同的角色和功能。以下是它们之间的区别和联系： 权限级别： root 是超级用户，也称为系统管理员。拥有 root 权限意味着拥有对整个系统的完全控制权，可以执行所有操作并访问所有文件。相比之下，sudo 是一个命令，允许普通用户在需要时以超级用户的身份执行特定的命令。 使用方式： root 用户可以直接登录到系统并拥有持久的超级用户权限。而 sudo 是一种临时提升权限的机制，允许普通用户在需要时以超级用户的身份执行特定命令。普通用户可以使用 sudo 命令来运行特权命令，但在执行时需要输入管理员密码进行身份验证。 安全性： sudo 的使用可以提高系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少意外或恶意操作造成的潜在风险。相比之下，root 用户拥有系统的完全权限，因此使用 root 用户执行命令时需要格外小心，以免对系统造成损坏。 日常操作： 为了提高系统安全性，通常建议使用 sudo 来执行需要特权的命令，而不是直接使用 root 用户。使用 sudo 可以在普通用户的身份下执行特权命令，并避免了在常规操作中长时间保持 root 权限，从而减少了潜在的错误或安全风险。 总结来说，root 是系统的超级用户，拥有完全的权限，而 sudo 是一种临时提升权限的机制，允许普通用户以超级用户的身份执行特定命令。使用 sudo 可以提高系统的安全性，同时避免在日常操作中过多使用 root 用户带来的潜在风险。 使用 sudo 的好处使用 sudo 有以下几个好处： 安全性： sudo 增加了系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少潜在的错误或恶意操作对系统造成的风险。普通用户在执行需要特权的命令时需要输入管理员密码，这种身份验证确保只有经过授权的用户才能执行特权操作。 权限控制： sudo 允许系统管理员细粒度地控制用户对系统资源和命令的访问权限。管理员可以通过配置 sudo 的策略文件，精确地指定哪些用户可以执行哪些命令以及以何种方式执行。这种权限控制有助于实施最小权限原则，即用户只能以最低权限执行任务，从而降低了潜在的安全风险。 审计和日志记录： sudo 提供了审计和日志记录功能，可以记录执行特权操作的用户、时间和执行的命令。这对于追踪系统中的活动、故障排查和安全审计非常有价值。通过审计和日志记录，管理员可以了解特权操作的细节，以及哪些用户在何时执行了哪些命令。 限制特权操作： 使用 sudo 可以限制特权操作的范围。普通用户只有在需要执行特定命令时才能使用 sudo 提升权限。这种限制可以避免用户误操作或滥用超级用户权限，从而减少了对系统的潜在风险。 总而言之，使用 sudo 可以提高系统的安全性、实施最小权限原则、提供审计和日志记录功能，并限制特权操作的范围。这使得系统管理员能够更好地管理用户权限并降低潜在的风险。 怎样查看sudo命令日志可以使用适当的文本编辑器打开 sudo 日志文件：选择适用于你的系统的文本编辑器（如 nano、vim、或者其他）以超级用户权限打开 sudo 日志文件。日志文件的位置和名称可能会因操作系统的不同而异。下面是一些常见的 sudo 日志文件路径： Ubuntu、Debian 等基于 Debian 的系统： 1sudo nano /var/log/auth.log CentOS、Fedora、Red Hat 等基于 Red Hat 的系统： 1sudo nano /var/log/secure macOS： 1sudo nano /var/log/system.log 查看 sudo 日志文件通常需要管理员或超级用户权限。确保你具有足够的权限才能访问和查看日志文件。此外，一些操作系统可能还提供了特定的命令或工具来查看系统日志，例如 journalctl 命令在某些 Linux 发行版中可用于查看系统日志。你可以根据你的操作系统和日志管理方式来选择适合的方法来查看 sudo 日志。 修改sudo配置sudo的配置文件是 /etc/sudoers 但是不建议直接用文本工具打开它，一旦修改出错可能导致很多严重问题，可以使用 visudo 命令进行打开编辑，使用 visudo 命令编辑 sudoers 文件时，系统会执行语法检查以确保配置的正确性，以避免可能的权限问题，下面展示一个简单配置样例： 简单样例1234567891011# User privilege specificationroot ALL=(ALL:ALL) ALL# Allow members of group sudo to execute any command%sudo ALL=(ALL:ALL) ALL# Allow members of group admin to execute any command%admin ALL=(ALL:ALL) ALL# Allow specific user to run specific command as another userjohndoe ALL=(appuser) /usr/local/bin/git visudo 是一个用于编辑 sudoers 文件的命令，该文件包含了与 sudo（以管理员权限执行命令）相关的配置信息。在 sudoers 文件中，每一行都由多个列组成，其中包含不同的字段和含义。以下是 sudoers 文件中各列的一般含义： 列1：用户列表 该列指定了可以使用 sudo 命令的用户或用户组。 可以是单个用户名，如 “bob”。 可以是用户组前缀 “%” 后跟用户组名，如 “%admin”。 列2：主机列表 该列指定了可以在哪些主机上使用 sudo 命令。 可以是单个主机名，如 “localhost”。 可以是主机名前缀 “ALL”，表示适用于所有主机。 列3：=(运行 as) 列表 该列指定了可以以哪个用户身份来运行命令。 可以是单个用户名，如 “root”。 可以是用户组前缀 “ALL”，表示可以以任何用户身份运行命令。 =(ALL:ALL)：表示可以以任何用户身份 (ALL) 在任何终端 (ALL) 上运行命令。 列4：NOPASSWD: 标志 该列指定了是否需要输入密码才能使用 sudo 命令。 如果列中包含 “NOPASSWD:”，则表示不需要密码。 如果列为空或未包含 “NOPASSWD:”，则需要输入密码。 列5及以后：命令列表 该列指定了可以使用 sudo 命令执行的具体命令。 可以是完整的命令路径，如 “/usr/bin/apt-get”。 可以是通配符，如 “/usr/bin/*” 表示该目录下的所有命令。 复杂样例及解释下面是一个复杂一些的 visudo 配置示例，其中包含了多个用户、用户组和命令的授权规则： 1234567891011121314151617181920212223242526272829# User privilege specification## Allow root to run any commands on all hostsroot ALL=(ALL:ALL) ALL## Allow members of the admin group to run any commands on all hosts%admin ALL=(ALL:ALL) ALL## Allow specific user to run specific commands as root without passwordjohndoe ALL=(root) NOPASSWD: /bin/ls, /usr/bin/apt-get## Allow specific user to run commands in specific directories as another userjohndoe ALL=(appuser) /opt/app/bin/*johndoe ALL=(backupuser) /var/backup/scripts/*## Allow specific user to run specific command with arguments as rootjohndoe ALL=(root) /usr/sbin/usermod [a-z]*## Deny specific user to run any commandbanneduser ALL=(ALL:ALL) ALL, !/usr/bin/*## Allow members of the wheel group to run any commands on localhost without password%wheel localhost=(ALL:ALL) NOPASSWD: ALL## Allow users in the developer group to run specific commands with arguments%developer ALL=(ALL:ALL) /usr/bin/git *, /usr/bin/make clean## Allow users in the support group to restart specific services%support ALL=(root) /usr/sbin/service apache2 restart, /usr/sbin/service nginx restart 上述配置说明不考虑注释行，含义如下： 第1行表示允许 root 用户在所有主机上以任何用户身份执行任何命令。 第3行表示允许 johndoe 用户作为 root 用户以无需密码的方式执行 /bin/ls 和 /usr/bin/apt-get 命令。 第4行和第5行表示允许 johndoe 用户作为 appuser 用户或 backupuser 用户在特定目录下执行命令。 第6行表示允许 johndoe 用户作为 root 用户执行带有特定参数的 /usr/sbin/usermod 命令。 第7行表示禁止 banneduser 用户执行除 /usr/bin/* 之外的所有命令。 第8行表示允许 wheel 组的用户在 localhost 主机上以任何用户身份执行任何命令，且无需密码。 第9行表示允许 developer 组的用户执行带有特定参数的 /usr/bin/git 和 /usr/bin/make 命令。 第10行表示允许 support 组的用户作为 root 用户重启特定服务。 使用sudo用户创建用户并添加到 sudo 组在 Linux 上创建用户并将其添加到 sudo 组，可以按照以下步骤进行操作： 打开终端：在操作系统中打开终端或命令行界面。 使用 adduser 命令创建新用户： 1sudo adduser newuser 这将提示你输入新用户的密码和其他详细信息。 将新用户添加到 sudo 组。可以使用 usermod 命令执行此操作： 1sudo usermod -aG sudo newuser 这将将新用户 newuser 添加到 sudo 组中。 验证用户是否成功添加到 sudo 组。你可以通过执行以下命令来检查用户所属的组： 1groups newuser 如果 sudo 组在列表中显示，表示用户已成功添加到 sudo 组。 现在，新创建的用户已经添加到 sudo 组，拥有 sudo 权限。他们可以使用 sudo 命令以管理员权限执行特权操作。请确保将适当的权限授予新用户，以确保系统的安全性和合规性。 查看是否有sudo权限可以通过id命令查看指定用户是否在 sudo 组内，比如下面的用户就在27(sudo)这个组内： 12root@jenkins1604:~# id gyeeuid=1004(gyee) gid=1004(gyee) groups=1004(gyee),27(sudo) 也可以查看(sudo)组内是否包含当前用户：12root@jenkins1604:~# getent group sudosudo:x:27:admin,gyee getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息。它可以用于检索和显示与系统用户、组、网络服务和其他系统资源相关的信息 ，getent 命令的基本语法如下： 1getent database entry 其中，database 表示要查询的数据库，而 entry 则表示要获取的数据库条目。 以下是一些常见的 getent 命令示例： 获取系统中所有用户的信息： 1getent passwd 获取特定用户的信息： 1getent passwd &lt;username&gt; 获取系统中所有组的信息： 1getent group 获取特定组的信息： 1getent group &lt;groupname&gt; 获取系统中所有网络服务的信息（/etc/services 文件中定义的服务）： 1getent services 没有sudo权限时执行会被记录当没有sudo权限时，执行命令会输出以下信息，显示此操作被记录在案： 123gyee@jenkins1604:/root$ sudo usermod -aG sudo gyee[sudo] password for gyee:gyee is not in the sudoers file. This incident will be reported. 可以查询系统安全日志 12root@jenkins1604:~# cat /var/log/auth.log | grep gyeeMay 26 22:07:13 machine sudo: gyee : user NOT in sudoers ; TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/sbin/usermod -aG sudo gyee 总结 sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令 root 是超级用户，拥有对整个系统的完全控制权，sudo 是一个允许普通用户在需要时以超级用户的身份执行特定的命令 adduser 和 useradd 都是在 Linux 系统上用于创建用户的命令，但 adduser命令更方便友好，尤其适用于交互式的用户创建 getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 大家所谓的不满，是不满自己没成为人上人吧，至于温饱，很多人已经绰绰有余了~ 2023-5-26 22:08:38]]></content>
+    <content type="text"><![CDATA[前言sudo命令应该是任何一个服务器使用人员都绕不开的命令，比如那个大名鼎鼎的删库跑路命令 sudo rm -rf /*，虽然经常使用，也知道用它能做一些普通用户无法完成的事情，那么它究竟是什么意思，有什么作用和好处，和超级无敌的 root 用户又有什么关系呢？接下来我们来简单梳理一下。 关于sudo的一些疑问sudo是什么sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令。它是 “Super User Do” 的缩写。超级用户通常是系统管理员，具有对操作系统的完全控制权。 当你以普通用户的身份登录到系统时，可能没有足够的权限来执行某些敏感的系统操作或访问某些文件。在这种情况下，可以使用 sudo 命令在临时提升权限的情况下执行特定命令。 使用 sudo 命令时，需要输入管理员密码以验证你的身份。一旦验证成功，就可以以超级用户的权限执行命令。这样可以确保系统安全，因为只有经过授权的用户才能执行特权操作。 例如，如果想要安装软件包或修改系统设置，但这些操作需要超级用户权限，你可以在命令前加上 sudo，然后输入密码以执行该命令。 以下是一个sudo命令使用的示例：1sudo apt-get install git 这个命令将使用 apt-get 工具安装一个软件包，由于它需要对系统进行修改，所以需要超级用户权限。通过使用 sudo，可以在普通用户的身份下临时获取这些权限来执行该操作。 sudo 和 root 的区别和联系sudo 和 root 在类 Unix 系统中具有不同的角色和功能。以下是它们之间的区别和联系： 权限级别： root 是超级用户，也称为系统管理员。拥有 root 权限意味着拥有对整个系统的完全控制权，可以执行所有操作并访问所有文件。相比之下，sudo 是一个命令，允许普通用户在需要时以超级用户的身份执行特定的命令。 使用方式： root 用户可以直接登录到系统并拥有持久的超级用户权限。而 sudo 是一种临时提升权限的机制，允许普通用户在需要时以超级用户的身份执行特定命令。普通用户可以使用 sudo 命令来运行特权命令，但在执行时需要输入管理员密码进行身份验证。 安全性： sudo 的使用可以提高系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少意外或恶意操作造成的潜在风险。相比之下，root 用户拥有系统的完全权限，因此使用 root 用户执行命令时需要格外小心，以免对系统造成损坏。 日常操作： 为了提高系统安全性，通常建议使用 sudo 来执行需要特权的命令，而不是直接使用 root 用户。使用 sudo 可以在普通用户的身份下执行特权命令，并避免了在常规操作中长时间保持 root 权限，从而减少了潜在的错误或安全风险。 总结来说，root 是系统的超级用户，拥有完全的权限，而 sudo 是一种临时提升权限的机制，允许普通用户以超级用户的身份执行特定命令。使用 sudo 可以提高系统的安全性，同时避免在日常操作中过多使用 root 用户带来的潜在风险。 使用 sudo 的好处使用 sudo 有以下几个好处： 安全性： sudo 增加了系统的安全性。通过限制普通用户的特权，只有在需要执行特定任务时才临时提升权限，可以减少潜在的错误或恶意操作对系统造成的风险。普通用户在执行需要特权的命令时需要输入管理员密码，这种身份验证确保只有经过授权的用户才能执行特权操作。 权限控制： sudo 允许系统管理员细粒度地控制用户对系统资源和命令的访问权限。管理员可以通过配置 sudo 的策略文件，精确地指定哪些用户可以执行哪些命令以及以何种方式执行。这种权限控制有助于实施最小权限原则，即用户只能以最低权限执行任务，从而降低了潜在的安全风险。 审计和日志记录： sudo 提供了审计和日志记录功能，可以记录执行特权操作的用户、时间和执行的命令。这对于追踪系统中的活动、故障排查和安全审计非常有价值。通过审计和日志记录，管理员可以了解特权操作的细节，以及哪些用户在何时执行了哪些命令。 限制特权操作： 使用 sudo 可以限制特权操作的范围。普通用户只有在需要执行特定命令时才能使用 sudo 提升权限。这种限制可以避免用户误操作或滥用超级用户权限，从而减少了对系统的潜在风险。 总而言之，使用 sudo 可以提高系统的安全性、实施最小权限原则、提供审计和日志记录功能，并限制特权操作的范围。这使得系统管理员能够更好地管理用户权限并降低潜在的风险。 怎样查看sudo命令日志可以使用适当的文本编辑器打开 sudo 日志文件：选择适用于你的系统的文本编辑器（如 nano、vim、或者其他）以超级用户权限打开 sudo 日志文件。日志文件的位置和名称可能会因操作系统的不同而异。下面是一些常见的 sudo 日志文件路径： Ubuntu、Debian 等基于 Debian 的系统： 1sudo nano /var/log/auth.log CentOS、Fedora、Red Hat 等基于 Red Hat 的系统： 1sudo nano /var/log/secure macOS： 1sudo nano /var/log/system.log 查看 sudo 日志文件通常需要管理员或超级用户权限。确保你具有足够的权限才能访问和查看日志文件。此外，一些操作系统可能还提供了特定的命令或工具来查看系统日志，例如 journalctl 命令在某些 Linux 发行版中可用于查看系统日志。你可以根据你的操作系统和日志管理方式来选择适合的方法来查看 sudo 日志。 修改sudo配置sudo的配置文件是 /etc/sudoers 但是不建议直接用文本工具打开它，一旦修改出错可能导致很多严重问题，可以使用 visudo 命令进行打开编辑，使用 visudo 命令编辑 sudoers 文件时，系统会执行语法检查以确保配置的正确性，以避免可能的权限问题，下面展示一个简单配置样例： 简单样例1234567891011# User privilege specificationroot ALL=(ALL:ALL) ALL# Allow members of group sudo to execute any command%sudo ALL=(ALL:ALL) ALL# Allow members of group admin to execute any command%admin ALL=(ALL:ALL) ALL# Allow specific user to run specific command as another userjohndoe ALL=(appuser) /usr/local/bin/git visudo 是一个用于编辑 sudoers 文件的命令，该文件包含了与 sudo（以管理员权限执行命令）相关的配置信息。在 sudoers 文件中，每一行都由多个列组成，其中包含不同的字段和含义。以下是 sudoers 文件中各列的一般含义： 列1：用户列表 该列指定了可以使用 sudo 命令的用户或用户组。 可以是单个用户名，如 “bob”。 可以是用户组前缀 “%” 后跟用户组名，如 “%admin”。 列2：主机列表 该列指定了可以在哪些主机上使用 sudo 命令。 可以是单个主机名，如 “localhost”。 可以是主机名前缀 “ALL”，表示适用于所有主机。 列3：=(运行 as) 列表 该列指定了可以以哪个用户身份来运行命令。 可以是单个用户名，如 “root”。 可以是用户组前缀 “ALL”，表示可以以任何用户身份运行命令。 =(ALL:ALL)：表示可以以任何用户身份 (ALL) 在任何终端 (ALL) 上运行命令。 列4：NOPASSWD: 标志 该列指定了是否需要输入密码才能使用 sudo 命令。 如果列中包含 “NOPASSWD:”，则表示不需要密码。 如果列为空或未包含 “NOPASSWD:”，则需要输入密码。 列5及以后：命令列表 该列指定了可以使用 sudo 命令执行的具体命令。 可以是完整的命令路径，如 “/usr/bin/apt-get”。 可以是通配符，如 “/usr/bin/*” 表示该目录下的所有命令。 复杂样例及解释下面是一个复杂一些的 visudo 配置示例，其中包含了多个用户、用户组和命令的授权规则： 1234567891011121314151617181920212223242526272829# User privilege specification## Allow root to run any commands on all hostsroot ALL=(ALL:ALL) ALL## Allow members of the admin group to run any commands on all hosts%admin ALL=(ALL:ALL) ALL## Allow specific user to run specific commands as root without passwordjohndoe ALL=(root) NOPASSWD: /bin/ls, /usr/bin/apt-get## Allow specific user to run commands in specific directories as another userjohndoe ALL=(appuser) /opt/app/bin/*johndoe ALL=(backupuser) /var/backup/scripts/*## Allow specific user to run specific command with arguments as rootjohndoe ALL=(root) /usr/sbin/usermod [a-z]*## Deny specific user to run any commandbanneduser ALL=(ALL:ALL) ALL, !/usr/bin/*## Allow members of the wheel group to run any commands on localhost without password%wheel localhost=(ALL:ALL) NOPASSWD: ALL## Allow users in the developer group to run specific commands with arguments%developer ALL=(ALL:ALL) /usr/bin/git *, /usr/bin/make clean## Allow users in the support group to restart specific services%support ALL=(root) /usr/sbin/service apache2 restart, /usr/sbin/service nginx restart 上述配置说明不考虑注释行，含义如下： 第1行表示允许 root 用户在所有主机上以任何用户身份执行任何命令。 第3行表示允许 johndoe 用户作为 root 用户以无需密码的方式执行 /bin/ls 和 /usr/bin/apt-get 命令。 第4行和第5行表示允许 johndoe 用户作为 appuser 用户或 backupuser 用户在特定目录下执行命令。 第6行表示允许 johndoe 用户作为 root 用户执行带有特定参数的 /usr/sbin/usermod 命令。 第7行表示禁止 banneduser 用户执行除 /usr/bin/* 之外的所有命令。 第8行表示允许 wheel 组的用户在 localhost 主机上以任何用户身份执行任何命令，且无需密码。 第9行表示允许 developer 组的用户执行带有特定参数的 /usr/bin/git 和 /usr/bin/make 命令。 第10行表示允许 support 组的用户作为 root 用户重启特定服务。 使用sudo用户创建用户并添加到 sudo 组在 Linux 上创建用户并将其添加到 sudo 组，可以按照以下步骤进行操作： 打开终端：在操作系统中打开终端或命令行界面。 使用 adduser 命令创建新用户： 1sudo adduser newuser 这将提示你输入新用户的密码和其他详细信息。 将新用户添加到 sudo 组。可以使用 usermod 命令执行此操作： 1sudo usermod -aG sudo newuser 这将将新用户 newuser 添加到 sudo 组中。 验证用户是否成功添加到 sudo 组。你可以通过执行以下命令来检查用户所属的组： 1groups newuser 如果 sudo 组在列表中显示，表示用户已成功添加到 sudo 组。 现在，新创建的用户已经添加到 sudo 组，拥有 sudo 权限。他们可以使用 sudo 命令以管理员权限执行特权操作。请确保将适当的权限授予新用户，以确保系统的安全性和合规性。 查看是否有sudo权限可以通过id命令查看指定用户是否在 sudo 组内，比如下面的用户就在27(sudo)这个组内： 12root@jenkins1604:~# id gyeeuid=1004(gyee) gid=1004(gyee) groups=1004(gyee),27(sudo) 也可以查看(sudo)组内是否包含当前用户：12root@jenkins1604:~# getent group sudosudo:x:27:admin,gyee getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息。它可以用于检索和显示与系统用户、组、网络服务和其他系统资源相关的信息 ，getent 命令的基本语法如下： 1getent database entry 其中，database 表示要查询的数据库，而 entry 则表示要获取的数据库条目。 以下是一些常见的 getent 命令示例： 获取系统中所有用户的信息： 1getent passwd 获取特定用户的信息： 1getent passwd &lt;username&gt; 获取系统中所有组的信息： 1getent group 获取特定组的信息： 1getent group &lt;groupname&gt; 获取系统中所有网络服务的信息（/etc/services 文件中定义的服务）： 1getent services 没有sudo权限时执行会被记录当没有sudo权限时，执行命令会输出以下信息，显示此操作被记录在案： 123gyee@jenkins1604:/root$ sudo usermod -aG sudo gyee[sudo] password for gyee:gyee is not in the sudoers file. This incident will be reported. 可以查询系统安全日志 12root@jenkins1604:~# cat /var/log/auth.log | grep gyeeMay 26 22:07:13 machine sudo: gyee : user NOT in sudoers ; TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/sbin/usermod -aG sudo gyee 总结 sudo 是一种在类 Unix 系统中使用的命令，用于以超级用户（superuser）的身份执行其他命令 root 是超级用户，拥有对整个系统的完全控制权，sudo 是一个允许普通用户在需要时以超级用户的身份执行特定的命令 adduser 和 useradd 都是在 Linux 系统上用于创建用户的命令，但 adduser命令更方便友好，尤其适用于交互式的用户创建 getent 是一个命令行工具，用于从系统数据库（如密码、组、主机、服务等）中获取条目的信息 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 大家所谓的不满，是不满自己没成为人上人吧，至于温饱，很多人已经绰绰有余了~ 2023-5-26 22:08:38]]></content>
       <categories>
         <category>linux</category>
       </categories>
@@ -111,10 +139,10 @@
       </categories>
       <tags>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>服务器</tag>
         <tag>dmesg</tag>
         <tag>oom</tag>
-        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -139,10 +167,10 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>git</tag>
         <tag>centos</tag>
         <tag>rpm</tag>
         <tag>yum</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -379,8 +407,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>nohup</tag>
         <tag>daemon</tag>
+        <tag>nohup</tag>
         <tag>setsid</tag>
         <tag>后台</tag>
       </tags>
@@ -652,8 +680,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>locate</tag>
         <tag>which</tag>
         <tag>grep</tag>
@@ -766,10 +794,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>commit</tag>
         <tag>git</tag>
-        <tag>branch</tag>
+        <tag>commit</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -978,9 +1006,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -992,9 +1020,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1235,10 +1263,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
         <tag>log</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1443,8 +1471,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1497,8 +1525,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1577,8 +1605,8 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>awk</tag>
         <tag>git</tag>
+        <tag>awk</tag>
         <tag>log</tag>
         <tag>统计</tag>
       </tags>
@@ -1773,8 +1801,8 @@
       <tags>
         <tag>版本控制</tag>
         <tag>Git</tag>
-        <tag>HEAD</tag>
         <tag>reset</tag>
+        <tag>HEAD</tag>
       </tags>
   </entry>
   <entry>
@@ -1785,8 +1813,8 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>工具</tag>
         <tag>git</tag>
+        <tag>工具</tag>
         <tag>mergetool</tag>
         <tag>文件冲突</tag>
         <tag>bc4</tag>
@@ -1943,8 +1971,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -1958,8 +1986,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2243,9 +2271,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2573,9 +2601,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
         <tag>linux</tag>
+        <tag>查找</tag>
         <tag>grep</tag>
       </tags>
   </entry>
