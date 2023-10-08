@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C/C++,keywords,xor_eq,co_await," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言源于上一篇中提到了 decltype是一个关键字，所以去查了现有的关键字列表，其实我对C/C++的关键字还停留在上世纪大概30多个的时代，虽然知道C++加了 auto、constexpr 等关键字，但查询过后才发现原来他扩充到了将近100个，而C语言的关键字也扩到了六七十个，有点震惊了。">
+<meta name="keywords" content="C&#x2F;C++,keywords,xor_eq,co_await">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++20中的关键字">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/10/07/C-20中的关键字/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言源于上一篇中提到了 decltype是一个关键字，所以去查了现有的关键字列表，其实我对C/C++的关键字还停留在上世纪大概30多个的时代，虽然知道C++加了 auto、constexpr 等关键字，但查询过后才发现原来他扩充到了将近100个，而C语言的关键字也扩到了六七十个，有点震惊了。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/571f2e791dfa484c82436da29a1e5b61.png">
+<meta property="og:updated_time" content="2023-10-08T15:08:12.248Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++20中的关键字">
+<meta name="twitter:description" content="前言源于上一篇中提到了 decltype是一个关键字，所以去查了现有的关键字列表，其实我对C/C++的关键字还停留在上世纪大概30多个的时代，虽然知道C++加了 auto、constexpr 等关键字，但查询过后才发现原来他扩充到了将近100个，而C语言的关键字也扩到了六七十个，有点震惊了。">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/571f2e791dfa484c82436da29a1e5b61.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/10/07/C-20中的关键字/"/>
+
+
+
+
+
+  <title>C++20中的关键字 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/10/07/C-20中的关键字/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++20中的关键字</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-10-07T23:34:23+08:00">
+                2023-10-07
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-10-08T23:08:12+08:00">
+                2023-10-08
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/10/07/C-20中的关键字/" class="leancloud_visitors" data-flag-title="C++20中的关键字">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,802(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>源于上一篇中提到了 <code>decltype</code>是一个关键字，所以去查了现有的关键字列表，其实我对C/C++的关键字还停留在上世纪大概30多个的时代，虽然知道C++加了 <code>auto</code>、<code>constexpr</code> 等关键字，但查询过后才发现原来他扩充到了将近100个，而C语言的关键字也扩到了六七十个，有点震惊了。</p>
+<a id="more"></a>
+<h1 id="关键字列表"><a href="#关键字列表" class="headerlink" title="关键字列表"></a>关键字列表</h1><p><img src="https://img-blog.csdnimg.cn/571f2e791dfa484c82436da29a1e5b61.png" alt="keywords"><br>这份列表来源于<a href="https://en.cppreference.com/w/cpp/keyword" target="_blank" rel="noopener">cppreference</a>，感兴趣的可以去看原文，下面对这些关键字进行一个简单的介绍，有些还是很陌生的。</p>
+<h1 id="关键字含义"><a href="#关键字含义" class="headerlink" title="关键字含义"></a>关键字含义</h1><table>
+<thead>
+<tr>
+<th style="text-align:left">关键字</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">alignas</td>
+<td style="text-align:left">指定类型或对象的对齐要求</td>
+</tr>
+<tr>
+<td style="text-align:left">alignof</td>
+<td style="text-align:left">查询类型的对齐要求</td>
+</tr>
+<tr>
+<td style="text-align:left">and</td>
+<td style="text-align:left">用作 <code>&amp;&amp;</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">and_eq</td>
+<td style="text-align:left">用作 <code>&amp;=</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">asm</td>
+<td style="text-align:left">汇编（asm）声明给予在 C++ 程序中嵌入汇编语言源代码的能力</td>
+</tr>
+<tr>
+<td style="text-align:left">atomic_cancel (TM TS)</td>
+<td style="text-align:left">原子块，若抛出异常，则调用 std::abort，除非该异常是用于事务取消的异常之一，这种情况下事务被取消</td>
+</tr>
+<tr>
+<td style="text-align:left">atomic_commit (TM TS)</td>
+<td style="text-align:left">原子块，若抛出异常，则正常地提交事务</td>
+</tr>
+<tr>
+<td style="text-align:left">atomic_noexcept (TM TS)</td>
+<td style="text-align:left">原子块，若抛出异常，则调用 std::abort</td>
+</tr>
+<tr>
+<td style="text-align:left">auto</td>
+<td style="text-align:left">可以在声明变量的时候根据变量初始值的类型自动为此变量选择匹配的类型（C++11）</td>
+</tr>
+<tr>
+<td style="text-align:left">bitand</td>
+<td style="text-align:left">用作 <code>&amp;</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">bitor</td>
+<td style="text-align:left">用作  `\</td>
+<td>`  的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">bool</td>
+<td style="text-align:left">足以存放两个值 true 或 false 之一的类型</td>
+</tr>
+<tr>
+<td style="text-align:left">break</td>
+<td style="text-align:left">控制将被转移到紧跟其外围循环或 switch 的下一位置</td>
+</tr>
+<tr>
+<td style="text-align:left">case</td>
+<td style="text-align:left">根据条件的值，将控制流转移到若干语句之一</td>
+</tr>
+<tr>
+<td style="text-align:left">catch</td>
+<td style="text-align:left">和try联合使用，将一或多个异常处理块（catch 子句）与复合语句关联</td>
+</tr>
+<tr>
+<td style="text-align:left">char</td>
+<td style="text-align:left">能在目标系统上最有效地处理的字符表示的类型</td>
+</tr>
+<tr>
+<td style="text-align:left">char8_t</td>
+<td style="text-align:left">UTF-8 字符表示的类型，要求大到足以表示任何 UTF-8 编码单元（ 8 位）</td>
+</tr>
+<tr>
+<td style="text-align:left">char16_t</td>
+<td style="text-align:left">UTF-16 字符表示的类型，要求大到足以表示任何 UTF-16 编码单元（ 16 位）</td>
+</tr>
+<tr>
+<td style="text-align:left">char32_t</td>
+<td style="text-align:left">UTF-32 字符表示的类型，要求大到足以表示任何 UTF-32 编码单元（ 32 位）， C++ 标准还保证 1 == sizeof(char) &lt;= sizeof(short) &lt;= sizeof(int) &lt;= sizeof(long) &lt;= sizeof(long long)</td>
+</tr>
+<tr>
+<td style="text-align:left">class</td>
+<td style="text-align:left">声明类</td>
+</tr>
+<tr>
+<td style="text-align:left">compl</td>
+<td style="text-align:left">用作 <code>~</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">concept</td>
+<td style="text-align:left">声明具名类型要求</td>
+</tr>
+<tr>
+<td style="text-align:left">const</td>
+<td style="text-align:left">类型限定符，定义类型为常量</td>
+</tr>
+<tr>
+<td style="text-align:left">consteval</td>
+<td style="text-align:left">指定函数是立即函数（immediate function），即每次调用该函数必须产生编译时常量</td>
+</tr>
+<tr>
+<td style="text-align:left">constexpr</td>
+<td style="text-align:left">指定变量或函数的值可在常量表达式中出现，在 constexpr if 语句中，条件的值必须是可按语境转换到 bool 类型的经转换常量表达式</td>
+</tr>
+<tr>
+<td style="text-align:left">constinit</td>
+<td style="text-align:left">断言变量拥有静态初始化，即零初始化与常量初始化</td>
+</tr>
+<tr>
+<td style="text-align:left">const_cast</td>
+<td style="text-align:left">用const_cast来去除const限定</td>
+</tr>
+<tr>
+<td style="text-align:left">continue</td>
+<td style="text-align:left">导致外围 for、范围 for、while 或 do-while 循环体的剩余部分被跳过</td>
+</tr>
+<tr>
+<td style="text-align:left">co_await</td>
+<td style="text-align:left">协程是能暂停执行以在之后恢复的函数</td>
+</tr>
+<tr>
+<td style="text-align:left">co_return</td>
+<td style="text-align:left">协程中的 return 语句</td>
+</tr>
+<tr>
+<td style="text-align:left">co_yield</td>
+<td style="text-align:left">协程中表达式向调用方返回一个值并暂停当前协程</td>
+</tr>
+<tr>
+<td style="text-align:left">decltype</td>
+<td style="text-align:left">检查实体的声明类型，或表达式的类型和值类别</td>
+</tr>
+<tr>
+<td style="text-align:left">default</td>
+<td style="text-align:left">1.switch 语句用于声明默认情况标号。2.显式默认化的函数定义令编译器为某个类生成特殊成员函数或比较运算符的显式指令</td>
+</tr>
+<tr>
+<td style="text-align:left">delete</td>
+<td style="text-align:left">1.销毁先前由 new 表达式分配的对象，并释放获得的内存区域。2.弃置函数(C++11 起)</td>
+</tr>
+<tr>
+<td style="text-align:left">do</td>
+<td style="text-align:left">do-while 循环，用作循环的声明</td>
+</tr>
+<tr>
+<td style="text-align:left">double</td>
+<td style="text-align:left">浮点类型</td>
+</tr>
+<tr>
+<td style="text-align:left">dynamic_cast</td>
+<td style="text-align:left">沿继承层级向上、向下及侧向，安全地转换到其他类的指针和引用</td>
+</tr>
+<tr>
+<td style="text-align:left">else</td>
+<td style="text-align:left">if 语句用作另一分支的声明</td>
+</tr>
+<tr>
+<td style="text-align:left">enum</td>
+<td style="text-align:left">声明枚举类型</td>
+</tr>
+<tr>
+<td style="text-align:left">explicit</td>
+<td style="text-align:left">1.指定构造函数或转换函数 (C++11 起)或推导指引 (C++17 起)为显式，即它不能用于隐式转换和复制初始化。2.explicit 说明符可以与常量表达式一同使用。当且仅当该常量表达式求值为 true 时函数为显式。</td>
+</tr>
+<tr>
+<td style="text-align:left">export</td>
+<td style="text-align:left">1.用于标记模板定义为被导出，这允许在其他翻译单元中声明但不定义同一模板。(C++11 前) 2.不使用并保留该关键词。(C++11 起)(C++20 前) 3.标记一个声明、一组声明或另一模块为当前模块所导出。(C++20 起)</td>
+</tr>
+<tr>
+<td style="text-align:left">extern</td>
+<td style="text-align:left">1.具有外部连接的静态存储期说明符 2.语言连接说明 3.显示模板实例化声明（或“extern 模板”）</td>
+</tr>
+<tr>
+<td style="text-align:left">false</td>
+<td style="text-align:left">布尔字面量</td>
+</tr>
+<tr>
+<td style="text-align:left">float</td>
+<td style="text-align:left">单精度浮点类型</td>
+</tr>
+<tr>
+<td style="text-align:left">for</td>
+<td style="text-align:left">用于该循环的声明</td>
+</tr>
+<tr>
+<td style="text-align:left">friend</td>
+<td style="text-align:left">友元声明出现于类体内，并向一个函数或另一个类授予对包含友元声明的类的私有及受保护成员的访问权。</td>
+</tr>
+<tr>
+<td style="text-align:left">goto</td>
+<td style="text-align:left">无条件转移控制流。当使用其他语句不可能将控制转移到所需位置时使用。</td>
+</tr>
+<tr>
+<td style="text-align:left">if</td>
+<td style="text-align:left">有条件地执行另一条语句。用于需要基于运行时或编译时条件执行的代码。</td>
+</tr>
+<tr>
+<td style="text-align:left">inline</td>
+<td style="text-align:left">1.将函数声明为一个 内联（inline）函数。完全在 class/struct/union 的定义之内定义的函数，无论它是成员函数还是非成员 friend 函数，均为隐式的内联函数。2.内联命名空间</td>
+</tr>
+<tr>
+<td style="text-align:left">int</td>
+<td style="text-align:left">基本整数类型</td>
+</tr>
+<tr>
+<td style="text-align:left">long</td>
+<td style="text-align:left">长整数类型</td>
+</tr>
+<tr>
+<td style="text-align:left">mutable(1)</td>
+<td style="text-align:left">1.容许在即便包含它的对象被声明为 const 时仍可修改声明为 mutable 的类成员。2.mutable 用于指定不影响类的外部可观察状态的成员（通常用于互斥体、记忆缓存、惰性求值和访问指令等）。3.从按复制捕获的形参中移除的 const 限定性的 lambda 声明符 (C++11 起) 4.被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中</td>
+</tr>
+<tr>
+<td style="text-align:left">namespace</td>
+<td style="text-align:left">命名空间声明</td>
+</tr>
+<tr>
+<td style="text-align:left">new</td>
+<td style="text-align:left">.创建并初始化拥有动态存储期的对象，这些对象的生存期不受它们创建时所在的作用域限制</td>
+</tr>
+<tr>
+<td style="text-align:left">noexcept (C++11 起)</td>
+<td style="text-align:left">1.noexcept 运算符进行编译时检查，若表达式声明为不抛出任何异常则返回 true 2.指定函数是否抛出异常</td>
+</tr>
+<tr>
+<td style="text-align:left">not</td>
+<td style="text-align:left">用作 <code>!</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">not_eq</td>
+<td style="text-align:left">用作 <code>!=</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">nullptr (C++11 起)</td>
+<td style="text-align:left">代表指针字面量，保持空指针常量的含义</td>
+</tr>
+<tr>
+<td style="text-align:left">operator</td>
+<td style="text-align:left">重载的运算符是具有特殊的函数名的函数</td>
+</tr>
+<tr>
+<td style="text-align:left">or</td>
+<td style="text-align:left">用作</td>
+<td>的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">or_eq</td>
+<td style="text-align:left">用作 `\</td>
+<td>=` 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">private</td>
+<td style="text-align:left">该访问说明符之后的各个成员具有私有成员访问</td>
+</tr>
+<tr>
+<td style="text-align:left">protected</td>
+<td style="text-align:left">该访问说明符之后的各个成员具有受保护成员访问</td>
+</tr>
+<tr>
+<td style="text-align:left">public</td>
+<td style="text-align:left">该访问说明符之后的各个成员具有公开成员访问</td>
+</tr>
+<tr>
+<td style="text-align:left">reflexpr (反射 TS)</td>
+<td style="text-align:left">反射是指程序在运行时动态获取对象属性与方法的一种机制</td>
+</tr>
+<tr>
+<td style="text-align:left">register</td>
+<td style="text-align:left">1.动存储期，另提示编译器将此对象置于处理器的寄存器。2.不使用并保留该关键词</td>
+</tr>
+<tr>
+<td style="text-align:left">reinterpret_cast</td>
+<td style="text-align:left">通过重新解释底层位模式在类型间转换。</td>
+</tr>
+<tr>
+<td style="text-align:left">requires (C++20 起)</td>
+<td style="text-align:left">1.对模板形参指定一个求值为要求的常量表达式。 2.于模板声明中指定关联制约</td>
+</tr>
+<tr>
+<td style="text-align:left">return</td>
+<td style="text-align:left">终止当前函数并返回指定值（若存在）给调用方函数</td>
+</tr>
+<tr>
+<td style="text-align:left">short</td>
+<td style="text-align:left">至少 16 位的宽度（和long一样表示大小）</td>
+</tr>
+<tr>
+<td style="text-align:left">signed</td>
+<td style="text-align:left">目标类型将拥有有符号表示（若省略则此为默认）</td>
+</tr>
+<tr>
+<td style="text-align:left">sizeof(1)</td>
+<td style="text-align:left">1.查询对象或类型的大小。2.在需要知道对象的实际大小时使用。3.返回形参包中的元素数量</td>
+</tr>
+<tr>
+<td style="text-align:left">static</td>
+<td style="text-align:left">1.声明具有静态存储期和内部连接的命名空间成员。2.定义具有静态存储期且仅初始化一次的块作用域变量。3.声明不绑定到特定实例的类成员</td>
+</tr>
+<tr>
+<td style="text-align:left">static_assert (C++11 起)</td>
+<td style="text-align:left">进行编译时断言检查</td>
+</tr>
+<tr>
+<td style="text-align:left">static_cast</td>
+<td style="text-align:left">用隐式和用户定义转换的组合在类型间转换</td>
+</tr>
+<tr>
+<td style="text-align:left">struct</td>
+<td style="text-align:left">1.复合类型的声明。2.有作用域枚举类型的声明(C++11 起) 3.若存在于作用域中的某个函数或变量所拥有的名字，与某个非联合体类类型的名字相同，则可在其名字之前加上 struct 来消歧义，这产生一个详述类型说明符</td>
+</tr>
+<tr>
+<td style="text-align:left">switch</td>
+<td style="text-align:left">根据条件的值，将控制流转移到若干语句之一</td>
+</tr>
+<tr>
+<td style="text-align:left">synchronized (TM TS)</td>
+<td style="text-align:left">程序中的所有最外层同步块都以一个单独的全序执行</td>
+</tr>
+<tr>
+<td style="text-align:left">template</td>
+<td style="text-align:left">1.声明模板。 2.在模板定义中，template 可用于将某个待决名声明为模板</td>
+</tr>
+<tr>
+<td style="text-align:left">this</td>
+<td style="text-align:left">this 是一个纯右值表达式，其值是隐式对象形参（在其上调用非静态成员函数的对象）的地址</td>
+</tr>
+<tr>
+<td style="text-align:left">thread_local (C++11 起)</td>
+<td style="text-align:left">线程存储期</td>
+</tr>
+<tr>
+<td style="text-align:left">throw</td>
+<td style="text-align:left">1.对错误条件发信号，并执行错误处理代码 2.列出函数可能直接或间接抛出的异常</td>
+</tr>
+<tr>
+<td style="text-align:left">true</td>
+<td style="text-align:left">bool 类型的纯右值，为真</td>
+</tr>
+<tr>
+<td style="text-align:left">try</td>
+<td style="text-align:left">将一或多个异常处理块（catch 子句）与复合语句关联</td>
+</tr>
+<tr>
+<td style="text-align:left">typedef</td>
+<td style="text-align:left">创建能在任何位置替代（可能复杂的）类型名的别名</td>
+</tr>
+<tr>
+<td style="text-align:left">typeid</td>
+<td style="text-align:left">查询类型的信息。用于必须知晓多态对象的动态类型的场合以及静态类型鉴别</td>
+</tr>
+<tr>
+<td style="text-align:left">typename</td>
+<td style="text-align:left">1.在模板声明中，typename 可用作 class 的代替品，以声明类型模板形参和模板形参 (C++17 起) 2.在模板的声明或定义内，typename 可用于声明某个待决的有限定名是类型。3.在模板的声明或定义内， (C++11 前)typename 可在非待决的有限定类型名之前使用。此情况下它没有效果。4.在类型要求的要求中。(C++20 起)</td>
+</tr>
+<tr>
+<td style="text-align:left">union</td>
+<td style="text-align:left">1.联合体类型的声明。2.若存在于作用域中的某个函数或变量所拥有的名字与某个联合体类型的名字相同，则可在该名字之前加上 union 以消歧义，这产生详述类型说明符</td>
+</tr>
+<tr>
+<td style="text-align:left">unsigned</td>
+<td style="text-align:left">目标类型将拥有无符号表示</td>
+</tr>
+<tr>
+<td style="text-align:left">using</td>
+<td style="text-align:left">1.对命名空间的 using 指令及对命名空间成员的 using 声明。2.对类成员的 using 声明。3.类型别名与别名模板声明 (C++11 起)</td>
+</tr>
+<tr>
+<td style="text-align:left">virtual</td>
+<td style="text-align:left">1.虚函数说明符。2.虚基类说明符</td>
+</tr>
+<tr>
+<td style="text-align:left">void</td>
+<td style="text-align:left">1.void 类型。2.无形参函数的形参列表</td>
+</tr>
+<tr>
+<td style="text-align:left">volatile</td>
+<td style="text-align:left">定义类型为易变，确保本条指令不会因编译器的优化而省略，且要求每次直接读值</td>
+</tr>
+<tr>
+<td style="text-align:left">wchar_t</td>
+<td style="text-align:left">宽字符表示的类型</td>
+</tr>
+<tr>
+<td style="text-align:left">while</td>
+<td style="text-align:left">1.while 循环的声明。2.do-while 循环终止条件的声明</td>
+</tr>
+<tr>
+<td style="text-align:left">xor</td>
+<td style="text-align:left">作为 <code>^</code> 的替代写法</td>
+</tr>
+<tr>
+<td style="text-align:left">xor_eq</td>
+<td style="text-align:left">用作 <code>^=</code> 的替代写法</td>
+</tr>
+</tbody>
+</table>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>C++关键字从C++11开始快速扩张，到C++20标准已经有100个左右了</li>
+<li>C语言关键字发展到现在也有60多个了</li>
+<li>像 <code>xor_eq</code>、<code>or_eq</code> 这些关键字就是对原来的运算符号换了个写法，感觉上没有什么用，只是不用敲特殊符号了</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/133655454" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>好日子都是自己争取来的~</p>
+<p>2023-10-7 23:34:23</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/10/07/C-20中的关键字/" title="C++20中的关键字">http://AlbertGithubHome.github.io/blog/2023/10/07/C-20中的关键字/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
+          
+            <a href="/blog/tags/keywords/" rel="tag"><i class="fa fa-tag"></i> keywords</a>
+          
+            <a href="/blog/tags/xor-eq/" rel="tag"><i class="fa fa-tag"></i> xor_eq</a>
+          
+            <a href="/blog/tags/co-await/" rel="tag"><i class="fa fa-tag"></i> co_await</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/10/07/linux环境下如果掌控了系统root账户就能对上面安装的MySQL数据为所欲为了吗/" rel="next" title="linux环境下如果掌控了系统root账户就能对上面安装的MySQL数据为所欲为了吗">
+                <i class="fa fa-chevron-left"></i> linux环境下如果掌控了系统root账户就能对上面安装的MySQL数据为所欲为了吗
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2023/10/08/废了九牛二虎之力终于修改了MySQL8-0的root密码/" rel="prev" title="废了九牛二虎之力终于修改了MySQL8.0的root密码">
+                废了九牛二虎之力终于修改了MySQL8.0的root密码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">225</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">539</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关键字列表"><span class="nav-number">2.</span> <span class="nav-text">关键字列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关键字含义"><span class="nav-number">3.</span> <span class="nav-text">关键字含义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

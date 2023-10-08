@@ -1,6 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[废了九牛二虎之力终于修改了MySQL8.0的root密码]]></title>
+    <url>%2Fblog%2F2023%2F10%2F08%2F%E5%BA%9F%E4%BA%86%E4%B9%9D%E7%89%9B%E4%BA%8C%E8%99%8E%E4%B9%8B%E5%8A%9B%E7%BB%88%E4%BA%8E%E4%BF%AE%E6%94%B9%E4%BA%86MySQL8-0%E7%9A%84root%E5%AF%86%E7%A0%81%2F</url>
+    <content type="text"><![CDATA[前言上次说到在Ubuntu系统上安装MySQL8.0之后默认是没有密码的，如果想设置密码需要写成ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;xxx&#39;; 的形式，其实在用这种方式之前，我还使用功能了mysql_secure_installation这个MySQL自带的程序来设置密码，但是没生效，为什么这个看起来很正规的方式不生效的呢？接下来一起找找原因。 使用mysql_secure_installation使用步骤比较简单，就按照提示来输入就可以了，这是我第二次运行，第一次运行时还要加个 ‘Would you like to setup VALIDATE PASSWORD component?’ 步骤 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657root@w-dev:~# mysql_secure_installationSecuring the MySQL server deployment.Enter password for user root:The 'validate_password' component is installed on the server.The subsequent steps will run with the existing configurationof the component.Using existing password for root.Estimated strength of the password: 50Change the password for root ? ((Press y|Y for Yes, any other key for No) : yNew password:Re-enter new password:Estimated strength of the password: 50Do you wish to continue with the password provided?(Press y|Y for Yes, any other key for No) : yBy default, a MySQL installation has an anonymous user,allowing anyone to log into MySQL without having to havea user account created for them. This is intended only fortesting, and to make the installation go a bit smoother.You should remove them before moving into a productionenvironment.Remove anonymous users? (Press y|Y for Yes, any other key for No) : ySuccess.Normally, root should only be allowed to connect from'localhost'. This ensures that someone cannot guess atthe root password from the network.Disallow root login remotely? (Press y|Y for Yes, any other key for No) : ySuccess.By default, MySQL comes with a database named 'test' thatanyone can access. This is also intended only for testing,and should be removed before moving into a productionenvironment.Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y - Dropping test database...Success. - Removing privileges on test database...Success.Reloading the privilege tables will ensure that all changesmade so far will take effect immediately.Reload privilege tables now? (Press y|Y for Yes, any other key for No) : ySuccess.All done! 那么这个程序具体干了哪些事呢，下面来解释一下。 mysql_secure_installation 是一个 MySQL 提供的命令行工具，用于帮助加强和改善 MySQL 服务器的安全性。当首次安装 MySQL 后，运行此工具可以执行一系列的操作来提高 MySQL 服务器的安全性，并确保默认设置不会导致潜在的安全漏洞。以下是 mysql_secure_installation 工具执行的主要任务： 设置 root 密码： 如果您在安装 MySQL 时没有为 root 用户设置密码，mysql_secure_installation 会提示您设置 root 密码。设置 root 密码是非常重要的，因为 root 用户具有最高的权限，拥有对 MySQL 服务器的完全控制。 删除匿名用户： mysql_secure_installation 会删除默认情况下存在的匿名用户。匿名用户是指没有用户名和密码就能访问 MySQL 服务器的用户。删除这些用户可以减少潜在的安全风险。 禁止远程 root 登录： 默认情况下，MySQL 允许 root 用户从任何主机登录。mysql_secure_installation 会提示您是否禁止 root 用户从远程主机登录，以减少潜在的远程攻击风险。 删除测试数据库： 默认情况下，MySQL 安装包含一个名为 “test” 的测试数据库，这个数据库可能会成为潜在的攻击目标。mysql_secure_installation 会提示您是否删除测试数据库。 刷新权限： 完成上述任务后，mysql_secure_installation 会刷新 MySQL 权限表，以确保更改生效。 mysql_secure_installation 工具有助于在 MySQL 安装完成后采取一些基本的安全措施，以减少潜在的风险和攻击。然而，这只是开始，为了更好地保护 MySQL 服务器和数据，您还应该采取其他安全措施，如定期备份、限制用户权限、监控数据库活动等。 mysql_secure_installation 为什么设置root密码无效看上面的描述这个程序挺靠谱的，为啥设置密码不好使呢？遵循着网络大神们的脚本，我找到了一个 mysql_secure_installation.sh脚本，来自[twitter-forks/mysql]开源库，其中包含这样一段代码： 12345678910111213141516esc_pass=`basic_single_escape "$password1"`do_query "UPDATE mysql.user SET Password=PASSWORD('$esc_pass') WHERE User='root';"if [ $? -eq 0 ]; thenecho "Password updated successfully!"echo "Reloading privilege tables.."reload_privilege_tablesif [ $? -eq 1 ]; then clean_and_exitfiechorootpass=$password1make_configelseecho "Password update failed!"clean_and_exitfi &quot;UPDATE mysql.user SET Password=PASSWORD(&#39;$esc_pass&#39;) WHERE User=&#39;root&#39;;&quot; 这个脚本里居然用了我们之前提到的已经失效的更新方式，但是我发现我在Ubuntu系统下安装的mysql_secure_installation是一个二进制程序，不是shell脚本，所以我又找到了mysql的源码程序，其中包含这样一段： 1234567891011 query = (char *)my_malloc(PSI_NOT_INSTRUMENTED, password_len + 50, MYF(MY_WME)); end = my_stpmov(query, "SET PASSWORD="); *end++ = '\''; end += mysql_real_escape_string_quote(mysql, end, password, (ulong)password_len, '\''); *end++ = '\''; if (mysql_real_query(mysql, query, (ulong)(end - query))) &#123; my_free(query); return false;&#125; 里面包含了&quot;SET PASSWORD=&quot;的字样，看起来不太靠谱的样子，需要注意的是，在 MySQL 5.7 版本之后，SET PASSWORD 命令已被弃用，推荐使用 ALTER USER 命令来修改密码。例如： 1ALTER USER 'root'@'localhost' IDENTIFIED BY '新密码'; 这个命令更加直观，并且与最新版本的 MySQL 兼容。同样，将 &#39;新密码&#39; 替换为您希望设置的新密码。 难道是MySQL 8.0没有更新工具的代码？暂时不得而知，这或许就是mysql_secure_installation设置密码不生效的原因。 ALTER USER再生事端前文提到了一种更加直观的设置新密码的方式 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;新密码&#39;;，但是在我这行不通，不仅我这行不通，网上也有很多人说设置不了，需要加上插件名称 WITH mysql_native_password，改为 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;新密码&#39;; 才可以，这又是为什么呢？ 执行 select host,user,plugin,authentication_string from mysql.user; 语句查看发现： 1234567891011mysql&gt; select host,user,plugin,authentication_string from mysql.user;+-----------+------------------+-----------------------+------------------------------------------------------------------------+| host | user | plugin | authentication_string |+-----------+------------------+-----------------------+------------------------------------------------------------------------+| localhost | zone1 | mysql_native_password | *4C7684A2CD28A1C3C55CC832E6O817FCE3C5B5DB || localhost | mysql.infoschema | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | mysql.session | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | mysql.sys | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | root | auth_socket | || localhost | admin | mysql_native_password | *F52COBE5FFB5FFCCD5BFD976OADEB81081AE4787 |+-----------+------------------+-----------------------+------------------------------------------------------------------------+ 原来每个账户还有默认的不同的密码管理插件，用于验证和管理用户密码，mysql_native_password、auth_socket和caching_sha2_password这三种插件的含义如下： mysql_native_password 加密算法： 使用较旧的哈希算法，如SHA-1或SHA-256，取决于 MySQL 版本。 认证方式： 用户密码以哈希形式存储在系统表中，服务器在用户登录时将明文密码哈希并与数据库中存储的哈希进行比较。 支持远程登录： 支持远程密码登录，可以从远程主机登录 MySQL。 适用场景： 适用于需要与旧版 MySQL 兼容或需要与其他应用程序或系统进行集成的情况。 caching_sha2_password 加密算法： 使用 SHA-256 进行加密，提供更高级别的安全性。 支持版本： 从 MySQL 5.7.4 开始，caching_sha2_password 成为默认的密码插件。 认证方式： 用户密码以加密形式存储在系统表中，并且在用户登录时，服务器将明文密码哈希并与数据库中存储的哈希进行比较。 支持远程登录： 支持远程密码登录，可以从远程主机登录 MySQL。 auth_socket 认证方式： 不存储密码哈希，而是依赖于操作系统（Linux）的用户认证机制。只有与操作系统用户账户关联的 MySQL 用户可以登录，而不需要密码。 适用场景： 通常用于本地连接，因为它要求数据库用户和操作系统用户名称一致。 安全性： 提供了一定的安全性，因为不需要存储密码哈希，但需要确保服务器的用户账户和 MySQL 用户账户的一致性。 总结来说，这些密码插件之间的区别主要涉及到加密算法、认证方式以及适用场景。caching_sha2_password 提供更高级别的安全性，而 auth_socket 依赖于操作系统用户认证机制，mysql_native_password 则提供与旧版 MySQL 兼容性。使用前应根据安全性需求、用户管理和应用程序集成的要求来选择合适的密码插件。一般来说，推荐使用较新且安全性更高的密码插件，如caching_sha2_password。 测试后发现，MySQL8.0默认安装后root用户的默认插件是 auth_socket，这种插件没办法设置密码，所以指定插件为 mysql_native_password 时就可以设置密码了，但是根据建议，我们应该选择 caching_sha2_password插件。 肯定好使的MySQL初始化方法 apt install mysql-server mysql ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH caching_sha2_password BY &#39;新密码&#39;; flush privileges; exit; 总结 安装MySQL8.0后使用ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH caching_sha2_password BY &#39;xxx&#39;;设置密码 mysql_secure_installation工具不好使的原因目前来看是源代码没有工具的源代码没有及时更新，与MySQL版本不匹配 mysql_secure_installation另外的几项功能，比如删除匿名用户、删除测试数据库、禁止远程登录在安装完貌似都处理好了 综上来看，难道mysql_secure_installation工具已经被废弃了？ ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 你们的一切都是我的，只要留心你将获得无穷的助力，很多东西不必从头开始，既然做不成巨人，就从巨人的肩膀上出发吧~ 证件照尺寸查询一寸 295413px | 2535mm二寸 413579px | 3549mm小一寸 260378px | 2232mm大一寸 390567px | 3348mm小二寸 413531px | 3545mm大二寸 413626px | 3553mm三寸 650992px | 5584mm四寸 8981181px | 76100mm五寸 10501500px | 89127mm 2023-10-8 20:56:28]]></content>
+      <categories>
+        <category>Mysql</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>root</tag>
+        <tag>mysql_secure_installation</tag>
+        <tag>AlterUser</tag>
+        <tag>修改密码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C++20中的关键字]]></title>
+    <url>%2Fblog%2F2023%2F10%2F07%2FC-20%E4%B8%AD%E7%9A%84%E5%85%B3%E9%94%AE%E5%AD%97%2F</url>
+    <content type="text"><![CDATA[前言源于上一篇中提到了 decltype是一个关键字，所以去查了现有的关键字列表，其实我对C/C++的关键字还停留在上世纪大概30多个的时代，虽然知道C++加了 auto、constexpr 等关键字，但查询过后才发现原来他扩充到了将近100个，而C语言的关键字也扩到了六七十个，有点震惊了。 关键字列表这份列表来源于cppreference，感兴趣的可以去看原文，下面对这些关键字进行一个简单的介绍，有些还是很陌生的。 关键字含义 关键字 含义 alignas 指定类型或对象的对齐要求 alignof 查询类型的对齐要求 and 用作 &amp;&amp; 的替代写法 and_eq 用作 &amp;= 的替代写法 asm 汇编（asm）声明给予在 C++ 程序中嵌入汇编语言源代码的能力 atomic_cancel (TM TS) 原子块，若抛出异常，则调用 std::abort，除非该异常是用于事务取消的异常之一，这种情况下事务被取消 atomic_commit (TM TS) 原子块，若抛出异常，则正常地提交事务 atomic_noexcept (TM TS) 原子块，若抛出异常，则调用 std::abort auto 可以在声明变量的时候根据变量初始值的类型自动为此变量选择匹配的类型（C++11） bitand 用作 &amp; 的替代写法 bitor 用作 `\ ` 的替代写法 bool 足以存放两个值 true 或 false 之一的类型 break 控制将被转移到紧跟其外围循环或 switch 的下一位置 case 根据条件的值，将控制流转移到若干语句之一 catch 和try联合使用，将一或多个异常处理块（catch 子句）与复合语句关联 char 能在目标系统上最有效地处理的字符表示的类型 char8_t UTF-8 字符表示的类型，要求大到足以表示任何 UTF-8 编码单元（ 8 位） char16_t UTF-16 字符表示的类型，要求大到足以表示任何 UTF-16 编码单元（ 16 位） char32_t UTF-32 字符表示的类型，要求大到足以表示任何 UTF-32 编码单元（ 32 位）， C++ 标准还保证 1 == sizeof(char) &lt;= sizeof(short) &lt;= sizeof(int) &lt;= sizeof(long) &lt;= sizeof(long long) class 声明类 compl 用作 ~ 的替代写法 concept 声明具名类型要求 const 类型限定符，定义类型为常量 consteval 指定函数是立即函数（immediate function），即每次调用该函数必须产生编译时常量 constexpr 指定变量或函数的值可在常量表达式中出现，在 constexpr if 语句中，条件的值必须是可按语境转换到 bool 类型的经转换常量表达式 constinit 断言变量拥有静态初始化，即零初始化与常量初始化 const_cast 用const_cast来去除const限定 continue 导致外围 for、范围 for、while 或 do-while 循环体的剩余部分被跳过 co_await 协程是能暂停执行以在之后恢复的函数 co_return 协程中的 return 语句 co_yield 协程中表达式向调用方返回一个值并暂停当前协程 decltype 检查实体的声明类型，或表达式的类型和值类别 default 1.switch 语句用于声明默认情况标号。2.显式默认化的函数定义令编译器为某个类生成特殊成员函数或比较运算符的显式指令 delete 1.销毁先前由 new 表达式分配的对象，并释放获得的内存区域。2.弃置函数(C++11 起) do do-while 循环，用作循环的声明 double 浮点类型 dynamic_cast 沿继承层级向上、向下及侧向，安全地转换到其他类的指针和引用 else if 语句用作另一分支的声明 enum 声明枚举类型 explicit 1.指定构造函数或转换函数 (C++11 起)或推导指引 (C++17 起)为显式，即它不能用于隐式转换和复制初始化。2.explicit 说明符可以与常量表达式一同使用。当且仅当该常量表达式求值为 true 时函数为显式。 export 1.用于标记模板定义为被导出，这允许在其他翻译单元中声明但不定义同一模板。(C++11 前) 2.不使用并保留该关键词。(C++11 起)(C++20 前) 3.标记一个声明、一组声明或另一模块为当前模块所导出。(C++20 起) extern 1.具有外部连接的静态存储期说明符 2.语言连接说明 3.显示模板实例化声明（或“extern 模板”） false 布尔字面量 float 单精度浮点类型 for 用于该循环的声明 friend 友元声明出现于类体内，并向一个函数或另一个类授予对包含友元声明的类的私有及受保护成员的访问权。 goto 无条件转移控制流。当使用其他语句不可能将控制转移到所需位置时使用。 if 有条件地执行另一条语句。用于需要基于运行时或编译时条件执行的代码。 inline 1.将函数声明为一个 内联（inline）函数。完全在 class/struct/union 的定义之内定义的函数，无论它是成员函数还是非成员 friend 函数，均为隐式的内联函数。2.内联命名空间 int 基本整数类型 long 长整数类型 mutable(1) 1.容许在即便包含它的对象被声明为 const 时仍可修改声明为 mutable 的类成员。2.mutable 用于指定不影响类的外部可观察状态的成员（通常用于互斥体、记忆缓存、惰性求值和访问指令等）。3.从按复制捕获的形参中移除的 const 限定性的 lambda 声明符 (C++11 起) 4.被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中 namespace 命名空间声明 new .创建并初始化拥有动态存储期的对象，这些对象的生存期不受它们创建时所在的作用域限制 noexcept (C++11 起) 1.noexcept 运算符进行编译时检查，若表达式声明为不抛出任何异常则返回 true 2.指定函数是否抛出异常 not 用作 ! 的替代写法 not_eq 用作 != 的替代写法 nullptr (C++11 起) 代表指针字面量，保持空指针常量的含义 operator 重载的运算符是具有特殊的函数名的函数 or 用作 的替代写法 or_eq 用作 `\ =` 的替代写法 private 该访问说明符之后的各个成员具有私有成员访问 protected 该访问说明符之后的各个成员具有受保护成员访问 public 该访问说明符之后的各个成员具有公开成员访问 reflexpr (反射 TS) 反射是指程序在运行时动态获取对象属性与方法的一种机制 register 1.动存储期，另提示编译器将此对象置于处理器的寄存器。2.不使用并保留该关键词 reinterpret_cast 通过重新解释底层位模式在类型间转换。 requires (C++20 起) 1.对模板形参指定一个求值为要求的常量表达式。 2.于模板声明中指定关联制约 return 终止当前函数并返回指定值（若存在）给调用方函数 short 至少 16 位的宽度（和long一样表示大小） signed 目标类型将拥有有符号表示（若省略则此为默认） sizeof(1) 1.查询对象或类型的大小。2.在需要知道对象的实际大小时使用。3.返回形参包中的元素数量 static 1.声明具有静态存储期和内部连接的命名空间成员。2.定义具有静态存储期且仅初始化一次的块作用域变量。3.声明不绑定到特定实例的类成员 static_assert (C++11 起) 进行编译时断言检查 static_cast 用隐式和用户定义转换的组合在类型间转换 struct 1.复合类型的声明。2.有作用域枚举类型的声明(C++11 起) 3.若存在于作用域中的某个函数或变量所拥有的名字，与某个非联合体类类型的名字相同，则可在其名字之前加上 struct 来消歧义，这产生一个详述类型说明符 switch 根据条件的值，将控制流转移到若干语句之一 synchronized (TM TS) 程序中的所有最外层同步块都以一个单独的全序执行 template 1.声明模板。 2.在模板定义中，template 可用于将某个待决名声明为模板 this this 是一个纯右值表达式，其值是隐式对象形参（在其上调用非静态成员函数的对象）的地址 thread_local (C++11 起) 线程存储期 throw 1.对错误条件发信号，并执行错误处理代码 2.列出函数可能直接或间接抛出的异常 true bool 类型的纯右值，为真 try 将一或多个异常处理块（catch 子句）与复合语句关联 typedef 创建能在任何位置替代（可能复杂的）类型名的别名 typeid 查询类型的信息。用于必须知晓多态对象的动态类型的场合以及静态类型鉴别 typename 1.在模板声明中，typename 可用作 class 的代替品，以声明类型模板形参和模板形参 (C++17 起) 2.在模板的声明或定义内，typename 可用于声明某个待决的有限定名是类型。3.在模板的声明或定义内， (C++11 前)typename 可在非待决的有限定类型名之前使用。此情况下它没有效果。4.在类型要求的要求中。(C++20 起) union 1.联合体类型的声明。2.若存在于作用域中的某个函数或变量所拥有的名字与某个联合体类型的名字相同，则可在该名字之前加上 union 以消歧义，这产生详述类型说明符 unsigned 目标类型将拥有无符号表示 using 1.对命名空间的 using 指令及对命名空间成员的 using 声明。2.对类成员的 using 声明。3.类型别名与别名模板声明 (C++11 起) virtual 1.虚函数说明符。2.虚基类说明符 void 1.void 类型。2.无形参函数的形参列表 volatile 定义类型为易变，确保本条指令不会因编译器的优化而省略，且要求每次直接读值 wchar_t 宽字符表示的类型 while 1.while 循环的声明。2.do-while 循环终止条件的声明 xor 作为 ^ 的替代写法 xor_eq 用作 ^= 的替代写法 总结 C++关键字从C++11开始快速扩张，到C++20标准已经有100个左右了 C语言关键字发展到现在也有60多个了 像 xor_eq、or_eq 这些关键字就是对原来的运算符号换了个写法，感觉上没有什么用，只是不用敲特殊符号了 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 好日子都是自己争取来的~ 2023-10-7 23:34:23]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>keywords</tag>
+        <tag>xor_eq</tag>
+        <tag>co_await</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下如果掌控了系统root账户就能对上面安装的MySQL数据为所欲为了吗]]></title>
+    <url>%2Fblog%2F2023%2F10%2F07%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%A6%82%E6%9E%9C%E6%8E%8C%E6%8E%A7%E4%BA%86%E7%B3%BB%E7%BB%9Froot%E8%B4%A6%E6%88%B7%E5%B0%B1%E8%83%BD%E5%AF%B9%E4%B8%8A%E9%9D%A2%E5%AE%89%E8%A3%85%E7%9A%84MySQL%E6%95%B0%E6%8D%AE%E4%B8%BA%E6%89%80%E6%AC%B2%E4%B8%BA%E4%BA%86%E5%90%97%2F</url>
+    <content type="text"><![CDATA[前言根据我目前测试的情况来看，这个问题的答案是【确实可以为所欲为】，事情的起因是这样的，一次偶然的机会我发现Ubuntu20.04系统上通过 sudo apt install mysql-server 命令安装的MySQL服务器，使用root账号登录无论输入什么密码都可以成功进入，多次尝试后才知道原来root用户默认没有密码，这可是让我惊呆了，居然还可以这样，为了服务器的安全，我必须给他设置个密码，在不断尝试的过程中引发了标题中的疑问。 修改root密码修改MySQL用户root密码在网络上充斥着各种各样的版本，最常见的这种在MySQL8.0中已经不生效了，错误示例如下： 1UPDATE user SET authentication_string = PASSWORD('iL1jfLqUSfmTECXRi4nO') WHERE User = 'root'; 目前测试在MySQL8.0版本中可行的设置root密码的方式为： 123USE mysql;ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'iL1jfLqUSfmTECXRi4nO';FLUSH PRIVILEGES; 产生疑问root用户的密码是设置好了，这么长的密码估计破解个几年也破解不开，但是我发现安装完毕提示了这样一样配置文件 /etc/mysql/debian.cnf，打开文件内容展示如下： 1234567891011# Automatically generated for Debian scripts. DO NOT TOUCH![client]host = localhostuser = debian-sys-maintpassword = xg9vyvjNly3vUSsmsocket = /var/run/mysqld/mysqld.sock[mysql_upgrade]host = localhostuser = debian-sys-maintpassword = xg9vyvjNly3vUSsmsocket = /var/run/mysqld/mysqld.sock 居然是一个包含了MySQL用户和密码的未加密的文本文件，这不是在大门口的脚垫底下放上了大门的钥匙吗？关键这个debian-sys-maint虽然设计上是用于数据库维护和管理，但权限上与root几乎相同，通常在 Debian 或基于 Debian 的 Linux 发行版比如Ununtu上安装MySQL就会自动生成这个文件，看起来有点不安全啊？ 于是查了相关的处理方法，都说要控制这个文件的权限，只让系统root用户可以访问它，这时我就产生了疑问，这样做安全吗？如果系统root用户被窃取了呢？那是不是完全可以通过这个文件来操控MySQL数据了，答案是很显然的。 渐渐明白虽然说掌握了root用户就可以任意修改MySQL数据让人难以接受，但是换个角度或许就可以释然了，root可是系统里的上帝啊，控制了root用户可以任意执行 rm -rf /*，如果你知道银行卡密码当然就可以从取款机里取钱，对于操作系统也是一样，既然你是root你就掌控了这个系统里的一切。 即便没有这个/etc/mysql/debian.cnf文件，root用户还可以先关闭MySQL服务，然后通过 sudo mysqld_safe --skip-grant-tables &amp;以跳过授权表的方式启动MySQL，此时允许你在不知道密码的情况下以 root 身份登录 MySQL，这还有什么隐私可言。再换种方式，作为root用户的我从磁盘上把MySQL存储的文件拿到其他MySQL服务器上都是可以的，所以你是防不住root上帝的。 所以刚刚那个【大门口的脚垫底下放上了大门的钥匙】的比喻不太恰当，应该是/etc/mysql/debian.cnf就像屋里的桌子上摆着的保险柜的钥匙，而你要保证大门的钥匙（root密码）不要轻易被人搞到手，像 --skip-grant-tables 这种看起来很像是后门，或者叫应急开关，实际上它的设计就是为了提供一种紧急的修复机制，用于在丧失所有密码或无法登录到 MySQL 数据库时进行数据库恢复和修复，比如紧急恢复、密码重置、修复数据库权限等等 这种设计就像是各司其职，我只负责我数据的管理与权限的分配，而用户需要保证系统很牢固，一旦你的系统被攻破我将束手就擒，做的再多也是徒劳。 总结 MySQL8.0修改密码的方式ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;xxx&#39;; 文件/etc/mysql/debian.cnf是Debian系列系统上安装MySQL时自动生成的，其中的用户用于用于数据库维护和管理 如果忘了MySQL中root用户的密码可以通过 sudo mysqld_safe --skip-grant-tables &amp; 启动服务来进行免密登录 控制了系统的root用户，你就掌控了操作系统的一切 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 假期归来又看了很多，也不安分了许多，或许只有通过打破常规才能获得额外的收益，否则只能是一直保持饿不死的状态 2023-10-7 20:47:41]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>mysql</tag>
+        <tag>root</tag>
+        <tag>debian-sys-maint</tag>
+        <tag>skip-grant-tables</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[C++中的decltype、std::declval 和 std::decay_t傻傻分不清楚]]></title>
+    <url>%2Fblog%2F2023%2F09%2F05%2FC-%E4%B8%AD%E7%9A%84decltype%E3%80%81std-declval-%E5%92%8C-std-decay-t%E5%82%BB%E5%82%BB%E5%88%86%E4%B8%8D%E6%B8%85%E6%A5%9A%2F</url>
+    <content type="text"><![CDATA[前言在C++中提到推导第一个映入脑海的可能是“模板”，当然有人也可能想到 auto，这些都是和推导相关的语言语法，再比如“完美转发”等等，总是就是他们的类型不用明明白白的写出来，可以利用一种简单的方式来定义，比如 candidates 是一个字符串数组， 如果遍历它我们可以写成 for (auto&amp; skillId : candidates)，而不用将 skillId 变量定义成 const std::string&amp;，这在一定程度上带来了便利，今天的几个东东也是用于推导的，我们一起来看看。 它们是什么decltype、std::declval 和 std::decay_t 都是 C++ 标准库中的类型相关工具，这些工具在 C++ 编程中提供了强大的类型推导和处理能力，使得代码更加灵活。 decltype 是一个关键字，用于从一个表达式中推导出其类型。它通常与表达式一起使用，以便在编译时确定表达式的类型。例如： 12int x = 5;decltype(x) y = 10; // y 的类型将被推导为 int decltype 还可以用于推导函数返回类型，以及在泛型编程中处理模板的类型。 std::declval 是一个函数模板，用于在不实际调用构造函数的情况下生成一个对象引用，以便在类型推导中使用。通常在需要引用某个类型的对象但实际无法创建该对象的上下文中使用，例如在函数返回类型推导中： 1234template &lt;typename T&gt;auto createAndProcess() -&gt; decltype(std::declval&lt;T&gt;().process()) &#123; // 此处只是用于类型推导，并不会实际创建 T 的对象&#125; 在这个例子中，std::declval&lt;T&gt;().process() 用于推导函数的返回类型，但并不会实际调用 process 函数。 std::decay_t 是一个类型转换工具模板，用于将给定类型的”衰变”后的类型返回。衰变指的是将类型转换为其”自然”形式，即去掉引用、添加 cv 限定符（const 和 volatile）。例如： 123using T1 = std::decay_t&lt;int&amp;&gt;; // T1 为 intusing T2 = std::decay_t&lt;const int&gt;; // T2 为 intusing T3 = std::decay_t&lt;int[]&gt;; // T3 为 int* std::decay_t 在模板编程中很有用，因为它可以帮助去除类型的多余限定符，使得函数模板的匹配更加精确。 通俗解释如果看了上面的例子还是有点迷糊，那我再解释的通俗一点： decltype 读音为 “dee-kluh-type”，就是返回一个变量的类型，比如你有一个对象 obj 想要再定义一个和它相同各类型的变量就可以写成 decltype(obj) newObj; std::declval 读音为 “standard dee-cl-val”，它能返回类型 T 的右值引用，其实是一个伪实例，不会产生任何临时对象，也不会因为表达式很复杂而发生真实的计算。因为不会真正的进行构造，所以可以实现在元编程时伪构造一个没有定义默认构造函数类，还可以避开纯虚基类不能实例化的问题，说白了它就是假装创建个对象用于推导类型。 std::decay_t 读音为 “standard dee-kay tee”，有点褪去外表直击内心的意味，就是大家一起褪去花里胡哨的修饰符，获得原始的类型，用于函数模板的匹配更加精确，比如判断类型 T是不是int，if constexpr (std::is_same_v&lt;std::decay_t&lt;T&gt;, int&gt;) 总结 decltype 是关键字，用于有了值或对象求类型的 std::declval 是函数模板，用于伪造一个对象但不实际构造的 std::decay_t 是类模板，用于去除修饰符获取原始类型的 没想到decltype 居然是关键字，结果一查发现C++的关键字已经膨胀了，下次总结一下 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 当身边出现不和谐声音的时候问问自己，是不是你把他们招来的，用实力让他们闭嘴，而不要视图通过语言让他们明白 2023-9-5 21:42:25]]></content>
+      <categories>
+        <category>C/C++</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>decltype</tag>
+        <tag>std::declval</tag>
+        <tag>std::decay_t</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[C++定义一个返回值为拥有3个元素的 char 数组引用的函数]]></title>
     <url>%2Fblog%2F2023%2F08%2F28%2FC-%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E8%BF%94%E5%9B%9E%E5%80%BC%E4%B8%BA%E6%8B%A5%E6%9C%893%E4%B8%AA%E5%85%83%E7%B4%A0%E7%9A%84-char-%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%2F</url>
     <content type="text"><![CDATA[前言编程语言最怕细节，怼着一个点扣能让你怀疑人生，今天就碰到这么一个问题，“C++定义一个返回值为拥有3个元素的 char 数组引用的函数”，不敢说99%的人不会，但我觉得应该有80%的人写不出来吧，要不你来试试。 分解需求首先得能看出来这是要求定义一个函数，如果这一步就错了，那就没必要往后走了，函数有的参数没有要求，但是返回值得是一个引用，这个引用的原始类型应该为一个拥有3个元素的char类型数组，难道要这样写？ 1234char&amp; [3] func()&#123; //...&#125; 试试吧，肯定编不过的，要是这么容易就哪能让人死去活来，直接给答案了 12345678910111213141516#include &lt;iostream&gt;const char (&amp;getCharArray())[3] &#123; static const char charArray[3] = &#123;'A', 'B', 'X'&#125;; return charArray;&#125;int main() &#123; const char (&amp;result)[3] = getCharArray(); for (char c : result) &#123; std::cout &lt;&lt; c &lt;&lt; " "; &#125; return 0;&#125; 举一反三学习要学会举一反三，把题目中的“引用”换成“指针”，再试一下，依葫芦画瓢还是很容易的 123456789101112131415161718#include &lt;iostream&gt;char (*getCharArrayPointer())[3] &#123; static char charArray[3] = &#123;'A', 'B', 'J'&#125;; return &amp;charArray;&#125;int main() &#123; char (*result)[3] = getCharArrayPointer(); for (int i = 0; i &lt; 3; ++i) &#123; std::cout &lt;&lt; (*result)[i] &lt;&lt; " "; &#125; std::cout &lt;&lt; std::endl; return 0;&#125; 仿佛这也不是我们常常见到的形式，对于指针作为返回值，我们常见到的应该是下面这种 1234567891011121314151617#include &lt;iostream&gt;char* getCharArrayPointer() &#123; static char charArray[10] = &#123;'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l'&#125;; return charArray;&#125;int main() &#123; char* result = getCharArrayPointer(); for (int i = 0; i &lt; 10; ++i) &#123; std::cout &lt;&lt; result[i]; &#125; std::cout &lt;&lt; std::endl; return 0;&#125; 他们有什么区别呢？我们从定义层面来对比一下： 进行对比 char (&result)[3] 123 - `result` 是一个引用类型变量，被引用的类型为 `char[3]` - `sizeof(result)` == 3- ```char (*result)[3] = getCharArrayPointer(); result 是一个指针类型变量，指向的类型的类型为 char[3] sizeof(result) == 8 result++ 先后移动24个字节=8*3 char* result = getCharArrayPointer(); result 是一个指针类型变量，被引用的类型为 char sizeof(result) == 8 result++ 先后移动8个字节=8*1 有了上面的对比就可以根据区别来选择定义什么样的返回值，使用引用类型能取到被引用变量的原始大小，使用指针要注意移动的步长。 总结 定义一个返回定长数组引用的函数 const char (&amp;getCharArray())[3] { //... } 定义一个返回定长数组指针的函数 const char (*getCharArray())[3] { //... } 引用不需要内存分配和释放，因为它只是目标对象的别名（存疑，在绝大多数编译器中，引用在底层是通过指针来实现的，但GPT嘴硬说不需要，表示需要继续探索） 引用在底层通过指针实现时，并不需要额外的内存分配。引用被设计为变量的别名，它并不占用额外的内存空间。引用在编译器生成的汇编代码中，会被处理为指向原始对象的指针，但是这个指针对于用户来说是透明的，不需要分配额外的内存来存储引用本身。引用只是目标对象的别名，与指针不同，它没有自己的内存存储空间。因此，无论引用在底层是通过指针实现还是其他方式实现，都不会导致额外的内存分配。这也是为什么引用在使用上更接近于对变量的直接访问。需要注意的是，尽管引用不需要额外的内存分配，但指针本身需要存储指向对象的地址，因此指针会占用一定的内存空间。这也是引用和指针之间的一个重要区别。 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 内练一口气，外练筋骨皮 2023-8-28 22:17:27]]></content>
@@ -82,8 +141,8 @@
         <tag>linux</tag>
         <tag>运维</tag>
         <tag>ubuntu</tag>
-        <tag>ulimit</tag>
         <tag>root</tag>
+        <tag>ulimit</tag>
       </tags>
   </entry>
   <entry>
@@ -437,9 +496,9 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
         <tag>linux</tag>
         <tag>节日</tag>
       </tags>
@@ -667,10 +726,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -940,8 +999,8 @@
       <tags>
         <tag>git</tag>
         <tag>commit</tag>
-        <tag>branch</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -982,10 +1041,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1292,9 +1351,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1407,10 +1466,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1561,10 +1620,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -1615,8 +1674,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1669,8 +1728,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1696,8 +1755,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>Excel</tag>
         <tag>SVN</tag>
+        <tag>Excel</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -1722,9 +1781,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1943,10 +2002,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -2071,8 +2130,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>stash</tag>
+        <tag>checkout</tag>
         <tag>merge</tag>
       </tags>
   </entry>
@@ -2130,8 +2189,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2144,10 +2203,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -2173,10 +2232,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
+        <tag>生活</tag>
         <tag>病毒</tag>
         <tag>武汉</tag>
         <tag>春节</tag>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -2187,10 +2246,10 @@
         <category>Thinking</category>
       </categories>
       <tags>
-        <tag>生活</tag>
         <tag>总结</tag>
         <tag>工作</tag>
         <tag>学习</tag>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -2746,8 +2805,8 @@
       </categories>
       <tags>
         <tag>find</tag>
-        <tag>linux</tag>
         <tag>查找</tag>
+        <tag>linux</tag>
         <tag>grep</tag>
       </tags>
   </entry>

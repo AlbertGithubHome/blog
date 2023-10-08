@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/shell/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/Shell/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/shell/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/Shell/"/>
 
 
 
 
 
-  <title>标签: shell | Albert World</title>
+  <title>标签: Shell | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>shell<small>标签</small>
+        <h1>Shell<small>标签</small>
         </h1>
       </div>
 
@@ -349,37 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2023/03/18/linux环境下利用rsync-find实现同步指定时间段文件/" itemprop="url">
+            <a class="post-title-link" href="/blog/2020/07/07/Shell脚本中获取命令运行结果、条件判断等常用操作/" itemprop="url">
               
-                <span itemprop="name">linux环境下利用rsync+find实现同步指定时间段文件</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2023-03-18T21:52:29+08:00"
-              content="2023-03-18" >
-          03-18
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/blog/2023/03/17/Ununtu环境下的sh-xxx-xxx-unexpected-operator的问题/" itemprop="url">
-              
-                <span itemprop="name">Ununtu环境下的判断字符串相等出现sh: xxx: [: xxx: unexpected operator的问题</span>
+                <span itemprop="name">Shell脚本中获取命令运行结果、特殊变量使用、条件判断等常用操作</span>
               
             </a>
         
@@ -387,9 +359,9 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2023-03-17T00:10:47+08:00"
-              content="2023-03-17" >
-          03-17
+              datetime="2020-07-07T23:27:09+08:00"
+              content="2020-07-07" >
+          07-07
         </time>
       </div>
 
@@ -449,7 +421,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">221</span>
+                <span class="site-state-item-count">225</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -471,7 +443,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">527</span>
+                <span class="site-state-item-count">539</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1167,6 +1139,45 @@
             newcounter.save(null, {
               success: function(newcounter) {
                 var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+          var $element = $(document.getElementById(url));
                 $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
               },
               error: function(newcounter, error) {
