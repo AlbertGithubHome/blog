@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[自建CA并生成自签名SSL证书]]></title>
-    <url>%2Fblog%2F22023%2F11%2F30%2F%E8%87%AA%E5%BB%BACA%E5%B9%B6%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E5%90%8DSSL%E8%AF%81%E4%B9%A6%2F</url>
-    <content type="text"><![CDATA[前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。 相信点进这篇文章的人应该知道为什么要自建CA和自签名SSL证书了，因为买现成的SSL证书挺贵的，SSL证书通常有三种类型：域名级（DV）、企业级（OV）、增强级（EV），价格从每年几百元到上万元不等，再细分的话还有单域名证书、通配符证书、多域名证书等等，有些证书还可以追加域名。 这笔费用对于大厂来说可能不算什么，但是对于小产品来说，即使选择最便宜的证书也是一笔开销，比如在上一篇《根证书的应用和信任基础》提到的12306官网在2017以前使用的也是用的自签名证书，一般正式产品总会咬咬牙买个证书，但是如果是本地测试，或者局域内网的使用的产品使用自建的证书就足够了，相当于我们配了临时证书资源在开发新功能，等到真正对外发布时再替换成购买的证书也来的及，所以接下来我们就一起走一遍自建证书的流程。 一键生成自签名证书总有心急的人想吃热豆腐，所以我把用到的命令写了一个脚本，只要输入几个自定义密码就可以完成CA证书和SSL证书的创建，前提是在你的电脑安装了openssl命令，在ubuntu上系统上默认就有，没有的自己安装一下吧。 命令脚本将下列命令放到shell脚本文件onekeyssl中执行即可 12345678910111213141516171819202122#!/bin/bashread -p "Enter your domain or ip [www.example.com/10.10.49.172]: " INPUTecho "1. Create ca private key..."openssl genrsa -des3 -out selfca.key 2048echo "2. Create ca root certificate..."openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crtecho "3. Create server key and certificate signing request..."openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=$INPUT" -out server.csrecho "4. Sign SSL certificate..."openssl x509 -req -extfile &lt;(printf "subjectAltName=IP:$INPUT") -days 3650 -in server.csr -CA selfca.crt -CAkey selfca.key -CAcreateserial -out server.crtecho "5. Create end, next work..."echo "Copy server.crt and server.key to your server machine" 执行结果123456789101112131415161718192021222324$ ./onekeyssl.shEnter your domain or ip [www.example.com/10.10.49.172]: 10.10.19.11. Create ca private key...Generating RSA private key, 2048 bit long modulus (2 primes)..................................................+++++.....................................+++++e is 65537 (0x010001)Enter pass phrase for selfca.key:【输入自定义密码】Verifying - Enter pass phrase for selfca.key:【重复密码】2. Create ca root certificate...Enter pass phrase for selfca.key:【重复密码】3. Create server key and certificate signing request...Generating a RSA private key.............................................................+++++..........+++++writing new private key to 'server.key'-----4. Sign SSL certificate...Signature oksubject=C = CN, ST = BJ, L = BJ, O = MyRootServer, OU = MyServer, CN = 10.10.19.1Getting CA Private KeyEnter pass phrase for selfca.key:【重复密码】5. Create end, next work...Copy server.crt and server.key to your server machine 分步来看看自建证书的过程整个过程分为自建CA和自签名SSL证书两部分： 自建CA：并不是要你自己搭建一个CA中心，这里的CA其实指的是创建自己的CA根证书，这样可以给其他人签署证书，但是这个CA根证书是你自己创建的，没有得到互联网的承认，也不会被正规CA认可，所以不具备通用和有效性，一般可以在内部网络使用。 自签名SSL证书：一般来说，我们的证书是要发给权威机构CA进行验证签署的，但是自签证书，就是自己给自己签署生成一份CA证书，或者用自建的CA根证书来签发的SSL证书，同样不具备互联网的通用和有效性，一般只用于测试环境或内部网络。 自建CA根证书自建CA根证书也是分成两步 生成CA私钥1openssl genrsa -des3 -out selfca.key 2048 这条命令使用 OpenSSL 工具生成一个带有Triple-DES（3DES）加密的密码保护的2048位RSA私钥文件，各个参数的含义如下： openssl: OpenSSL 工具的命令行执行器。 genrsa: 生成RSA密钥的命令。 -des3: 使用Triple-DES算法对生成的私钥进行加密，这会在生成私钥时要求你设置一个密码，以便在每次使用私钥时都需要提供密码。 -out selfca.key: 指定生成的私钥的输出文件名为 selfca.key，私钥文件将被保存在当前工作目录中。 2048: 指定生成的RSA私钥的位数为2048位，这是一种常见的安全密钥长度。 其中密码这一项在生成CA证书时我们是想加的，运行命令后需要输入一个自定义密码两次，以后每次使用这个私钥都要输入密码，但是在很多文章中你会发现他们有一步是要删除密码，原因是在一些自动化部署场景中，去掉私钥密码可以避免手动输入密码，使整个过程更加自动化，比如配置到Apache或者Nginx中时不必每次启动时输入密码，所以我们在后面生成服务器私钥时就不使用密码了。 带有密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–Proc-Type: 4,ENCRYPTEDDEK-Info: DES-EDE3-CBC,2D6A221FF66727E0 vEzhQnjsKVBLw6tPNo6Dx7D8CyzhZdZYgfxuZBYP30cLWOORTpsS1q0txNMCaWoyS79k0+qTgENne2oirALiCnPB5Rzf3vO6gv/KSScvEnGrZ6Q57i3xObhLYzCtKOAgE6wSBBfbeC6cXczAFZ2ehnM42+Cv/9BX829X7BnbylNbaV1VXQTaEsmo+uWwx9dZ…C2udyFqENooTB7n1Qbtm3Fsruwgk/0IM3vSRk41/EWADabWs4tR/uXQmCPyxouHIxhT3U4EeabyY8dyjSRCkzKPIEFl2HwnYQHZcDVUPD52uHEvA5M7c1QNgX2VmTXzPAgSijAZHDrh6QWa+R9eqUVQShY4mAN7c1sv1or4ZckV7jQTbIBjUGcjhX1TooxX0/RE/GLodSqD8wCkxjgD7uxy93oOLuV/9iDDsrI7VMrs5jlKhKEuPozc+Y+hERRBmUUMbAE2JBW+jD/JzkmXL8w4AGU8wHeRI/FqKQXLbP6v3h+Yb4zP/aOVZ5mdWlHWT1+BykB3qgKUqcn+FmRbodvK8C1G1opDchyomCToHzCGTDqAAcRPoNiB5z3jB+yPCM0m83wI4rWYPghWL4hT7aZgI8l2xwTJfJfyJ+/6MfBZgh/qa4t703A==—–END RSA PRIVATE KEY—– 不带密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–MIIEpQIBAAKCAQEA6OCPgi1pUWdkS9DdR2mk6QJsE9i6rCgaDuk+xyi8Sdxp2u8rf81ZrK4xUNUNTX8+lnj5WeolJ/Hk1o9I659oPkbWuw7yyuCBFbZ9m3goZCt2w+lccsLw6o6XyGTUiptcgB/GmGcd/ua3REAt3l6uYn32vjeit5oX5xsmsUKbwpIH/B81nMohd/t6m9c0h2mcVnUYDmUsV+hmgdASvkTSmvqHOUwV1qX/pQNgjR+auLiezozaLmVkvtSI9/tX6sqtlyROn7ZFsUHJbYuyfOekqLCiY5Wo5ocSTqAd4n/JYmjA6anIYGDXbLcP+075ZgkHSoR9ab4uFtghStx99QYwywIDAQABAoIBAQDWeWryE2y5wiVH…SdwHzniXCpBpNYB6XoV57bPpQiSCqVyT9Owd0A9csZf4905dOZg+/25K2TFmv7gGfHN/4EkCgYEAz7VrytExyCm1B+7sFln7c1hjy5wzNaW2tYi08szvErJkpe3jz9HHMLbTn+DrXZu76nsiXfQbTl7SpPQJptHctHx7K+9mykDaJNGDDNmJRKdwi8cfINrDyYPab+aojwU1FZtF8EEXKjnzWIvmM8FO71ej+COUOmDxWCsDbpoHyhA=—–END RSA PRIVATE KEY—– 生成CA自签名证书1openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crt 这条命令使用 OpenSSL 工具生成自签名根证书（Root Certificate），各个参数的含义如下： openssl req： 这是 OpenSSL 工具中用于处理证书签署请求（CSR）的命令。 -new： 表示创建新的 CSR。 -x509： 表示生成自签名的 X.509 证书，而不是生成 CSR。 -days 3650： 设置证书的有效期为 3650 天（10 年）。 -key selfca.key： 指定用于生成证书的私钥文件为 selfca.key。 -subj &quot;/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA&quot;： 设置证书主题（Subject）的信息。这里使用了简化的 Distinguished Name (DN)，包括了国家（C=CN）、省/州（ST=BJ）、城市（L=BJ）、组织（O=MyRootCA）、组织单位（OU=MyCA）、通用名称（CN=CA）等信息。 -out selfca.crt： 指定生成的证书文件的输出路径和文件名，这里为 selfca.crt。 至此我们就生成了一个自签名的CA根证书，如果把它加入到操作系统或浏览器的信任列表中，那么之后由他签发的SSL证书都可以被信任了，接下来我们开始用它来签发SSL证书。 自签名SSL证书这个过程主要包括生成服务器密钥、构建签名请求和用CA签名证书三部分，其中前两步可以合并为一步：]]></content>
-      <categories>
-        <category>Network</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-        <tag>https</tag>
-        <tag>openssl</tag>
-        <tag>CA根证书</tag>
-        <tag>自签名SSL证书</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[gitlab修改代码库的名称、路径和分组]]></title>
     <url>%2Fblog%2F2023%2F12%2F19%2Fgitlab%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E3%80%81%E8%B7%AF%E5%BE%84%E5%92%8C%E5%88%86%E7%BB%84%2F</url>
     <content type="text"><![CDATA[前言工作项目的源码使用gitlab进行管理，通常情况下不会修改代码库和路径，但是非一般的情况总是存在，比如刚刚立项时多次调整项目名，甚至改变管理层级，所以还是有这类需求的，一开始我本打算将旧的代码库和提交记录推送到新的地址和分组，后来在gitlab后台里翻了翻，结合网络大神们的指点，发现可以直接修改代码库的名称和分组，总共需要修改3个配置，一起来看下。 修改过程具体需求假设需求是将项目名从 A 改为 B，同时将访问路径从 git@gitlab.example.cn:APrject/AGroup/A.git 改为 git@gitlab.example.cn:APrject/AGroup/B.git，这里一共有三处需要修改：项目名、访问路径、以及分组，下面依次列举出修改的方法： 修改项目名导航路径【Settings】-&gt;【General】-&gt;【Naming, topics, avatar】-&gt;【Project name】，只需填入新的项目名，点击 “Save changes” 按钮即可，页面展示如下： 修改访问路径做完上一步只是修改了项目名字，如果使用 git clone 命令下载整个库，路径是没有发生变化的，修改访问路径需要调整 “Path” 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Change path】，只能修改最后一段Path，其中不能再包含 /，修改后点击 “Change path” 即可，页面展示如下： 修改分组上面修改路径这一步只允许修改Path的最后一段，不能直接调整分组路径，想要调整前面的路径需要调整分组 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Transfer project】，这一步只能选择已有的分组，选择好目标分组，点击 “Transfer project” 按钮即可，页面展示如下： 总结 gitlab后台可以直接修改代码库的名称、路径和分组等信息，不必重新创建项目 在修改名称、路径和分组等信息后需要相关人员更新对原有代码库的引用，否则会找不到 使用 git remote set-url origin &lt;new-url&gt; 命令可以更新已有仓库的URL ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 对未来的迷茫以及内心的不安，让我们在现有社会经济条件下，沦为被金钱和物质所统治的行尸走肉]]></content>
@@ -71,11 +56,26 @@
       </categories>
       <tags>
         <tag>Network</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
         <tag>openssl</tag>
         <tag>ssh-keygen</tag>
         <tag>pem</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[自建CA并生成自签名SSL证书]]></title>
+    <url>%2Fblog%2F2023%2F11%2F30%2F%E8%87%AA%E5%BB%BACA%E5%B9%B6%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E5%90%8DSSL%E8%AF%81%E4%B9%A6%2F</url>
+    <content type="text"><![CDATA[前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。 相信点进这篇文章的人应该知道为什么要自建CA和自签名SSL证书了，因为买现成的SSL证书挺贵的，SSL证书通常有三种类型：域名级（DV）、企业级（OV）、增强级（EV），价格从每年几百元到上万元不等，再细分的话还有单域名证书、通配符证书、多域名证书等等，有些证书还可以追加域名。 这笔费用对于大厂来说可能不算什么，但是对于小产品来说，即使选择最便宜的证书也是一笔开销，比如在上一篇《根证书的应用和信任基础》提到的12306官网在2017以前使用的也是用的自签名证书，一般正式产品总会咬咬牙买个证书，但是如果是本地测试，或者局域内网的使用的产品使用自建的证书就足够了，相当于我们配了临时证书资源在开发新功能，等到真正对外发布时再替换成购买的证书也来的及，所以接下来我们就一起走一遍自建证书的流程。 一键生成自签名证书总有心急的人想吃热豆腐，所以我把用到的命令写了一个脚本，只要输入几个自定义密码就可以完成CA证书和SSL证书的创建，前提是在你的电脑安装了openssl命令，在ubuntu上系统上默认就有，没有的自己安装一下吧。 命令脚本将下列命令放到shell脚本文件onekeyssl中执行即可 12345678910111213141516171819202122#!/bin/bashread -p "Enter your domain or ip [www.example.com/10.10.49.172]: " INPUTecho "1. Create ca private key..."openssl genrsa -des3 -out selfca.key 2048echo "2. Create ca root certificate..."openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crtecho "3. Create server key and certificate signing request..."openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=$INPUT" -out server.csrecho "4. Sign SSL certificate..."openssl x509 -req -extfile &lt;(printf "subjectAltName=IP:$INPUT") -days 3650 -in server.csr -CA selfca.crt -CAkey selfca.key -CAcreateserial -out server.crtecho "5. Create end, next work..."echo "Copy server.crt and server.key to your server machine" 执行结果123456789101112131415161718192021222324$ ./onekeyssl.shEnter your domain or ip [www.example.com/10.10.49.172]: 10.10.19.11. Create ca private key...Generating RSA private key, 2048 bit long modulus (2 primes)..................................................+++++.....................................+++++e is 65537 (0x010001)Enter pass phrase for selfca.key:【输入自定义密码】Verifying - Enter pass phrase for selfca.key:【重复密码】2. Create ca root certificate...Enter pass phrase for selfca.key:【重复密码】3. Create server key and certificate signing request...Generating a RSA private key.............................................................+++++..........+++++writing new private key to 'server.key'-----4. Sign SSL certificate...Signature oksubject=C = CN, ST = BJ, L = BJ, O = MyRootServer, OU = MyServer, CN = 10.10.19.1Getting CA Private KeyEnter pass phrase for selfca.key:【重复密码】5. Create end, next work...Copy server.crt and server.key to your server machine 分步来看看自建证书的过程整个过程分为自建CA和自签名SSL证书两部分： 自建CA：并不是要你自己搭建一个CA中心，这里的CA其实指的是创建自己的CA根证书，这样可以给其他人签署证书，但是这个CA根证书是你自己创建的，没有得到互联网的承认，也不会被正规CA认可，所以不具备通用和有效性，一般可以在内部网络使用。 自签名SSL证书：一般来说，我们的证书是要发给权威机构CA进行验证签署的，但是自签证书，就是自己给自己签署生成一份CA证书，或者用自建的CA根证书来签发的SSL证书，同样不具备互联网的通用和有效性，一般只用于测试环境或内部网络。 自建CA根证书自建CA根证书也是分成两步 生成CA私钥1openssl genrsa -des3 -out selfca.key 2048 这条命令使用 OpenSSL 工具生成一个带有Triple-DES（3DES）加密的密码保护的2048位RSA私钥文件，各个参数的含义如下： openssl: OpenSSL 工具的命令行执行器。 genrsa: 生成RSA密钥的命令。 -des3: 使用Triple-DES算法对生成的私钥进行加密，这会在生成私钥时要求你设置一个密码，以便在每次使用私钥时都需要提供密码。 -out selfca.key: 指定生成的私钥的输出文件名为 selfca.key，私钥文件将被保存在当前工作目录中。 2048: 指定生成的RSA私钥的位数为2048位，这是一种常见的安全密钥长度。 其中密码这一项在生成CA证书时我们是想加的，运行命令后需要输入一个自定义密码两次，以后每次使用这个私钥都要输入密码，但是在很多文章中你会发现他们有一步是要删除密码，原因是在一些自动化部署场景中，去掉私钥密码可以避免手动输入密码，使整个过程更加自动化，比如配置到Apache或者Nginx中时不必每次启动时输入密码，所以我们在后面生成服务器私钥时就不使用密码了。 带有密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–Proc-Type: 4,ENCRYPTEDDEK-Info: DES-EDE3-CBC,2D6A221FF66727E0 vEzhQnjsKVBLw6tPNo6Dx7D8CyzhZdZYgfxuZBYP30cLWOORTpsS1q0txNMCaWoyS79k0+qTgENne2oirALiCnPB5Rzf3vO6gv/KSScvEnGrZ6Q57i3xObhLYzCtKOAgE6wSBBfbeC6cXczAFZ2ehnM42+Cv/9BX829X7BnbylNbaV1VXQTaEsmo+uWwx9dZ…C2udyFqENooTB7n1Qbtm3Fsruwgk/0IM3vSRk41/EWADabWs4tR/uXQmCPyxouHIxhT3U4EeabyY8dyjSRCkzKPIEFl2HwnYQHZcDVUPD52uHEvA5M7c1QNgX2VmTXzPAgSijAZHDrh6QWa+R9eqUVQShY4mAN7c1sv1or4ZckV7jQTbIBjUGcjhX1TooxX0/RE/GLodSqD8wCkxjgD7uxy93oOLuV/9iDDsrI7VMrs5jlKhKEuPozc+Y+hERRBmUUMbAE2JBW+jD/JzkmXL8w4AGU8wHeRI/FqKQXLbP6v3h+Yb4zP/aOVZ5mdWlHWT1+BykB3qgKUqcn+FmRbodvK8C1G1opDchyomCToHzCGTDqAAcRPoNiB5z3jB+yPCM0m83wI4rWYPghWL4hT7aZgI8l2xwTJfJfyJ+/6MfBZgh/qa4t703A==—–END RSA PRIVATE KEY—– 不带密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–MIIEpQIBAAKCAQEA6OCPgi1pUWdkS9DdR2mk6QJsE9i6rCgaDuk+xyi8Sdxp2u8rf81ZrK4xUNUNTX8+lnj5WeolJ/Hk1o9I659oPkbWuw7yyuCBFbZ9m3goZCt2w+lccsLw6o6XyGTUiptcgB/GmGcd/ua3REAt3l6uYn32vjeit5oX5xsmsUKbwpIH/B81nMohd/t6m9c0h2mcVnUYDmUsV+hmgdASvkTSmvqHOUwV1qX/pQNgjR+auLiezozaLmVkvtSI9/tX6sqtlyROn7ZFsUHJbYuyfOekqLCiY5Wo5ocSTqAd4n/JYmjA6anIYGDXbLcP+075ZgkHSoR9ab4uFtghStx99QYwywIDAQABAoIBAQDWeWryE2y5wiVH…SdwHzniXCpBpNYB6XoV57bPpQiSCqVyT9Owd0A9csZf4905dOZg+/25K2TFmv7gGfHN/4EkCgYEAz7VrytExyCm1B+7sFln7c1hjy5wzNaW2tYi08szvErJkpe3jz9HHMLbTn+DrXZu76nsiXfQbTl7SpPQJptHctHx7K+9mykDaJNGDDNmJRKdwi8cfINrDyYPab+aojwU1FZtF8EEXKjnzWIvmM8FO71ej+COUOmDxWCsDbpoHyhA=—–END RSA PRIVATE KEY—– 生成CA自签名证书1openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crt 这条命令使用 OpenSSL 工具生成自签名根证书（Root Certificate），各个参数的含义如下： openssl req： 这是 OpenSSL 工具中用于处理证书签署请求（CSR）的命令。 -new： 表示创建新的 CSR。 -x509： 表示生成自签名的 X.509 证书，而不是生成 CSR。 -days 3650： 设置证书的有效期为 3650 天（10 年）。 -key selfca.key： 指定用于生成证书的私钥文件为 selfca.key。 -subj &quot;/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA&quot;： 设置证书主题（Subject）的信息。这里使用了简化的 Distinguished Name (DN)，包括了国家（C=CN）、省/州（ST=BJ）、城市（L=BJ）、组织（O=MyRootCA）、组织单位（OU=MyCA）、通用名称（CN=CA）等信息。 -out selfca.crt： 指定生成的证书文件的输出路径和文件名，这里为 selfca.crt。 至此我们就生成了一个自签名的CA根证书，如果把它加入到操作系统或浏览器的信任列表中，那么之后由他签发的SSL证书都可以被信任了，接下来我们开始用它来签发SSL证书。 自签名SSL证书这个过程主要包括生成服务器密钥、构建签名请求和用CA签名证书三部分，其中前两步可以合并为一步：]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>https</tag>
+        <tag>openssl</tag>
+        <tag>CA根证书</tag>
+        <tag>自签名SSL证书</tag>
       </tags>
   </entry>
   <entry>
@@ -506,8 +506,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>find</tag>
+        <tag>linux</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -1121,8 +1121,8 @@
       <tags>
         <tag>git</tag>
         <tag>commit</tag>
-        <tag>stash</tag>
         <tag>branch</tag>
+        <tag>stash</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -1331,9 +1331,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1345,9 +1345,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1473,9 +1473,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1588,8 +1588,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>log</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
       </tags>
@@ -1796,8 +1796,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1824,8 +1824,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1850,8 +1850,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1877,8 +1877,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>Excel</tag>
+        <tag>SVN</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -1903,9 +1903,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -2109,11 +2109,11 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
         <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -2296,8 +2296,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>reset</tag>
         <tag>checkout</tag>
+        <tag>reset</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -2311,8 +2311,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>branch</tag>
+        <tag>checkout</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2596,9 +2596,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
+        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
-        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2926,9 +2926,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>find</tag>
         <tag>查找</tag>
+        <tag>linux</tag>
         <tag>grep</tag>
       </tags>
   </entry>

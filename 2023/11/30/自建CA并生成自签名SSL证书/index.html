@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络,https,openssl,CA根证书,自签名SSL证书," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。">
+<meta name="keywords" content="网络,https,openssl,CA根证书,自签名SSL证书">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自建CA并生成自签名SSL证书">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/11/30/自建CA并生成自签名SSL证书/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2023-12-19T16:33:51.378Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自建CA并生成自签名SSL证书">
+<meta name="twitter:description" content="前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/11/30/自建CA并生成自签名SSL证书/"/>
+
+
+
+
+
+  <title>自建CA并生成自签名SSL证书 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/11/30/自建CA并生成自签名SSL证书/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">自建CA并生成自签名SSL证书</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-11-30T23:20:00+08:00">
+                2023-11-30
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-12-20T00:33:51+08:00">
+                2023-12-20
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Network/" itemprop="url" rel="index">
+                    <span itemprop="name">Network</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/11/30/自建CA并生成自签名SSL证书/" class="leancloud_visitors" data-flag-title="自建CA并生成自签名SSL证书">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,948(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">8(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。</p>
+<a id="more"></a>
+<p>相信点进这篇文章的人应该知道为什么要自建CA和自签名SSL证书了，因为买现成的SSL证书挺贵的，SSL证书通常有三种类型：域名级（DV）、企业级（OV）、增强级（EV），价格从每年几百元到上万元不等，再细分的话还有单域名证书、通配符证书、多域名证书等等，有些证书还可以追加域名。</p>
+<p>这笔费用对于大厂来说可能不算什么，但是对于小产品来说，即使选择最便宜的证书也是一笔开销，比如在上一篇<a href="https://blog.csdn.net/albertsh/article/details/107147803" target="_blank" rel="noopener">《根证书的应用和信任基础》</a>提到的12306官网在2017以前使用的也是用的自签名证书，一般正式产品总会咬咬牙买个证书，但是如果是本地测试，或者局域内网的使用的产品使用自建的证书就足够了，相当于我们配了临时证书资源在开发新功能，等到真正对外发布时再替换成购买的证书也来的及，所以接下来我们就一起走一遍自建证书的流程。</p>
+<h1 id="一键生成自签名证书"><a href="#一键生成自签名证书" class="headerlink" title="一键生成自签名证书"></a>一键生成自签名证书</h1><p>总有心急的人想吃热豆腐，所以我把用到的命令写了一个脚本，只要输入几个自定义密码就可以完成CA证书和SSL证书的创建，前提是在你的电脑安装了openssl命令，在ubuntu上系统上默认就有，没有的自己安装一下吧。</p>
+<h2 id="命令脚本"><a href="#命令脚本" class="headerlink" title="命令脚本"></a>命令脚本</h2><p>将下列命令放到shell脚本文件<code>onekeyssl</code>中执行即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">read</span> -p <span class="string">"Enter your domain or ip [www.example.com/10.10.49.172]: "</span> INPUT</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"1. Create ca private key..."</span></span><br><span class="line"></span><br><span class="line">openssl genrsa -des3 -out selfca.key 2048</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"2. Create ca root certificate..."</span></span><br><span class="line"></span><br><span class="line">openssl req -new -x509 -days 3650 -key selfca.key -subj <span class="string">"/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA"</span> -out selfca.crt</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"3. Create server key and certificate signing request..."</span></span><br><span class="line"></span><br><span class="line">openssl req -newkey rsa:2048 -nodes -keyout server.key -subj <span class="string">"/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=<span class="variable">$INPUT</span>"</span> -out server.csr</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"4. Sign SSL certificate..."</span></span><br><span class="line"></span><br><span class="line">openssl x509 -req -extfile &lt;(<span class="built_in">printf</span> <span class="string">"subjectAltName=IP:<span class="variable">$INPUT</span>"</span>) -days 3650 -<span class="keyword">in</span> server.csr -CA selfca.crt -CAkey selfca.key -CAcreateserial -out server.crt</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"5. Create end, next work..."</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Copy server.crt and server.key to your server machine"</span></span><br></pre></td></tr></table></figure>
+<h2 id="执行结果"><a href="#执行结果" class="headerlink" title="执行结果"></a>执行结果</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ ./onekeyssl.sh</span><br><span class="line">Enter your domain or ip [www.example.com/10.10.49.172]: 10.10.19.1</span><br><span class="line">1. Create ca private key...</span><br><span class="line">Generating RSA private key, 2048 bit long modulus (2 primes)</span><br><span class="line">..................................................+++++</span><br><span class="line">.....................................+++++</span><br><span class="line">e is 65537 (0x010001)</span><br><span class="line">Enter pass phrase <span class="keyword">for</span> selfca.key:【输入自定义密码】</span><br><span class="line">Verifying - Enter pass phrase <span class="keyword">for</span> selfca.key:【重复密码】</span><br><span class="line">2. Create ca root certificate...</span><br><span class="line">Enter pass phrase <span class="keyword">for</span> selfca.key:【重复密码】</span><br><span class="line">3. Create server key and certificate signing request...</span><br><span class="line">Generating a RSA private key</span><br><span class="line">.............................................................+++++</span><br><span class="line">..........+++++</span><br><span class="line">writing new private key to <span class="string">'server.key'</span></span><br><span class="line">-----</span><br><span class="line">4. Sign SSL certificate...</span><br><span class="line">Signature ok</span><br><span class="line">subject=C = CN, ST = BJ, L = BJ, O = MyRootServer, OU = MyServer, CN = 10.10.19.1</span><br><span class="line">Getting CA Private Key</span><br><span class="line">Enter pass phrase <span class="keyword">for</span> selfca.key:【重复密码】</span><br><span class="line">5. Create end, next work...</span><br><span class="line">Copy server.crt and server.key to your server machine</span><br></pre></td></tr></table></figure>
+<h1 id="分步来看看自建证书的过程"><a href="#分步来看看自建证书的过程" class="headerlink" title="分步来看看自建证书的过程"></a>分步来看看自建证书的过程</h1><p>整个过程分为自建CA和自签名SSL证书两部分：</p>
+<p>自建CA：并不是要你自己搭建一个CA中心，这里的CA其实指的是创建自己的CA根证书，这样可以给其他人签署证书，但是这个CA根证书是你自己创建的，没有得到互联网的承认，也不会被正规CA认可，所以不具备通用和有效性，一般可以在内部网络使用。</p>
+<p>自签名SSL证书：一般来说，我们的证书是要发给权威机构CA进行验证签署的，但是自签证书，就是自己给自己签署生成一份CA证书，或者用自建的CA根证书来签发的SSL证书，同样不具备互联网的通用和有效性，一般只用于测试环境或内部网络。</p>
+<h2 id="自建CA根证书"><a href="#自建CA根证书" class="headerlink" title="自建CA根证书"></a>自建CA根证书</h2><p>自建CA根证书也是分成两步</p>
+<h3 id="生成CA私钥"><a href="#生成CA私钥" class="headerlink" title="生成CA私钥"></a>生成CA私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -des3 -out selfca.key 2048</span><br></pre></td></tr></table></figure>
+<p>这条命令使用 OpenSSL 工具生成一个带有Triple-DES（3DES）加密的密码保护的2048位RSA私钥文件，各个参数的含义如下：</p>
+<ul>
+<li><p><code>openssl</code>: OpenSSL 工具的命令行执行器。</p>
+</li>
+<li><p><code>genrsa</code>: 生成RSA密钥的命令。</p>
+</li>
+<li><p><code>-des3</code>: 使用Triple-DES算法对生成的私钥进行加密，这会在生成私钥时要求你设置一个密码，以便在每次使用私钥时都需要提供密码。</p>
+</li>
+<li><p><code>-out selfca.key</code>: 指定生成的私钥的输出文件名为 <code>selfca.key</code>，私钥文件将被保存在当前工作目录中。</p>
+</li>
+<li><p><code>2048</code>: 指定生成的RSA私钥的位数为2048位，这是一种常见的安全密钥长度。</p>
+</li>
+</ul>
+<p>其中密码这一项在生成CA证书时我们是想加的，运行命令后需要输入一个自定义密码两次，以后每次使用这个私钥都要输入密码，但是在很多文章中你会发现他们有一步是要删除密码，原因是在一些自动化部署场景中，去掉私钥密码可以避免手动输入密码，使整个过程更加自动化，比如配置到Apache或者Nginx中时不必每次启动时输入密码，所以我们在后面生成服务器私钥时就不使用密码了。</p>
+<p>带有密码的私钥内容</p>
+<blockquote>
+<p>—–BEGIN RSA PRIVATE KEY—–<br>Proc-Type: 4,ENCRYPTED<br>DEK-Info: DES-EDE3-CBC,2D6A221FF66727E0</p>
+<p>vEzhQnjsKVBLw6tPNo6Dx7D8CyzhZdZYgfxuZBYP30cLWOORTpsS1q0txNMCaWoy<br>S79k0+qTgENne2oirALiCnPB5Rzf3vO6gv/KSScvEnGrZ6Q57i3xObhLYzCtKOAg<br>E6wSBBfbeC6cXczAFZ2ehnM42+Cv/9BX829X7BnbylNbaV1VXQTaEsmo+uWwx9dZ<br>…<br>C2udyFqENooTB7n1Qbtm3Fsruwgk/0IM3vSRk41/EWADabWs4tR/uXQmCPyxouHI<br>xhT3U4EeabyY8dyjSRCkzKPIEFl2HwnYQHZcDVUPD52uHEvA5M7c1QNgX2VmTXzP<br>AgSijAZHDrh6QWa+R9eqUVQShY4mAN7c1sv1or4ZckV7jQTbIBjUGcjhX1TooxX0<br>/RE/GLodSqD8wCkxjgD7uxy93oOLuV/9iDDsrI7VMrs5jlKhKEuPozc+Y+hERRBm<br>UUMbAE2JBW+jD/JzkmXL8w4AGU8wHeRI/FqKQXLbP6v3h+Yb4zP/aOVZ5mdWlHWT<br>1+BykB3qgKUqcn+FmRbodvK8C1G1opDchyomCToHzCGTDqAAcRPoNiB5z3jB+yPC<br>M0m83wI4rWYPghWL4hT7aZgI8l2xwTJfJfyJ+/6MfBZgh/qa4t703A==<br>—–END RSA PRIVATE KEY—–</p>
+</blockquote>
+<p>不带密码的私钥内容</p>
+<blockquote>
+<p>—–BEGIN RSA PRIVATE KEY—–<br>MIIEpQIBAAKCAQEA6OCPgi1pUWdkS9DdR2mk6QJsE9i6rCgaDuk+xyi8Sdxp2u8r<br>f81ZrK4xUNUNTX8+lnj5WeolJ/Hk1o9I659oPkbWuw7yyuCBFbZ9m3goZCt2w+lc<br>csLw6o6XyGTUiptcgB/GmGcd/ua3REAt3l6uYn32vjeit5oX5xsmsUKbwpIH/B81<br>nMohd/t6m9c0h2mcVnUYDmUsV+hmgdASvkTSmvqHOUwV1qX/pQNgjR+auLiezoza<br>LmVkvtSI9/tX6sqtlyROn7ZFsUHJbYuyfOekqLCiY5Wo5ocSTqAd4n/JYmjA6anI<br>YGDXbLcP+075ZgkHSoR9ab4uFtghStx99QYwywIDAQABAoIBAQDWeWryE2y5wiVH<br>…<br>SdwHzniXCpBpNYB6XoV57bPpQiSCqVyT9Owd0A9csZf4905dOZg+/25K2TFmv7gG<br>fHN/4EkCgYEAz7VrytExyCm1B+7sFln7c1hjy5wzNaW2tYi08szvErJkpe3jz9HH<br>MLbTn+DrXZu76nsiXfQbTl7SpPQJptHctHx7K+9mykDaJNGDDNmJRKdwi8cfINrD<br>yYPab+aojwU1FZtF8EEXKjnzWIvmM8FO71ej+COUOmDxWCsDbpoHyhA=<br>—–END RSA PRIVATE KEY—–</p>
+</blockquote>
+<h3 id="生成CA自签名证书"><a href="#生成CA自签名证书" class="headerlink" title="生成CA自签名证书"></a>生成CA自签名证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -x509 -days 3650 -key selfca.key -subj <span class="string">"/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA"</span> -out selfca.crt</span><br></pre></td></tr></table></figure>
+<p>这条命令使用 OpenSSL 工具生成自签名根证书（Root Certificate），各个参数的含义如下：</p>
+<ul>
+<li><p><strong><code>openssl req</code>：</strong> 这是 OpenSSL 工具中用于处理证书签署请求（CSR）的命令。</p>
+</li>
+<li><p><strong><code>-new</code>：</strong> 表示创建新的 CSR。</p>
+</li>
+<li><p><strong><code>-x509</code>：</strong> 表示生成自签名的 X.509 证书，而不是生成 CSR。</p>
+</li>
+<li><p><strong><code>-days 3650</code>：</strong> 设置证书的有效期为 3650 天（10 年）。</p>
+</li>
+<li><p><strong><code>-key selfca.key</code>：</strong> 指定用于生成证书的私钥文件为 <code>selfca.key</code>。</p>
+</li>
+<li><p><strong><code>-subj &quot;/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA&quot;</code>：</strong> 设置证书主题（Subject）的信息。这里使用了简化的 Distinguished Name (DN)，包括了国家（C=CN）、省/州（ST=BJ）、城市（L=BJ）、组织（O=MyRootCA）、组织单位（OU=MyCA）、通用名称（CN=CA）等信息。</p>
+</li>
+<li><p><strong><code>-out selfca.crt</code>：</strong> 指定生成的证书文件的输出路径和文件名，这里为 <code>selfca.crt</code>。</p>
+</li>
+</ul>
+<p>至此我们就生成了一个自签名的CA根证书，如果把它加入到操作系统或浏览器的信任列表中，那么之后由他签发的SSL证书都可以被信任了，接下来我们开始用它来签发SSL证书。</p>
+<h2 id="自签名SSL证书"><a href="#自签名SSL证书" class="headerlink" title="自签名SSL证书"></a>自签名SSL证书</h2><p>这个过程主要包括生成服务器密钥、构建签名请求和用CA签名证书三部分，其中前两步可以合并为一步：</p>
+<!--
+### 生成服务器私钥
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out server.key 2048</span><br></pre></td></tr></table></figure>
+<p>这一步与生成CA私钥的命令几乎一样，只是去掉了 <code>-des3</code> 选项，不再需要密码，这样以后配置到服务器上时免去了手动输入密码的麻烦。<br>–&gt;</p>
+<h3 id="生成服务器私钥和证书申请文件CRS"><a href="#生成服务器私钥和证书申请文件CRS" class="headerlink" title="生成服务器私钥和证书申请文件CRS"></a>生成服务器私钥和证书申请文件CRS</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl req -newkey rsa:2048 -nodes -keyout server.key -subj <span class="string">"/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=10.10.49.172"</span> -out server.csr</span><br></pre></td></tr></table></figure>
+<p>这条命令使用 OpenSSL 工具生成证书签署请求（CSR），各个参数的含义如下：</p>
+<ul>
+<li><p><strong><code>openssl req</code>：</strong> 这是 OpenSSL 工具中用于处理证书签署请求（CSR）的命令。</p>
+</li>
+<li><p><strong><code>-newkey rsa:2048</code>：</strong> 创建一个新的 RSA 密钥对，其中包括一个 2048 位的 RSA 私钥和相应的公钥。</p>
+</li>
+<li><p><strong><code>-nodes</code>：</strong> 生成的私钥不使用密码进行加密。这意味着私钥文件 <code>server.key</code> 将不需要密码才能访问。</p>
+</li>
+<li><p><strong><code>-keyout server.key</code>：</strong> 指定生成的私钥文件的输出路径和文件名，这里为 <code>server.key</code>。</p>
+</li>
+<li><p><strong><code>-subj &quot;/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=10.10.49.172&quot;</code>：</strong> 设置证书主题（Subject）的信息。这里使用了简化的 Distinguished Name (DN)，包括了国家（C=CN）、省/州（ST=BJ）、城市（L=BJ）、组织（O=MyRootServer）、组织单位（OU=MyServer）、通用名称（CN=10.10.49.172）等信息。通用名称（CN）通常用于指定服务器的主机名或 IP 地址。</p>
+</li>
+<li><p><strong><code>-out server.csr</code>：</strong> 指定生成的证书签署请求文件的输出路径和文件名，这里为 <code>server.csr</code>。</p>
+</li>
+</ul>
+<h3 id="使用CA根证书签名SSL证书"><a href="#使用CA根证书签名SSL证书" class="headerlink" title="使用CA根证书签名SSL证书"></a>使用CA根证书签名SSL证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl x509 -req -extfile &lt;(<span class="built_in">printf</span> <span class="string">"subjectAltName=IP:10.10.49.172"</span>) -days 3650 -<span class="keyword">in</span> server.csr -CA selfca.crt -CAkey selfca.key -CAcreateserial -out server.crt</span><br></pre></td></tr></table></figure>
+<p>这条命令使用 OpenSSL 工具签署证书签署请求（CSR）并生成证书，并且带有SAN信息，各个参数的含义如下：</p>
+<ul>
+<li><p><strong><code>openssl x509</code>：</strong> 这是 OpenSSL 工具中用于处理 X.509 证书的命令。</p>
+</li>
+<li><p><strong><code>-req</code>：</strong> 表示输入的文件是证书签署请求（CSR）。</p>
+</li>
+<li><p><strong><code>-extfile &lt;(printf &quot;subjectAltName=IP:10.10.49.172[,DNS:&lt;YOUR_DOMAIN&gt;,...]&quot;)</code>：</strong> 使用扩展文件，该文件包含了额外的证书扩展信息。在这里，<code>subjectAltName</code> 扩展用于指定主体的备用名称（Subject Alternative Name），这里指定了 IP 地址 <code>10.10.49.172</code>。你也可以在方括号中添加其他主机名或 IP 地址，用逗号分隔。</p>
+</li>
+<li><p><strong><code>-days 3650</code>：</strong> 设置生成的证书的有效期为 3650 天（10 年）。</p>
+</li>
+<li><p><strong><code>-in server.csr</code>：</strong> 指定输入的证书签署请求文件，这里为 <code>server.csr</code>。</p>
+</li>
+<li><p><strong><code>-CA selfca.crt</code>：</strong> 指定用于签署证书的 CA 证书文件，这里为 <code>selfca.crt</code>。</p>
+</li>
+<li><p><strong><code>-CAkey selfca.key</code>：</strong> 指定用于签署证书的 CA 私钥文件，这里为 <code>selfca.key</code>。</p>
+</li>
+<li><p><strong><code>-CAcreateserial</code>：</strong> 创建一个新的序列号文件，该文件用于跟踪 CA 签署的证书的唯一性。</p>
+</li>
+<li><p><strong><code>-out server.crt</code>：</strong> 指定生成的证书文件的输出路径和文件名，这里为 <code>server.crt</code>。</p>
+</li>
+</ul>
+<p>SAN（Subject Alternative Name）是 X.509 证书的一种扩展，用于指定除主题（Subject）之外的其他标识信息。主要用于解决传统的基于主题（Subject）的身份验证方式可能存在的限制，特别是在一个证书需要覆盖多个主机名或 IP 地址的情况下。</p>
+<p>SAN 扩展可以包含多个备用名称（Alternative Name），这些备用名称可以是：</p>
+<ol>
+<li><p><strong>DNS Name（域名）：</strong> 用于指定主机名，可以是域名或子域名。</p>
+</li>
+<li><p><strong>IP Address（IP 地址）：</strong> 用于指定 IP 地址。</p>
+</li>
+<li><p><strong>Email Address（电子邮件地址）：</strong> 用于指定电子邮件地址。</p>
+</li>
+<li><p><strong>URI（统一资源标识符）：</strong> 用于指定统一资源标识符。</p>
+</li>
+<li><p><strong>Directory Name（目录名称）：</strong> 用于指定目录名。</p>
+</li>
+</ol>
+<p>在实际使用中，SAN 可以解决多种问题，例如：</p>
+<ul>
+<li><p><strong>多域 SSL 证书：</strong> 当一个 SSL 证书需要覆盖多个域名时，可以使用 SAN 扩展。</p>
+</li>
+<li><p><strong>IP 地址验证：</strong> 当需要确保证书可以与特定 IP 地址关联时，可以使用 SAN 扩展。</p>
+</li>
+<li><p><strong>多级子域名：</strong> 当证书需要覆盖主域和多级子域时，可以使用 SAN 扩展。</p>
+</li>
+</ul>
+<p>SAN 扩展通常在证书签署请求（CSR）或证书颁发时指定，并在证书中进行存储。在 OpenSSl 命令中，使用 <code>-extfile</code> 选项指定一个包含 SAN 信息的文件，通过该文件可以指定多个备用名称。</p>
+<h1 id="最终的文件列表"><a href="#最终的文件列表" class="headerlink" title="最终的文件列表"></a>最终的文件列表</h1><p>至此CA根证书和自签名SSL证书就生成好了，我们一共收获到了5个文件，作用分别如下：</p>
+<ul>
+<li><p><code>selfca.key</code>：CA私钥，用于后续签名SSL证书</p>
+</li>
+<li><p><code>selfca.crt</code>：CA根证书，用于后续签名SSL证书，需要加入到操作系统或浏览器的信任列表中</p>
+</li>
+<li><p><code>server.key</code>：服务器私钥，需要配置到https服务，比如Apache和Nginx配置文件中</p>
+</li>
+<li><p><code>server.csr</code>：证书签署请求文件，后续没用了</p>
+</li>
+<li><p><code>server.crt</code>：自签名SSL证书，需要配置到https服务，比如Apache和Nginx配置文件中，这就是代表服务器的身份证件</p>
+</li>
+</ul>
+<p>如果想查询证书信息同样可以使用 <code>openssl</code> 命令查询</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">$  openssl x509 -text -noout -<span class="keyword">in</span> server.crt</span><br><span class="line">Certificate:</span><br><span class="line">    Data:</span><br><span class="line">        Version: 3 (0x2)</span><br><span class="line">        Serial Number:</span><br><span class="line">            56:76:35:2c:61:a5:a0:7c:8c:3b:26:93:db:c2:95:a7:18:f9:95:f0</span><br><span class="line">        Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">        Issuer: C = CN, ST = BJ, L = BJ, O = MyRootCA, OU = MyCA, CN = CA</span><br><span class="line">        Validity</span><br><span class="line">            Not Before: Nov 30 14:43:32 2023 GMT</span><br><span class="line">            Not After : Nov 27 14:43:32 2033 GMT</span><br><span class="line">        Subject: C = CN, ST = BJ, L = BJ, O = MyRootServer, OU = MyServer, CN = 10.10.17.2</span><br><span class="line">        Subject Public Key Info:</span><br><span class="line">            Public Key Algorithm: rsaEncryption</span><br><span class="line">                RSA Public-Key: (2048 bit)</span><br><span class="line">                Modulus:</span><br><span class="line">                    00:b3:41:7c:58:c7:13:c1:c9:af:5b:d6:7d:cb:9a:</span><br><span class="line">                    04:f1:73:5f:60:c4:43:df:4e:26:f5:4d:da:48:f6:</span><br><span class="line">                    4f:13:90:c0:6f:17:a8:44:00:9c:3f:a5:f1:5e:6c:</span><br><span class="line">                    28:15:74:5f:c7:c5:0c:bf:a1:7b:b3:31:ac:7c:67:</span><br><span class="line">                    59:58:f6:33:<span class="built_in">cd</span>:bb:a6:45:85:98:21:c1:79:2c:b9:</span><br><span class="line">                    d2:46:9e:9c:ef:59:ba:d4:0d:fb:4c:86:81:a1:4c:</span><br><span class="line">                    a8:47:d7:4c:cf:13:89:8b:d2:6d:68:85:8f:10:26:</span><br><span class="line">                    87:15:73:ee:e6:14:36:f2:09:d3:c9:2f:f5:bf:c6:</span><br><span class="line">                    e1:ec:ee:54:06:82:83:ee:f7:70:e1:50:2e:a0:44:</span><br><span class="line">                    ce:e1:a4:f9:68:4e:e5:b4:be:39:77:02:1b:ca:c2:</span><br><span class="line">                    c9:55:72:d1:56:ca:e4:47:67:54:1b:d8:a2:83:29:</span><br><span class="line">                    02:0a:1a:b3:81:22:a0:fb:84:cf:d7:43:1c:be:37:</span><br><span class="line">                    bf:9e:04:95:ad:2e:20:ca:2f:04:c8:ef:92:26:7f:</span><br><span class="line">                    5c:f9:1c:94:6d:e5:7b:93:2a:51:fa:d2:e1:a8:87:</span><br><span class="line">                    d4:f8:aa:6d:38:d0:6a:19:8f:48:9d:3a:c3:40:bd:</span><br><span class="line">                    e9:00:ff:cf:f6:67:08:7e:ec:f2:e6:3b:b1:f5:c9:</span><br><span class="line">                    ea:f9:52:5c:f4:68:6b:ee:15:b4:<span class="built_in">fc</span>:ce:44:6d:86:</span><br><span class="line">                    4d:ef</span><br><span class="line">                Exponent: 65537 (0x10001)</span><br><span class="line">        X509v3 extensions:</span><br><span class="line">            X509v3 Subject Alternative Name:</span><br><span class="line">                IP Address:10.10.17.2</span><br><span class="line">    Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">         26:c8:f8:bd:dc:a3:67:86:e9:a9:81:ce:1a:be:a4:be:c2:f0:</span><br><span class="line">         10:cf:9f:30:1a:a8:40:ee:1a:41:ab:87:33:7e:35:2c:f0:3b:</span><br><span class="line">         9b:62:79:82:fe:7c:63:6e:e8:65:a7:2d:2e:aa:d9:73:2d:58:</span><br><span class="line">         a1:b6:70:ae:33:5f:28:27:52:a0:06:d9:37:d4:a8:70:85:73:</span><br><span class="line">         34:a4:a0:f4:f0:da:4c:9a:61:ab:74:9d:2f:ff:56:be:e4:7a:</span><br><span class="line">         c8:af:7e:f6:8a:4c:52:dc:13:db:9a:33:63:cb:79:b0:18:78:</span><br><span class="line">         f4:9e:af:dd:02:54:0b:94:b0:94:29:77:92:ae:7a:35:ca:00:</span><br><span class="line">         28:bc:be:c1:a1:1a:47:1b:72:5d:2c:1d:0e:79:e6:45:0e:3e:</span><br><span class="line">         e1:25:dc:4c:e0:cb:a0:2a:ad:98:02:d1:e3:92:68:5a:37:89:</span><br><span class="line">         5e:36:54:ec:ed:8a:b4:8b:f7:26:a9:4e:89:15:5e:ed:b1:26:</span><br><span class="line">         45:b4:03:99:37:74:c1:4c:d4:11:eb:42:3d:a4:3f:a8:30:99:</span><br><span class="line">         a0:61:08:85:f7:9e:4e:15:21:37:c3:61:ea:7e:24:3d:73:85:</span><br><span class="line">         44:28:b1:be:b5:27:26:df:38:49:43:ce:b9:96:f9:48:d4:15:</span><br><span class="line">         4b:49:e6:6c:9e:e1:21:d1:25:af:da:76:e2:7e:ca:da:9e:30:</span><br><span class="line">         60:77:53:70</span><br></pre></td></tr></table></figure>
+<h1 id="相关名词"><a href="#相关名词" class="headerlink" title="相关名词"></a>相关名词</h1><p>写到这里虽然说了很多，但感觉还是有点不太清楚，问题出在哪里呢？貌似很多名字直接把初学者干蒙了，所以对于一些认证的名次我再简单总结一下：</p>
+<h2 id="SSL-TLS协议"><a href="#SSL-TLS协议" class="headerlink" title="SSL/TLS协议"></a>SSL/TLS协议</h2><p>SSL: Secure Socket Layer 是由网景公司创建的，一种在互联网上提供密钥传输机制或者叫做协议。其主要目标是保证两个应用间通信数据的保密性和可靠性，可在服务器端和用户端同时支持的一种加密算法。</p>
+<p>TLS：Transport Lanyer Security，由于网景公司的没落，IETF将SSL进行标准化，1999年公布了TLS标准文件。常用的版本：TLS v1（与SSL v3基本相同）</p>
+<h2 id="证书颁发机构（CA）"><a href="#证书颁发机构（CA）" class="headerlink" title="证书颁发机构（CA）"></a>证书颁发机构（CA）</h2><p>CA（Certificate Authority）是一个负责签发和管理数字证书的可信任实体。数字证书用于在计算机网络上进行身份验证和加密通信。CA 的主要职责包括验证证书请求者的身份，并签发数字证书，确认公钥和身份之间的关联。</p>
+<p>以下是 CA 的主要特征和职责：</p>
+<ol>
+<li><p><strong>身份验证：</strong> CA 负责验证证书请求者的身份。这通常涉及验证请求者拥有特定域名或 IP 地址的控制权。验证可以通过多种方式进行，包括域验证、组织验证等。</p>
+</li>
+<li><p><strong>签发证书：</strong> 一旦验证通过，CA 将签发数字证书。数字证书包含了一对密钥中的公钥，以及相关的身份信息。私钥通常由证书的所有者保管，而公钥和证书信息则被 CA 所签署。</p>
+</li>
+<li><p><strong>证书吊销：</strong> CA 负责在需要时吊销证书。证书可能需要吊销的原因包括证书的所有者不再控制相关私钥、证书的私钥被泄露、证书的所有者不再合法等。</p>
+</li>
+<li><p><strong>维护证书撤销列表（CRL）：</strong> CA 维护一个证书撤销列表，其中包含吊销的证书的信息。这允许其他实体检查某个证书是否已被吊销。</p>
+</li>
+<li><p><strong>数字签名：</strong> CA 使用其私钥对签发的证书进行数字签名，以确保证书的完整性和真实性。其他实体可以使用 CA 的公钥来验证数字签名。</p>
+</li>
+<li><p><strong>信任链：</strong> CA 的根证书被内置到操作系统和浏览器中，形成了信任链。当服务器或服务端提供由 CA 签发的证书时，客户端可以通过信任链验证证书的真实性。</p>
+</li>
+</ol>
+<h2 id="数字证书（Certificate）"><a href="#数字证书（Certificate）" class="headerlink" title="数字证书（Certificate）"></a>数字证书（Certificate）</h2><p>数字证书，是一种用于电脑的身份识别机制。由数字证书颁发机构（CA）对使用私钥创建的签名请求文件做的签名（盖章），表示CA结构对证书持有者的认可。</p>
+<p>X.509证书包含三个文件：后缀分别为key，csr和crt，在密码学中，X.509是一个标准，规范了公开秘钥认证、证书吊销列表、授权凭证、凭证路径验证算法等</p>
+<p>key：是服务器上的私钥文件，用于对发送给客户端数据的加密，以及对从客户端接收到数据的解密</p>
+<p>csr：是证书签名请求文件，用于提交给证书颁发机构（CA）对证书签名</p>
+<p>crt：是由证书颁发机构（CA）签名后的证书，或者是开发者自签名的证书，包含证书持有人的信息，持有人的公钥，以及签署者的签名等信息</p>
+<h2 id="pem文件"><a href="#pem文件" class="headerlink" title=".pem文件"></a>.pem文件</h2><p>在生成密钥的过程中通常会涉及到.pem文件，<code>.pem</code> 是一种通用的文件扩展名，表示文件内容遵循 Privacy Enhanced Mail (PEM) 格式。PEM 格式是一种基于文本的编码格式，常用于存储和传输数据，特别是涉及加密和证书的数据。PEM 格式的文件使用 ASCII 编码，以便于阅读和传输。</p>
+<p>PEM 文件通常包含的信息类型有：</p>
+<ol>
+<li><p><strong>证书（Certificate）：</strong> 通常以 <code>.pem</code> 扩展名保存，包含用于公钥加密和身份验证的数字证书。</p>
+</li>
+<li><p><strong>私钥（Private Key）：</strong> 也可以以 <code>.pem</code> 扩展名保存，包含用于对数据进行解密和签名的私钥。</p>
+</li>
+<li><p><strong>证书请求（Certificate Signing Request，CSR）：</strong> 包含有关证书请求者的信息，通常用于向证书颁发机构（CA）请求签发数字证书。</p>
+</li>
+<li><p><strong>密钥和证书的捆绑（Bundle）：</strong> 有时，PEM 文件还可以包含密钥和证书的捆绑，以便在一个文件中同时包含私钥和相关的证书。</p>
+</li>
+</ol>
+<p>PEM 格式的文件采用 Base64 编码，同时包含用于描述文件内容的文本标记。标记通常以 <code>-----BEGIN ...-----</code> 和 <code>-----END ...-----</code> 的形式出现，标记之间的内容是经过 Base64 编码的二进制数据。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN CERTIFICATE-----</span><br><span class="line">MIID...</span><br><span class="line">...</span><br><span class="line">... (Base64-encoded data)</span><br><span class="line">...</span><br><span class="line">-----END CERTIFICATE-----</span><br></pre></td></tr></table></figure>
+<p>不同的应用程序和系统可能会使用 <code>.pem</code> 扩展名来表示各种类型的文件，因此需要根据上下文和文件内容来确定其确切的含义。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>自建CA根证书和生成SSL签名证书都可以通过 <code>openssl</code> 命令来完成</li>
+<li>自建CA根证书结果会得到selfca.key和selfca.crt两个文件，名字可以自定义，用于后续签名服务器SSL证书</li>
+<li>生成SSL签名证书的结果会得到server.key、server.csr、server.csr三个文件，只要把server.key和server.csr配置到服务器就好了</li>
+<li>生成server.key时一般为了自动化维护不会设置密码，如果为了安全确实需要密码的话，可以配置到密码文件中防止服务重启时打断流程</li>
+<li>网络的世界里证书就是身份证，在这个环境下你总要无条件信点啥，比如你的操作系统和浏览器</li>
+</ul>
+<h1 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h1><p>不知道你有没有注意到，用私钥签名根证书的时候并没有使用公钥，按道理说签名的时候会把公钥放到签名证书中才对，为什么这里没有呢？那是因为对于 RSA 算法，从私钥可以提取公钥，因为私钥包含了模数（modulus）和私钥指数（private exponent）。然而，从公钥（包含模数和公钥指数）推导出私钥，则取决于大数分解问题的难解性，目前尚未找到有效的算法在合理的时间内解决大整数的分解问题。所以说公钥是可以从私钥从得到的，所以不必单独获取。</p>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/134607439"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>兜兜又转转，有些时候真的迈出那一步就成了，想了又想是不可能前进1cm的，就像这篇总结，真的开始了，到现在也就完成了~</p>
+</blockquote>
+-->
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/11/30/自建CA并生成自签名SSL证书/" title="自建CA并生成自签名SSL证书">http://AlbertGithubHome.github.io/blog/2023/11/30/自建CA并生成自签名SSL证书/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/网络/" rel="tag"><i class="fa fa-tag"></i> 网络</a>
+          
+            <a href="/blog/tags/https/" rel="tag"><i class="fa fa-tag"></i> https</a>
+          
+            <a href="/blog/tags/openssl/" rel="tag"><i class="fa fa-tag"></i> openssl</a>
+          
+            <a href="/blog/tags/CA根证书/" rel="tag"><i class="fa fa-tag"></i> CA根证书</a>
+          
+            <a href="/blog/tags/自签名SSL证书/" rel="tag"><i class="fa fa-tag"></i> 自签名SSL证书</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/11/24/究竟什么是阻塞与非阻塞、同步与异步/" rel="next" title="究竟什么是阻塞与非阻塞、同步与异步">
+                <i class="fa fa-chevron-left"></i> 究竟什么是阻塞与非阻塞、同步与异步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2023/12/05/怎么验证公钥和私钥是一对/" rel="prev" title="怎么验证公钥和私钥是一对">
+                怎么验证公钥和私钥是一对 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">233</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">562</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一键生成自签名证书"><span class="nav-number">2.</span> <span class="nav-text">一键生成自签名证书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令脚本"><span class="nav-number">2.1.</span> <span class="nav-text">命令脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行结果"><span class="nav-number">2.2.</span> <span class="nav-text">执行结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分步来看看自建证书的过程"><span class="nav-number">3.</span> <span class="nav-text">分步来看看自建证书的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#自建CA根证书"><span class="nav-number">3.1.</span> <span class="nav-text">自建CA根证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成CA私钥"><span class="nav-number">3.1.1.</span> <span class="nav-text">生成CA私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成CA自签名证书"><span class="nav-number">3.1.2.</span> <span class="nav-text">生成CA自签名证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自签名SSL证书"><span class="nav-number">3.2.</span> <span class="nav-text">自签名SSL证书</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
