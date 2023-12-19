@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Network,openssl,ssh-keygen,pem,公钥,私钥," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言公钥和私钥都是一串字符，长得也没有什么关联性，那么当拿到一个公钥和一个私钥后怎么验证它们两个是一对呢？先说说为什么会有这个疑问，最近在对接一些SDK时经常需要做签名和验证签名的工作，双方要相互提供公钥来完成后续的身份验证，测试过程中生成了多个密钥对，当时就在想如果我用错了怎样才能发现呢？有没有什么方法可以验证公钥和私钥是一对呢？再寻找方法的过程中发现 ssh-keygen 和 openssl">
+<meta name="keywords" content="Network,openssl,ssh-keygen,pem,公钥,私钥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎么验证公钥和私钥是一对">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/12/05/怎么验证公钥和私钥是一对/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言公钥和私钥都是一串字符，长得也没有什么关联性，那么当拿到一个公钥和一个私钥后怎么验证它们两个是一对呢？先说说为什么会有这个疑问，最近在对接一些SDK时经常需要做签名和验证签名的工作，双方要相互提供公钥来完成后续的身份验证，测试过程中生成了多个密钥对，当时就在想如果我用错了怎样才能发现呢？有没有什么方法可以验证公钥和私钥是一对呢？再寻找方法的过程中发现 ssh-keygen 和 openssl">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2023-12-19T16:06:33.640Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="怎么验证公钥和私钥是一对">
+<meta name="twitter:description" content="前言公钥和私钥都是一串字符，长得也没有什么关联性，那么当拿到一个公钥和一个私钥后怎么验证它们两个是一对呢？先说说为什么会有这个疑问，最近在对接一些SDK时经常需要做签名和验证签名的工作，双方要相互提供公钥来完成后续的身份验证，测试过程中生成了多个密钥对，当时就在想如果我用错了怎样才能发现呢？有没有什么方法可以验证公钥和私钥是一对呢？再寻找方法的过程中发现 ssh-keygen 和 openssl">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/12/05/怎么验证公钥和私钥是一对/"/>
+
+
+
+
+
+  <title>怎么验证公钥和私钥是一对 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/12/05/怎么验证公钥和私钥是一对/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">怎么验证公钥和私钥是一对</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-12-05T23:20:43+08:00">
+                2023-12-05
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-12-20T00:06:33+08:00">
+                2023-12-20
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Network/" itemprop="url" rel="index">
+                    <span itemprop="name">Network</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/12/05/怎么验证公钥和私钥是一对/" class="leancloud_visitors" data-flag-title="怎么验证公钥和私钥是一对">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,351(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>公钥和私钥都是一串字符，长得也没有什么关联性，那么当拿到一个公钥和一个私钥后怎么验证它们两个是一对呢？先说说为什么会有这个疑问，最近在对接一些SDK时经常需要做签名和验证签名的工作，双方要相互提供公钥来完成后续的身份验证，测试过程中生成了多个密钥对，当时就在想如果我用错了怎样才能发现呢？有没有什么方法可以验证公钥和私钥是一对呢？再寻找方法的过程中发现 <code>ssh-keygen</code> 和 <code>openssl</code> 生成的密钥对差别居然这么大，但后来又发现他们居然还有联系，所以本文将刚刚提到的问题都总结一下，方便日后查阅。</p>
+<a id="more"></a>
+<p>解决这个问题的思路我么可以从密钥使用的方式入手，私钥加密公钥解密可以验证身份，公钥加密私钥解密可以秘密传递数据，也就是说公钥和私钥是配合工作的，如果我们用私钥加密一个数据，公钥可以解开就说明他们两个是一对的的。</p>
+<p>其实还有一个更简单的办法，公钥是可以从私钥中提取出来的，反之则不行。在公钥密码学中，私钥和公钥之间的关系是一种数学上的单向函数。这种函数的特性使得从私钥生成公钥是可行的，而从公钥还原私钥是非常困难的，这被称为一个单向函数或单向映射，因此被认为是安全的。</p>
+<p>有了这个前提我们就可以这样做，从私钥中提取出公钥，然后和要比对的公钥进行比较，如果一致就说明原来的公钥和私钥是一对啦。</p>
+<h1 id="ssh-keygen-和-openssl"><a href="#ssh-keygen-和-openssl" class="headerlink" title="ssh-keygen 和 openssl"></a>ssh-keygen 和 openssl</h1><p><code>ssh-keygen</code> 和 <code>openssl</code> 是两个不同的工具，它们分别用于生成和处理不同类型的密钥和证书。以下是它们的一些主要区别：</p>
+<ol>
+<li><p><strong>功能和用途：</strong></p>
+<ul>
+<li><code>ssh-keygen</code>：主要用于生成和管理SSH密钥对，包括RSA、DSA、ECDSA和Ed25519密钥。</li>
+<li><code>openssl</code>：是一个通用的密码学工具，可以用于生成和管理多种密码学对象，包括SSL/TLS证书、密钥、摘要和数字签名等。</li>
+</ul>
+</li>
+<li><p><strong>支持的算法：</strong></p>
+<ul>
+<li><code>ssh-keygen</code>：专注于SSH密钥生成，支持多种SSH密钥算法。</li>
+<li><code>openssl</code>：支持广泛的密码学算法，包括RSA、DSA、ECDSA、Diffie-Hellman、AES、SHA等，用于生成和操作各种密码学对象。</li>
+</ul>
+</li>
+<li><p><strong>密钥格式：</strong></p>
+<ul>
+<li><code>ssh-keygen</code>：生成的SSH密钥通常以OpenSSH格式存储。</li>
+<li><code>openssl</code>：支持多种密钥格式，例如PEM、DER等，可以处理不同类型的密钥和证书。</li>
+</ul>
+</li>
+<li><p><strong>具体应用场景：</strong></p>
+<ul>
+<li><code>ssh-keygen</code>：主要用于SSH连接，生成用于身份验证的密钥对。</li>
+<li><code>openssl</code>：更广泛地用于TLS/SSL证书、数字签名、加密和其他与通用密码学相关的应用。</li>
+</ul>
+</li>
+<li><p><strong>具体命令和用法：</strong></p>
+<ul>
+<li><p><code>ssh-keygen</code>：用于生成SSH密钥对的常见命令包括：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048 -f myid_rsa</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>openssl</code>：用于生成RSA密钥对的常见命令包括：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl genpkey -algorithm RSA -out private-key.pem</span><br><span class="line">openssl rsa -pubout -<span class="keyword">in</span> private-key.pem -out public-key.pem</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<p>以上的ChatGPT提供的内容，还是对比的挺全面的，从 <code>openssl</code> 生成密钥对的过程可以看出，确实可以从私钥中提取出公钥。</p>
+<p><code>ssh-keygen</code> 是我接触的最多的生成密钥对的命令，不管是github还是gitlab，或者一些其他的托管平台都会提到SSH Keys，所以每次我都会用 <code>ssh-keygen</code> 来生成，它是用于生成SSH连接密钥对最直接的选择，如果是想要使用更广泛的密码学操作，包括证书生成、签名和加密等，那么 <code>openssl</code> 提供了更大的灵活性。</p>
+<h2 id="两种证书的内容对比"><a href="#两种证书的内容对比" class="headerlink" title="两种证书的内容对比"></a>两种证书的内容对比</h2><p>前面说了两种命令生成的证书、格式、算法和用途都有区别，我们来看看利用上面的命令生成的证书内容有什么不同，先看 <code>ssh-keygen</code> 生成的私钥 <code>myid_rsa</code> 和公钥 <code>myid_rsa.pub</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [17:58:47]</span></span><br><span class="line">$ ssh-keygen -t rsa -b 2048 -f myid_rsa</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase):</span><br><span class="line">Enter same passphrase again:</span><br><span class="line">Your identification has been saved <span class="keyword">in</span> myid_rsa</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> myid_rsa.pub</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:eLzG9lryO/AOdd05cDkixvBNCPFZRLRu0wp3bxZ7Vnk demo@demo-ThinkPad-X390</span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+---[RSA 2048]----+</span></span><br><span class="line"><span class="string">|         +o =*   |</span></span><br><span class="line"><span class="string">|          =.= . .|</span></span><br><span class="line"><span class="string">|           B = + |</span></span><br><span class="line"><span class="string">|       o  . o.=.+|</span></span><br><span class="line"><span class="string">|      . S ...=.BE|</span></span><br><span class="line"><span class="string">|       o.o .+ + B|</span></span><br><span class="line"><span class="string">|        Bo.  . .*|</span></span><br><span class="line"><span class="string">|       o *o    +.|</span></span><br><span class="line"><span class="string">|        .o=o     |</span></span><br><span class="line"><span class="string">+----[SHA256]-----+</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:22:03]</span></span><br><span class="line">$ cat myid_rsa</span><br><span class="line">-----BEGIN OPENSSH PRIVATE KEY-----</span><br><span class="line">b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn</span><br><span class="line">NhAAAAAwEAAQAAAQEAr7gEjCdhA4at0tx0efpLunEOEGvK3ejJCh/dBwLfsvVJelwTeJjK</span><br><span class="line">zI2nFvYGkJgndhWLuvwy6+ODnvASeNvXSvZZzXvvXjTF4JP3TRbATayFvS9mZgzOnxh/rU</span><br><span class="line">z4P7ecLBfqZZkem+VBrMlv37yaIWf7co59dtrJJuAfZJFXyW//LQhNoEaqbZ/gvZls5pOX</span><br><span class="line">r2foMnYg2HV0ayPlvz8cmVF8LIOqaGOc28nMQakVwO+nZhbSv1bGprIGcy4czc7UOp/m+o</span><br><span class="line">t6mWJflpq3NBGiImyfaT2kxp1+pIdd6ISqoZqa9C2JzH7ZXVGjevbHuqup871yjUGapxDx</span><br><span class="line">lDk9HjdSLwAAA9AlxLUDJcS1AwAAAAdzc2gtcnNhAAABAQCvuASMJ2EDhq3S3HR5+ku6cQ</span><br><span class="line">4Qa8rd6MkKH90HAt+y9Ul6XBN4mMrMjacW9gaQmCd2FYu6/DLr44Oe8BJ429dK9lnNe+9e</span><br><span class="line">NMXgk/dNFsBNrIW9L2ZmDM6fGH+tTPg/t5wsF+plmR6b5UGsyW/fvJohZ/tyjn122skm4B</span><br><span class="line">9kkVfJb/8tCE2gRqptn+C9mWzmk5evZ+gydiDYdXRrI+W/PxyZUXwsg6poY5zbycxBqRXA</span><br><span class="line">76dmFtK/VsamsgZzLhzNztQ6n+b6i3qZYl+Wmrc0EaIibJ9pPaTGnX6kh13ohKqhmpr0LY</span><br><span class="line">nMftldUaN69se6q6nzvXKNQZqnEPGUOT0eN1IvAAAAAwEAAQAAAP8nH9HjYuE258XMLUnB</span><br><span class="line">3vj9ii6XeWiyACLDHlUYOouUTQkPNXEgaOS+psuNUTok97vRjvqNp5mu6/liahGy10AYcM</span><br><span class="line">GN/wpM73MfjdKCV455vPAKL4OdNTzML6g97eVYSol7R9foxy8JhwIYdsFyD4xB4+UYnKFS</span><br><span class="line">1WP0Q/K5caMaNnazPF0X7JDSenEwBwl1bDAN5OKwZNzSzUpR/96fl1DAgnG9yp1/634WGt</span><br><span class="line">IfjXLm13OSMrSHfwazNHoqAPkD0SQVJrm38ppvqArU0tBVfh/kvBkv7CCAE9mzhxusiKju</span><br><span class="line">B0c/jrsRDu45AJX5wuqIWcZdfppATJjK10S20MgN5dkAAACBALYym7mpDVQJ2gedSjv/Pv</span><br><span class="line">a+O/5b/20jawc3RFZdJAUWSGJTe9UqyHBHPlYj3/bHJVWIQ9S7s5AxpBtAEOsjeQf0VGFa</span><br><span class="line">FALQwcUghx5r1uM5sAL06CT/5t3Ze8lcJozNW7yjbVZKjJK13GTDMrnPYTfPOc+I/6N3R+</span><br><span class="line">SV2iKOwUQPAAAAgQDp9/2WvHOX2GKXan2BvMaexj6GYIQa8xEsqhtQGY9zxQ2d+9Z7YgDf</span><br><span class="line">XnNanxv8XJ61komeP9KmhS+2TCt0trj8sXtQobDsDGjFcDx0jjBobU6zKvO4htoZP3lb8w</span><br><span class="line">ZARgQoEANxqNOo8R61CsDQW4eM0ReAitKZ0GCcXbqNYCRTGwAAAIEAwEPdhAH4iH6V7IJn</span><br><span class="line">Qs3pgf9AG9UubDe9mAwVNIircWTFO2EFaBpwP7UKgpNmmZjoD2lWEcr2Zxv6x8ILBlJqea</span><br><span class="line">vCpGfLo0hwt2XZHgLRsTx8RmsbmYI2l8qnkMWyz5Lh3XAhNMZM4s9OvSJM6JPWYcedG5KY</span><br><span class="line">G1/zbarjwkq+Gn0AAAAVc2h6QHNoei1UaGlua1BhZC1YMzkwAQIDBAUG</span><br><span class="line">-----END OPENSSH PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:22:10]</span></span><br><span class="line">$ cat myid_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvuASMJ2EDhq3S3HR5+ku6cQ4Qa8rd6MkKH90HAt+y9Ul6XBN4mMrMjacW9gaQmCd2FYu6/DLr44Oe8BJ429dK9lnNe+9eNMXgk/dNFsBNrIW9L2ZmDM6fGH+tTPg/t5wsF+plmR6b5UGsyW/fvJohZ/tyjn122skm4B9kkVfJb/8tCE2gRqptn+C9mWzmk5evZ+gydiDYdXRrI+W/PxyZUXwsg6poY5zbycxBqRXA76dmFtK/VsamsgZzLhzNztQ6n+b6i3qZYl+Wmrc0EaIibJ9pPaTGnX6kh13ohKqhmpr0LYnMftldUaN69se6q6nzvXKNQZqnEPGUOT0eN1Iv demo@demo-ThinkPad-X390</span><br></pre></td></tr></table></figure>
+<p>接着看看 <code>openssl</code> 生成的私钥 <code>private-key.pem</code> 和公钥 <code>public-key.pem</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:23:01]</span></span><br><span class="line">$ openssl genpkey -algorithm RSA -out private-key.pem</span><br><span class="line">......................................................................+++++</span><br><span class="line">..................+++++</span><br><span class="line"></span><br><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:25:04]</span></span><br><span class="line">$ openssl rsa -pubout -<span class="keyword">in</span> private-key.pem -out public-key.pem</span><br><span class="line">writing RSA key</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:26:18]</span></span><br><span class="line">$ cat private-key.pem</span><br><span class="line">-----BEGIN PRIVATE KEY-----</span><br><span class="line">MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDjxEM9ypyLb0fT</span><br><span class="line">xk7Ujdvj7efUjbLhzAcbfHNRZqzqif1rlTS4jz+tIDZBX9/HJkDcoz1dIolp/53S</span><br><span class="line">CJtz+qBrkHMzsi6dcqd5jXUfT3Ts/FMTVsAKIkwafnw2Gbi2DGQx8WQ8Sn5+LlUP</span><br><span class="line">FSCJa+2MTc21taiMP7CtF7iG6jFeGna3xeRTWAjMMS2xk9Zk37KMz8weU4ShdQ9q</span><br><span class="line">mX7yuKHuZzUiWHmjbW/bi6abur3dfi/1jRSnFQF+r/gJoH1UXT4st/+fW425nWqO</span><br><span class="line">ohSV+xw61a09fjECfjVDkMXtwiPCbbGNjD8WjLbilOJK3uBx5e7GIN1jZjVBqlH9</span><br><span class="line">NqEk12HVAgMBAAECggEAIlcf8DwRGDDB+psGnaN5yMbA0lo+4y5Yz/sWg+pgHciK</span><br><span class="line">TeMkHMN0TUzzAS5MVgFdfCachONFJpckm1sy3OynrTANPnkZ8CEuQPRj+UGIloaA</span><br><span class="line">nATTVXPQV5pEbf+4yrHZlXIYs8JjifDAYFLGIhIEsce1QTVPYT3lDGPsLWM36ED6</span><br><span class="line">XVnvJYsr00wpLlYy4uWikt4Q8ruKDnWSS8xeE7pj0bBaqYd8Gz4jfrJ94IgNIROQ</span><br><span class="line">xnXb8aMG/o441ImrF6YXKn8jR/gjZXT1L4ZsD7fGTvLKBxxImBXL2eIoZ8usmTtX</span><br><span class="line">eLEfYaJlzyXOcnYKKVtMQxRI+4ANJWWnMDgM8NTBTQKBgQD0hboW//hXGVcng3Pu</span><br><span class="line">NfD7hUPHQKWWUHbchjRfxvxy/4itqGaWHtUrmc4PTXUxW71YaVA6qm2gvfV+jn83</span><br><span class="line">o5k009vVbXYVvztNQq9wC0Fj2OYwQkxHMgAY9JdhZr6ghuEZ0+hNd5Jea9K3w62C</span><br><span class="line">cY0mHqlvo55szhWmhuvzFtSUXwKBgQDudTFUjf7+qPsfYEX14udsKtfowrjepFLf</span><br><span class="line">nQAbxj16PxpRBSV7S77gdlW1shKEreIPbm083bhU3ypCRs7ktR0Wki/uoQGYekHr</span><br><span class="line">b8Nljh+rM9DxY83+HfLHAC/RjP8ZFrWJFgo6Whfr3jhlb8j3a4siLvqMj0d35BRv</span><br><span class="line">M+HtsEhWSwKBgQC7M746aZG5LP9akvsofkeWaHpxi366S7QUNPLX+MHBUP1U5j5T</span><br><span class="line">5BsTnFbzxDtapH+btlTj9SKlE4llcLbY4/khRqlhBsKG97bw+YLS5usTBDWG8Nrx</span><br><span class="line">DsigUnGq8jwzLdAcM+3/kPGQNEBIzBiEa2bCrmrNu5hIeKZ+rYDqxKnPRQKBgQCh</span><br><span class="line">MZuNOwfbAkPvq9bfJuml1zho4eiyqIZVHv6Jx/KbBrk1d7Mkq8l2VsgNsTiPdDPS</span><br><span class="line">lqVFdeQ7izg34UHOnRfywBOizjgT6OFS1BRUPETwKHDgHMWNOJV7LIcmspdnUFCb</span><br><span class="line">QMjdNTXifi/FclF537sH+pXoGpsHUqj1my7ozDe6DQKBgQDY9tJvXx5DRPVH2t60</span><br><span class="line">0rl1df3PogoAhwjvK+Q/Y5vLyrL470JxMNPtW546aWXRL6INTg+OvsUqLJXEMlxl</span><br><span class="line">HdHIe16orIGBrGcqHNGfkQPfddJVOo0eQCCk4jaLL9EP7+euA83vp6cP38rqgsL7</span><br><span class="line">0+gt34iMPCP9dEKaJyjZPv+vFQ==</span><br><span class="line">-----END PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:26:21]</span></span><br><span class="line">$ cat public-key.pem</span><br><span class="line">-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA48RDPcqci29H08ZO1I3b</span><br><span class="line">4+3n1I2y4cwHG3xzUWas6on9a5U0uI8/rSA2QV/fxyZA3KM9XSKJaf+d0gibc/qg</span><br><span class="line">a5BzM7IunXKneY11H0907PxTE1bACiJMGn58Nhm4tgxkMfFkPEp+fi5VDxUgiWvt</span><br><span class="line">jE3NtbWojD+wrRe4huoxXhp2t8XkU1gIzDEtsZPWZN+yjM/MHlOEoXUPapl+8rih</span><br><span class="line">7mc1Ilh5o21v24umm7q93X4v9Y0UpxUBfq/4CaB9VF0+LLf/n1uNuZ1qjqIUlfsc</span><br><span class="line">OtWtPX4xAn41Q5DF7cIjwm2xjYw/Foy24pTiSt7gceXuxiDdY2Y1QapR/TahJNdh</span><br><span class="line">1QIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br></pre></td></tr></table></figure>
+<h1 id="从私钥提取公钥"><a href="#从私钥提取公钥" class="headerlink" title="从私钥提取公钥"></a>从私钥提取公钥</h1><p>使用 <code>openssl</code> 命令从私钥提取公钥，上面已经展示过程了，它的公钥就是这样生成的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -pubout -<span class="keyword">in</span> private-key.pem -out public-key.pem</span><br></pre></td></tr></table></figure>
+<p>使用 <code>ssh-keygen</code> 命令从私钥提取公钥可以这样做</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -y -f myid_rsa &gt; compare_myid_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>结果文件 compare_myid_rsa.pub 和 myid_rsa.pub 的内容一模一样，所以从私钥提取公钥可以作为检验密钥是否匹配的方法</p>
+<h1 id="OPENSSH和PEM两种密钥格式相互转化"><a href="#OPENSSH和PEM两种密钥格式相互转化" class="headerlink" title="OPENSSH和PEM两种密钥格式相互转化"></a>OPENSSH和PEM两种密钥格式相互转化</h1><p>之前说了<code>ssh-keygen</code> 和 <code>openssl</code>两个命令及生成的密钥区别，现在讲讲两种密钥的联系，OpenSSH 和 OpenSSL 使用的密钥对虽然有一些格式上的差异，但可以相互转换。OpenSSH 使用自己的私钥和公钥格式, 而 OpenSSL 通常使用 PEM 格式，可以通过下列命令转化</p>
+<h2 id="OpenSSH-格式私钥转换成-OpenSSL-PEM-格式私钥"><a href="#OpenSSH-格式私钥转换成-OpenSSL-PEM-格式私钥" class="headerlink" title="OpenSSH 格式私钥转换成 OpenSSL PEM 格式私钥"></a>OpenSSH 格式私钥转换成 OpenSSL PEM 格式私钥</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -p -N <span class="string">""</span> -f myid_rsa -m PEM</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>$ file myid_rsa<br>myid_rsa: PEM RSA private key</p>
+</blockquote>
+<h2 id="OpenSSL-PEM-格式私钥转换成-OpenSSH-格式私钥"><a href="#OpenSSL-PEM-格式私钥转换成-OpenSSH-格式私钥" class="headerlink" title="OpenSSL PEM 格式私钥转换成 OpenSSH 格式私钥"></a>OpenSSL PEM 格式私钥转换成 OpenSSH 格式私钥</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -p -N <span class="string">""</span> -f myid_rsa</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>$ file myid_rsa<br>myid_rsa: OpenSSH private key</p>
+</blockquote>
+<h2 id="OpenSSH-格式公钥生成-OpenSSL-PEM-格式公钥"><a href="#OpenSSH-格式公钥生成-OpenSSL-PEM-格式公钥" class="headerlink" title="OpenSSH 格式公钥生成 OpenSSL PEM 格式公钥"></a>OpenSSH 格式公钥生成 OpenSSL PEM 格式公钥</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -e -m PEM -f myid_rsa.pub &gt; new-public-key.pem</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>$ file new-public-key.pem<br>new-public-key.pem: ASCII text</p>
+</blockquote>
+<h2 id="OpenSSL-PEM-格式公钥生成-OpenSSH-格式公钥"><a href="#OpenSSL-PEM-格式公钥生成-OpenSSH-格式公钥" class="headerlink" title="OpenSSL PEM 格式公钥生成 OpenSSH 格式公钥"></a>OpenSSL PEM 格式公钥生成 OpenSSH 格式公钥</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -i -m PKCS8 -f new-public-key.pem &gt; compare_myid_rsa.pub</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>$ file compare_myid_rsa.pub<br>compare_myid_rsa.pub: OpenSSH RSA public key</p>
+</blockquote>
+<h1 id="公钥和私钥的匹配使用"><a href="#公钥和私钥的匹配使用" class="headerlink" title="公钥和私钥的匹配使用"></a>公钥和私钥的匹配使用</h1><p>匹配使用公钥和私钥之前先准备一个测试文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"Hello World"</span> &gt; data.txt</span><br></pre></td></tr></table></figure>
+<h2 id="加密和解密"><a href="#加密和解密" class="headerlink" title="加密和解密"></a>加密和解密</h2><p>使用公钥加密</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsautl -<span class="keyword">in</span> data.txt -out data_enc.txt -inkey public-key.pem -pubin -encrypt</span><br></pre></td></tr></table></figure>
+<p>使用私钥解密</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsautl -<span class="keyword">in</span> data_enc.txt -out data_dec.txt -inkey private-key.pem -decrypt</span><br></pre></td></tr></table></figure>
+<p>两个命令执行后都没有任何控制台输出，文件 <code>data_enc.txt</code> 中是加密后的内容，文件 <code>data_dec.txt</code> 是解密后的内容，成功解密后内容与 <code>data.txt</code> 文件内容一样</p>
+<h2 id="签名和验证"><a href="#签名和验证" class="headerlink" title="签名和验证"></a>签名和验证</h2><p>使用私钥签名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha256 -sign private-key.pem -out signature.bin data.txt</span><br></pre></td></tr></table></figure>
+<p>使用公钥验证签名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha256 -verify public-key.pem -signature signature.bin data.txt</span><br></pre></td></tr></table></figure>
+<p>验证通过后，会在命令行输出 “Verified OK” 字样，若不通过则输出 “Verification Failure” 字样</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>验证公钥私钥是否匹配的最便捷的方法是通过私钥提取公钥来和原公钥进行对比</li>
+<li>公钥加密私钥解密，私钥签名公钥验证签名，需要把公钥发给别人，私钥自己要保留好</li>
+<li>公钥和私钥常用的有OpenSSH和PEM两种格式，这两种格式的密钥可以相互转化</li>
+<li><code>ssh-keygen</code> 和 <code>openssl</code> 是两个不同的工具，前者用于管理SSH密钥更具体，后者使用范围更广更灵活</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/134724042" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>事情一件件去办就好了，『没什么大不了的』，希望你长大后还可以经常乐观的说这句话，一副俾睨天下的姿态</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/12/05/怎么验证公钥和私钥是一对/" title="怎么验证公钥和私钥是一对">http://AlbertGithubHome.github.io/blog/2023/12/05/怎么验证公钥和私钥是一对/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Network/" rel="tag"><i class="fa fa-tag"></i> Network</a>
+          
+            <a href="/blog/tags/openssl/" rel="tag"><i class="fa fa-tag"></i> openssl</a>
+          
+            <a href="/blog/tags/ssh-keygen/" rel="tag"><i class="fa fa-tag"></i> ssh-keygen</a>
+          
+            <a href="/blog/tags/pem/" rel="tag"><i class="fa fa-tag"></i> pem</a>
+          
+            <a href="/blog/tags/公钥/" rel="tag"><i class="fa fa-tag"></i> 公钥</a>
+          
+            <a href="/blog/tags/私钥/" rel="tag"><i class="fa fa-tag"></i> 私钥</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/11/24/究竟什么是阻塞与非阻塞、同步与异步/" rel="next" title="究竟什么是阻塞与非阻塞、同步与异步">
+                <i class="fa fa-chevron-left"></i> 究竟什么是阻塞与非阻塞、同步与异步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2023/12/08/nginx配置自建SSL证书/" rel="prev" title="nginx配置自建SSL证书">
+                nginx配置自建SSL证书 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">233</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">562</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ssh-keygen-和-openssl"><span class="nav-number">2.</span> <span class="nav-text">ssh-keygen 和 openssl</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#两种证书的内容对比"><span class="nav-number">2.1.</span> <span class="nav-text">两种证书的内容对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从私钥提取公钥"><span class="nav-number">3.</span> <span class="nav-text">从私钥提取公钥</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OPENSSH和PEM两种密钥格式相互转化"><span class="nav-number">4.</span> <span class="nav-text">OPENSSH和PEM两种密钥格式相互转化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSH-格式私钥转换成-OpenSSL-PEM-格式私钥"><span class="nav-number">4.1.</span> <span class="nav-text">OpenSSH 格式私钥转换成 OpenSSL PEM 格式私钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSL-PEM-格式私钥转换成-OpenSSH-格式私钥"><span class="nav-number">4.2.</span> <span class="nav-text">OpenSSL PEM 格式私钥转换成 OpenSSH 格式私钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSH-格式公钥生成-OpenSSL-PEM-格式公钥"><span class="nav-number">4.3.</span> <span class="nav-text">OpenSSH 格式公钥生成 OpenSSL PEM 格式公钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSL-PEM-格式公钥生成-OpenSSH-格式公钥"><span class="nav-number">4.4.</span> <span class="nav-text">OpenSSL PEM 格式公钥生成 OpenSSH 格式公钥</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#公钥和私钥的匹配使用"><span class="nav-number">5.</span> <span class="nav-text">公钥和私钥的匹配使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加密和解密"><span class="nav-number">5.1.</span> <span class="nav-text">加密和解密</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#签名和验证"><span class="nav-number">5.2.</span> <span class="nav-text">签名和验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,6 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[自建CA并生成自签名SSL证书]]></title>
+    <url>%2Fblog%2F22023%2F11%2F30%2F%E8%87%AA%E5%BB%BACA%E5%B9%B6%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E5%90%8DSSL%E8%AF%81%E4%B9%A6%2F</url>
+    <content type="text"><![CDATA[前言这是加密与认证系列的第五篇文章了，本来我是想把自建证书和nginx配置https访问总结到一起的，但是在实际操作的过程中我发现了很多细小的知识点，有些还是挺有意思的，这是一个不断自我提问不断寻求答案的过程，随着扩展的内容越来越多，我决定这篇只写自建CA和签名SSL证书这部分，至于nginx配置https访问放到后面再写吧。 相信点进这篇文章的人应该知道为什么要自建CA和自签名SSL证书了，因为买现成的SSL证书挺贵的，SSL证书通常有三种类型：域名级（DV）、企业级（OV）、增强级（EV），价格从每年几百元到上万元不等，再细分的话还有单域名证书、通配符证书、多域名证书等等，有些证书还可以追加域名。 这笔费用对于大厂来说可能不算什么，但是对于小产品来说，即使选择最便宜的证书也是一笔开销，比如在上一篇《根证书的应用和信任基础》提到的12306官网在2017以前使用的也是用的自签名证书，一般正式产品总会咬咬牙买个证书，但是如果是本地测试，或者局域内网的使用的产品使用自建的证书就足够了，相当于我们配了临时证书资源在开发新功能，等到真正对外发布时再替换成购买的证书也来的及，所以接下来我们就一起走一遍自建证书的流程。 一键生成自签名证书总有心急的人想吃热豆腐，所以我把用到的命令写了一个脚本，只要输入几个自定义密码就可以完成CA证书和SSL证书的创建，前提是在你的电脑安装了openssl命令，在ubuntu上系统上默认就有，没有的自己安装一下吧。 命令脚本将下列命令放到shell脚本文件onekeyssl中执行即可 12345678910111213141516171819202122#!/bin/bashread -p "Enter your domain or ip [www.example.com/10.10.49.172]: " INPUTecho "1. Create ca private key..."openssl genrsa -des3 -out selfca.key 2048echo "2. Create ca root certificate..."openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crtecho "3. Create server key and certificate signing request..."openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootServer/OU=MyServer/CN=$INPUT" -out server.csrecho "4. Sign SSL certificate..."openssl x509 -req -extfile &lt;(printf "subjectAltName=IP:$INPUT") -days 3650 -in server.csr -CA selfca.crt -CAkey selfca.key -CAcreateserial -out server.crtecho "5. Create end, next work..."echo "Copy server.crt and server.key to your server machine" 执行结果123456789101112131415161718192021222324$ ./onekeyssl.shEnter your domain or ip [www.example.com/10.10.49.172]: 10.10.19.11. Create ca private key...Generating RSA private key, 2048 bit long modulus (2 primes)..................................................+++++.....................................+++++e is 65537 (0x010001)Enter pass phrase for selfca.key:【输入自定义密码】Verifying - Enter pass phrase for selfca.key:【重复密码】2. Create ca root certificate...Enter pass phrase for selfca.key:【重复密码】3. Create server key and certificate signing request...Generating a RSA private key.............................................................+++++..........+++++writing new private key to 'server.key'-----4. Sign SSL certificate...Signature oksubject=C = CN, ST = BJ, L = BJ, O = MyRootServer, OU = MyServer, CN = 10.10.19.1Getting CA Private KeyEnter pass phrase for selfca.key:【重复密码】5. Create end, next work...Copy server.crt and server.key to your server machine 分步来看看自建证书的过程整个过程分为自建CA和自签名SSL证书两部分： 自建CA：并不是要你自己搭建一个CA中心，这里的CA其实指的是创建自己的CA根证书，这样可以给其他人签署证书，但是这个CA根证书是你自己创建的，没有得到互联网的承认，也不会被正规CA认可，所以不具备通用和有效性，一般可以在内部网络使用。 自签名SSL证书：一般来说，我们的证书是要发给权威机构CA进行验证签署的，但是自签证书，就是自己给自己签署生成一份CA证书，或者用自建的CA根证书来签发的SSL证书，同样不具备互联网的通用和有效性，一般只用于测试环境或内部网络。 自建CA根证书自建CA根证书也是分成两步 生成CA私钥1openssl genrsa -des3 -out selfca.key 2048 这条命令使用 OpenSSL 工具生成一个带有Triple-DES（3DES）加密的密码保护的2048位RSA私钥文件，各个参数的含义如下： openssl: OpenSSL 工具的命令行执行器。 genrsa: 生成RSA密钥的命令。 -des3: 使用Triple-DES算法对生成的私钥进行加密，这会在生成私钥时要求你设置一个密码，以便在每次使用私钥时都需要提供密码。 -out selfca.key: 指定生成的私钥的输出文件名为 selfca.key，私钥文件将被保存在当前工作目录中。 2048: 指定生成的RSA私钥的位数为2048位，这是一种常见的安全密钥长度。 其中密码这一项在生成CA证书时我们是想加的，运行命令后需要输入一个自定义密码两次，以后每次使用这个私钥都要输入密码，但是在很多文章中你会发现他们有一步是要删除密码，原因是在一些自动化部署场景中，去掉私钥密码可以避免手动输入密码，使整个过程更加自动化，比如配置到Apache或者Nginx中时不必每次启动时输入密码，所以我们在后面生成服务器私钥时就不使用密码了。 带有密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–Proc-Type: 4,ENCRYPTEDDEK-Info: DES-EDE3-CBC,2D6A221FF66727E0 vEzhQnjsKVBLw6tPNo6Dx7D8CyzhZdZYgfxuZBYP30cLWOORTpsS1q0txNMCaWoyS79k0+qTgENne2oirALiCnPB5Rzf3vO6gv/KSScvEnGrZ6Q57i3xObhLYzCtKOAgE6wSBBfbeC6cXczAFZ2ehnM42+Cv/9BX829X7BnbylNbaV1VXQTaEsmo+uWwx9dZ…C2udyFqENooTB7n1Qbtm3Fsruwgk/0IM3vSRk41/EWADabWs4tR/uXQmCPyxouHIxhT3U4EeabyY8dyjSRCkzKPIEFl2HwnYQHZcDVUPD52uHEvA5M7c1QNgX2VmTXzPAgSijAZHDrh6QWa+R9eqUVQShY4mAN7c1sv1or4ZckV7jQTbIBjUGcjhX1TooxX0/RE/GLodSqD8wCkxjgD7uxy93oOLuV/9iDDsrI7VMrs5jlKhKEuPozc+Y+hERRBmUUMbAE2JBW+jD/JzkmXL8w4AGU8wHeRI/FqKQXLbP6v3h+Yb4zP/aOVZ5mdWlHWT1+BykB3qgKUqcn+FmRbodvK8C1G1opDchyomCToHzCGTDqAAcRPoNiB5z3jB+yPCM0m83wI4rWYPghWL4hT7aZgI8l2xwTJfJfyJ+/6MfBZgh/qa4t703A==—–END RSA PRIVATE KEY—– 不带密码的私钥内容 —–BEGIN RSA PRIVATE KEY—–MIIEpQIBAAKCAQEA6OCPgi1pUWdkS9DdR2mk6QJsE9i6rCgaDuk+xyi8Sdxp2u8rf81ZrK4xUNUNTX8+lnj5WeolJ/Hk1o9I659oPkbWuw7yyuCBFbZ9m3goZCt2w+lccsLw6o6XyGTUiptcgB/GmGcd/ua3REAt3l6uYn32vjeit5oX5xsmsUKbwpIH/B81nMohd/t6m9c0h2mcVnUYDmUsV+hmgdASvkTSmvqHOUwV1qX/pQNgjR+auLiezozaLmVkvtSI9/tX6sqtlyROn7ZFsUHJbYuyfOekqLCiY5Wo5ocSTqAd4n/JYmjA6anIYGDXbLcP+075ZgkHSoR9ab4uFtghStx99QYwywIDAQABAoIBAQDWeWryE2y5wiVH…SdwHzniXCpBpNYB6XoV57bPpQiSCqVyT9Owd0A9csZf4905dOZg+/25K2TFmv7gGfHN/4EkCgYEAz7VrytExyCm1B+7sFln7c1hjy5wzNaW2tYi08szvErJkpe3jz9HHMLbTn+DrXZu76nsiXfQbTl7SpPQJptHctHx7K+9mykDaJNGDDNmJRKdwi8cfINrDyYPab+aojwU1FZtF8EEXKjnzWIvmM8FO71ej+COUOmDxWCsDbpoHyhA=—–END RSA PRIVATE KEY—– 生成CA自签名证书1openssl req -new -x509 -days 3650 -key selfca.key -subj "/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA" -out selfca.crt 这条命令使用 OpenSSL 工具生成自签名根证书（Root Certificate），各个参数的含义如下： openssl req： 这是 OpenSSL 工具中用于处理证书签署请求（CSR）的命令。 -new： 表示创建新的 CSR。 -x509： 表示生成自签名的 X.509 证书，而不是生成 CSR。 -days 3650： 设置证书的有效期为 3650 天（10 年）。 -key selfca.key： 指定用于生成证书的私钥文件为 selfca.key。 -subj &quot;/C=CN/ST=BJ/L=BJ/O=MyRootCA/OU=MyCA/CN=CA&quot;： 设置证书主题（Subject）的信息。这里使用了简化的 Distinguished Name (DN)，包括了国家（C=CN）、省/州（ST=BJ）、城市（L=BJ）、组织（O=MyRootCA）、组织单位（OU=MyCA）、通用名称（CN=CA）等信息。 -out selfca.crt： 指定生成的证书文件的输出路径和文件名，这里为 selfca.crt。 至此我们就生成了一个自签名的CA根证书，如果把它加入到操作系统或浏览器的信任列表中，那么之后由他签发的SSL证书都可以被信任了，接下来我们开始用它来签发SSL证书。 自签名SSL证书这个过程主要包括生成服务器密钥、构建签名请求和用CA签名证书三部分，其中前两步可以合并为一步：]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>https</tag>
+        <tag>openssl</tag>
+        <tag>CA根证书</tag>
+        <tag>自签名SSL证书</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[gitlab修改代码库的名称、路径和分组]]></title>
+    <url>%2Fblog%2F2023%2F12%2F19%2Fgitlab%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E3%80%81%E8%B7%AF%E5%BE%84%E5%92%8C%E5%88%86%E7%BB%84%2F</url>
+    <content type="text"><![CDATA[前言工作项目的源码使用gitlab进行管理，通常情况下不会修改代码库和路径，但是非一般的情况总是存在，比如刚刚立项时多次调整项目名，甚至改变管理层级，所以还是有这类需求的，一开始我本打算将旧的代码库和提交记录推送到新的地址和分组，后来在gitlab后台里翻了翻，结合网络大神们的指点，发现可以直接修改代码库的名称和分组，总共需要修改3个配置，一起来看下。 修改过程具体需求假设需求是将项目名从 A 改为 B，同时将访问路径从 git@gitlab.example.cn:APrject/AGroup/A.git 改为 git@gitlab.example.cn:APrject/AGroup/B.git，这里一共有三处需要修改：项目名、访问路径、以及分组，下面依次列举出修改的方法： 修改项目名导航路径【Settings】-&gt;【General】-&gt;【Naming, topics, avatar】-&gt;【Project name】，只需填入新的项目名，点击 “Save changes” 按钮即可，页面展示如下： 修改访问路径做完上一步只是修改了项目名字，如果使用 git clone 命令下载整个库，路径是没有发生变化的，修改访问路径需要调整 “Path” 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Change path】，只能修改最后一段Path，其中不能再包含 /，修改后点击 “Change path” 即可，页面展示如下： 修改分组上面修改路径这一步只允许修改Path的最后一段，不能直接调整分组路径，想要调整前面的路径需要调整分组 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Transfer project】，这一步只能选择已有的分组，选择好目标分组，点击 “Transfer project” 按钮即可，页面展示如下： 总结 gitlab后台可以直接修改代码库的名称、路径和分组等信息，不必重新创建项目 在修改名称、路径和分组等信息后需要相关人员更新对原有代码库的引用，否则会找不到 使用 git remote set-url origin &lt;new-url&gt; 命令可以更新已有仓库的URL ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 对未来的迷茫以及内心的不安，让我们在现有社会经济条件下，沦为被金钱和物质所统治的行尸走肉]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>gitlab</tag>
+        <tag>修改项目名</tag>
+        <tag>修改路径</tag>
+        <tag>修改分组</tag>
+        <tag>后台管理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[利用websockify将websocket通信转换成tcp]]></title>
+    <url>%2Fblog%2F2023%2F12%2F13%2F%E5%88%A9%E7%94%A8websockify%E5%B0%86websocket%E9%80%9A%E4%BF%A1%E8%BD%AC%E6%8D%A2%E6%88%90tcp%2F</url>
+    <content type="text"><![CDATA[前言目前遇到一个问题，原本的服务都是利用tcp通信的，但是某些平台只支持websocket，是不是要从头实现一套websocket网络收发逻辑呢？短时间内有没有替代方案呢？在经过一番寻找之后发现了websockify这个神器，可以将websocket协议转换成tcp协议，从而实现不修改应用服务就支持tcp协议的目的，接下来就说说它怎么用，以及探索的过程。 websockifywebsockify 介绍websockify 是一个用于将 WebSocket 流量转发到其他协议的工具，它的主要用途之一是将 WebSockets 转发到基于 TCP 的协议，例如 VNC（Virtual Network Computing），以下是它的一些关键特点和用途： WebSocket 转发： websockify 允许你将 WebSocket 流量转发到其他类型的网络服务，使得你可以通过 WebSocket 连接访问这些服务。 VNC 转发： websockify 最常用于将 WebSocket 转发到 VNC 服务器。这使得你可以通过 Web 浏览器访问运行 VNC 服务的远程计算机的桌面。 安全性： websockify 支持加密通信，因此可以在安全连接上运行，提供更好的数据保护。 协议适配： websockify 提供了一个通用的桥接机制，允许你将 WebSocket 连接转发到支持其他协议的服务，而不仅仅是 VNC。 JavaScript 客户端： websockify 还包括一个 JavaScript 客户端库，可以直接在浏览器中使用，无需额外的插件。 使用 websockify 的典型场景包括在 Web 浏览器中访问远程计算机的桌面，或者通过 WebSocket 连接到其他需要 TCP 连接的服务，在实际应用中，你可以通过命令行使用 websockify，也可以将其嵌入到其他应用程序中。 websockify 使用在Ubuntu系统下可以直接使用以下安装： 1$ sudo apt install websockify 下面是一个使用示例，作用是将原本连接到8765的websocket请求转换成tcp请求，TCP端口4321 1$ websockify 8765 127.0.0.1:12346 启动后原本仅支持TCP协议的服务就可以通过websockify实现对websocket的支持了 探索的过程虽然是短短的一条 websockify 8765 127.0.0.1:12346 命令就可以实现从websocket到tcp的转换，但是探索的过程却不顺利，在发现websockify这个神器之后，首先是测试它是否能满足我们的需求，是否好用，但是直接在原有的服务上测试太费时间，所以尝试写了几个模拟的脚本。 提供基础TCP服务最基本的我们需要一个很能提供TCP服务的程序，这里我使用python写了一个回显的服务器 echoserver.py，绑定本地的12346端口 123456789101112131415161718192021222324252627282930313233import socketdef main(): # 创建一个TCP套接字 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # 绑定IP地址和端口 server_socket.bind(('127.0.0.1', 12346)) # 监听连接 server_socket.listen(5) print("服务器已启动，等待客户端连接...") while True: # 接受客户端连接 client_socket, client_address = server_socket.accept() print(f"客户端&#123;client_address&#125;已连接") # 接收客户端发送的数据 data = client_socket.recv(1024) print(f"收到来自&#123;client_address&#125;的数据： &#123;data.decode('utf-8')&#125;") # 将接收到的数据发送回客户端 client_socket.send(data) print(f"已将数据发送回&#123;client_address&#125;") # 关闭客户端套接字 client_socket.close() print(f"客户端&#123;client_address&#125;已断开连接")if __name__ == "__main__": main() 测试可用 启动服务 12$ python3 echoserver.py服务器已启动，等待客户端连接... 用nc命令发送tcp数据 12$ echo "Hello server" | nc 127.0.0.1 12346Hello server TCP服务器看到的内容 123456服务器已启动，等待客户端连接...客户端('127.0.0.1', 59214)已连接收到来自('127.0.0.1', 59214)的数据： Hello server已将数据发送回('127.0.0.1', 59214)客户端('127.0.0.1', 59214)已断开连接 TCP服务一切正常 实现Websocket客户端因为python的运行环境是现成的，所以我又用它写了一个websocket客户端 wsclient.py 来发送数据，想运行的话得安装几个包 12python3 -m pip install websocketpython3 -m pip install websocket-client 真实的情况下我是用websocket客户端连接nginx，然后将nginx转发到websockify监听端口，然后websockify将数据转成tcp连接应用服务，但是这个过程太复杂了，不利于说明问题，所以后面的内容我省掉nginx，假装它不存在，直接用websocket客户端连接websockify监听端口 12345678910111213141516171819202122232425262728293031323334# -*- coding: utf-8 -*-# 运行websocket服务器import websocketdef on_message(ws, message): print(f"Received message: &#123;message&#125;")def on_error(ws, error): print(f"Error: &#123;error&#125;")def on_close(ws, close_status_code, close_msg): print(f"Connection closed with status code &#123;close_status_code&#125;")def on_open(ws): print("Connection opened") # 在连接建立后发送一条消息 ws.send("abcd")if __name__ == "__main__": # WebSocket 服务器地址 ws_url = "ws://10.10.49.172:8765" # 创建 WebSocket 连接 ws = websocket.WebSocketApp(ws_url, on_message=on_message, on_error=on_error, on_close=on_close) # 设置连接建立时的回调函数 ws.on_open = on_open # 启动 WebSocket 连接 ws.run_forever() 为了websocket客户端的测试，我写了一个websocket服务器 wsserver.py 来接收数据，不过这不是一开始就测试了，而是在后面发现转换TCP失败查找原因，按流程分段测试时补充的脚本内容 12345678910111213141516171819import asyncioimport websocketsasync def echo(websocket, path): try: async for message in websocket: print(f"Received message: &#123;message&#125;") await websocket.send(message) except websockets.exceptions.ConnectionClosed: print("WebSocket connection closed")async def main(): server = await websockets.serve(echo, "0.0.0.0", 12346) print("WebSocket server is running...") await server.wait_closed()if __name__ == "__main__": asyncio.run(main()) 测试结果websocket客户端发送的数据，websocket服务器可以正常收到。 开始测试websockify功能 启动tcp服务echoserver，监听12346端口 12$ python3 echoserver.py服务器已启动，等待客户端连接... 启动tcp服务websockify，监听8765端口，转换到12346端口 12345$ websockify 8765 127.0.0.1:12346WebSocket server settings: - Listen on :8765 - No SSL/TLS support (no cert file) - proxying from :8765 to 127.0.0.1:12346 运行websocket客户端发送的数据 123$ python3 ./wsclient.pyConnection openedConnection closed with status code 1003 报错了！！！ 再看echoserver输出，虽然连接成功，但是收到的数据为空 客户端(‘127.0.0.1’, 55032)已连接收到来自(‘127.0.0.1’, 55032)的数据：已将数据发送回(‘127.0.0.1’, 55032)客户端(‘127.0.0.1’, 55032)已断开连接 然后看下websockify输出，显示转发连接12346端口成功了，但是没有后续输出 $ websockify 8765 127.0.0.1:12346WebSocket server settings: Listen on :8765 No SSL/TLS support (no cert file) proxying from :8765 to 127.0.0.1:1234610.2.48.36 - - [13/Dec/2023 20:03:11] 10.2.48.36: Plain non-SSL (ws://) WebSocket connection10.2.48.36 - - [13/Dec/2023 20:03:11] connecting to: 127.0.0.1:12346 定位问题吧，期间不断调整nginx配置，查看nginx和websockify日志，调整wsclient写法，调整echoserver写法，分步测试wsclient和echoserver功能都没发现问题，具体测试细节暂且不表，后来我发现可以修改websockify启动参数输出更详细的日志，测试过程如下 再次启动websockify启动websockify再次使用wsclient测试，输出了额外的信息 123456789101112131415161718192021$ websockify 8765 127.0.0.1:12346 --log-file /tmp/ws.log -v --trafficWebSocket server settings: - Listen on :8765 - No SSL/TLS support (no cert file) - proxying from :8765 to 127.0.0.1:1234610.2.48.36: new handler Process10.2.48.36 - - [13/Dec/2023 20:13:42] "GET / HTTP/1.1" 101 -10.2.48.36 - - [13/Dec/2023 20:13:42] 10.2.48.36: Plain non-SSL (ws://) WebSocket connection10.2.48.36 - - [13/Dec/2023 20:13:42] connecting to: 127.0.0.1:12346Traffic Legend: &#125; - Client receive &#125;. - Client receive partial &#123; - Target receive &gt; - Target send &gt;. - Target send partial &lt; - Client send &lt;. - Client send partial&#125;.10.2.48.36 - - [13/Dec/2023 20:13:42] 127.0.0.1:12346: Client closed connection10.2.48.36 - - [13/Dec/2023 20:13:42] 127.0.0.1:12346: Closed target 顺着结尾的两条日志 Client closed connection，我找到了这一篇问题 websockify - Client disconnects immediately after connection #365 结论说是websockify不支持发送文本了 Hmm… Are you trying to send text over that socket? We dropped support for text frames in the big cleanup. Could you print the code and reason from the close in your close handler? 我一看我的wsclient.py可不就是发送的文本嘛，看来有救了，赶紧改成了发送bytes ws.send(b&#39;\x01\x02\x03\x04&#39;)，但错误依旧，尝试各种发送函数无果，我严重怀疑我的换个python的websockets包有问题，所以我用html写了一个wsclient.html： 123456789101112131415161718192021222324252627282930313233343536373839404142&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt; &lt;meta charset="UTF-8"&gt; &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt; &lt;title&gt;WebSocket Binary Data Example&lt;/title&gt;&lt;/head&gt;&lt;body&gt; &lt;script&gt; // 替换为你的 WebSocket 服务器地址 const socket = new WebSocket("ws://10.10.49.172:8765"); // 监听连接打开事件 socket.addEventListener("open", (event) =&gt; &#123; console.log("WebSocket connection opened."); // 构造二进制数据，这里使用一个简单的示例 const binaryData = new Uint8Array([49, 50, 51, 52]); // 发送二进制数据 socket.send(binaryData); console.log("Binary data sent successfully."); &#125;); // 监听接收消息事件 socket.addEventListener("message", (event) =&gt; &#123; console.log("Received message:", event.data); &#125;); // 监听连接关闭事件 socket.addEventListener("close", (event) =&gt; &#123; console.log("WebSocket connection closed."); &#125;); // 监听错误事件 socket.addEventListener("error", (event) =&gt; &#123; console.error("WebSocket error:", event); &#125;); &lt;/script&gt;&lt;/body&gt;&lt;/html&gt; 这次终于正常了，websockify输出变成了由应用服务主动断开 123456789101112131415161718192021$ websockify 8765 127.0.0.1:12346 --log-file /tmp/ws.log -v --trafficWebSocket server settings: - Listen on :8765 - No SSL/TLS support (no cert file) - proxying from :8765 to 127.0.0.1:1234610.2.48.36: new handler Process10.2.48.36 - - [13/Dec/2023 20:24:29] "GET / HTTP/1.1" 101 -10.2.48.36 - - [13/Dec/2023 20:24:29] 10.2.48.36: Plain non-SSL (ws://) WebSocket connection10.2.48.36 - - [13/Dec/2023 20:24:29] connecting to: 127.0.0.1:12346Traffic Legend: &#125; - Client receive &#125;. - Client receive partial &#123; - Target receive &gt; - Target send &gt;. - Target send partial &lt; - Client send &lt;. - Client send partial&#125;&gt;&#123;&lt;10.2.48.36 - - [13/Dec/2023 20:24:29] 127.0.0.1:12346: Target closed connection10.2.48.36 - - [13/Dec/2023 20:24:29] 127.0.0.1:12346: Closed target echoserver也看到了发送的内容【1234】： 123456$ python3 echoserver.py服务器已启动，等待客户端连接...客户端('127.0.0.1', 37438)已连接收到来自('127.0.0.1', 37438)的数据： 1234已将数据发送回('127.0.0.1', 37438)客户端('127.0.0.1', 37438)已断开连接 单独实现一个js版本websocket客户端刚刚用html里的js发送了websocket数据，需要浏览器的帮助，如果是在服务器上局限性很大，所以我调整了一下，改成了js版本websocket客户端，用node.js运行，wsclient.js内容如下： 1234567891011121314151617181920212223242526272829303132const WebSocket = require('ws');// 替换为你的 WebSocket 服务器地址const socket = new WebSocket("ws://10.10.49.172:8765");// 监听连接打开事件socket.addEventListener("open", (event) =&gt; &#123; console.log("WebSocket connection opened."); // 构造二进制数据，这里使用一个简单的示例 const binaryData = new Uint8Array([49, 50, 51, 52]); // 发送二进制数据 socket.send(binaryData); console.log("Binary data sent successfully.");&#125;);// 监听接收消息事件socket.addEventListener("message", (event) =&gt; &#123; console.log("Received message:", event.data);&#125;);// 监听连接关闭事件socket.addEventListener("close", (event) =&gt; &#123; console.log("WebSocket connection closed.");&#125;);// 监听错误事件socket.addEventListener("error", (event) =&gt; &#123; console.error("WebSocket error:", event);&#125;); 运行结果如下： 12345$ node wsclient.jsWebSocket connection opened.Binary data sent successfully.Received message: &lt;Buffer 31 32 33 34&gt;WebSocket connection closed. 至此，websockify的测试就结束了，它可以满足我们的需求，将websocket请求转换成tcp请求 什么是VNC前面在介绍websockify多次提到VNC，其实VNC (Virtual Network Computing) 是一种远程桌面协议，允许用户在一个计算机上通过网络远程控制另一个计算机的桌面。VNC 提供了一种在远程计算机上查看和操作桌面的方式，就像你坐在那台计算机前一样，以下是关于 VNC 的一些关键概念： Server：在 VNC 中，远程计算机上运行的应用程序称为 VNC 服务器。该服务器负责监听连接请求，并将计算机的桌面图像发送给连接的客户端。 Viewer：连接到 VNC 服务器的应用程序称为 VNC 查看器。这是用户使用的远程桌面客户端，允许他们查看和操作远程计算机的桌面。 Port：VNC 服务器通过一个特定的网络端口监听连接请求。通常，VNC 默认使用 5900 端口。如果有多个 VNC 服务器在同一台计算机上运行，它们可能使用不同的端口（5901、5902 等）。 Security：VNC 提供了一些安全性选项，如密码保护和加密。这有助于确保在远程访问时保护计算机的安全。 Authentication：VNC 服务器和查看器之间的连接通常需要身份验证。这可以是使用密码进行简单的身份验证，也可以是更复杂的加密和密钥交换过程。 websockify：对于一些场景，特别是在 Web 浏览器中访问 VNC，你可能会使用工具如 websockify 将 VNC 的协议转换为 WebSocket 协议，以便在浏览器中实现 VNC 远程桌面访问。 总结 websockify可以轻松实现从websocket请求向tcp请求的转换，使用很方便 转换路径 wsclient --ws--&gt; websockify --tcp--&gt; tcp application --tcp--&gt; websockify --ws--&gt; wsclient wss对应的是ws的加密版本，他们的关系是wss=ws+SSL/TSL，类似的https=http+SSL/TSL 无论是nginx还是websockify都可以配置服务器证书，将应用服务器从SSL/TSL中解脱出来 VNC是一种远程桌面协议，允许用户在一个计算机上通过网络远程控制另一个计算机的桌面 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 迈出这一步确实不太容易，一旦行动了就会发现没有想象中的那么难，我们都没有预知未来的能力，无法判定目前的选择是对还是错，既然选择了就要努力走下去]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>网络协议</tag>
+        <tag>websockify</tag>
+        <tag>websocket</tag>
+        <tag>tcp/ip</tag>
+        <tag>NVC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[nginx配置自建SSL证书]]></title>
+    <url>%2Fblog%2F2023%2F12%2F08%2Fnginx%E9%85%8D%E7%BD%AE%E8%87%AA%E5%BB%BASSL%E8%AF%81%E4%B9%A6%2F</url>
+    <content type="text"><![CDATA[前言之前的一篇文章《自建CA并生成自签名SSL证书》中讲到为什么要自建CA和自签名SSL证书，是因为买证书得花钱，对于内部或小规模项目，使用自建SSL证书可能更为方便，不需要支付费用，而且不涉及复杂的验证过程。正式对外的服务一般都是要买公共证书颁发机构（CA）签发的SSL证书的，但是在对外发布前可以先使用自建证书打通流程 配置SSL证书创建SSL证书的流程参考上文中提到的文章吧，本文只讲怎样把自建SSL证书配置到nginx，实际上非常简单。 假设我们的自建证书是 /root/ca/server.crt，服务器私钥是 /root/ca/server.key，nginx配置文件我以《记录一下第一次安装和配置Nginx》 这篇文章的配置文件为例，初始配置为： 1234567891011121314151617upstream go_entrance &#123; server localhost:4101; server localhost:4102;&#125;server &#123; listen 4100; server_name localhost; location / &#123; proxy_pass http://go_entrance; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; &#125;&#125; 4100端口监听http协议转发到本机的4101端口和4102端口，如果把SSL证书配置到这个端口上，就相当于这个端口支持了https，配置修改如下： 1234567891011121314151617181920212223242526upstream go_entrance &#123; server localhost:4101; server localhost:4102;&#125;server &#123; listen 4100 ssl; server_name localhost; ssl_certificate /root/ca/server.crt; ssl_certificate_key /root/ca/server.key; ssl_session_cache shared:SSL:10m; ssl_session_timeout 10m; ssl_protocols TLSv1 TLSv1.1 TLSv1.2; ssl_ciphers HIGH:!aNULL:!MD5; ssl_prefer_server_ciphers on; location / &#123; proxy_pass http://go_entrance; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; &#125;&#125; 只需要将4100端口后面加上 ssl，再配置几个ssl相关的参数就可以了，含义如下： ssl_certificate： 指定 SSL 证书文件路径 /root/ca/server.crt ssl_certificate_key： 指定私钥文件路径 /root/ca/server.key ssl_session_cache： 配置用于存储 SSL 会话的缓存。shared:SSL:10m 表示使用共享的内存区域，最大占用内存为 10MB ssl_session_timeout： 配置 SSL 会话的超时时间，这里设置为 10 分钟 ssl_protocols： 指定支持的 SSL/TLS 协议版本，这里包括 TLSv1、TLSv1.1 和 TLSv1.2 ssl_ciphers： 指定支持的加密套件，这里配置为 HIGH:!aNULL:!MD5，表示使用高强度的加密套件，不支持空加密和 MD5 SSL证书放在 Nginx 而不放在应用服务器上的好处正如上面的配置一样，4100端口收到https请求后转发到4101和4102上的是http协议，说明使用这种方式一些仅支持http协议的应用服务也可以通过nginx配置证书来达到支持https的目的，具体好处如下： 集中管理： 使用反向代理服务器管理 SSL 证书可以实现集中式管理。这意味着你可以在一个地方管理证书，而不需要在每个应用服务器上都安装和维护证书。这样能够简化证书的更新和维护流程。 简化配置： 通过在反向代理服务器上配置 SSL，你可以简化应用服务器的配置。应用服务器可以专注于处理应用程序逻辑，而无需关心 SSL 配置。这样有助于提高系统的可维护性和简化配置过程。 负载均衡和扩展： 如果你使用负载均衡，SSL终止（SSL Termination）在负载均衡器上执行可以减轻应用服务器的负担。负载均衡器负责处理SSL握手，将非加密的请求转发给后端应用服务器。这样，后端服务器就可以专注于处理业务逻辑，而无需处理加密和解密操作。 性能优化： SSL 握手和加解密操作可能是计算密集型的任务，将这些任务从应用服务器中移除，可以在 SSL 握手和加解密方面提高性能。 统一的安全策略： 通过在反向代理服务器上管理 SSL，可以实施统一的安全策略，确保所有传入和传出的流量都经过相同的安全设置。 Nginx只能转发http协议吗不，Nginx 不仅仅能够转发 HTTP 协议，还支持其他多种协议的代理转发。主要的协议包括： HTTPS协议： 通过在配置中启用 SSL/TLS，Nginx 可以用作安全的 HTTPS 服务器和反向代理，处理加密的 HTTP 流量。 1234567listen 443 ssl;ssl_certificate /path/to/certificate.crt;ssl_certificate_key /path/to/private-key.key;location / &#123; proxy_pass https://backend_server;&#125; TCP协议： 从1.9版本开始 Nginx 可以用于代理 TCP 流量，例如数据库连接、消息队列等。 123456stream &#123; server &#123; listen 3306; proxy_pass backend_server:3306; &#125;&#125; UDP协议： 从Nginx 1.9.13版本开始，开始支持 UDP 代理。这使得它可以用于代理 UDP 流量，如 DNS 请求等。 123456stream &#123; server &#123; listen 53 udp; proxy_pass backend_dns_server:53; &#125;&#125; WebSocket协议： WebSocket 是一种在单个 TCP 连接上提供全双工通信的协议，常用于实时应用程序，如在线游戏、聊天应用等。 1234567891011121314151617map $http_upgrade $connection_upgrade &#123; default upgrade; '' close;&#125;server &#123; listen 80; server_name your_domain.com; location /websocket &#123; proxy_pass http://backend_server; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection $connection_upgrade; &#125;&#125; Nginx转发TCP协议会收到端口限制吗是的，TCP是一种面向连接的全双工通信的协议，当转发TCP消息时，Nginx不仅是一个服务器接受客户端的连接，再它连接应用服务器时还表现成一个客户端，每个连接需要消耗一个端口，以理论值65535个端口来计算，nginx最多转发65535个连接，但是可以通过 proxy_bind 来突破限制，或者配置多个IP或虚拟IP也可以。 这种方式还没测过，感兴趣可以参考官方说明的看一下 https://nginx.org/r/proxy_bind Nginx本身能将Websocket数据转化成TCP数据吗只使用Nginx是做不到的，但是搭配Websockify就可以做到WSS（WebSocket Secure）到 TCP 的转发 安装 Nginx：确保你的系统上已经安装了 Nginx。你可以使用系统包管理器或从 Nginx 官方网站下载并安装 安装 Websockify：安装 Websockify，可以使用 pip 执行以下命令： 1pip install websockify 创建 Websockify 启动脚本：创建一个用于启动 Websockify 的脚本，例如 start_websockify.sh。脚本内容可能如下所示： 12#!/bin/bashwebsockify --web /path/to/webroot 1234 localhost:5678 这里 1234 是用于 WebSocket 连接的端口，localhost:5678 是实际 TCP 服务的地址 配置 Nginx：修改 Nginx 配置文件，将 WSS 请求转发到 Websockify 启动脚本。示例配置如下： 123456789101112131415server &#123; listen 443 ssl; server_name your_domain.com; ssl_certificate /root/ca/server.crt; ssl_certificate_key /root/ca/server.key; location / &#123; proxy_pass http://localhost:1234; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; proxy_set_header Host $host; &#125;&#125; 这里的 listen 443 表示监听 HTTPS 请求，proxy_pass http://localhost:1234 将请求代理到 Websockify 启动脚本 启动服务：启动 Websockify 服务： 12chmod +x start_websockify.sh./start_websockify.sh 启动 Nginx 服务： 1systemctl start nginx 测试：使用支持 WebSocket 的客户端连接到 WSS 地址，例如 wss://your_domain.com，并验证是否成功将 WebSocket 请求转发到 TCP 服务 总结 nginx配置自建SSL证书，只需要修改nginx配置文件，在端口后配置添加 ssl 并指定证书和私钥路径即可 nginx上配置SSL证书可以将证书统一管理，减轻应用服务器加密解密的负担，专注于业务逻辑开发 nginx不仅支持http协议转发，还支持https、tcp、udp、websocket等协议的转发 nginx转发tcp协议时会收到端口号个数限制，理论上限6万，通过proxy_bind可以突破上限 nginx搭配websockify可以做到WSS 到 TCP 的转发 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 寒风终究是刮到我这里了]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>运维</tag>
+        <tag>nginx ssl</tag>
+        <tag>https</tag>
+        <tag>websockify</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[怎么验证公钥和私钥是一对]]></title>
+    <url>%2Fblog%2F2023%2F12%2F05%2F%E6%80%8E%E4%B9%88%E9%AA%8C%E8%AF%81%E5%85%AC%E9%92%A5%E5%92%8C%E7%A7%81%E9%92%A5%E6%98%AF%E4%B8%80%E5%AF%B9%2F</url>
+    <content type="text"><![CDATA[前言公钥和私钥都是一串字符，长得也没有什么关联性，那么当拿到一个公钥和一个私钥后怎么验证它们两个是一对呢？先说说为什么会有这个疑问，最近在对接一些SDK时经常需要做签名和验证签名的工作，双方要相互提供公钥来完成后续的身份验证，测试过程中生成了多个密钥对，当时就在想如果我用错了怎样才能发现呢？有没有什么方法可以验证公钥和私钥是一对呢？再寻找方法的过程中发现 ssh-keygen 和 openssl 生成的密钥对差别居然这么大，但后来又发现他们居然还有联系，所以本文将刚刚提到的问题都总结一下，方便日后查阅。 解决这个问题的思路我么可以从密钥使用的方式入手，私钥加密公钥解密可以验证身份，公钥加密私钥解密可以秘密传递数据，也就是说公钥和私钥是配合工作的，如果我们用私钥加密一个数据，公钥可以解开就说明他们两个是一对的的。 其实还有一个更简单的办法，公钥是可以从私钥中提取出来的，反之则不行。在公钥密码学中，私钥和公钥之间的关系是一种数学上的单向函数。这种函数的特性使得从私钥生成公钥是可行的，而从公钥还原私钥是非常困难的，这被称为一个单向函数或单向映射，因此被认为是安全的。 有了这个前提我们就可以这样做，从私钥中提取出公钥，然后和要比对的公钥进行比较，如果一致就说明原来的公钥和私钥是一对啦。 ssh-keygen 和 opensslssh-keygen 和 openssl 是两个不同的工具，它们分别用于生成和处理不同类型的密钥和证书。以下是它们的一些主要区别： 功能和用途： ssh-keygen：主要用于生成和管理SSH密钥对，包括RSA、DSA、ECDSA和Ed25519密钥。 openssl：是一个通用的密码学工具，可以用于生成和管理多种密码学对象，包括SSL/TLS证书、密钥、摘要和数字签名等。 支持的算法： ssh-keygen：专注于SSH密钥生成，支持多种SSH密钥算法。 openssl：支持广泛的密码学算法，包括RSA、DSA、ECDSA、Diffie-Hellman、AES、SHA等，用于生成和操作各种密码学对象。 密钥格式： ssh-keygen：生成的SSH密钥通常以OpenSSH格式存储。 openssl：支持多种密钥格式，例如PEM、DER等，可以处理不同类型的密钥和证书。 具体应用场景： ssh-keygen：主要用于SSH连接，生成用于身份验证的密钥对。 openssl：更广泛地用于TLS/SSL证书、数字签名、加密和其他与通用密码学相关的应用。 具体命令和用法： ssh-keygen：用于生成SSH密钥对的常见命令包括： 1ssh-keygen -t rsa -b 2048 -f myid_rsa openssl：用于生成RSA密钥对的常见命令包括： 12openssl genpkey -algorithm RSA -out private-key.pemopenssl rsa -pubout -in private-key.pem -out public-key.pem 以上的ChatGPT提供的内容，还是对比的挺全面的，从 openssl 生成密钥对的过程可以看出，确实可以从私钥中提取出公钥。 ssh-keygen 是我接触的最多的生成密钥对的命令，不管是github还是gitlab，或者一些其他的托管平台都会提到SSH Keys，所以每次我都会用 ssh-keygen 来生成，它是用于生成SSH连接密钥对最直接的选择，如果是想要使用更广泛的密码学操作，包括证书生成、签名和加密等，那么 openssl 提供了更大的灵活性。 两种证书的内容对比前面说了两种命令生成的证书、格式、算法和用途都有区别，我们来看看利用上面的命令生成的证书内容有什么不同，先看 ssh-keygen 生成的私钥 myid_rsa 和公钥 myid_rsa.pub 123456789101112131415161718192021# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [17:58:47]$ ssh-keygen -t rsa -b 2048 -f myid_rsaGenerating public/private rsa key pair.Enter passphrase (empty for no passphrase):Enter same passphrase again:Your identification has been saved in myid_rsaYour public key has been saved in myid_rsa.pubThe key fingerprint is:SHA256:eLzG9lryO/AOdd05cDkixvBNCPFZRLRu0wp3bxZ7Vnk demo@demo-ThinkPad-X390The key's randomart image is:+---[RSA 2048]----+| +o =* || =.= . .|| B = + || o . o.=.+|| . S ...=.BE|| o.o .+ + B|| Bo. . .*|| o *o +.|| .o=o |+----[SHA256]-----+ 1234567891011121314151617181920212223242526272829# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:22:03]$ cat myid_rsa-----BEGIN OPENSSH PRIVATE KEY-----b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcnNhAAAAAwEAAQAAAQEAr7gEjCdhA4at0tx0efpLunEOEGvK3ejJCh/dBwLfsvVJelwTeJjKzI2nFvYGkJgndhWLuvwy6+ODnvASeNvXSvZZzXvvXjTF4JP3TRbATayFvS9mZgzOnxh/rUz4P7ecLBfqZZkem+VBrMlv37yaIWf7co59dtrJJuAfZJFXyW//LQhNoEaqbZ/gvZls5pOXr2foMnYg2HV0ayPlvz8cmVF8LIOqaGOc28nMQakVwO+nZhbSv1bGprIGcy4czc7UOp/m+ot6mWJflpq3NBGiImyfaT2kxp1+pIdd6ISqoZqa9C2JzH7ZXVGjevbHuqup871yjUGapxDxlDk9HjdSLwAAA9AlxLUDJcS1AwAAAAdzc2gtcnNhAAABAQCvuASMJ2EDhq3S3HR5+ku6cQ4Qa8rd6MkKH90HAt+y9Ul6XBN4mMrMjacW9gaQmCd2FYu6/DLr44Oe8BJ429dK9lnNe+9eNMXgk/dNFsBNrIW9L2ZmDM6fGH+tTPg/t5wsF+plmR6b5UGsyW/fvJohZ/tyjn122skm4B9kkVfJb/8tCE2gRqptn+C9mWzmk5evZ+gydiDYdXRrI+W/PxyZUXwsg6poY5zbycxBqRXA76dmFtK/VsamsgZzLhzNztQ6n+b6i3qZYl+Wmrc0EaIibJ9pPaTGnX6kh13ohKqhmpr0LYnMftldUaN69se6q6nzvXKNQZqnEPGUOT0eN1IvAAAAAwEAAQAAAP8nH9HjYuE258XMLUnB3vj9ii6XeWiyACLDHlUYOouUTQkPNXEgaOS+psuNUTok97vRjvqNp5mu6/liahGy10AYcMGN/wpM73MfjdKCV455vPAKL4OdNTzML6g97eVYSol7R9foxy8JhwIYdsFyD4xB4+UYnKFS1WP0Q/K5caMaNnazPF0X7JDSenEwBwl1bDAN5OKwZNzSzUpR/96fl1DAgnG9yp1/634WGtIfjXLm13OSMrSHfwazNHoqAPkD0SQVJrm38ppvqArU0tBVfh/kvBkv7CCAE9mzhxusiKjuB0c/jrsRDu45AJX5wuqIWcZdfppATJjK10S20MgN5dkAAACBALYym7mpDVQJ2gedSjv/Pva+O/5b/20jawc3RFZdJAUWSGJTe9UqyHBHPlYj3/bHJVWIQ9S7s5AxpBtAEOsjeQf0VGFaFALQwcUghx5r1uM5sAL06CT/5t3Ze8lcJozNW7yjbVZKjJK13GTDMrnPYTfPOc+I/6N3R+SV2iKOwUQPAAAAgQDp9/2WvHOX2GKXan2BvMaexj6GYIQa8xEsqhtQGY9zxQ2d+9Z7YgDfXnNanxv8XJ61komeP9KmhS+2TCt0trj8sXtQobDsDGjFcDx0jjBobU6zKvO4htoZP3lb8wZARgQoEANxqNOo8R61CsDQW4eM0ReAitKZ0GCcXbqNYCRTGwAAAIEAwEPdhAH4iH6V7IJnQs3pgf9AG9UubDe9mAwVNIircWTFO2EFaBpwP7UKgpNmmZjoD2lWEcr2Zxv6x8ILBlJqeavCpGfLo0hwt2XZHgLRsTx8RmsbmYI2l8qnkMWyz5Lh3XAhNMZM4s9OvSJM6JPWYcedG5KYG1/zbarjwkq+Gn0AAAAVc2h6QHNoei1UaGlua1BhZC1YMzkwAQIDBAUG-----END OPENSSH PRIVATE KEY----- 123# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:22:10]$ cat myid_rsa.pubssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvuASMJ2EDhq3S3HR5+ku6cQ4Qa8rd6MkKH90HAt+y9Ul6XBN4mMrMjacW9gaQmCd2FYu6/DLr44Oe8BJ429dK9lnNe+9eNMXgk/dNFsBNrIW9L2ZmDM6fGH+tTPg/t5wsF+plmR6b5UGsyW/fvJohZ/tyjn122skm4B9kkVfJb/8tCE2gRqptn+C9mWzmk5evZ+gydiDYdXRrI+W/PxyZUXwsg6poY5zbycxBqRXA76dmFtK/VsamsgZzLhzNztQ6n+b6i3qZYl+Wmrc0EaIibJ9pPaTGnX6kh13ohKqhmpr0LYnMftldUaN69se6q6nzvXKNQZqnEPGUOT0eN1Iv demo@demo-ThinkPad-X390 接着看看 openssl 生成的私钥 private-key.pem 和公钥 public-key.pem 12345678# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:23:01]$ openssl genpkey -algorithm RSA -out private-key.pem......................................................................+++++..................+++++# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:25:04]$ openssl rsa -pubout -in private-key.pem -out public-key.pemwriting RSA key 123456789101112131415161718192021222324252627282930# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:26:18]$ cat private-key.pem-----BEGIN PRIVATE KEY-----MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDjxEM9ypyLb0fTxk7Ujdvj7efUjbLhzAcbfHNRZqzqif1rlTS4jz+tIDZBX9/HJkDcoz1dIolp/53SCJtz+qBrkHMzsi6dcqd5jXUfT3Ts/FMTVsAKIkwafnw2Gbi2DGQx8WQ8Sn5+LlUPFSCJa+2MTc21taiMP7CtF7iG6jFeGna3xeRTWAjMMS2xk9Zk37KMz8weU4ShdQ9qmX7yuKHuZzUiWHmjbW/bi6abur3dfi/1jRSnFQF+r/gJoH1UXT4st/+fW425nWqOohSV+xw61a09fjECfjVDkMXtwiPCbbGNjD8WjLbilOJK3uBx5e7GIN1jZjVBqlH9NqEk12HVAgMBAAECggEAIlcf8DwRGDDB+psGnaN5yMbA0lo+4y5Yz/sWg+pgHciKTeMkHMN0TUzzAS5MVgFdfCachONFJpckm1sy3OynrTANPnkZ8CEuQPRj+UGIloaAnATTVXPQV5pEbf+4yrHZlXIYs8JjifDAYFLGIhIEsce1QTVPYT3lDGPsLWM36ED6XVnvJYsr00wpLlYy4uWikt4Q8ruKDnWSS8xeE7pj0bBaqYd8Gz4jfrJ94IgNIROQxnXb8aMG/o441ImrF6YXKn8jR/gjZXT1L4ZsD7fGTvLKBxxImBXL2eIoZ8usmTtXeLEfYaJlzyXOcnYKKVtMQxRI+4ANJWWnMDgM8NTBTQKBgQD0hboW//hXGVcng3PuNfD7hUPHQKWWUHbchjRfxvxy/4itqGaWHtUrmc4PTXUxW71YaVA6qm2gvfV+jn83o5k009vVbXYVvztNQq9wC0Fj2OYwQkxHMgAY9JdhZr6ghuEZ0+hNd5Jea9K3w62CcY0mHqlvo55szhWmhuvzFtSUXwKBgQDudTFUjf7+qPsfYEX14udsKtfowrjepFLfnQAbxj16PxpRBSV7S77gdlW1shKEreIPbm083bhU3ypCRs7ktR0Wki/uoQGYekHrb8Nljh+rM9DxY83+HfLHAC/RjP8ZFrWJFgo6Whfr3jhlb8j3a4siLvqMj0d35BRvM+HtsEhWSwKBgQC7M746aZG5LP9akvsofkeWaHpxi366S7QUNPLX+MHBUP1U5j5T5BsTnFbzxDtapH+btlTj9SKlE4llcLbY4/khRqlhBsKG97bw+YLS5usTBDWG8NrxDsigUnGq8jwzLdAcM+3/kPGQNEBIzBiEa2bCrmrNu5hIeKZ+rYDqxKnPRQKBgQChMZuNOwfbAkPvq9bfJuml1zho4eiyqIZVHv6Jx/KbBrk1d7Mkq8l2VsgNsTiPdDPSlqVFdeQ7izg34UHOnRfywBOizjgT6OFS1BRUPETwKHDgHMWNOJV7LIcmspdnUFCbQMjdNTXifi/FclF537sH+pXoGpsHUqj1my7ozDe6DQKBgQDY9tJvXx5DRPVH2t600rl1df3PogoAhwjvK+Q/Y5vLyrL470JxMNPtW546aWXRL6INTg+OvsUqLJXEMlxlHdHIe16orIGBrGcqHNGfkQPfddJVOo0eQCCk4jaLL9EP7+euA83vp6cP38rqgsL70+gt34iMPCP9dEKaJyjZPv+vFQ==-----END PRIVATE KEY----- 1234567891011# demo @ demo-ThinkPad-X390 in ~/tmp/rsa [19:26:21]$ cat public-key.pem-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA48RDPcqci29H08ZO1I3b4+3n1I2y4cwHG3xzUWas6on9a5U0uI8/rSA2QV/fxyZA3KM9XSKJaf+d0gibc/qga5BzM7IunXKneY11H0907PxTE1bACiJMGn58Nhm4tgxkMfFkPEp+fi5VDxUgiWvtjE3NtbWojD+wrRe4huoxXhp2t8XkU1gIzDEtsZPWZN+yjM/MHlOEoXUPapl+8rih7mc1Ilh5o21v24umm7q93X4v9Y0UpxUBfq/4CaB9VF0+LLf/n1uNuZ1qjqIUlfscOtWtPX4xAn41Q5DF7cIjwm2xjYw/Foy24pTiSt7gceXuxiDdY2Y1QapR/TahJNdh1QIDAQAB-----END PUBLIC KEY----- 从私钥提取公钥使用 openssl 命令从私钥提取公钥，上面已经展示过程了，它的公钥就是这样生成的 1openssl rsa -pubout -in private-key.pem -out public-key.pem 使用 ssh-keygen 命令从私钥提取公钥可以这样做 1ssh-keygen -y -f myid_rsa &gt; compare_myid_rsa.pub 结果文件 compare_myid_rsa.pub 和 myid_rsa.pub 的内容一模一样，所以从私钥提取公钥可以作为检验密钥是否匹配的方法 OPENSSH和PEM两种密钥格式相互转化之前说了ssh-keygen 和 openssl两个命令及生成的密钥区别，现在讲讲两种密钥的联系，OpenSSH 和 OpenSSL 使用的密钥对虽然有一些格式上的差异，但可以相互转换。OpenSSH 使用自己的私钥和公钥格式, 而 OpenSSL 通常使用 PEM 格式，可以通过下列命令转化 OpenSSH 格式私钥转换成 OpenSSL PEM 格式私钥1ssh-keygen -p -N "" -f myid_rsa -m PEM $ file myid_rsamyid_rsa: PEM RSA private key OpenSSL PEM 格式私钥转换成 OpenSSH 格式私钥1ssh-keygen -p -N "" -f myid_rsa $ file myid_rsamyid_rsa: OpenSSH private key OpenSSH 格式公钥生成 OpenSSL PEM 格式公钥1ssh-keygen -e -m PEM -f myid_rsa.pub &gt; new-public-key.pem $ file new-public-key.pemnew-public-key.pem: ASCII text OpenSSL PEM 格式公钥生成 OpenSSH 格式公钥1ssh-keygen -i -m PKCS8 -f new-public-key.pem &gt; compare_myid_rsa.pub $ file compare_myid_rsa.pubcompare_myid_rsa.pub: OpenSSH RSA public key 公钥和私钥的匹配使用匹配使用公钥和私钥之前先准备一个测试文件 1echo "Hello World" &gt; data.txt 加密和解密使用公钥加密 1openssl rsautl -in data.txt -out data_enc.txt -inkey public-key.pem -pubin -encrypt 使用私钥解密 1openssl rsautl -in data_enc.txt -out data_dec.txt -inkey private-key.pem -decrypt 两个命令执行后都没有任何控制台输出，文件 data_enc.txt 中是加密后的内容，文件 data_dec.txt 是解密后的内容，成功解密后内容与 data.txt 文件内容一样 签名和验证使用私钥签名 1openssl dgst -sha256 -sign private-key.pem -out signature.bin data.txt 使用公钥验证签名 1openssl dgst -sha256 -verify public-key.pem -signature signature.bin data.txt 验证通过后，会在命令行输出 “Verified OK” 字样，若不通过则输出 “Verification Failure” 字样 总结 验证公钥私钥是否匹配的最便捷的方法是通过私钥提取公钥来和原公钥进行对比 公钥加密私钥解密，私钥签名公钥验证签名，需要把公钥发给别人，私钥自己要保留好 公钥和私钥常用的有OpenSSH和PEM两种格式，这两种格式的密钥可以相互转化 ssh-keygen 和 openssl 是两个不同的工具，前者用于管理SSH密钥更具体，后者使用范围更广更灵活 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 事情一件件去办就好了，『没什么大不了的』，希望你长大后还可以经常乐观的说这句话，一副俾睨天下的姿态]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>openssl</tag>
+        <tag>ssh-keygen</tag>
+        <tag>pem</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[究竟什么是阻塞与非阻塞、同步与异步]]></title>
+    <url>%2Fblog%2F2023%2F11%2F24%2F%E7%A9%B6%E7%AB%9F%E4%BB%80%E4%B9%88%E6%98%AF%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E%E3%80%81%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5%2F</url>
+    <content type="text"><![CDATA[前言这几个名词在程序开发时经常听到，但是突然问起来各个词的含义一时间还真是说不清楚，貌似这几个词都是翻译过来的，每个人的解释都不太一样，我对这几个词的理解也不是一成不变的，随着开发经验的积累，渐渐有了自己的记忆方式，所以总结一下，不一定准确，有问题可以一起聊一聊。 先说说我的结论：阻塞与非阻塞是指等待执行结果时的状态，同步与异步是指获取执行结果的方式，读起来有点绕口，听起来也迷迷糊糊的，没关系，我们用具体的例子来说明应该就容易理解了。 阻塞与非阻塞先说说『阻塞与非阻塞是指等待执行结果时的状态』这一句，是说在执行某个操作或者某个函数时，在没有拿到我们想要的结果时，我们的状态是怎样的，如果是一直等就是【阻塞】的，如果发现没有结果就去做别的事情了就是【非阻塞】的。 以常见的网络IO为例，服务器对客户端连接的socket调用read函数，试图获取客户端发送的请求数据，但是客户端并不总是有数据发送过来，所以想要获得数据我可以采用【阻塞】方式一直等，也可以采用【非阻塞】方式，在发现此时没有数据时就先去干别的事，一会再来看看。 同步与异步再来说说『同步与异步是指获取执行结果的方式』这一句，以游戏中的常见升级发奖为例，可以主动调用升级函数，在执行完成后返回升级的结果，然后根据结果来发奖励，也就是【同步】写法，也可以注册一个监听等级变化的回调函数，注册完我就不管了，当升级时会将升级的结果通过回调函数传回来，这就是【异步】处理方式。 复杂的网络IO为什么同步和异步没有用网络IO来举例呢？因为网络IO这里的情况更加复杂，虽然你注册了回调函数，但它很可能是个同步IO，究竟怎么回事，一起来看看。 我们知道要想从IO读取数据，需要经历「内核数据准备好」和「数据从内核态拷贝到用户态」两个过程，还是以read函数为例，如果设置为阻塞模式，相当于read函数等待了「内核数据准备好」和「数据从内核态拷贝到用户态」两个过程，然后取到IO数据，如果设置成非阻塞模式，当内核数据没准备好会直接返回，也就是不会等待第一个过程，但是当数据准备好时，会直接等待第二个过程完成后，将结果数据返回。 所以无论是否阻塞，我们都等待了第二个阶段，等着它执行完成后获取结果，所以这两种都是同步IO。 那作为IO多路复用里的“一哥”epoll也是同步IO吗？是的！那封装了select/poll/epoll的libevent可是用了Reactor模式，支持事件回调，它也是同步IO吗？是的！ 真正的异步IO有点惊呆了不是吗？那究竟什么是异步IO呢？还真有！Windows 里实现了一套完整的支持 socket 的异步编程接口 IOCP，而 Linux 是在 2019 年 5.1 版本 内核首次引入的高性能异步I/O 框架 io_uring，我确实都没用过，感兴趣的可以试一下 是否是异步IO就看「数据从内核态拷贝到用户态」这个过程需不需要等待，如果需要逻辑层自己等待这个过程取数据就是同步IO，如果这个过程都不用等，调用回调函数时已经把内核态的数据拷贝出来，并且通过回调将数据进行了回传，这就是异步IO。 IO分类与示例所以总结下来一共有这么几种：同步阻塞IO，同步非阻塞IO，异步IO，为啥不区分异步阻塞IO和异步非阻塞IO呢？你在阻塞时搞个异步试试，办不到吧，所以异步只能与非阻塞搭配，也就习惯只写异步IO了。 一顿理论讲下来可能还是比较抽象，那我们再举个日常生活中的例子，比如中午买饭的过程： 同步阻塞IO就好像，你去食堂吃面条，但是你去这一锅面条还没煮好，然后你就一直在那里等啊等，等了一段时间终于做好了（数据准备的过程），但是你还得继续等工作人员把面条（内核空间）打到你的餐盘里（用户空间），才能找个桌子开始吃饭。 同步非阻塞IO就好像，你又去食堂吃饭，问大叔饭做好了没有，告诉你没有你就离开了，过了一会，你又来饭堂问大叔饭做好了吗，人家说说做好了，于是你等着把饭打到你的餐盘里，后面这个过程你是得等待的。 异步IO就好像，你在十分焦急的写BUG，这时到饭点肚子饿了，给食堂大叔打电话，等饭做好了麻烦给我送一份，等到饭好了真的送来直接就能吃了，一直在抓紧写BUG中间没有等待（做梦中） 我想大部分同学吃午饭都是第一种同步阻塞IO吧，第二种同步非阻塞IO可能也有，但是不是要重新排队啊，如果是第三种异步IO的情况，我只能说大哥/姐，我跟你混了~~ 总结 IO分为同步阻塞IO，同步非阻塞IO，异步IO三类 异步IO有Windows平台的 IOCP 和 Linux 平台的 io_uring 从IO读取数据，需要经历「内核数据准备好」和「数据从内核态拷贝到用户态」两个过程 分析阻塞和非阻塞看是否等待第一个过程，分析同步与异步看是否等待第二个过程 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 人生的岔路口，不知是机会还是风险，边走边看吧，毕竟路还是在脚下，空想也到不了终点~]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>服务器</tag>
+        <tag>同步与异步</tag>
+        <tag>阻塞与非阻塞</tag>
+        <tag>异步IO</tag>
+        <tag>Reactor</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[git diff对比差异时指定或排除特定的文件和目录]]></title>
+    <url>%2Fblog%2F2023%2F10%2F31%2Fgit-diff%E5%AF%B9%E6%AF%94%E5%B7%AE%E5%BC%82%E6%97%B6%E6%8C%87%E5%AE%9A%E6%88%96%E6%8E%92%E9%99%A4%E7%89%B9%E5%AE%9A%E7%9A%84%E6%96%87%E4%BB%B6%E5%92%8C%E7%9B%AE%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[前言 你一般什么时候会用GPT? 居然会有这种话题，答案就是作为程序员的我天天在用，虽然GPT有个胡说八道的毛病，但试试总没错的，就比如今天题目中这个问题，我也是先查了GPT没好使，但给我提供了查询思路，最后在Stack Overflow上找到解决办法，记录一下 git diff指定或者排除文件我就直接列答案了，没什么可说的，工具参数记住就好 指定文件和目录1git diff dev..feature --stat -- ':*.pb.go' ':*.pb.h' ':*.pb.cc' 以上语句表示对比dev和feature分支差异的文件，但是只选择后缀为以上三种的文件，如果是特定的目录，将冒号后的内容替换成目录即可，-- &#39;:src/thirdparty&#39; 排除文件和目录1git diff dev..feature --stat -- ':!*.pb.go' ':!*.pb.h' ':!*.pb.cc' 在上面的基础上加个取反的感叹号就行，如果是排除目录就在 !直接写目录就可以了，这种排除的写法还有另一种形式，用(exclude)代替感叹号，其中还可以写其他属性，感兴趣可以自己扩展查询一下： 1git diff dev..feature --stat -- ':(exclude)*.pb.go' ':(exclude)*.pb.h' ':(exclude)*.pb.cc' 番外篇今天在某乎上看到一个提问《C++有多难？》，看着大佬们口若悬河、引经据典的在诉说、在吐槽、在愤慨，却引起了我的回忆，我为什么选择C++？ 只因为在人群中多看了一眼吧，有先入为主的因素，也有水到渠成的必然。 我最先接触的一门编程语言是C语言，对于刚刚接触编程的我来说，它是那么令人着迷，虽然开发环境是寒酸可怜的Turbo C，但是丝毫没有影响我的学习热情，刚开始打印出一个杨辉三角都开心的不得了，教科书上的每个例子我都敲了很多遍，虽然那古老的教材现在被大佬们批判的不行，但确实领我在代码的世界里入了门。 后来随着学习的推进，又逐步接触了Java、C#等高级语言，也接触了汇编、单片机等偏底层的领域，为什么没有选Java、C#而一直坚守C语言呢？有份程序员的孤傲，当时觉得C语言很酷，我是底层我牛X，你们这些语言不是带个虚拟机，就是拖个运行时一点都Cool，那为什么不选汇编语言呢？咳咳，确实吼不住。 就这样我带着C语言，C语言伴着我开始一步步经历大学生活，当然期间也从一些“旁门左道”里习得只言片语的C++，只是我不知道它还有这个名字，带着舍我其谁的年轻气盛，我和C语言一起去参加各种编程比赛，结果有好有坏，但实力确实很菜，虽然也拿到过一些区域或者国家级的名次，但如今已成过往云烟。 转眼间就来到了大四实习，一个专业100多人，少部分人选择了苹果应用，绝大多数投身于Java开发，而我独自一人选择了嵌入式C，为什么选择嵌入式，因为只有它带“C”，也是在这短暂的几个月里我再一次听说了C++，但仅仅局限于了解C和C++有什么不同，C++好像有个class和struct挺像的。 开始真正的找工作了，受大学和室友一起打dota的影响，我毅然决然的加入了游戏开发大军，在那个各类游戏百花齐放的年代，C/C++在游戏行业有着根深蒂固的基础，因为我的C语言还不错，所以还是顺利的入了坑。 但随着踏入这个坑，我和C++开始正面交锋了，纠缠至今已经有10多年，中间工作6年之后有一次转Golang开发的机会被我拒绝了，我给那个面试官的回答是因为情怀吧，我不能离开C++。 如今我用C++20的标准在工作，与刚开始接触的C++98真的跨了一个世纪，各种语法糖之外是另一些语法糖，每个版本中标准委员会提到的特性，恨不得要3年后的要下个版本才能开发，庞大语言体系使得一些初入社会的毛头小子才配标注“精通”二字，而像我这种使用十多年的菜鸟只敢承认用过C++，略懂皮毛而已。 C++很难吗？真的很难！可不可以简单一点，其实它也可以很简单，不要拿着各种内存问题和我C++挑战，这不是我的强项，但我同样可以写出没有内存泄漏的程序；也不要拿着各种工具、运行时库和我比开发效率，这也不是我的强项，我难道就没有库吗，开源的世界里百花齐放。 不要一提到C++就是面向对象、STL、模板元编程，它是一门编程语言，一门用于完成任务的可编写逻辑的语言，用它写一个冒泡排序也很简单，不要过分夸大他的难度，每次你都把它最难的地方亮出来，对它来说是不公平的。 如今，我不会再说C++就是牛X其他语言都是垃圾这种脑抽的话，C++只是一种语言，一种我暂时还离不开的语言，但它不再是我的唯一，写个小工具偶尔也会使用Python或者Golang，不是我不再爱C++，而是有了更合适的选择而已。 C++，一门集强大与庞大于一身的语言，学会它容易，但学透它确实很难，我们在一起共同成长。 总结 GPT无处不在，每天必用超过了google git diff 指定文件类型 git diff dev..feature -- &#39;:*.pb.go&#39; &#39;:*.pb.h&#39; &#39;:*.pb.cc&#39; git diff 排除文件类型 git diff dev..feature -- &#39;:!*.pb.go&#39; &#39;:!*.pb.h&#39; &#39;:!*.pb.cc&#39; ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 每天提问自己一个问题，试验一段时间，看看是否有效吧，本质还是眼高手低造成了目前的焦虑]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>diff</tag>
+        <tag>gpt</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux环境下使用timeout监控命令执行超过5分钟后发送通知]]></title>
+    <url>%2Fblog%2F2023%2F10%2F23%2Flinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8timeout%E7%9B%91%E6%8E%A7%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%B6%85%E8%BF%875%E5%88%86%E9%92%9F%E5%90%8E%E5%8F%91%E9%80%81%E9%80%9A%E7%9F%A5%2F</url>
+    <content type="text"><![CDATA[前言有一段时间没写了，马上1024了，总得有点输出吧，想到最近用了一个挺有用的命令 timeout ，所以拿出来简单展示一下它的用法，作用就是可以给指定命令设置超时时间，相当于扩展了原命令，对于一般没有超时参数的命令是个方便的扩展方式，可以增加超时处理。 使用方法使用方法也非常简单，下面是一个简单的示例： 123456789101112131415161718192021#!/bin/bash# 设置超时时间（秒）TIMEOUT=300# 要监控的命令./hooks/rsync.sh &amp;# 获取命令的进程IDcommand_pid=$!# 等待命令执行完成，或者直到超时timeout $TIMEOUT tail --pid=$command_pid -f /dev/null# 检查是否超时if [ $? -eq 124 ]; then echo "timeout" iostat -d -x 2 9else echo "normal"fi tail --pid=$command_pid -f /dev/null 这个命令是用来等待指定进程 $command_pid 结束的同时保持脚本的运行，以确保后续的超时检查。 tail 是一个用于显示文件末尾内容的命令，通常用于查看日志文件。 --pid=$command_pid 是 tail 命令的一个选项。它告诉 tail 命令在结束之前等待指定的进程 $command_pid 完成。这是通过监视 /proc/$command_pid/fd/1 文件（进程的标准输出）来实现的，以便在进程结束时 tail 命令也会退出。 -f /dev/null 表示 tail 命令要查看 /dev/null 文件的内容，但 /dev/null 文件是一个空文件，所以它不会产生输出。这里的目的是让 tail 命令一直运行，直到 $command_pid 进程结束。 这种构造的作用是等待命令执行完成，但在等待的过程中不产生输出。一旦 $command_pid 进程结束，tail 命令也会退出，允许脚本继续执行后续操作，如检查是否超时。 if [ $? -eq 124 ]; then ... else ...:这一段是条件语句，用于检查timeout命令的返回状态。如果返回状态是124，意味着rsync.sh脚本执行超时，那么它会打印”timeout”以指示发生了超时，并且运行iostat -d -x 2 9命令来获取磁盘I/O统计信息。 如果timeout命令的返回状态不是124，即没有发生超时，它将执行else部分打印”normal”以指示命令正常执行。 其他有趣的命令类似这种监控或者扩展的命令还有： time，于测量命令执行的时间。它会运行一个命令，并报告命令执行所花费的实际时间（包括用户CPU时间和系统CPU时间），通常用于性能分析和优化。例如 time my_command， at，可以计划执行一次性任务，比如将在15:30执行命令echo &quot;my_command&quot; | at 15:30 nohup，用于在后台运行命令，比如 nohup my_command &gt; output.log 2&gt;&amp;1 &amp; 系统资源查询命令12345date &gt;&gt; /tmp/slow.logiostat -d -x 2 5 &gt;&gt; /tmp/slow.logvmstat -n 2 5 &gt;&gt; /tmp/slow.logsar -B 2 5 &gt;&gt; /tmp/slow.logtop -b -n 3 | grep "md5sum" &gt;&gt; /tmp/slow.log 有时发现系统总是被无故拖慢，有些进程迟迟不能结束，虽然有监控grafana大盘可以查，但是有些参数不太细致，可以上面展示的这些命令来临时查一下，它们的含义如下： iostat -d -x 2 5 &gt;&gt; /tmp/slow.log： iostat 用于报告系统磁盘活动和性能 -d 选项表示只显示磁盘相关的信息 -x 选项用于显示扩展的磁盘统计信息 2 表示每隔2秒报告一次 5 表示报告5次 vmstat -n 2 5 &gt;&gt; /tmp/slow.log： vmstat 用于显示虚拟内存统计 -n 选项用于指定输出中不显示表头 sar -B 2 5 &gt;&gt; /tmp/slow.log： sar 用于系统性能数据采集和报告 -B 选项用于报告缓冲区和页缓存统计信息 top -b -n 3 | grep “md5sum” &gt;&gt; /tmp/slow.log： top 用于实时查看系统中正在运行的进程和其性能 -b 选项表示以批处理模式运行，适用于脚本 -n 3 表示运行3次 top grep &quot;md5sum&quot; 用于筛选包含 “md5sum” 的行，以查找与 “md5sum” 相关的进程 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647Fri Oct 20 13:36:31 CST 2023Linux 3.10.0-1160.88.1.el7.x86_64 (demo-machine) 10/20/2023 &gt;_x86_64_ (8 CPU)Device: rrqm/s wrqm/s r/s w/s rkB/s wkB/s avgrq-sz &gt;avgqu-sz await r_await w_await svctm %utilfd0 0.00 0.00 0.00 0.00 0.00 0.00 8.00 &gt;0.00 136.50 136.50 0.00 136.50 0.00sdb 0.00 0.00 1.98 0.02 179.62 6.55 186.84 &gt;0.06 32.16 30.23 265.38 1.45 0.29sda 0.00 0.02 0.01 0.23 0.27 1.98 18.70 &gt;0.00 9.97 103.14 6.89 1.96 0.05Device: rrqm/s wrqm/s r/s w/s rkB/s wkB/s avgrq-sz &gt;avgqu-sz await r_await w_await svctm %utilfd0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00sdb 0.00 0.00 1.47 0.00 598.04 0.00 813.33 &gt;0.13 86.33 86.33 0.00 42.33 6.23sda 0.00 0.00 0.49 0.98 3.92 2.70 9.00 &gt;0.01 10.00 30.00 0.00 10.00 1.47Device: rrqm/s wrqm/s r/s w/s rkB/s wkB/s avgrq-sz &gt;avgqu-sz await r_await w_await svctm %utilfd0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00sdb 0.00 0.00 0.99 0.00 392.08 0.00 792.00 &gt;0.02 19.00 19.00 0.00 9.50 0.94sda 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00Device: rrqm/s wrqm/s r/s w/s rkB/s wkB/s avgrq-sz &gt;avgqu-sz await r_await w_await svctm %utilfd0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00sdb 0.00 0.00 4.00 0.00 1776.00 0.00 888.00 &gt;0.06 15.25 15.25 0.00 2.62 1.05sda 0.00 0.00 0.00 1.50 0.00 6.00 8.00 &gt;0.00 2.00 0.00 2.00 0.67 0.10Device: rrqm/s wrqm/s r/s w/s rkB/s wkB/s avgrq-sz &gt;avgqu-sz await r_await w_await svctm %utilfd0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00sdb 0.00 0.00 4.23 0.00 2066.15 0.00 976.73 &gt;0.13 31.00 31.00 0.00 3.55 1.50sda 0.00 0.00 0.00 0.00 0.00 0.00 0.00 &gt;0.00 0.00 0.00 0.00 0.00 0.00procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu----- r b swpd free buff cache si so bi bo in cs us sy id wa st 2 0 0 162364 0 12586664 0 0 23 1 0 1 0 0 100 0 0 2 0 0 158892 0 12565264 0 0 0 0 3209 413 0 8 92 0 0 2 0 0 165976 0 12543900 0 0 0 0 1879 332 0 5 95 0 0 2 0 0 163496 0 12523372 0 0 396 0 2844 678 0 8 92 0 0 3 0 0 162240 0 12502092 0 0 0 0 2038 574 0 7 93 0 0Linux 3.10.0-1160.88.1.el7.x86_64 (demo-machine) 10/20/2023 &gt;_x86_64_ (8 CPU)01:36:48 PM pgpgin/s pgpgout/s fault/s majflt/s pgfree/s pgscank/s pgscand/s &gt;pgsteal/s %vmeff01:36:50 PM 1674.00 0.00 3098.00 0.00 3431.00 3362.00 &gt;0.00 3362.00 100.0001:36:52 PM 0.00 0.00 2874.50 0.00 2675.00 2650.50 &gt;0.00 2650.50 100.0001:36:54 PM 2822.00 0.00 2478.50 0.00 2666.50 2645.00 &gt;0.00 2645.00 100.0001:36:56 PM 0.00 0.50 1248.50 0.00 156173.00 2642.00 &gt;0.00 2642.00 100.0001:36:58 PM 0.00 0.00 1975.00 0.00 321.50 0.00 &gt;0.00 0.00 0.00Average: 899.20 0.10 2334.90 0.00 33053.40 2259.90 0.00 2259.90 100.00 5667 root 20 0 1455484 54400 1256 R 100.0 0.3 3:54.39 md5sum 5667 root 20 0 1455484 75784 1256 R 100.0 0.5 3:57.40 md5sum 5667 root 20 0 1455484 98752 1256 R 100.0 0.6 4:00.41 md5sum 总结 timeout 可以给其他命令设置超时时间 at 可以计划执行一次性任务 iostat -d -x 2 5 用于报告系统磁盘活动和性能 vmstat -n 2 5 用于显示虚拟内存统计 sar -B 2 5 用于系统性能数据采集和报告 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 心态还是很难调整好，大道理学了这么久，发现都是讲给别人听的，根本治愈不了自己，该歇歇了~]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>运维</tag>
+        <tag>服务器</tag>
+        <tag>timeout</tag>
+        <tag>iostat</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[废了九牛二虎之力终于修改了MySQL8.0的root密码]]></title>
     <url>%2Fblog%2F2023%2F10%2F08%2F%E5%BA%9F%E4%BA%86%E4%B9%9D%E7%89%9B%E4%BA%8C%E8%99%8E%E4%B9%8B%E5%8A%9B%E7%BB%88%E4%BA%8E%E4%BF%AE%E6%94%B9%E4%BA%86MySQL8-0%E7%9A%84root%E5%AF%86%E7%A0%81%2F</url>
     <content type="text"><![CDATA[前言上次说到在Ubuntu系统上安装MySQL8.0之后默认是没有密码的，如果想设置密码需要写成ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;xxx&#39;; 的形式，其实在用这种方式之前，我还使用功能了mysql_secure_installation这个MySQL自带的程序来设置密码，但是没生效，为什么这个看起来很正规的方式不生效的呢？接下来一起找找原因。 使用mysql_secure_installation使用步骤比较简单，就按照提示来输入就可以了，这是我第二次运行，第一次运行时还要加个 ‘Would you like to setup VALIDATE PASSWORD component?’ 步骤 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657root@w-dev:~# mysql_secure_installationSecuring the MySQL server deployment.Enter password for user root:The 'validate_password' component is installed on the server.The subsequent steps will run with the existing configurationof the component.Using existing password for root.Estimated strength of the password: 50Change the password for root ? ((Press y|Y for Yes, any other key for No) : yNew password:Re-enter new password:Estimated strength of the password: 50Do you wish to continue with the password provided?(Press y|Y for Yes, any other key for No) : yBy default, a MySQL installation has an anonymous user,allowing anyone to log into MySQL without having to havea user account created for them. This is intended only fortesting, and to make the installation go a bit smoother.You should remove them before moving into a productionenvironment.Remove anonymous users? (Press y|Y for Yes, any other key for No) : ySuccess.Normally, root should only be allowed to connect from'localhost'. This ensures that someone cannot guess atthe root password from the network.Disallow root login remotely? (Press y|Y for Yes, any other key for No) : ySuccess.By default, MySQL comes with a database named 'test' thatanyone can access. This is also intended only for testing,and should be removed before moving into a productionenvironment.Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y - Dropping test database...Success. - Removing privileges on test database...Success.Reloading the privilege tables will ensure that all changesmade so far will take effect immediately.Reload privilege tables now? (Press y|Y for Yes, any other key for No) : ySuccess.All done! 那么这个程序具体干了哪些事呢，下面来解释一下。 mysql_secure_installation 是一个 MySQL 提供的命令行工具，用于帮助加强和改善 MySQL 服务器的安全性。当首次安装 MySQL 后，运行此工具可以执行一系列的操作来提高 MySQL 服务器的安全性，并确保默认设置不会导致潜在的安全漏洞。以下是 mysql_secure_installation 工具执行的主要任务： 设置 root 密码： 如果您在安装 MySQL 时没有为 root 用户设置密码，mysql_secure_installation 会提示您设置 root 密码。设置 root 密码是非常重要的，因为 root 用户具有最高的权限，拥有对 MySQL 服务器的完全控制。 删除匿名用户： mysql_secure_installation 会删除默认情况下存在的匿名用户。匿名用户是指没有用户名和密码就能访问 MySQL 服务器的用户。删除这些用户可以减少潜在的安全风险。 禁止远程 root 登录： 默认情况下，MySQL 允许 root 用户从任何主机登录。mysql_secure_installation 会提示您是否禁止 root 用户从远程主机登录，以减少潜在的远程攻击风险。 删除测试数据库： 默认情况下，MySQL 安装包含一个名为 “test” 的测试数据库，这个数据库可能会成为潜在的攻击目标。mysql_secure_installation 会提示您是否删除测试数据库。 刷新权限： 完成上述任务后，mysql_secure_installation 会刷新 MySQL 权限表，以确保更改生效。 mysql_secure_installation 工具有助于在 MySQL 安装完成后采取一些基本的安全措施，以减少潜在的风险和攻击。然而，这只是开始，为了更好地保护 MySQL 服务器和数据，您还应该采取其他安全措施，如定期备份、限制用户权限、监控数据库活动等。 mysql_secure_installation 为什么设置root密码无效看上面的描述这个程序挺靠谱的，为啥设置密码不好使呢？遵循着网络大神们的脚本，我找到了一个 mysql_secure_installation.sh脚本，来自[twitter-forks/mysql]开源库，其中包含这样一段代码： 12345678910111213141516esc_pass=`basic_single_escape "$password1"`do_query "UPDATE mysql.user SET Password=PASSWORD('$esc_pass') WHERE User='root';"if [ $? -eq 0 ]; thenecho "Password updated successfully!"echo "Reloading privilege tables.."reload_privilege_tablesif [ $? -eq 1 ]; then clean_and_exitfiechorootpass=$password1make_configelseecho "Password update failed!"clean_and_exitfi &quot;UPDATE mysql.user SET Password=PASSWORD(&#39;$esc_pass&#39;) WHERE User=&#39;root&#39;;&quot; 这个脚本里居然用了我们之前提到的已经失效的更新方式，但是我发现我在Ubuntu系统下安装的mysql_secure_installation是一个二进制程序，不是shell脚本，所以我又找到了mysql的源码程序，其中包含这样一段： 1234567891011 query = (char *)my_malloc(PSI_NOT_INSTRUMENTED, password_len + 50, MYF(MY_WME)); end = my_stpmov(query, "SET PASSWORD="); *end++ = '\''; end += mysql_real_escape_string_quote(mysql, end, password, (ulong)password_len, '\''); *end++ = '\''; if (mysql_real_query(mysql, query, (ulong)(end - query))) &#123; my_free(query); return false;&#125; 里面包含了&quot;SET PASSWORD=&quot;的字样，看起来不太靠谱的样子，需要注意的是，在 MySQL 5.7 版本之后，SET PASSWORD 命令已被弃用，推荐使用 ALTER USER 命令来修改密码。例如： 1ALTER USER 'root'@'localhost' IDENTIFIED BY '新密码'; 这个命令更加直观，并且与最新版本的 MySQL 兼容。同样，将 &#39;新密码&#39; 替换为您希望设置的新密码。 难道是MySQL 8.0没有更新工具的代码？暂时不得而知，这或许就是mysql_secure_installation设置密码不生效的原因。 ALTER USER再生事端前文提到了一种更加直观的设置新密码的方式 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;新密码&#39;;，但是在我这行不通，不仅我这行不通，网上也有很多人说设置不了，需要加上插件名称 WITH mysql_native_password，改为 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;新密码&#39;; 才可以，这又是为什么呢？ 执行 select host,user,plugin,authentication_string from mysql.user; 语句查看发现： 1234567891011mysql&gt; select host,user,plugin,authentication_string from mysql.user;+-----------+------------------+-----------------------+------------------------------------------------------------------------+| host | user | plugin | authentication_string |+-----------+------------------+-----------------------+------------------------------------------------------------------------+| localhost | zone1 | mysql_native_password | *4C7684A2CD28A1C3C55CC832E6O817FCE3C5B5DB || localhost | mysql.infoschema | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | mysql.session | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | mysql.sys | caching_sha2_password | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED || localhost | root | auth_socket | || localhost | admin | mysql_native_password | *F52COBE5FFB5FFCCD5BFD976OADEB81081AE4787 |+-----------+------------------+-----------------------+------------------------------------------------------------------------+ 原来每个账户还有默认的不同的密码管理插件，用于验证和管理用户密码，mysql_native_password、auth_socket和caching_sha2_password这三种插件的含义如下： mysql_native_password 加密算法： 使用较旧的哈希算法，如SHA-1或SHA-256，取决于 MySQL 版本。 认证方式： 用户密码以哈希形式存储在系统表中，服务器在用户登录时将明文密码哈希并与数据库中存储的哈希进行比较。 支持远程登录： 支持远程密码登录，可以从远程主机登录 MySQL。 适用场景： 适用于需要与旧版 MySQL 兼容或需要与其他应用程序或系统进行集成的情况。 caching_sha2_password 加密算法： 使用 SHA-256 进行加密，提供更高级别的安全性。 支持版本： 从 MySQL 5.7.4 开始，caching_sha2_password 成为默认的密码插件。 认证方式： 用户密码以加密形式存储在系统表中，并且在用户登录时，服务器将明文密码哈希并与数据库中存储的哈希进行比较。 支持远程登录： 支持远程密码登录，可以从远程主机登录 MySQL。 auth_socket 认证方式： 不存储密码哈希，而是依赖于操作系统（Linux）的用户认证机制。只有与操作系统用户账户关联的 MySQL 用户可以登录，而不需要密码。 适用场景： 通常用于本地连接，因为它要求数据库用户和操作系统用户名称一致。 安全性： 提供了一定的安全性，因为不需要存储密码哈希，但需要确保服务器的用户账户和 MySQL 用户账户的一致性。 总结来说，这些密码插件之间的区别主要涉及到加密算法、认证方式以及适用场景。caching_sha2_password 提供更高级别的安全性，而 auth_socket 依赖于操作系统用户认证机制，mysql_native_password 则提供与旧版 MySQL 兼容性。使用前应根据安全性需求、用户管理和应用程序集成的要求来选择合适的密码插件。一般来说，推荐使用较新且安全性更高的密码插件，如caching_sha2_password。 测试后发现，MySQL8.0默认安装后root用户的默认插件是 auth_socket，这种插件没办法设置密码，所以指定插件为 mysql_native_password 时就可以设置密码了，但是根据建议，我们应该选择 caching_sha2_password插件。 肯定好使的MySQL初始化方法 apt install mysql-server mysql ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH caching_sha2_password BY &#39;新密码&#39;; flush privileges; exit; 总结 安装MySQL8.0后使用ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH caching_sha2_password BY &#39;xxx&#39;;设置密码 mysql_secure_installation工具不好使的原因目前来看是源代码没有工具的源代码没有及时更新，与MySQL版本不匹配 mysql_secure_installation另外的几项功能，比如删除匿名用户、删除测试数据库、禁止远程登录在安装完貌似都处理好了 综上来看，难道mysql_secure_installation工具已经被废弃了？ ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 你们的一切都是我的，只要留心你将获得无穷的助力，很多东西不必从头开始，既然做不成巨人，就从巨人的肩膀上出发吧~ 证件照尺寸查询一寸 295413px | 2535mm二寸 413579px | 3549mm小一寸 260378px | 2232mm大一寸 390567px | 3348mm小二寸 413531px | 3545mm大二寸 413626px | 3553mm三寸 650992px | 5584mm四寸 8981181px | 76100mm五寸 10501500px | 89127mm 2023-10-8 20:56:28]]></content>
@@ -168,8 +290,8 @@
       </categories>
       <tags>
         <tag>运维</tag>
-        <tag>distcc</tag>
         <tag>c++</tag>
+        <tag>distcc</tag>
         <tag>分布式编译</tag>
         <tag>编译加速</tag>
       </tags>
@@ -384,8 +506,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
+        <tag>find</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -726,10 +848,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1209,9 +1331,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1223,9 +1345,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1351,9 +1473,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1467,9 +1589,9 @@
       <tags>
         <tag>git</tag>
         <tag>log</tag>
+        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1702,8 +1824,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>sed</tag>
+        <tag>文件</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1781,9 +1903,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1987,11 +2109,11 @@
         <category>加密与认证</category>
       </categories>
       <tags>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
         <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -2002,10 +2124,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -2130,8 +2252,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>stash</tag>
         <tag>checkout</tag>
+        <tag>stash</tag>
         <tag>merge</tag>
       </tags>
   </entry>
@@ -2174,8 +2296,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -2474,9 +2596,9 @@
       <tags>
         <tag>C/C++</tag>
         <tag>bind</tag>
-        <tag>placeholders</tag>
         <tag>class</tag>
         <tag>object</tag>
+        <tag>placeholders</tag>
       </tags>
   </entry>
   <entry>
@@ -2804,9 +2926,9 @@
         <category>linux</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>find</tag>
         <tag>查找</tag>
-        <tag>linux</tag>
         <tag>grep</tag>
       </tags>
   </entry>
