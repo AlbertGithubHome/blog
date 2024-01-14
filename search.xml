@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[推荐一款通过ssh连接linux服务的开源工具WindTerm]]></title>
+    <url>%2Fblog%2F2024%2F01%2F14%2F%E6%8E%A8%E8%8D%90%E4%B8%80%E6%AC%BE%E9%80%9A%E8%BF%87ssh%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7WindTerm%2F</url>
+    <content type="text"><![CDATA[前言工作一入门便是游戏服务器开发，所以常常有连接Linux服务器的需求，之前用的最多的是Xshell，最近这个软件个人版只能免费使用一个月了，超过时间会提示更新无法正常使用，工作当中用的最多的是SecureCRT，不过这个软件是收费的，公司买了授权，可以正常用，但是在家时就不行了，最近我找到了WindTerm这个软件，用起来还不错，记录一下。 WindTerm介绍 A Quicker and better SSH/Telnet/Serial/Shell/Sftp client for DevOps. WindTerm一款使用使用C语言开发的跨平台SSH客户端WindTerm，完全免费开源，软件包只有20多M，性能很好，Windows、Linux、Mac均提供程序包下载，免按照，下载解压即可使用，官方地址为 https://github.com/kingToolbox/WindTerm/releases，最新版本为2.6.0 最近github访问又变慢了，如果你下载不下来，可以从这个平台地址下载CSDN下载-WindTerm_2.6.0_Prerelease_7_Windows_Portable_x86_64.zip，我已经设置成免积分了，方便有需要的人直接取用，简单罗列下它的功能。 多平台支持Linux，Mac，Win，免安装解压即可使用 实施了 SSH v2、Telnet、Raw Tcp、串行、Shell 协议 会话认证时支持 SSH 自动执行 支持 SSH ProxyCommand 或 ProxyJump 支持SSH代理转发。 支持使用密码、公钥、键盘交互、gssapi-with-mic 的 SSH 自动登录 支持直接/本地端口转发、反向/远程端口转发和动态端口转发 支持 XModem、YModem 和 ZModem，可以使用rz、sz上传和下载文件 集成sftp、scp客户端，支持下载、上传、删除、重命名、新建文件/目录 集成本地文件管理器，支持移动到、复制到、复制自、删除、重命名、新建文件/目录 支持 Windows Cmd、PowerShell 和 Cmd、PowerShell 作为管理员 支持Linux bash、zsh、powershell core 支持 MacOS bash、zsh、powershell core 有较好的操作界面 WindTerm使用下载WindTerm_2.6.0_Prerelease_7_Windows_Portable_x86_64.zip 后解压，双击WindTerm.exe即可打开软件，会弹出下面的界面，提示存储配置文件的地方，我就选择放到应用程序目录了 直接通过【会话】-&gt;【新建会话】便可以建立连接Linux服务器的通道，这与之前用的软件都大同小异，基本没有差别，输入主机地址点击【连接】，后续再输入密码就可以开始连接了 如果是第一个使用的时候，会弹出下面这个界面，让自定义一个主密码，其实就是这个软件的使用密码，后续锁屏或者更新会话信息时会用到。 因为我是自己在家使用，我就不设置主密码了，直接点击OK完成，后面会让输入Linux账户和密码，到这一步相信大家都会用了。 主密码和锁屏这个问题我也是查了一些资料才解决的，因为我没有输入主密码，所以每次锁屏时我只要回车就可以了，如果想修改锁屏时间，在【会话】-&gt;【首选项】-&gt;【设置】中可以找到 也可以直接通过配置文件修改，找到刚启动软件时你选择的目录 D:\app\WindTerm_2.6.0\.wind\profiles\default.v10，直接修改配置文件内容，通过字段名也很清楚要改哪些值 12345678&#123; "application.fingerprint" : "c5QR13M1iEkNPGlVNjDBWadi1uS0PiXR4Y+79cp09PAXr7G6WQxg/7WFj9RJ9dIsKKOWqm5Xq2N6w5Jx4v2mTw==", "application.language" : "zh-CN", "application.lockScreenTimeout" : 1, "application.masterPassword" : false, "terminal.loginWizard.defaultAuthType" : "Account", "terminal.reimportShellSessions" : 2&#125; application.lockScreenTimeout：是控制锁屏时间的 application.masterPassword：是代表是否有主密码的 整个页面布局和配色还是挺漂亮的，不喜欢可以自己调整的哈 总结 WindTerm是一款可以通过ssh连接Linux服务器的客户端工具 WindTerm免费开源，支持Windows、Linux、Mac系统，无需安装，解压即可使用 WindTerm集成sftp、scp客户端，支持下载、上传、删除、重命名、新建文件/目录 WindTerm默认需要指定一个主密码，相当于验证使用者身份的功能，当然也可以为空 WindTerm的锁屏时间可以通过首选项菜单设置，也可通过配置修改 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 人生就是一本账，欠下的东西总要还的，茫茫人生路之后，你是想在历史长河中留下一笔，还是“隐藏”的毫无痕迹呢？]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>运维</tag>
+        <tag>ssh</tag>
+        <tag>windterm</tag>
+        <tag>免安装</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[2023年终总结——你相信光吗]]></title>
+    <url>%2Fblog%2F2024%2F01%2F01%2F2023%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E4%BD%A0%E7%9B%B8%E4%BF%A1%E5%85%89%E5%90%97%2F</url>
+    <content type="text"><![CDATA[不断追求利益的经济冲动，不停侵蚀人们的生活，压垮、吞噬并统治生活本身，无法言喻的不安和看不到明天的混沌感，让我们在现有社会经济条件下，沦为被金钱和物质所统治的行尸走肉~ 前言最近在看一本叫《饱食穷民》的书，讲述的是泡沫经济年代的日本社会，宛如梦幻泡影一样变化无常，又像断梗浮萍一样飘忽不定，到处充斥着不安的色彩，我试图从中寻找一些当前现实问题的解决方案，上段文字也是出自此书之中，阅读之后我大受震撼，其中描述的有关软件工程师的篇章，简直就是我的复刻版，无论是心境、情感、还是所面临的问题都如出一辙，读完觉得背后隐隐发凉，因为最终那些令人无法接受的结局，确实是我不想看到的。 2023年要结束了，今年的时光过的格外的快，突然想起大年初二时半夜更新游戏版本好像还是昨天发生的事情，结果一眨眼就来到了2023的尾巴，2022年末的时候大家对2023年的发展充满了希望，结果今年快过完了，发现比之前“三年”更难了，零下20度的温度配合着各种“毕业”的声音，让不安的情绪充斥着每一个打工人的内心。 面对除夕上班的决定，一开始大家还是强烈反对，但是渐渐的情绪发生了逆转，除夕上班说明还有工作，很多人在这个寒冷的冬天已经“提前放假”，没有打工的机会了，在这个寒冷的冬天，你还相信光吗？ 回顾2023回顾这一年忙忙碌碌，高强度的工作却没取得预想的成果，各种Flag完成情况更是惨不忍睹。 工作上 FLAG 适应自己身份的转变，提升自己的管理技能，做一名合格的管理者 继续做好本职可开发工作，做好工作内容的总结，推动新项目顺利上线 根据自己的技能树框架，查漏补缺，有针对性的学习和探索 完成度 ：80% 作为一个入门的管理者，今年见识到了更多更复杂的管理情景，Hire and Fire 全都经历过了，管理经验更加完整，尝试跨过了之前一直无法逾越的坎，为了能生存下去，有时不得不做出取舍，参加了一系列的管理课程，学习后发现万物皆可为工具，招人的工具、提升效率的工具、提升凝聚力的工具、提高团队氛围的工具、优化团队的工具，学习过后内心不禁生出一丝悲凉。 本职工作继续充当牛马，还真是个踏踏实实的老黄牛，推动项目一步步往前走，但目前项目暂时停滞了，今年上线是不可能了，不过经历了一次完整的测试过程，算是在失望之中获得了一点点慰藉。 今年的工作强度依旧很大，前三季度基本上12点左右回家，个别时候会工作到后半夜，比上一年能好一点，但是最终的结果却不尽如人意。 技能树框架基本荒废，因为没时间往里边填东西，基本上是被项目推着走，缺什么就补什么，nginx测试和调整配置有了一定的经验，linux系统参数的调优也在压测是接触了不少，还有网络参数配置等等。 对于这一项来说，努力到位了，结果并不能说明什么，可能还是缺少一点点运气了。 学习上 FLAG 继续博客总结，40篇是基础线，2023要超过这个值，尽量一周一篇，放假可休息 新的一年依旧很忙，刷题不强制要求，每周最好有贡献，每月必须有输出 在现有的技能树框架上继续丰富，做到枝繁叶茂，试试找点副业 开源代码还是以项目为驱动，选取经典实现，比如kafka 继续读书，今年书也买好了，数量不多，下半年应该还会买一批 完成度 ：70% 博客总结目标达成，今年在CSDN共有42篇总结，较40篇的及格线多了一点点，年初有篇关于ChatGPT的博文一开始阅读量刷刷刷的涨，后来判定违规就被吞了，整体上博客内容比较基础，大多数来源于工作之中的知识点，也有一些是平时的思考和感悟，以下是近两年的数据对比。 !-- ![2022csdn](https://img-blog.csdnimg.cn/direct/1b019f2ab6114156874451c0f6f20ad7.png#pic_center) ![2023csdn](https://img-blog.csdnimg.cn/direct/77a16b7b2d6c406f9c30eda21fc529bc.png#pic_center) -- 2023年一年的博客访问量突破了60万，相比于去年的40多万上升了不少，文章基数增多了应该是主要原因，去年的10W+文章《float的精度和取值范围》 一年就上涨了6万多，看来高质量的内容才是吸引人的关键，并且会形成头部效应，马太效应，出现强者恒强的情况。 今年的CSDN活动依旧不少，但是我已经很少参加了，一方面没有那么多时间，还有就是看不懂规则，年终的博客之星评选，由于博文的数量没有达标，连报名的资格都没有，有点遗憾。 关于刷题这个Flag约等于没有，别说刷题了，忙的连账号都没登录几次，刚刚看了看提交记录，仅在前两个月提交了十几道题，图我就不截了，有点磕碜，不过新的一年中可能需要多一点了，毕竟工作都不稳定了，得准备准备练练手感了。 技能树框架秃了，其实我也不想秃，但是每天回家总是很晚，我实在是懒得补充了，这明显是一个借口，但却是一个事实，心里知道这个事情要做，所以换了一种方式，改为记笔记的方式来弥补，一开始准备每天问自己一个问题，后来坚持不下来，但是每次有空闲想起来就会认真回答一次，然后就是将工作中遇到的盲点和知识点记录下来，为技能树积累素材。 阅读经典代码这部分还是以项目驱动为主，比如修改easyloging++文件描述符不释放的问题，分析libevent网络数据读取缓慢的问题，扩展框架支持 websocket 连接等，都是从项目需求实际出发，当然也看了一些帧同步小游戏的示例代码，有C#的也有JS的，暂时没有找到能明显解决我对帧同步疑问的项目，目前还在学习和寻找中。 读书一直没有停，由于每天大强度的工作时间，休息之余我已经不读技术类书籍了，现在读的更多是传记、小说、散文等等，通过一页页纸张回顾历史长河，窥探他人的一生。 有的人纷繁的一生落在纸上不过一页，而绝大多数人根部就不会在书本上留下痕迹。以下便是2023年阅读的书籍内容： 时间从来不语却回答了所有问题（2023-2-12 13:56） 一本杂记，更多的是晚年的人生 苏东坡传 —— 一蓑烟雨任平生（2023-2-26 23:57） 人身缘何不快乐，只因未读苏东坡 知行合一王阳明（2023-3-12 20:43） 良知源自内心，无需外求。功名利禄，本是外在的，得之我幸，不得我命。 别让孩子伤在敏感期（2023-3-19 16:32:23） 在孩子处于各种敏感期时，学会给予尊重，顺其自然，适时引导 不要规划孩子必须在哪一个领域取得成就，但只要她喜欢，就提供一个舞台，让她尽情去发挥 我是猫（2023-6-25 00:48:05） 两年的猫生戛然而止，古怪的苦沙弥高朋满座 人间失格（2023-6-24 13:30:50） 一个从小就将自己伪装起来的孩子着实令人害怕，让人回忆起了令人心酸的表哥 虽然一切都已经过去，但还是有些记忆片段会在读书是产生共鸣，从记忆深处涌上来 《斜阳》中的我是贵族是对时代的呐喊，回不去也融不进 《GoodBye》更是写成了幻想小说的范畴 罗生门（2023-8-7 23:13:34） 怪诞、讽刺、描写细致的短篇小说，不过有些故事的寓意看不太懂 浮生六记（2023-11-26 22:35:23） 初中时的课文《童趣》居然来自这本书，据说后两记是伪写的，但最后一记《养生记道》却多次引起共鸣，可能我正处在迷茫期吧。“五百年谪在红尘，略成游戏。三千里击开沧海，便是逍遥。” 月亮与六便士（2023-12-10 17:00:27） 一个完全不顾他人感受的人是否能称之为伟大，疯子还差不多 《苏东坡传》描写了苏东坡的一生，他虽狂放不羁，但有个一直拯救他的弟弟却是它一生的幸福，“人身缘何不快乐，只因未读苏东坡”，其实不止是苏东坡，很多大人物的一生就极其坎坷，如果看看他们的经历，我们的人生才刚刚开始，而如今这个浮躁的社会已经很难让人平静的接受这一切了。 《月亮与六便士》是一本很出名的书籍，从听说这本书到真正的开始读跨过了大概6、7年的时间，但如今读过之后却让与我的预想差距太大，我没想到这是一篇小说，斯特里克兰简直是一个变态，全文描述了他不顾一切的追求艺术，将其称之为伟大，但我觉得这样的伟大毫无意义，即使他的绘画技艺已经出神入化，世界也不缺他一个，但他却真实的伤害了周围的每一个人。 投资上 FLAG 定投和智能条件单保持现状，ETF追加1~2个新的行业赛道 股票池还有几个垃圾票要找机会清理掉，手里的价投股票适当做做趋势 保持对新年经济的乐观，目标收益10个点 完成度 ：50% 今年除了少量增持了之前的“三傻”和科技股之外，追加了医药ETF和光伏ETF，设置了定投单和网格条件单，持仓的FLAG的是达到了，但收益有点一言难尽，手中的垃圾票清掉了部分，有些垃圾真得再等几年，这种票已经不关注了，就留在持仓列表里做个提醒好了。 工业富联算是今天收获颇丰的一个票，也是唯一一个高额正收益的票，去年的FLAG是【目标收益10个点】，可能这个愿望描述的不够具体，就像雍和宫许愿一样，被调剂成了负的，结果股票加基金损失了10个点左右，真是令人头大。 本来前10个月收益基本达标，但最后这一个季度，行情急转直下，价值投资带头向下俯冲，毫无招架之力。 生活上 FLAG 疫情放开了，有事没事都趁着假期回家看看 身体很重要，锻炼的很费时，中和一下，可以跳跳绳 周末了陪娃耍一耍，工作尽量不占用周末的时间 完成度 ：70% 今年回家的次数也不是太多，元旦、春节、劳动节、国庆中秋节总计21天，比2022年的14天多了不少，主要差在了国庆假期上，回家正好收玉米，赶上了丰收的季节。 身体锻炼几乎没有，全年跳绳不超过3次，不过脂肪肝和高尿酸的情况都有所减轻，每天真的懒得不想动。 2023年的周末和工作日分的还是比较清晰的，工作日强度很大，但周末工作的时间很少了，真的是在家陪家人和或者一起出去逛逛，一家人去了之前谈论了8年还没去过的香山公园，看了一圈几乎还没红的枫叶。 去年的总结中给我养的花花拍了照片，今年对比了一下发现一年的时间长了很多，再拍一张照片看看。 2023年初还补充了几盆多肉，从最开始的柔弱养成了郁郁葱葱的“绿油油”，这一年个头没少长，都窜的老高，就是不上颜色，可能是光照太少了？ 年初文章总结了《工作十年对游戏看法的转变历程》，文中提到我买了8090掌上游戏机玩俄罗斯方块，后来趁娃不在又买了Switch准备寻找灵感，但结果就是海关发货太慢了，等娃回来正好赶上游戏机送到，最后Switch就成了她的玩具。 现在每天没时间玩也不敢玩，和娃约定好了周末才可以玩一会，每周末充一次电，和宝宝一起玩一会赛车还是很有意思的，偶尔自己偷偷玩玩塞尔达，似乎这些才能被称之为真正的游戏，哪些哪里亮就点哪里的游戏真的能被称为游戏吗？自己对这类游戏有些厌倦了。 展望2024工作 今年的工作环境极其复杂，切换了新的赛道，工作内容繁杂，需要逐步将内容理顺 继续培养管理技能，面对不同的人采取不同的策略，尝试向上管理的方法 补充技能树框架，采取提问和总结的方式，有针对性的学习和探索，为新的工作机会打好基础 学习 40篇以上博客总结，尽量一周一篇，放假休息，保持知识库一直更新 刷题不要求每周有贡献了，不切实际的FLAG没有意义，希望每月有贡献吧 采取提问回答方式补充技能树，利用好别人总结好的知识，很多知识点没必要从头开始 阅读开源代码解决实际问题，今年想尝试的知识点有【帧同步】和【共享内存】 继续保持读书的习惯，今年的图书已经到位，类型多是历史、传记和小说 投资 垃圾票适时出清 保持定投和智能条件单策略，重点放在科技和医药赛道，光伏赛道等待产能出清，持续观望 环境很差，但依旧相信国运，考虑今年的进入低位，2024年目标正收益15个点（可得说清楚，避免调剂） 生活 假期回家时间不低于去年的21天 想跑跑步，目前仅停留在脑海里，每周末下楼去转转 养养花，新年不打算买新的花了，好好把目前的多肉养出状态 周末陪陪家人，希望不要被家里的神仙宝贝娃娃气炸 总结2023年作为魔幻的一年，本来被给予了美好的希望，没想到放开之后，情况变得越发糟糕，打破了人们的预期，报复性的反弹没有如约而至，很多事情在封闭期间没有发生，却在这个寒冷的冬天尝了个遍，HR在得知自己毕业消息后，需要在临行前通知其他小伙伴毕业，主管实在不想开人，最终不得不自己离开，这些事情听起来很新奇，却在这个寒冬中显得那么的习以为常。 最近看了一些书籍和记录片，已经渐渐的体会到，做人不能太明白，有时糊里糊涂的反而更幸福，如果作为一个明白人还能收放自如的糊里糊涂，那便是境界升华了。 你还相信光吗？我依旧相信！虽然深处寒冬，我心依旧向往光明，信仰的力量支撑着我们前进，不管现在的真实情况是向上还是向下，我相信总有一天会向上突破的，期待这一天早点到来~ ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 旧年伊始志气豪，万物焕新气宇高。谁料寒冬多磨难，心怀光明盼春晓。]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>总结</tag>
+        <tag>工作</tag>
+        <tag>学习</tag>
+        <tag>生活，投资</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Linux环境下通过journal命令查看和管理日志]]></title>
+    <url>%2Fblog%2F2023%2F12%2F22%2FLinux%E7%8E%AF%E5%A2%83%E4%B8%8B%E9%80%9A%E8%BF%87journal%E5%91%BD%E4%BB%A4%E6%9F%A5%E7%9C%8B%E5%92%8C%E7%AE%A1%E7%90%86%E6%97%A5%E5%BF%97%2F</url>
+    <content type="text"><![CDATA[前言就在半月之前，负责打包更新的服务器突然登录不上去了，赶紧找来运维的同事帮忙解决，发现系统日志中有很多 systemd-journald[424]: Failed to open runtime journal: No space left on device 字样的错误，被告知磁盘满了需要清理，但是我当时登录不上去，只能让他们帮忙重启后利用单用户模式上去删除临时文件试试，但重启后发现问题解决了，很是诧异，查询服务器后台监控平台，发现磁盘空间还有50%，inode只占用了0.02%，这怎么会磁盘满了呢？ 问题分析后来经过分析，应该是journal默认将系统日志存储在/run/log/journal目录中，而 /run是一个临时文件系统，通常挂载在内存中，用于存储运行时产生的临时文件，如进程 ID 文件、锁文件等，如果登录所需的文件或进程受到 /run 空间不足的影响，可能会导致登录问题。例如，如果 sshd 进程的运行所需的文件被存储在 /run 中并且空间不足，那么可能无法正常登录。 1234$ df -hFilesystem Size Used Avail Use% Mounted ondevtmpfs 7.8G 0 7.8G 0% /devtmpfs 7.8G 868K 7.8G 1% /run 所以系统重启后，这个空间释放了也就能通过ssh登录了，并且重启后journal日志清空也证实了这一点。 关于这个空间限制多数说的是10%，但是如果真是的所处分区的10%，那么不会导致我登录不上的，所以我倾向于是系统内存10%或者硬盘最大10%，默认最大限制4G，具体限制等我有空时查查文档吧，先贴一段看起来很靠谱的描述 SystemMaxUse=, SystemKeepFree=, SystemMaxFileSize=, SystemMaxFiles=, RuntimeMaxUse=, RuntimeKeepFree=, RuntimeMaxFileSize=, RuntimeMaxFiles=限制日志文件的 大小上限。 以 “System” 开头的选项用于限制磁盘使用量， 也就是 /var/log/journal 的使用量。 以 “Runtime” 开头的选项用于限制内存使用量， 也就是 /run/log/journal 的使用量。 以 “System” 开头的选项仅在 /var/log/journal 目录确实存在且可写时才有意义。 但以 “Runtime” 开头的选项永远有意义。 也就是说， 在系统启动早期 /var 尚未挂载时、 或者系统管理员禁止在磁盘上存储日志的时候， 仅有 “Runtime” 开头的选项有意义。 journalctl 与 systemd-journald 工具会忽略日志目录中 所有后缀名不等于 “.journal” 或 “.journal~” 的文件。 换句话说，日志目录中不应该存在后缀名不等于 “.journal” 或 “.journal~” 的文件， 因为这些文件 永远不会被清理。 SystemMaxUse= 与 RuntimeMaxUse= 限制全部日志文件加在一起最多可以占用多少空间。 SystemKeepFree= 与 RuntimeKeepFree= 表示除日志文件之外，至少保留多少空间给其他用途。 systemd-journald 会同时考虑这两个因素， 并且尽量限制日志文件的总大小，以同时满足这两个限制。 SystemMaxUse= 与 RuntimeMaxUse= 的默认值是10%空间与4G空间两者中的较小者； SystemKeepFree= 与 RuntimeKeepFree= 的默认值是15%空间与4G空间两者中的较大者； 如果在 systemd-journald 启动时，文件系统即将被填满并且已经超越了 SystemKeepFree= 或 RuntimeKeepFree= 的限制，那么日志记录将被暂停。 也就是说，如果在创建日志文件时，文件系统有充足的空闲空间， 但是后来文件系统被其他非日志文件过多占用， 那么 systemd-journald 只会立即暂停日志记录， 但不会删除已经存在的日志文件。 注意，只会删除已归档的日志文件以释放空间。 也就是说，即使在完成日志清理之后， 日志所占用的空间仍然可能大于 SystemMaxUse= 或 RuntimeMaxUse= 的限制。 SystemMaxFileSize= 与 RuntimeMaxFileSize= 限制单个日志文件的最大体积， 到达此限制后日志文件将会自动滚动。 默认值是对应的 SystemMaxUse= 与 RuntimeMaxUse= 值的1/8 ， 这也意味着日志滚动 默认保留7个历史文件。 日志大小 可以使用以1024为基数的 K, M, G, T, P, E 后缀， 分别对应于 1024, 1024², … 字节。 SystemMaxFiles= 与 RuntimeMaxFiles= 限制最多允许同时存在多少个日志文件， 超出此限制后， 最老的日志文件将被删除， 而当前的活动日志文件 则不受影响。 默认值为100个。 以上描述来自 《journald.conf 中文手册》，另外 《Systemd日志管理服务：Journald以及重要配置选项》 这篇博文也提到了默认日志数据将仅存储在内存中，在系统关闭时会删除该数据。 journal 和 syslog 对比提到系统日志除了journal比较常见以外，还有 syslog 也是比较基础的服务，两者都是日志服务，并且在系统中合理分工，相互配合，它们服务于不同的目标并且具有不同的特性。syslog是Linux系统的一套日志框架，它既可以记录日志到本地文件，也可以通过网络发送到接收syslog的服务器，以实现对多个设备的syslog消息进行统一的存储或解析。而journal是改进型的日志管理服务，主要收集来自内核、系统早期的启动阶段的日志以及系统守护进程在启动和运行中的标准输出和错误。 在CentOS 7及更高版本中，journalctl成为了查看和管理系统日志的主要工具，它从/var/log/journal/和/run/log/journal/等路径获取日志信息。同时，systemd-journald会将日志信息写入到socket文件/run/systemd/journal/syslog中，然后由rsyslog服务监听这个socket文件，从而实现对日志的统一管理和处理。因此，可以说syslog和journalctl在日志管理中各司其职，共同保障了Linux系统日志的完整性和可用性。 以上提到了一些名词，先说明一下来清楚其中的关系，journal日志使用journalctl工具管理，依赖systemd-journald服务，syslog日志可以用文本工具来查看，view、more、cat等命令都可以用，也可以借助其他工具查看特定信息，比如用dmesg命令查看syslog中内核相关日志，syslog依赖的服务名通常是 rsyslogd journalctl 和 syslog 都是 Linux 系统中用于处理和查看系统日志的工具，我们从以下几个方面来对比下两者的区别： 存储方式： syslog 使用文本文件来存储日志信息，可以通过文本编辑器查看，通常存储在 /var/log/syslog 或 /var/log/message journalctl 使用 systemd-journald 服务来存储二进制格式的日志文件。通常存储在 /run/log/journal/ 或 /var/log/journal/ 日志内容： syslog 使用文本格式，记录在文本文件中。日志信息包含时间戳、主机名、应用程序名等 journalctl 使用二进制格式，可以存储更多的元数据，例如进程 ID、用户 ID、SELinux 上下文等。这使得日志更加结构化，支持更高级的查询和过滤 查询和过滤： syslog 的查询和过滤通常使用命令行工具（例如 grep）或者专用的工具（例如 logrotate） journalctl 提供了更丰富和强大的查询和过滤功能，可以按时间、服务单元、日志级别等多个条件进行过滤。这使得查找和分析特定事件更加方便 实时查看： syslog 通常使用 tail 命令实时查看日志文件的末尾 journalctl 可以使用 -f 或 --follow 选项来实时查看最新的日志 服务和依赖关系： syslog 是一个通用的日志服务，可以由多个日志守护进程（如 rsyslog、syslog-ng）实现 journalctl 是 systemd 系统中的一部分，依赖于 systemd-journald 服务 配置文件的路径： syslog 的配置文件在 /etc/rsyslog.conf journalctl 的配置文件在 /etc/systemd/journald.conf 总体而言，journalctl 是 systemd 系统的一部分，提供了更现代化、结构化和强大的日志管理功能，但这并不意味着 syslog 是过时的。在一些系统中，两者可能同时存在，而且一些工具和服务可能仍然使用传统的 syslog。选择使用哪一个取决于系统的需求和管理员的偏好。 下面分别展示一下systemd-journald 和 rsyslogd 两个服务查询信息： 123456789101112131415[root@demo ~]# systemctl status systemd-journald● systemd-journald.service - Journal Service Loaded: loaded (/usr/lib/systemd/system/systemd-journald.service; static; vendor preset: disabled) Active: active (running) since Mon 2023-12-04 20:26:34 CST; 2 weeks 3 days ago Docs: man:systemd-journald.service(8) man:journald.conf(5) Main PID: 7099 (systemd-journal) Status: "Processing requests..." CGroup: /system.slice/systemd-journald.service └─7099 /usr/lib/systemd/systemd-journaldDec 04 20:26:34 demo systemd-journal[7099]: Permanent journal is using 8.0M (max allowed 4.0G, trying to leave 4.0G free of 183.5G available → c…imit 4.0G).Dec 04 20:26:34 demo systemd-journal[7099]: Time spent on flushing to /var is 21.108ms for 1873 entries.Dec 04 20:26:34 demo systemd-journal[7099]: Journal startedHint: Some lines were ellipsized, use -l to show in full. 1234567891011121314151617181920[root@demo ~]# systemctl status rsyslogdUnit rsyslogd.service could not be found.[root@demo ~]# systemctl status rsyslog● rsyslog.service - System Logging Service Loaded: loaded (/usr/lib/systemd/system/rsyslog.service; enabled; vendor preset: enabled) Active: active (running) since Mon 2023-12-04 19:46:04 CST; 2 weeks 3 days ago Docs: man:rsyslogd(8) http://www.rsyslog.com/doc/ Main PID: 913 (rsyslogd) CGroup: /system.slice/rsyslog.service └─913 /usr/sbin/rsyslogd -nDec 04 19:46:04 demo systemd[1]: Starting System Logging Service...Dec 04 19:46:04 demo rsyslogd[913]: [origin software="rsyslogd" swVersion="8.24.0-57.el7_9.3" x-pid="913" x-info="http://www.rsyslog.com"] startDec 04 19:46:04 demo systemd[1]: Started System Logging Service.Dec 04 20:26:34 demo rsyslogd[913]: imjournal: journal reloaded... [v8.24.0-57.el7_9.3 try http://www.rsyslog.com/e/0 ]Dec 10 03:22:01 demo rsyslogd[913]: [origin software="rsyslogd" swVersion="8.24.0-57.el7_9.3" x-pid="913" x-info="http://www.rsyslog.com"] rsys...was HUPedDec 15 01:35:01 demo rsyslogd[913]: imjournal: journal reloaded... [v8.24.0-57.el7_9.3 try http://www.rsyslog.com/e/0 ]Dec 17 03:07:01 demo rsyslogd[913]: [origin software="rsyslogd" swVersion="8.24.0-57.el7_9.3" x-pid="913" x-info="http://www.rsyslog.com"] rsys...was HUPedHint: Some lines were ellipsized, use -l to show in full. journal 和 syslog 配置两个服务的配置文件都有很多内容，在此只展示其中部分重要的参数，先看一下 /etc/systemd/journald.conf 12345678[Journal]Storage=persistent #开启持久化存储#Compress=yes #开启压缩功能#Seal=yesSystemMaxUse=40% #设置系统最大占用率为40%StorageOption=size #设置存储选项为按大小进行存储StorageOption=autorotate #设置存储选项为自动轮换StoragePath=/export/log/journal #设置日志文件的存储路径 再看一下 /etc/rsyslog.conf 配置文件 123456789101112131415161718192021222324252627282930313233343536# Include all config files in /etc/rsyslog.d/$IncludeConfig /etc/rsyslog.d/*.conf #将包含 `/etc/rsyslog.d/` 目录下的所有以 `.conf` 结尾的配置文件，可以将配置分散到多个文件使得管理更加灵活# Turn off message reception via local log socket;# local messages are retrieved through imjournal now.$OmitLocalLogging on #不再通过本地日志套接字接收消息，本地消息现在通过 `imjournal`（Journal 日志服务）来检索#### RULES ##### Log all kernel messages to the console.# Logging much else clutters up the screen.#kern.* /dev/console# Log anything (except mail) of level info or higher.# Don't log private authentication messages!*.info;mail.none;authpriv.none;cron.none /var/log/messages #将所有信息级别（info）以及除了邮件、认证、和 cron 之外的其他日志，都记录到 `/var/log/messages` 文件中# The authpriv file has restricted access.authpriv.* /var/log/secure #将所有 authpriv（私密认证）级别的日志记录到 `/var/log/secure` 文件中# Log all the mail messages in one place.mail.* -/var/log/maillog #将所有邮件相关的日志记录到 `/var/log/maillog` 文件中# Log cron stuffcron.* /var/log/cron #将所有 cron 服务相关的日志记录到 `/var/log/cron` 文件中# Everybody gets emergency messages*.emerg :omusrmsg:* #将所有紧急级别（emergency）的日志消息发送到用户消息队列# Save news errors of level crit and higher in a special file.uucp,news.crit /var/log/spooler #将所有 uucp 和 news 的 crit 级别及更高级别的日志记录到 `/var/log/spooler` 文件中# Save boot messages also to boot.loglocal7.* /var/log/boot.log #表示保存启动消息到boot.log文件中 使用journalctl查看和管理日志查看日志123456789101112131415161718192021222324252627282930313233343536373839# 查看所有日志（默认情况下只保存本次启动的日志）$ sudo journalctl# 显示尾部指定行数的日志，默认10行$ sudo journalctl -n 20# 实时滚动显示最新日志$ sudo journalctl -f# 查看指定时间的日志$ sudo journalctl --since yesterday$ sudo journalctl --since="2023-12-22 16:52:18"$ sudo journalctl --since "30 min ago"$ sudo journalctl --since "2023-12-22 16:52:18" --until "2023-12-22 23:52:18"$ sudo journalctl --since 09:00 --until "1 hour ago"# 查看内核日志，过滤掉应用日志$ sudo journalctl -k# 查看系统本次启动的日志$ sudo journalctl -b$ sudo journalctl -b -0# 查看上一次启动的日志$ sudo journalctl -b -1# 查看指定优先级及其以上级别的日志，共有8级 0: emerg 1: alert 2: crit 3: err 4: warning 5: notice 6: info 7: debug# -b 不加任何参数时，表示显示当前引导周期的日志。这意味着只显示自最近一次启动以来的日志。# -b N： N 是一个整数，表示要显示第 N 个引导周期的日志。例如，-b 0 表示显示最新的引导周期，-b 1 表示显示上一个引导周期，以此类推$ sudo journalctl -p err -b# 日志默认分页输出，--no-pager 改为正常的标准输出$ sudo journalctl --no-pager# 以单行 JSON 格式输出$ sudo journalctl -b -u nginx.service -o json# 以多行 JSON 可读性更好的格式输出$ sudo journalctl -b -u nginx.service -o json-pretty 查看指定服务日志1234567891011121314151617181920# 查看指定服务的日志$ sudo journalctl /usr/sbin/sshd# 查看指定进程的日志$ sudo journalctl _PID=1# 查看某个路径的脚本的日志$ sudo journalctl /bin/bash# 查看指定用户的日志$ sudo journalctl _UID=1000 --since today# 查看某个 Unit 的日志# 单元（unit）通常是 systemd 服务的一个抽象，用于表示系统中正在运行的各种服务或任务$ sudo journalctl -u nginx.service$ sudo journalctl -u nginx.service --since today# 合并显示多个 Unit 的日志$ journalctl -u nginx.service -u ssh.service --since today 查看调整存储1234567891011121314# 显示日志占据的硬盘空间$ sudo journalctl --disk-usage# 仅保留500MB大小的日志文减$ sudo journalctl --vacuum-size=500M# 指定日志文件保存多久$ sudo journalctl --vacuum-time=1years# 仅保留最近一个月的日志文件$ sudo journalctl --vacuum-time=1m# 仅保留最近2天的日志文件$ sudo journalctl --vacuum-time=2d 回到文章开头的问题通过梳理知识，我发现通过 systemctl 命令查询 systemd-journald 服务状态可以看到日志存储路径和存储限制，分别展示一下，先看存储到内存的： 123456789101112131415161718192021222324252627root@demo1:~# systemctl status systemd-journald● systemd-journald.service - Journal Service Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled) Active: active (running) since Fri 2023-12-22 10:25:43 CST; 10h ago Docs: man:systemd-journald.service(8) man:journald.conf(5) Main PID: 1132 (systemd-journal) Status: "Processing requests..." Tasks: 1 Memory: 272.0K CPU: 204ms CGroup: /system.slice/systemd-journald.service └─1132 /lib/systemd/systemd-journaldDec 22 10:25:43 demo1 systemd-journald[1132]: Runtime journal (/run/log/journal/) is 8.0M, max 159.9M, 151.9M free.Dec 22 10:25:43 demo1 systemd-journald[1132]: Journal startedroot@demo1:~# df -hFilesystem Size Used Avail Use% Mounted onudev 7.8G 0 7.8G 0% /devtmpfs 1.6G 9.3M 1.6G 1% /run/dev/sda1 83G 29G 51G 36% /tmpfs 7.9G 0 7.9G 0% /dev/shmtmpfs 5.0M 0 5.0M 0% /run/locktmpfs 7.9G 0 7.9G 0% /sys/fs/cgroup/dev/sdb 1017G 903G 115G 89% /exporttmpfs 1.6G 0 1.6G 0% /run/user/111tmpfs 1.6G 0 1.6G 0% /run/user/1001 默认存储到 /run/log/journal/中，分区一共1.6G，最大max 159.9M，当前用了 8.0M，按这个来推算果然限制是10%，再看看持久化的情况 123456789101112131415161718192021222324252627282930313233root@jenkins2004:~# systemctl status systemd-journald● systemd-journald.service - Journal Service Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled) Active: active (running) since Sun 2023-08-27 09:24:15 CST; 3 months 26 days agoTriggeredBy: ● systemd-journald-dev-log.socket ● systemd-journald.socket ● systemd-journald-audit.socket Docs: man:systemd-journald.service(8) man:journald.conf(5) Main PID: 375 (systemd-journal) Status: "Processing requests..." Tasks: 1 (limit: 19123) Memory: 42.7M CGroup: /system.slice/systemd-journald.service └─375 /lib/systemd/systemd-journald8月 27 09:24:15 jenkins2004 systemd-journald[375]: Journal started8月 27 09:24:15 jenkins2004 systemd-journald[375]: Time spent on flushing to /var/log/journal/cc9ad539032546a1bd39a773d37e415f is 613.827ms for 1229 entries.8月 27 09:24:15 jenkins2004 systemd-journald[375]: System Journal (/var/log/journal/cc9ad539032546a1bd39a773d37e415f) is 1.4G, max 4.0G, 2.5G free.8月 27 09:24:22 jenkins2004 systemd-journald[375]: Forwarding to syslog missed 1 messages.8月 27 09:24:53 jenkins2004 systemd-journald[375]: Forwarding to syslog missed 80 messages.Warning: journal has been rotated since unit was started, output may be incomplete.root@jenkins2004:~# df -h | grep -v snapFilesystem Size Used Avail Use% Mounted onudev 7.8G 0 7.8G 0% /devtmpfs 1.6G 1.6M 1.6G 1% /run/dev/sda5 590G 369G 191G 66% /tmpfs 7.9G 0 7.9G 0% /dev/shmtmpfs 5.0M 0 5.0M 0% /run/locktmpfs 7.9G 0 7.9G 0% /sys/fs/cgroup/dev/sda1 511M 4.0K 511M 1% /boot/efitmpfs 1.6G 36K 1.6G 1% /run/user/125tmpfs 1.6G 4.0K 1.6G 1% /run/user/1002 看起来存到了 var/log/journal，最大可用空间居然到了4G，这样来分析这次的问题可能不是journal日志搞的鬼，而是很多进程吧/run目录写满了，导致journal写不进去报了开头的错误，进而引发的无法登录。 总结 syslog和journal在日志管理中各司其职，共同保障了Linux系统日志的完整性和可用性 journal默认将系统日志存储在/run/log/journal目录中，而 /run 通常挂载在内存中，当此目录被写满时可能导致ssh无法登录 将 /etc/systemd/journald.conf 配置中的 Storage 字段设置为 persistent 可以开启日志持久化 sudo journalctl -n 20 可以显示显示尾部最新的20行日志，-n后不加参数默认10行 sudo journalctl -u nginx.service 查看ssh服务器的日志 sudo journalctl --since=&quot;2023-12-22 16:52:18&quot; 查看指定时间以后的日志 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 寒意一波接着一波，总会有看见“光”的时候（30厘米的下跌，摔得可真疼）]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>运维</tag>
+        <tag>服务器</tag>
+        <tag>journalctl</tag>
+        <tag>syslog</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[gitlab修改代码库的名称、路径和分组]]></title>
     <url>%2Fblog%2F2023%2F12%2F19%2Fgitlab%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E3%80%81%E8%B7%AF%E5%BE%84%E5%92%8C%E5%88%86%E7%BB%84%2F</url>
     <content type="text"><![CDATA[前言工作项目的源码使用gitlab进行管理，通常情况下不会修改代码库和路径，但是非一般的情况总是存在，比如刚刚立项时多次调整项目名，甚至改变管理层级，所以还是有这类需求的，一开始我本打算将旧的代码库和提交记录推送到新的地址和分组，后来在gitlab后台里翻了翻，结合网络大神们的指点，发现可以直接修改代码库的名称和分组，总共需要修改3个配置，一起来看下。 修改过程具体需求假设需求是将项目名从 A 改为 B，同时将访问路径从 git@gitlab.example.cn:APrject/AGroup/A.git 改为 git@gitlab.example.cn:APrject/AGroup/B.git，这里一共有三处需要修改：项目名、访问路径、以及分组，下面依次列举出修改的方法： 修改项目名导航路径【Settings】-&gt;【General】-&gt;【Naming, topics, avatar】-&gt;【Project name】，只需填入新的项目名，点击 “Save changes” 按钮即可，页面展示如下： 修改访问路径做完上一步只是修改了项目名字，如果使用 git clone 命令下载整个库，路径是没有发生变化的，修改访问路径需要调整 “Path” 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Change path】，只能修改最后一段Path，其中不能再包含 /，修改后点击 “Change path” 即可，页面展示如下： 修改分组上面修改路径这一步只允许修改Path的最后一段，不能直接调整分组路径，想要调整前面的路径需要调整分组 导航路径【Settings】-&gt;【General】-&gt;【Advanced】-&gt;【Expand】-&gt;【Transfer project】，这一步只能选择已有的分组，选择好目标分组，点击 “Transfer project” 按钮即可，页面展示如下： 总结 gitlab后台可以直接修改代码库的名称、路径和分组等信息，不必重新创建项目 在修改名称、路径和分组等信息后需要相关人员更新对原有代码库的引用，否则会找不到 使用 git remote set-url origin &lt;new-url&gt; 命令可以更新已有仓库的URL ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 对未来的迷茫以及内心的不安，让我们在现有社会经济条件下，沦为被金钱和物质所统治的行尸走肉]]></content>
@@ -40,8 +84,8 @@
         <category>Nginx</category>
       </categories>
       <tags>
-        <tag>Nginx</tag>
         <tag>运维</tag>
+        <tag>Nginx</tag>
         <tag>nginx ssl</tag>
         <tag>https</tag>
         <tag>websockify</tag>
@@ -434,10 +478,10 @@
         <category>SVN</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
-        <tag>备份</tag>
         <tag>运维</tag>
         <tag>服务器</tag>
+        <tag>SVN</tag>
+        <tag>备份</tag>
         <tag>数据清理</tag>
       </tags>
   </entry>
@@ -848,10 +892,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1007,9 +1051,9 @@
       <tags>
         <tag>find</tag>
         <tag>查找</tag>
+        <tag>grep</tag>
         <tag>locate</tag>
         <tag>which</tag>
-        <tag>grep</tag>
       </tags>
   </entry>
   <entry>
@@ -1331,9 +1375,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1345,9 +1389,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1796,8 +1840,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1850,8 +1894,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1877,8 +1921,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>Excel</tag>
         <tag>SVN</tag>
+        <tag>Excel</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -2169,8 +2213,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>windows</tag>
         <tag>汇编</tag>
+        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -2927,8 +2971,8 @@
       </categories>
       <tags>
         <tag>find</tag>
-        <tag>查找</tag>
         <tag>linux</tag>
+        <tag>查找</tag>
         <tag>grep</tag>
       </tags>
   </entry>

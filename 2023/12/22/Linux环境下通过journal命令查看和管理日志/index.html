@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,运维,服务器,journalctl,syslog," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言就在半月之前，负责打包更新的服务器突然登录不上去了，赶紧找来运维的同事帮忙解决，发现系统日志中有很多 systemd-journald[424]: Failed to open runtime journal: No space left on device 字样的错误，被告知磁盘满了需要清理，但是我当时登录不上去，只能让他们帮忙重启后利用单用户模式上去删除临时文件试试，但重启后发现问题解决了">
+<meta name="keywords" content="linux,运维,服务器,journalctl,syslog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux环境下通过journal命令查看和管理日志">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言就在半月之前，负责打包更新的服务器突然登录不上去了，赶紧找来运维的同事帮忙解决，发现系统日志中有很多 systemd-journald[424]: Failed to open runtime journal: No space left on device 字样的错误，被告知磁盘满了需要清理，但是我当时登录不上去，只能让他们帮忙重启后利用单用户模式上去删除临时文件试试，但重启后发现问题解决了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-01-14T11:45:50.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux环境下通过journal命令查看和管理日志">
+<meta name="twitter:description" content="前言就在半月之前，负责打包更新的服务器突然登录不上去了，赶紧找来运维的同事帮忙解决，发现系统日志中有很多 systemd-journald[424]: Failed to open runtime journal: No space left on device 字样的错误，被告知磁盘满了需要清理，但是我当时登录不上去，只能让他们帮忙重启后利用单用户模式上去删除临时文件试试，但重启后发现问题解决了">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/"/>
+
+
+
+
+
+  <title>Linux环境下通过journal命令查看和管理日志 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux环境下通过journal命令查看和管理日志</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-12-22T22:03:50+08:00">
+                2023-12-22
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-01-14T19:45:50+08:00">
+                2024-01-14
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/" class="leancloud_visitors" data-flag-title="Linux环境下通过journal命令查看和管理日志">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">4,738(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">21(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>就在半月之前，负责打包更新的服务器突然登录不上去了，赶紧找来运维的同事帮忙解决，发现系统日志中有很多 <code>systemd-journald[424]: Failed to open runtime journal: No space left on device</code> 字样的错误，被告知磁盘满了需要清理，但是我当时登录不上去，只能让他们帮忙重启后利用单用户模式上去删除临时文件试试，但重启后发现问题解决了，很是诧异，查询服务器后台监控平台，发现磁盘空间还有50%，inode只占用了0.02%，这怎么会磁盘满了呢？</p>
+<a id="more"></a>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>后来经过分析，应该是journal默认将系统日志存储在/run/log/journal目录中，而 <code>/run</code>是一个临时文件系统，通常挂载在内存中，用于存储运行时产生的临时文件，如进程 ID 文件、锁文件等，如果登录所需的文件或进程受到 <code>/run</code> 空间不足的影响，可能会导致登录问题。例如，如果 <code>sshd</code> 进程的运行所需的文件被存储在 <code>/run</code> 中并且空间不足，那么可能无法正常登录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">devtmpfs        7.8G     0  7.8G   0% /dev</span><br><span class="line">tmpfs           7.8G  868K  7.8G   1% /run</span><br></pre></td></tr></table></figure>
+<p>所以系统重启后，这个空间释放了也就能通过ssh登录了，并且重启后journal日志清空也证实了这一点。</p>
+<p>关于这个空间限制多数说的是10%，但是如果真是的所处分区的10%，那么不会导致我登录不上的，所以我倾向于是系统内存10%或者硬盘最大10%，默认最大限制4G，具体限制等我有空时查查文档吧，先贴一段看起来很靠谱的描述</p>
+<blockquote>
+<p>SystemMaxUse=, SystemKeepFree=, SystemMaxFileSize=, SystemMaxFiles=, RuntimeMaxUse=, RuntimeKeepFree=, RuntimeMaxFileSize=, RuntimeMaxFiles=<br>限制日志文件的 大小上限。 以 “System” 开头的选项用于限制磁盘使用量， 也就是 /var/log/journal 的使用量。 以 “Runtime” 开头的选项用于限制内存使用量， 也就是 /run/log/journal 的使用量。 以 “System” 开头的选项仅在 /var/log/journal 目录确实存在且可写时才有意义。 但以 “Runtime” 开头的选项永远有意义。 也就是说， 在系统启动早期 /var 尚未挂载时、 或者系统管理员禁止在磁盘上存储日志的时候， 仅有 “Runtime” 开头的选项有意义。 journalctl 与 systemd-journald 工具会忽略日志目录中 所有后缀名不等于 “.journal” 或 “.journal~” 的文件。 换句话说，日志目录中不应该存在后缀名不等于 “.journal” 或 “.journal~” 的文件， 因为这些文件 永远不会被清理。</p>
+<p>SystemMaxUse= 与 RuntimeMaxUse= 限制全部日志文件加在一起最多可以占用多少空间。 SystemKeepFree= 与 RuntimeKeepFree= 表示除日志文件之外，至少保留多少空间给其他用途。 systemd-journald 会同时考虑这两个因素， 并且尽量限制日志文件的总大小，以同时满足这两个限制。</p>
+<p>SystemMaxUse= 与 RuntimeMaxUse= 的默认值是10%空间与4G空间两者中的较小者； SystemKeepFree= 与 RuntimeKeepFree= 的默认值是15%空间与4G空间两者中的较大者； 如果在 systemd-journald 启动时，文件系统即将被填满并且已经超越了 SystemKeepFree= 或 RuntimeKeepFree= 的限制，那么日志记录将被暂停。 也就是说，如果在创建日志文件时，文件系统有充足的空闲空间， 但是后来文件系统被其他非日志文件过多占用， 那么 systemd-journald 只会立即暂停日志记录， 但不会删除已经存在的日志文件。 注意，只会删除已归档的日志文件以释放空间。 也就是说，即使在完成日志清理之后， 日志所占用的空间仍然可能大于 SystemMaxUse= 或 RuntimeMaxUse= 的限制。</p>
+<p>SystemMaxFileSize= 与 RuntimeMaxFileSize= 限制单个日志文件的最大体积， 到达此限制后日志文件将会自动滚动。 默认值是对应的 SystemMaxUse= 与 RuntimeMaxUse= 值的1/8 ， 这也意味着日志滚动 默认保留7个历史文件。</p>
+<p>日志大小 可以使用以1024为基数的 K, M, G, T, P, E 后缀， 分别对应于 1024, 1024², … 字节。</p>
+<p>SystemMaxFiles= 与 RuntimeMaxFiles= 限制最多允许同时存在多少个日志文件， 超出此限制后， 最老的日志文件将被删除， 而当前的活动日志文件 则不受影响。 默认值为100个。</p>
+</blockquote>
+<p>以上描述来自 <a href="https://www.jinbuguo.com/systemd/journald.conf.html" target="_blank" rel="noopener">《journald.conf 中文手册》</a>，另外 <a href="https://www.cnblogs.com/morgan363/p/13957565.html" target="_blank" rel="noopener">《Systemd日志管理服务：Journald以及重要配置选项》</a> 这篇博文也提到了默认日志数据将仅存储在内存中，在系统关闭时会删除该数据。</p>
+<h1 id="journal-和-syslog-对比"><a href="#journal-和-syslog-对比" class="headerlink" title="journal 和 syslog 对比"></a>journal 和 syslog 对比</h1><p>提到系统日志除了journal比较常见以外，还有 syslog 也是比较基础的服务，两者都是日志服务，并且在系统中合理分工，相互配合，它们服务于不同的目标并且具有不同的特性。syslog是Linux系统的一套日志框架，它既可以记录日志到本地文件，也可以通过网络发送到接收syslog的服务器，以实现对多个设备的syslog消息进行统一的存储或解析。而journal是改进型的日志管理服务，主要收集来自内核、系统早期的启动阶段的日志以及系统守护进程在启动和运行中的标准输出和错误。</p>
+<p>在CentOS 7及更高版本中，journalctl成为了查看和管理系统日志的主要工具，它从/var/log/journal/和/run/log/journal/等路径获取日志信息。同时，systemd-journald会将日志信息写入到socket文件/run/systemd/journal/syslog中，然后由rsyslog服务监听这个socket文件，从而实现对日志的统一管理和处理。因此，可以说syslog和journalctl在日志管理中各司其职，共同保障了Linux系统日志的完整性和可用性。</p>
+<p>以上提到了一些名词，先说明一下来清楚其中的关系，journal日志使用journalctl工具管理，依赖<code>systemd-journald</code>服务，syslog日志可以用文本工具来查看，view、more、cat等命令都可以用，也可以借助其他工具查看特定信息，比如用dmesg命令查看syslog中内核相关日志，syslog依赖的服务名通常是 <code>rsyslogd</code></p>
+<p><code>journalctl</code> 和 <code>syslog</code> 都是 Linux 系统中用于处理和查看系统日志的工具，我们从以下几个方面来对比下两者的区别：</p>
+<ul>
+<li><p><strong>存储方式：</strong></p>
+<ul>
+<li><code>syslog</code> 使用文本文件来存储日志信息，可以通过文本编辑器查看，通常存储在 <code>/var/log/syslog</code> 或 <code>/var/log/message</code></li>
+<li><code>journalctl</code> 使用 <code>systemd-journald</code> 服务来存储二进制格式的日志文件。通常存储在 <code>/run/log/journal/</code> 或 <code>/var/log/journal/</code></li>
+</ul>
+</li>
+<li><p><strong>日志内容：</strong></p>
+<ul>
+<li><code>syslog</code> 使用文本格式，记录在文本文件中。日志信息包含时间戳、主机名、应用程序名等</li>
+<li><code>journalctl</code> 使用二进制格式，可以存储更多的元数据，例如进程 ID、用户 ID、SELinux 上下文等。这使得日志更加结构化，支持更高级的查询和过滤</li>
+</ul>
+</li>
+<li><p><strong>查询和过滤：</strong></p>
+<ul>
+<li><code>syslog</code> 的查询和过滤通常使用命令行工具（例如 <code>grep</code>）或者专用的工具（例如 <code>logrotate</code>）</li>
+<li><code>journalctl</code> 提供了更丰富和强大的查询和过滤功能，可以按时间、服务单元、日志级别等多个条件进行过滤。这使得查找和分析特定事件更加方便</li>
+</ul>
+</li>
+<li><p><strong>实时查看：</strong></p>
+<ul>
+<li><code>syslog</code> 通常使用 <code>tail</code> 命令实时查看日志文件的末尾</li>
+<li><code>journalctl</code> 可以使用 <code>-f</code> 或 <code>--follow</code> 选项来实时查看最新的日志</li>
+</ul>
+</li>
+<li><p><strong>服务和依赖关系：</strong></p>
+<ul>
+<li><code>syslog</code> 是一个通用的日志服务，可以由多个日志守护进程（如 <code>rsyslog</code>、<code>syslog-ng</code>）实现</li>
+<li><code>journalctl</code> 是 <code>systemd</code> 系统中的一部分，依赖于 <code>systemd-journald</code> 服务</li>
+</ul>
+</li>
+<li><p><strong>配置文件的路径：</strong></p>
+<ul>
+<li><code>syslog</code> 的配置文件在 <code>/etc/rsyslog.conf</code></li>
+<li><code>journalctl</code> 的配置文件在 <code>/etc/systemd/journald.conf</code></li>
+</ul>
+</li>
+</ul>
+<p>总体而言，<code>journalctl</code> 是 <code>systemd</code> 系统的一部分，提供了更现代化、结构化和强大的日志管理功能，但这并不意味着 <code>syslog</code> 是过时的。在一些系统中，两者可能同时存在，而且一些工具和服务可能仍然使用传统的 <code>syslog</code>。选择使用哪一个取决于系统的需求和管理员的偏好。</p>
+<p>下面分别展示一下<code>systemd-journald</code> 和 <code>rsyslogd</code> 两个服务查询信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@demo ~]<span class="comment"># systemctl status systemd-journald</span></span><br><span class="line">● systemd-journald.service - Journal Service</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/systemd-journald.service; static; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Mon 2023-12-04 20:26:34 CST; 2 weeks 3 days ago</span><br><span class="line">     Docs: man:systemd-journald.service(8)</span><br><span class="line">           man:journald.conf(5)</span><br><span class="line"> Main PID: 7099 (systemd-journal)</span><br><span class="line">   Status: <span class="string">"Processing requests..."</span></span><br><span class="line">   CGroup: /system.slice/systemd-journald.service</span><br><span class="line">           └─7099 /usr/lib/systemd/systemd-journald</span><br><span class="line"></span><br><span class="line">Dec 04 20:26:34 demo systemd-journal[7099]: Permanent journal is using 8.0M (max allowed 4.0G, trying to leave 4.0G free of 183.5G available → c…imit 4.0G).</span><br><span class="line">Dec 04 20:26:34 demo systemd-journal[7099]: Time spent on flushing to /var is 21.108ms <span class="keyword">for</span> 1873 entries.</span><br><span class="line">Dec 04 20:26:34 demo systemd-journal[7099]: Journal started</span><br><span class="line">Hint: Some lines were ellipsized, use -l to show <span class="keyword">in</span> full.</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[root@demo ~]<span class="comment"># systemctl status rsyslogd</span></span><br><span class="line">Unit rsyslogd.service could not be found.</span><br><span class="line">[root@demo ~]<span class="comment"># systemctl status rsyslog</span></span><br><span class="line">● rsyslog.service - System Logging Service</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/rsyslog.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Mon 2023-12-04 19:46:04 CST; 2 weeks 3 days ago</span><br><span class="line">     Docs: man:rsyslogd(8)</span><br><span class="line">           http://www.rsyslog.com/doc/</span><br><span class="line"> Main PID: 913 (rsyslogd)</span><br><span class="line">   CGroup: /system.slice/rsyslog.service</span><br><span class="line">           └─913 /usr/sbin/rsyslogd -n</span><br><span class="line"></span><br><span class="line">Dec 04 19:46:04 demo systemd[1]: Starting System Logging Service...</span><br><span class="line">Dec 04 19:46:04 demo rsyslogd[913]:  [origin software=<span class="string">"rsyslogd"</span> swVersion=<span class="string">"8.24.0-57.el7_9.3"</span> x-pid=<span class="string">"913"</span> x-info=<span class="string">"http://www.rsyslog.com"</span>] start</span><br><span class="line">Dec 04 19:46:04 demo systemd[1]: Started System Logging Service.</span><br><span class="line">Dec 04 20:26:34 demo rsyslogd[913]: imjournal: journal reloaded... [v8.24.0-57.el7_9.3 try http://www.rsyslog.com/e/0 ]</span><br><span class="line">Dec 10 03:22:01 demo rsyslogd[913]:  [origin software=<span class="string">"rsyslogd"</span> swVersion=<span class="string">"8.24.0-57.el7_9.3"</span> x-pid=<span class="string">"913"</span> x-info=<span class="string">"http://www.rsyslog.com"</span>] rsys...was HUPed</span><br><span class="line">Dec 15 01:35:01 demo rsyslogd[913]: imjournal: journal reloaded... [v8.24.0-57.el7_9.3 try http://www.rsyslog.com/e/0 ]</span><br><span class="line">Dec 17 03:07:01 demo rsyslogd[913]:  [origin software=<span class="string">"rsyslogd"</span> swVersion=<span class="string">"8.24.0-57.el7_9.3"</span> x-pid=<span class="string">"913"</span> x-info=<span class="string">"http://www.rsyslog.com"</span>] rsys...was HUPed</span><br><span class="line">Hint: Some lines were ellipsized, use -l to show <span class="keyword">in</span> full.</span><br></pre></td></tr></table></figure>
+<h1 id="journal-和-syslog-配置"><a href="#journal-和-syslog-配置" class="headerlink" title="journal 和 syslog 配置"></a>journal 和 syslog 配置</h1><p>两个服务的配置文件都有很多内容，在此只展示其中部分重要的参数，先看一下 <code>/etc/systemd/journald.conf</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[Journal]</span><br><span class="line">Storage=persistent              <span class="comment">#开启持久化存储</span></span><br><span class="line"><span class="comment">#Compress=yes                   #开启压缩功能</span></span><br><span class="line"><span class="comment">#Seal=yes</span></span><br><span class="line">SystemMaxUse=40%                <span class="comment">#设置系统最大占用率为40%</span></span><br><span class="line">StorageOption=size              <span class="comment">#设置存储选项为按大小进行存储</span></span><br><span class="line">StorageOption=autorotate        <span class="comment">#设置存储选项为自动轮换</span></span><br><span class="line">StoragePath=/<span class="built_in">export</span>/<span class="built_in">log</span>/journal <span class="comment">#设置日志文件的存储路径</span></span><br></pre></td></tr></table></figure>
+<p>再看一下 <code>/etc/rsyslog.conf</code> 配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Include all config files in /etc/rsyslog.d/</span></span><br><span class="line"><span class="variable">$IncludeConfig</span> /etc/rsyslog.d/*.conf <span class="comment">#将包含 `/etc/rsyslog.d/` 目录下的所有以 `.conf` 结尾的配置文件，可以将配置分散到多个文件使得管理更加灵活</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Turn off message reception via local log socket;</span></span><br><span class="line"><span class="comment"># local messages are retrieved through imjournal now.</span></span><br><span class="line"><span class="variable">$OmitLocalLogging</span> on <span class="comment">#不再通过本地日志套接字接收消息，本地消息现在通过 `imjournal`（Journal 日志服务）来检索</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#### RULES ####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log all kernel messages to the console.</span></span><br><span class="line"><span class="comment"># Logging much else clutters up the screen.</span></span><br><span class="line"><span class="comment">#kern.*                                                 /dev/console</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log anything (except mail) of level info or higher.</span></span><br><span class="line"><span class="comment"># Don't log private authentication messages!</span></span><br><span class="line">*.info;mail.none;authpriv.none;cron.none                /var/<span class="built_in">log</span>/messages <span class="comment">#将所有信息级别（info）以及除了邮件、认证、和 cron 之外的其他日志，都记录到 `/var/log/messages` 文件中</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The authpriv file has restricted access.</span></span><br><span class="line">authpriv.*                                              /var/<span class="built_in">log</span>/secure <span class="comment">#将所有 authpriv（私密认证）级别的日志记录到 `/var/log/secure` 文件中</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log all the mail messages in one place.</span></span><br><span class="line">mail.*                                                  -/var/<span class="built_in">log</span>/maillog <span class="comment">#将所有邮件相关的日志记录到 `/var/log/maillog` 文件中</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log cron stuff</span></span><br><span class="line">cron.*                                                  /var/<span class="built_in">log</span>/cron <span class="comment">#将所有 cron 服务相关的日志记录到 `/var/log/cron` 文件中</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Everybody gets emergency messages</span></span><br><span class="line">*.emerg                                                 :omusrmsg:*     <span class="comment">#将所有紧急级别（emergency）的日志消息发送到用户消息队列</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Save news errors of level crit and higher in a special file.</span></span><br><span class="line">uucp,news.crit                                          /var/<span class="built_in">log</span>/spooler <span class="comment">#将所有 uucp 和 news 的 crit 级别及更高级别的日志记录到 `/var/log/spooler` 文件中</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Save boot messages also to boot.log</span></span><br><span class="line">local7.*                                                /var/<span class="built_in">log</span>/boot.log <span class="comment">#表示保存启动消息到boot.log文件中</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用journalctl查看和管理日志"><a href="#使用journalctl查看和管理日志" class="headerlink" title="使用journalctl查看和管理日志"></a>使用journalctl查看和管理日志</h1><h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看所有日志（默认情况下只保存本次启动的日志）</span></span><br><span class="line">$ sudo journalctl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示尾部指定行数的日志，默认10行</span></span><br><span class="line">$ sudo journalctl -n 20</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实时滚动显示最新日志</span></span><br><span class="line">$ sudo journalctl -f</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看指定时间的日志</span></span><br><span class="line">$ sudo journalctl --since yesterday</span><br><span class="line">$ sudo journalctl --since=<span class="string">"2023-12-22 16:52:18"</span></span><br><span class="line">$ sudo journalctl --since <span class="string">"30 min ago"</span></span><br><span class="line">$ sudo journalctl --since <span class="string">"2023-12-22 16:52:18"</span> --until <span class="string">"2023-12-22 23:52:18"</span></span><br><span class="line">$ sudo journalctl --since 09:00 --until <span class="string">"1 hour ago"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看内核日志，过滤掉应用日志</span></span><br><span class="line">$ sudo journalctl -k</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看系统本次启动的日志</span></span><br><span class="line">$ sudo journalctl -b</span><br><span class="line">$ sudo journalctl -b -0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看上一次启动的日志</span></span><br><span class="line">$ sudo journalctl -b -1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看指定优先级及其以上级别的日志，共有8级 0: emerg 1: alert 2: crit 3: err 4: warning 5: notice 6: info 7: debug</span></span><br><span class="line"><span class="comment"># -b 不加任何参数时，表示显示当前引导周期的日志。这意味着只显示自最近一次启动以来的日志。</span></span><br><span class="line"><span class="comment"># -b N： N 是一个整数，表示要显示第 N 个引导周期的日志。例如，-b 0 表示显示最新的引导周期，-b 1 表示显示上一个引导周期，以此类推</span></span><br><span class="line">$ sudo journalctl -p err -b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志默认分页输出，--no-pager 改为正常的标准输出</span></span><br><span class="line">$ sudo journalctl --no-pager</span><br><span class="line"></span><br><span class="line"><span class="comment"># 以单行 JSON 格式输出</span></span><br><span class="line">$ sudo journalctl -b -u nginx.service -o json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 以多行 JSON 可读性更好的格式输出</span></span><br><span class="line">$ sudo journalctl -b -u nginx.service  -o json-pretty</span><br></pre></td></tr></table></figure>
+<h2 id="查看指定服务日志"><a href="#查看指定服务日志" class="headerlink" title="查看指定服务日志"></a>查看指定服务日志</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># 查看指定服务的日志</span></span><br><span class="line">$ sudo journalctl /usr/sbin/sshd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看指定进程的日志</span></span><br><span class="line">$ sudo journalctl _PID=1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看某个路径的脚本的日志</span></span><br><span class="line">$ sudo journalctl /bin/bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看指定用户的日志</span></span><br><span class="line">$ sudo journalctl _UID=1000 --since today</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看某个 Unit 的日志</span></span><br><span class="line"><span class="comment"># 单元（unit）通常是 systemd 服务的一个抽象，用于表示系统中正在运行的各种服务或任务</span></span><br><span class="line">$ sudo journalctl -u nginx.service</span><br><span class="line">$ sudo journalctl -u nginx.service --since today</span><br><span class="line"></span><br><span class="line"><span class="comment"># 合并显示多个 Unit 的日志</span></span><br><span class="line">$ journalctl -u nginx.service -u ssh.service --since today</span><br></pre></td></tr></table></figure>
+<h2 id="查看调整存储"><a href="#查看调整存储" class="headerlink" title="查看调整存储"></a>查看调整存储</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示日志占据的硬盘空间</span></span><br><span class="line">$ sudo journalctl --disk-usage</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅保留500MB大小的日志文减</span></span><br><span class="line">$ sudo journalctl --vacuum-size=500M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定日志文件保存多久</span></span><br><span class="line">$ sudo journalctl --vacuum-time=1years</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅保留最近一个月的日志文件</span></span><br><span class="line">$ sudo journalctl --vacuum-time=1m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅保留最近2天的日志文件</span></span><br><span class="line">$ sudo journalctl --vacuum-time=2d</span><br></pre></td></tr></table></figure>
+<h1 id="回到文章开头的问题"><a href="#回到文章开头的问题" class="headerlink" title="回到文章开头的问题"></a>回到文章开头的问题</h1><p>通过梳理知识，我发现通过 <code>systemctl</code> 命令查询 <code>systemd-journald</code> 服务状态可以看到日志存储路径和存储限制，分别展示一下，先看存储到内存的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">root@demo1:~<span class="comment"># systemctl status systemd-journald</span></span><br><span class="line">● systemd-journald.service - Journal Service</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Fri 2023-12-22 10:25:43 CST; 10h ago</span><br><span class="line">     Docs: man:systemd-journald.service(8)</span><br><span class="line">           man:journald.conf(5)</span><br><span class="line"> Main PID: 1132 (systemd-journal)</span><br><span class="line">   Status: <span class="string">"Processing requests..."</span></span><br><span class="line">    Tasks: 1</span><br><span class="line">   Memory: 272.0K</span><br><span class="line">      CPU: 204ms</span><br><span class="line">   CGroup: /system.slice/systemd-journald.service</span><br><span class="line">           └─1132 /lib/systemd/systemd-journald</span><br><span class="line"></span><br><span class="line">Dec 22 10:25:43 demo1 systemd-journald[1132]: Runtime journal (/run/<span class="built_in">log</span>/journal/) is 8.0M, max 159.9M, 151.9M free.</span><br><span class="line">Dec 22 10:25:43 demo1 systemd-journald[1132]: Journal started</span><br><span class="line">root@demo1:~<span class="comment"># df -h</span></span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">udev            7.8G     0  7.8G   0% /dev</span><br><span class="line">tmpfs           1.6G  9.3M  1.6G   1% /run</span><br><span class="line">/dev/sda1        83G   29G   51G  36% /</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% /dev/shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% /run/lock</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sdb       1017G  903G  115G  89% /<span class="built_in">export</span></span><br><span class="line">tmpfs           1.6G     0  1.6G   0% /run/user/111</span><br><span class="line">tmpfs           1.6G     0  1.6G   0% /run/user/1001</span><br></pre></td></tr></table></figure>
+<p>默认存储到 /run/log/journal/中，分区一共1.6G，最大max 159.9M，当前用了 8.0M，按这个来推算果然限制是10%，再看看持久化的情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">root@jenkins2004:~<span class="comment"># systemctl status systemd-journald</span></span><br><span class="line">● systemd-journald.service - Journal Service</span><br><span class="line">     Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled)</span><br><span class="line">     Active: active (running) since Sun 2023-08-27 09:24:15 CST; 3 months 26 days ago</span><br><span class="line">TriggeredBy: ● systemd-journald-dev-log.socket</span><br><span class="line">             ● systemd-journald.socket</span><br><span class="line">             ● systemd-journald-audit.socket</span><br><span class="line">       Docs: man:systemd-journald.service(8)</span><br><span class="line">             man:journald.conf(5)</span><br><span class="line">   Main PID: 375 (systemd-journal)</span><br><span class="line">     Status: <span class="string">"Processing requests..."</span></span><br><span class="line">      Tasks: 1 (<span class="built_in">limit</span>: 19123)</span><br><span class="line">     Memory: 42.7M</span><br><span class="line">     CGroup: /system.slice/systemd-journald.service</span><br><span class="line">             └─375 /lib/systemd/systemd-journald</span><br><span class="line"></span><br><span class="line">8月 27 09:24:15 jenkins2004 systemd-journald[375]: Journal started</span><br><span class="line">8月 27 09:24:15 jenkins2004 systemd-journald[375]: Time spent on flushing to /var/<span class="built_in">log</span>/journal/cc9ad539032546a1bd39a773d37e415f is 613.827ms <span class="keyword">for</span> 1229 entries.</span><br><span class="line">8月 27 09:24:15 jenkins2004 systemd-journald[375]: System Journal (/var/<span class="built_in">log</span>/journal/cc9ad539032546a1bd39a773d37e415f) is 1.4G, max 4.0G, 2.5G free.</span><br><span class="line">8月 27 09:24:22 jenkins2004 systemd-journald[375]: Forwarding to syslog missed 1 messages.</span><br><span class="line">8月 27 09:24:53 jenkins2004 systemd-journald[375]: Forwarding to syslog missed 80 messages.</span><br><span class="line">Warning: journal has been rotated since unit was started, output may be incomplete.</span><br><span class="line">root@jenkins2004:~<span class="comment"># df -h | grep -v snap</span></span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">udev            7.8G     0  7.8G   0% /dev</span><br><span class="line">tmpfs           1.6G  1.6M  1.6G   1% /run</span><br><span class="line">/dev/sda5       590G  369G  191G  66% /</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% /dev/shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% /run/lock</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1       511M  4.0K  511M   1% /boot/efi</span><br><span class="line">tmpfs           1.6G   36K  1.6G   1% /run/user/125</span><br><span class="line">tmpfs           1.6G  4.0K  1.6G   1% /run/user/1002</span><br></pre></td></tr></table></figure>
+<p>看起来存到了 <code>var/log/journal</code>，最大可用空间居然到了4G，这样来分析这次的问题可能不是journal日志搞的鬼，而是很多进程吧/run目录写满了，导致journal写不进去报了开头的错误，进而引发的无法登录。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>syslog和journal在日志管理中各司其职，共同保障了Linux系统日志的完整性和可用性</li>
+<li>journal默认将系统日志存储在/run/log/journal目录中，而 <code>/run</code> 通常挂载在内存中，当此目录被写满时可能导致ssh无法登录</li>
+<li>将 <code>/etc/systemd/journald.conf</code> 配置中的 Storage 字段设置为 <code>persistent</code> 可以开启日志持久化</li>
+<li><code>sudo journalctl -n 20</code> 可以显示显示尾部最新的20行日志，-n后不加参数默认10行</li>
+<li><code>sudo journalctl -u nginx.service</code> 查看ssh服务器的日志</li>
+<li><code>sudo journalctl --since=&quot;2023-12-22 16:52:18&quot;</code> 查看指定时间以后的日志</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/135094892" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>寒意一波接着一波，总会有看见“光”的时候（30厘米的下跌，摔得可真疼）</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/" title="Linux环境下通过journal命令查看和管理日志">http://AlbertGithubHome.github.io/blog/2023/12/22/Linux环境下通过journal命令查看和管理日志/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/运维/" rel="tag"><i class="fa fa-tag"></i> 运维</a>
+          
+            <a href="/blog/tags/服务器/" rel="tag"><i class="fa fa-tag"></i> 服务器</a>
+          
+            <a href="/blog/tags/journalctl/" rel="tag"><i class="fa fa-tag"></i> journalctl</a>
+          
+            <a href="/blog/tags/syslog/" rel="tag"><i class="fa fa-tag"></i> syslog</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2023/12/19/gitlab修改代码库的名称、路径和分组/" rel="next" title="gitlab修改代码库的名称、路径和分组">
+                <i class="fa fa-chevron-left"></i> gitlab修改代码库的名称、路径和分组
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2024/01/01/2023年终总结——你相信光吗/" rel="prev" title="2023年终总结——你相信光吗">
+                2023年终总结——你相信光吗 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">236</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">567</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分析"><span class="nav-number">2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#journal-和-syslog-对比"><span class="nav-number">3.</span> <span class="nav-text">journal 和 syslog 对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#journal-和-syslog-配置"><span class="nav-number">4.</span> <span class="nav-text">journal 和 syslog 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用journalctl查看和管理日志"><span class="nav-number">5.</span> <span class="nav-text">使用journalctl查看和管理日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看日志"><span class="nav-number">5.1.</span> <span class="nav-text">查看日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看指定服务日志"><span class="nav-number">5.2.</span> <span class="nav-text">查看指定服务日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看调整存储"><span class="nav-number">5.3.</span> <span class="nav-text">查看调整存储</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回到文章开头的问题"><span class="nav-number">6.</span> <span class="nav-text">回到文章开头的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
