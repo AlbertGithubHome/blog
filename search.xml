@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[一个golang小白使用vscode搭建Ununtu20.04下的go开发环境]]></title>
+    <url>%2Fblog%2F2024%2F01%2F21%2F%E4%B8%80%E4%B8%AAgolang%E5%B0%8F%E7%99%BD%E4%BD%BF%E7%94%A8vscode%E6%90%AD%E5%BB%BAgo%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F</url>
+    <content type="text"><![CDATA[前言先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇《Go环境配置时遇到的GOPATH路径以及包管理问题》，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必放到 GOPATH 路径中了，通过go.mod文件来标记并跟踪每个软件包的版本，灵活度大大提高，从此 GOPATH 概念逐渐淡化，在1.18版本新引入一个新功能go.work，它被设计为解决在同一工作空间中处理多个模块的问题，使得go工程的模块管理更加方便。 简单描述下我的开发环境，Windows10 + VSCode1.58.0 + WLS1.0 - Ubuntu20.04，平时工作都是在Ubuntu上，习惯了在Linux上的开发，所以即使是自己家的电脑也安装了子系统，就当成Ubuntu 来用就行了，Vscode安装在Windows上，直接连接到子系统上进行代码编写，以上是前提，本文的重点是在Ubuntu20.04系统上安装go的编译和运行环境。 搭建go环境我选择的go版本是1.19，已经支持 go.sum 和 go.work，同时也为了和工作开发保持一致，没必要用太新的特性，现在的go包管理已经不想早期的Java，不再依赖 GOPATH，和 Python3.x 更像了，只管下载包然后在各自的工程目录下使用就行了，必要时需要指定使用库的版本。 下载go安装包go语言的官网是 https://golang.google.cn/dl/，下载1.19版本的Linux包go1.19.linux-amd64.tar.gz，这个网址通常下载很慢，可以改为go语言中文网https://studygolang.com/dl来下载1.19版本go1.19.linux-amd64.tar.gz 可以通过浏览器下载拷贝到指定位置，也可以通过wget命令下载 12345678910111213141516alberts@home-pc:~$ wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz--2024-01-21 17:22:11-- https://golang.google.cn/dl/go1.19.linux-amd64.tar.gzResolving golang.google.cn (golang.google.cn)... 203.208.50.34Connecting to golang.google.cn (golang.google.cn)|203.208.50.34|:443... connected.HTTP request sent, awaiting response... 302 FoundLocation: https://dl.google.com/go/go1.19.linux-amd64.tar.gz [following]--2024-01-21 17:22:12-- https://dl.google.com/go/go1.19.linux-amd64.tar.gzResolving dl.google.com (dl.google.com)... 220.181.174.161, 2401:3800:4001:807::1001Connecting to dl.google.com (dl.google.com)|220.181.174.161|:443... connected.HTTP request sent, awaiting response... 200 OKLength: 148796421 (142M) [application/x-gzip]Saving to: ‘go1.19.linux-amd64.tar.gz’go1.19.linux-amd64.tar.gz 100%[==============================&gt;] 141.90M 3.62MB/s in 31s2024-01-21 17:22:43 (4.54 MB/s) - ‘go1.19.linux-amd64.tar.gz’ saved [148796421/148796421] 解压go压缩包完成安装go的运行环境直接解压拷贝到指定位置就可以了，我把go解压安装到了 /usr/local/go 目录，解压之前也清理掉老的目录，如果之前没安装过，rm这条命令可以不使用 123sudo surm -rf /usr/local/gotar -C /usr/local -xzf go1.19.linux-amd64.tar.gz 配置环境变量这一步有点类似Windows中的修改注册表，我安装了新的程序，需要通知系统当使用 go 命令时需要去哪个目录下寻找可执行程序，具体操作如下 使用vim编辑.bashrc文件 1alberts@home-pc:~$ vim ~/.bashrc 到文件的末尾添加以下代码 1alberts@home-pc:~$ export PATH=$PATH:/usr/local/go/bin 重新加载配置文件 1alberts@home-pc:~$ source ~/.bashrc 查看版本是否安装成功 12alberts@home-pc:~$ go versiongo version go1.19 linux/amd64 查看版本显示出 go1.19 linux/amd64, 至此go语言的基础开发环境就配置好了 编写一个helloword程序123456789alberts@home-pc:/mnt/g$ mkdir wlsworkspacealberts@home-pc:/mnt/g$ cd wlsworkspacealberts@home-pc:/mnt/g/wlsworkspace$ mkdir helloalberts@home-pc:/mnt/g/wlsworkspace$ cd hello/alberts@home-pc:/mnt/g/wlsworkspace/hello$ go mod init github.com/alberts/go/hellogo: creating new go.mod: module github.com/alberts/go/helloalberts@home-pc:/mnt/g/wlsworkspace/hello$ touch hello.goalberts@home-pc:/mnt/g/wlsworkspace/hello$ lsgo.mod hello.go 打开 hello.go 文件编写以下内容： 1234567package mainimport "fmt"func main() &#123; fmt.Println("Hello,World!")&#125; 保存文件后使用 go run 命令运行 12alberts@home-pc:/mnt/g/wlsworkspace/hello$ go run hello.goHello,World! 安装VSCode插件安装智能提示插件为了编写go代码方便，可以安装这个名为Go的插件，这个插件不是必须安装的，但是你在写go代码时VSCode会自动提示你安装这个插件，为了实现Go语法只能提醒，我们可以直接点击提示安装，或者在插件市场里搜索安装 go插件 插件安装完成后会提示下面的报错 The “gopls” command is not available. Run “go get -v golang.org/x/tools/gopls” to install. 说明安装这个插件需要依赖 golang.org/x/tools/gopls 这个包，我们可以根据提示安装 安装go依赖包12alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/goplsgo: module golang.org/x/tools/gopls: Get "https://proxy.golang.org/golang.org/x/tools/gopls/@v/list": dial tcp 142.251.42.241:443: connect: connection refused 直接安装通常会因无法下载而失败，需要修改代理来改变下载地址 修改代理并重新安装依赖包123alberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GO111MODULE=onalberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOPROXY=https://goproxy.cn,directalberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOSUMDB="sum.golang.org" 安装依赖包 1234567891011121314151617181920212223242526272829303132alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/goplsgo: downloading golang.org/x/tools v0.17.0go: downloading golang.org/x/tools/gopls v0.14.2go: downloading golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fdgo: downloading golang.org/x/telemetry v0.0.0-20231114163143-69313e640400go: downloading github.com/sergi/go-diff v1.1.0go: downloading honnef.co/go/tools v0.4.5go: downloading mvdan.cc/gofumpt v0.4.0go: downloading mvdan.cc/xurls/v2 v2.4.0go: downloading golang.org/x/mod v0.14.0go: downloading golang.org/x/sync v0.4.0go: downloading golang.org/x/text v0.13.0go: downloading golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338go: downloading golang.org/x/sys v0.14.0go: downloading golang.org/x/vuln v1.0.1go: downloading github.com/google/go-cmp v0.5.9go: downloading github.com/BurntSushi/toml v1.2.1go: added github.com/BurntSushi/toml v1.2.1go: added github.com/google/go-cmp v0.5.9go: added github.com/sergi/go-diff v1.1.0go: added golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338go: added golang.org/x/mod v0.14.0go: added golang.org/x/sync v0.4.0go: added golang.org/x/sys v0.14.0go: added golang.org/x/telemetry v0.0.0-20231114163143-69313e640400go: added golang.org/x/text v0.13.0go: added golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fdgo: added golang.org/x/tools/gopls v0.14.2go: added golang.org/x/vuln v1.0.1go: added honnef.co/go/tools v0.4.5go: added mvdan.cc/gofumpt v0.4.0go: added mvdan.cc/xurls/v2 v2.4.0 这次安装成功了，这些依赖包默认安装到了 ~/go/pkg目录下，使用时直接在go文件中引用就行了 import golang.org/x/sys 以上这些包是Go语言的依赖管理工具，它们的作用如下： golang.org/x/tools: 提供了一系列用于开发Go语言的工具，如gopls等 golang.org/x/tools/gopls: 是一个基于Go语言的代码补全和导航工具，它可以帮助开发者更高效地编写和调试Go代码 golang.org/x/telemetry: 提供了一套用于收集和分析应用程序性能数据的库 github.com/sergi/go-diff: 是一个用于比较两个Go源代码文件差异的工具 honnef.co/go/tools: 提供了一些用于处理Go源代码的工具，如goimports（自动导入缺失的包）等 mvdan.cc/gofumpt: 是一个用于格式化Go源代码的工具，它可以自动调整代码格式以符合Go语言的最佳实践 mvdan.cc/xurls/v2: 是一个用于解析URL的库，它可以将URL分解为各个组成部分，方便开发者处理 golang.org/x/mod: 是一个用于管理Go模块的库，它可以帮助你更好地组织和管理项目的依赖关系 golang.org/x/sync: 提供了一组同步原语，如互斥锁、条件变量等，用于实现多线程编程中的同步机制 golang.org/x/text: 提供了一个用于处理Unicode文本的库，它可以帮助你更方便地处理和操作文本数据 golang.org/x/exp/typeparams: 提供了一个用于处理类型参数的库，它可以帮助你更方便地处理泛型编程中的类型参数问题 golang.org/x/sys: 提供了一个用于访问操作系统功能的库，它可以帮助你更方便地处理操作系统相关的任务 golang.org/x/vuln: 提供了一个用于管理已知安全漏洞的库，它可以帮助你更容易地识别和修复项目中的安全漏洞 github.com/stamblerre/gocode: 提供Go语言的代码自动补全功能，用于IDEs和编辑器 github.com/uudashr/gopkgs/v2/cmd/gopkgs: 命令行工具，帮助发现和使用Go语言软件包 github.com/ramya-rao-a/go-outline: VSCode插件，为Go源代码文件生成结构大纲以便于导航 总结一下需要安装的依赖包 go get -v golang.org/x/tools/goplsgo get -v github.com/stamblerre/gocodego get -v github.com/uudashr/gopkgs/v2/cmd/gopkgsgo get -v github.com/ramya-rao-a/go-outline 根据VSCode提示安装后续的Tools，得到的控制台输出信息如下 Tools environment: GOPATH=/home/alberts/goInstalling 6 tools at /home/alberts/go/bin in module mode. gopkgs go-outline dlv dlv-dap staticcheck gopls Installing github.com/uudashr/gopkgs/v2/cmd/gopkgs (gopkgs) SUCCEEDEDInstalling github.com/ramya-rao-a/go-outline (go-outline) SUCCEEDEDInstalling github.com/go-delve/delve/cmd/dlv (dlv) SUCCEEDEDInstalling github.com/go-delve/delve/cmd/dlv@master (/home/alberts/go/bin/dlv-dap) SUCCEEDEDInstalling honnef.co/go/tools/cmd/staticcheck (staticcheck) SUCCEEDEDInstalling golang.org/x/tools/gopls (gopls) SUCCEEDED All tools successfully installed. You are ready to Go :). go.mod 和 go.workgo.modGo语言从1.11版本开始引入了Go Modules，这个版本之后不再需要将项目放到GOPATH中。 Go Modules是Go语言的依赖管理工具，它改变了之前必须使用GOPATH来管理依赖的模式。在Go 1.11及之后的版本中，通过go.mod文件来标记并跟踪每个软件包的版本，这意味着开发者可以在任何地方创建项目，而不必遵循GOPATH目录结构。 此外，Go团队还增加了一个环境变量GO111MODULE来控制模块支持的启用和禁用。这个环境变量的命名中的”111”象征着它是在Go 1.11版本中引入的。 总的来说，Go语言自1.11版本起，通过引入Go Modules，使得开发者不再受限于GOPATH，可以更加灵活地管理项目和依赖。这一变化被广泛认为是Go语言发展中的一个重大改进。 go.work“go.work” 是Go 1.18版本新引入的一个功能，它被设计为解决在同一工作空间中处理多个模块的问题。在之前的版本中，开发者常常会遇到路径问题、版本冲突问题等挑战。为了应对这些情况，他们可能需要对每个模块的go.mod文件进行手动修改，过程繁琐且容易出错。 “go.work”文件的主要作用就是来解决这些问题。它是一个特殊的文件，其中包含了use和replace指令，这些指令会覆盖工作区目录下的每个Go Module的go.mod文件中的内容。因此，开发者无需再对每个Go Module的go.mod文件进行手动修改，极大地简化了操作流程并提高了效率。 此外，”go.work”文件的优先级高于go.mod文件中的定义。也就是说，如果在go.work和go.mod中同时指定了不同的代码仓库路径，那么go.work中的设置将会被优先采用。这一特性进一步加强了”go.work”文件在依赖管理中的重要性。 小试一下go.work当前工作目录下有 base 和 hello 两个包含go.mod的工程，使用 go work init 命令可以初始化一个工作空间 12345678910alberts@home-pc:/mnt/g/wlsworkspace$ lsbase helloalberts@home-pc:/mnt/g/wlsworkspace$ go work init base helloalberts@home-pc:/mnt/g/wlsworkspace$ cat go.workgo 1.19use ( ./base ./hello) 初始化之后工程之间就可以相互引用彼此对外的包内容了 总结 下载go压缩包 wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz 初始化工程目录hello go mod init github.com/alberts/go/hello，包名通常是支持https访问的网络地址 初始化工作空间 go work init base hello，base 和 hello 都是包含go.mod文件的go工程 安装依赖包 go get -v golang.org/x/tools/gopls 安装依赖包 github.com/stamblerre/gocode 安装依赖包 github.com/uudashr/gopkgs/v2/cmd/gopkgs 安装依赖包 github.com/ramya-rao-a/go-outline ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 放下助人情节，尊重他人命运~]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>golang</tag>
+        <tag>vscode</tag>
+        <tag>proxy</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[推荐一款通过ssh连接linux服务的开源工具WindTerm]]></title>
     <url>%2Fblog%2F2024%2F01%2F14%2F%E6%8E%A8%E8%8D%90%E4%B8%80%E6%AC%BE%E9%80%9A%E8%BF%87ssh%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7WindTerm%2F</url>
     <content type="text"><![CDATA[前言工作一入门便是游戏服务器开发，所以常常有连接Linux服务器的需求，之前用的最多的是Xshell，最近这个软件个人版只能免费使用一个月了，超过时间会提示更新无法正常使用，工作当中用的最多的是SecureCRT，不过这个软件是收费的，公司买了授权，可以正常用，但是在家时就不行了，最近我找到了WindTerm这个软件，用起来还不错，记录一下。 WindTerm介绍 A Quicker and better SSH/Telnet/Serial/Shell/Sftp client for DevOps. WindTerm一款使用使用C语言开发的跨平台SSH客户端WindTerm，完全免费开源，软件包只有20多M，性能很好，Windows、Linux、Mac均提供程序包下载，免按照，下载解压即可使用，官方地址为 https://github.com/kingToolbox/WindTerm/releases，最新版本为2.6.0 最近github访问又变慢了，如果你下载不下来，可以从这个平台地址下载CSDN下载-WindTerm_2.6.0_Prerelease_7_Windows_Portable_x86_64.zip，我已经设置成免积分了，方便有需要的人直接取用，简单罗列下它的功能。 多平台支持Linux，Mac，Win，免安装解压即可使用 实施了 SSH v2、Telnet、Raw Tcp、串行、Shell 协议 会话认证时支持 SSH 自动执行 支持 SSH ProxyCommand 或 ProxyJump 支持SSH代理转发。 支持使用密码、公钥、键盘交互、gssapi-with-mic 的 SSH 自动登录 支持直接/本地端口转发、反向/远程端口转发和动态端口转发 支持 XModem、YModem 和 ZModem，可以使用rz、sz上传和下载文件 集成sftp、scp客户端，支持下载、上传、删除、重命名、新建文件/目录 集成本地文件管理器，支持移动到、复制到、复制自、删除、重命名、新建文件/目录 支持 Windows Cmd、PowerShell 和 Cmd、PowerShell 作为管理员 支持Linux bash、zsh、powershell core 支持 MacOS bash、zsh、powershell core 有较好的操作界面 WindTerm使用下载WindTerm_2.6.0_Prerelease_7_Windows_Portable_x86_64.zip 后解压，双击WindTerm.exe即可打开软件，会弹出下面的界面，提示存储配置文件的地方，我就选择放到应用程序目录了 直接通过【会话】-&gt;【新建会话】便可以建立连接Linux服务器的通道，这与之前用的软件都大同小异，基本没有差别，输入主机地址点击【连接】，后续再输入密码就可以开始连接了 如果是第一个使用的时候，会弹出下面这个界面，让自定义一个主密码，其实就是这个软件的使用密码，后续锁屏或者更新会话信息时会用到。 因为我是自己在家使用，我就不设置主密码了，直接点击OK完成，后面会让输入Linux账户和密码，到这一步相信大家都会用了。 主密码和锁屏这个问题我也是查了一些资料才解决的，因为我没有输入主密码，所以每次锁屏时我只要回车就可以了，如果想修改锁屏时间，在【会话】-&gt;【首选项】-&gt;【设置】中可以找到 也可以直接通过配置文件修改，找到刚启动软件时你选择的目录 D:\app\WindTerm_2.6.0\.wind\profiles\default.v10，直接修改配置文件内容，通过字段名也很清楚要改哪些值 12345678&#123; "application.fingerprint" : "c5QR13M1iEkNPGlVNjDBWadi1uS0PiXR4Y+79cp09PAXr7G6WQxg/7WFj9RJ9dIsKKOWqm5Xq2N6w5Jx4v2mTw==", "application.language" : "zh-CN", "application.lockScreenTimeout" : 1, "application.masterPassword" : false, "terminal.loginWizard.defaultAuthType" : "Account", "terminal.reimportShellSessions" : 2&#125; application.lockScreenTimeout：是控制锁屏时间的 application.masterPassword：是代表是否有主密码的 整个页面布局和配色还是挺漂亮的，不喜欢可以自己调整的哈 总结 WindTerm是一款可以通过ssh连接Linux服务器的客户端工具 WindTerm免费开源，支持Windows、Linux、Mac系统，无需安装，解压即可使用 WindTerm集成sftp、scp客户端，支持下载、上传、删除、重命名、新建文件/目录 WindTerm默认需要指定一个主密码，相当于验证使用者身份的功能，当然也可以为空 WindTerm的锁屏时间可以通过首选项菜单设置，也可通过配置修改 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 人生就是一本账，欠下的东西总要还的，茫茫人生路之后，你是想在历史长河中留下一笔，还是“隐藏”的毫无痕迹呢？]]></content>
@@ -68,8 +82,8 @@
         <category>Nginx</category>
       </categories>
       <tags>
-        <tag>Nginx</tag>
         <tag>网络协议</tag>
+        <tag>Nginx</tag>
         <tag>websockify</tag>
         <tag>websocket</tag>
         <tag>tcp/ip</tag>
@@ -100,11 +114,11 @@
       </categories>
       <tags>
         <tag>Network</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
         <tag>openssl</tag>
         <tag>ssh-keygen</tag>
         <tag>pem</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -550,8 +564,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
+        <tag>find</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -892,10 +906,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1051,9 +1065,9 @@
       <tags>
         <tag>find</tag>
         <tag>查找</tag>
-        <tag>grep</tag>
         <tag>locate</tag>
         <tag>which</tag>
+        <tag>grep</tag>
       </tags>
   </entry>
   <entry>
@@ -1517,9 +1531,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1632,10 +1646,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1868,8 +1882,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>sed</tag>
+        <tag>文件</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1947,9 +1961,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -2069,10 +2083,10 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>source</tag>
         <tag>gdb</tag>
         <tag>dir</tag>
         <tag>path</tag>
+        <tag>source</tag>
       </tags>
   </entry>
   <entry>
@@ -2096,9 +2110,9 @@
         <category>加密与认证</category>
       </categories>
       <tags>
+        <tag>HTTPS</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>HTTPS</tag>
         <tag>根证书</tag>
         <tag>中间人</tag>
       </tags>
@@ -2138,10 +2152,10 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>加密</tag>
+        <tag>HTTPS</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>HTTPS</tag>
+        <tag>加密</tag>
         <tag>证书</tag>
       </tags>
   </entry>
@@ -2153,11 +2167,11 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>加密</tag>
-        <tag>认证</tag>
-        <tag>非对称加密</tag>
         <tag>公钥</tag>
         <tag>私钥</tag>
+        <tag>认证</tag>
+        <tag>非对称加密</tag>
+        <tag>加密</tag>
       </tags>
   </entry>
   <entry>
@@ -2168,9 +2182,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
+        <tag>reset</tag>
         <tag>HEAD</tag>
       </tags>
   </entry>
@@ -2213,8 +2227,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>汇编</tag>
         <tag>windows</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -2485,8 +2499,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>ERROR</tag>
         <tag>source</tag>
+        <tag>ERROR</tag>
         <tag>sql</tag>
       </tags>
   </entry>
@@ -2970,8 +2984,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
+        <tag>find</tag>
         <tag>查找</tag>
         <tag>grep</tag>
       </tags>

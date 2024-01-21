@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Go,golang,vscode,proxy," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇《Go环境配置时遇到的GOPATH路径以及包管理问题》，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必">
+<meta name="keywords" content="Go,golang,vscode,proxy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个golang小白使用vscode搭建Ununtu20.04下的go开发环境">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇《Go环境配置时遇到的GOPATH路径以及包管理问题》，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-01-21T13:01:35.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个golang小白使用vscode搭建Ununtu20.04下的go开发环境">
+<meta name="twitter:description" content="前言先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇《Go环境配置时遇到的GOPATH路径以及包管理问题》，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/"/>
+
+
+
+
+
+  <title>一个golang小白使用vscode搭建Ununtu20.04下的go开发环境 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个golang小白使用vscode搭建Ununtu20.04下的go开发环境</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-01-21T13:13:55+08:00">
+                2024-01-21
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-01-21T21:01:35+08:00">
+                2024-01-21
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/" class="leancloud_visitors" data-flag-title="一个golang小白使用vscode搭建Ununtu20.04下的go开发环境">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,405(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">15(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇<a href="https://blog.csdn.net/albertsh/article/details/113907051" target="_blank" rel="noopener">《Go环境配置时遇到的GOPATH路径以及包管理问题》</a>，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必放到 <code>GOPATH</code> 路径中了，通过go.mod文件来标记并跟踪每个软件包的版本，灵活度大大提高，从此 <code>GOPATH</code> 概念逐渐淡化，在1.18版本新引入一个新功能<code>go.work</code>，它被设计为解决在同一工作空间中处理多个模块的问题，使得go工程的模块管理更加方便。</p>
+<a id="more"></a>
+<p>简单描述下我的开发环境，<code>Windows10</code> + <code>VSCode1.58.0</code> + <code>WLS1.0 - Ubuntu20.04</code>，平时工作都是在Ubuntu上，习惯了在Linux上的开发，所以即使是自己家的电脑也安装了子系统，就当成<code>Ubuntu</code> 来用就行了，Vscode安装在Windows上，直接连接到子系统上进行代码编写，以上是前提，本文的重点是在Ubuntu20.04系统上安装go的编译和运行环境。</p>
+<h1 id="搭建go环境"><a href="#搭建go环境" class="headerlink" title="搭建go环境"></a>搭建go环境</h1><p>我选择的go版本是1.19，已经支持 <code>go.sum</code> 和 <code>go.work</code>，同时也为了和工作开发保持一致，没必要用太新的特性，现在的go包管理已经不想早期的Java，不再依赖 <code>GOPATH</code>，和 Python3.x 更像了，只管下载包然后在各自的工程目录下使用就行了，必要时需要指定使用库的版本。</p>
+<h2 id="下载go安装包"><a href="#下载go安装包" class="headerlink" title="下载go安装包"></a>下载go安装包</h2><p>go语言的官网是 <a href="https://golang.google.cn/dl/" target="_blank" rel="noopener">https://golang.google.cn/dl/</a>，下载1.19版本的Linux包<a href="https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz" target="_blank" rel="noopener">go1.19.linux-amd64.tar.gz</a>，这个网址通常下载很慢，可以改为go语言中文网<a href="https://studygolang.com/dl" target="_blank" rel="noopener">https://studygolang.com/dl</a>来下载1.19版本<a href="https://studygolang.com/dl/golang/go1.19.linux-amd64.tar.gz" target="_blank" rel="noopener">go1.19.linux-amd64.tar.gz</a></p>
+<p>可以通过浏览器下载拷贝到指定位置，也可以通过<code>wget</code>命令下载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:~$ wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz</span><br><span class="line">--2024-01-21 17:22:11--  https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz</span><br><span class="line">Resolving golang.google.cn (golang.google.cn)... 203.208.50.34</span><br><span class="line">Connecting to golang.google.cn (golang.google.cn)|203.208.50.34|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 302 Found</span><br><span class="line">Location: https://dl.google.com/go/go1.19.linux-amd64.tar.gz [following]</span><br><span class="line">--2024-01-21 17:22:12--  https://dl.google.com/go/go1.19.linux-amd64.tar.gz</span><br><span class="line">Resolving dl.google.com (dl.google.com)... 220.181.174.161, 2401:3800:4001:807::1001</span><br><span class="line">Connecting to dl.google.com (dl.google.com)|220.181.174.161|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: 148796421 (142M) [application/x-gzip]</span><br><span class="line">Saving to: ‘go1.19.linux-amd64.tar.gz’</span><br><span class="line"></span><br><span class="line">go1.19.linux-amd64.tar.gz      100%[==============================&gt;] 141.90M  3.62MB/s    <span class="keyword">in</span> 31s</span><br><span class="line"></span><br><span class="line">2024-01-21 17:22:43 (4.54 MB/s) - ‘go1.19.linux-amd64.tar.gz’ saved [148796421/148796421]</span><br></pre></td></tr></table></figure>
+<h2 id="解压go压缩包完成安装"><a href="#解压go压缩包完成安装" class="headerlink" title="解压go压缩包完成安装"></a>解压go压缩包完成安装</h2><p>go的运行环境直接解压拷贝到指定位置就可以了，我把go解压安装到了 <code>/usr/local/go</code> 目录，解压之前也清理掉老的目录，如果之前没安装过，<code>rm</code>这条命令可以不使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line">rm -rf /usr/<span class="built_in">local</span>/go</span><br><span class="line">tar -C /usr/<span class="built_in">local</span> -xzf go1.19.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><p>这一步有点类似Windows中的修改注册表，我安装了新的程序，需要通知系统当使用 <code>go</code> 命令时需要去哪个目录下寻找可执行程序，具体操作如下</p>
+<ul>
+<li><p>使用vim编辑.bashrc文件</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:~$ vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>到文件的末尾添加以下代码</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:~$ <span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/usr/<span class="built_in">local</span>/go/bin</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新加载配置文件</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:~$ <span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看版本是否安装成功</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:~$ go version</span><br><span class="line">go version go1.19 linux/amd64</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>查看版本显示出 <code>go1.19 linux/amd64</code>, 至此go语言的基础开发环境就配置好了</p>
+<h2 id="编写一个helloword程序"><a href="#编写一个helloword程序" class="headerlink" title="编写一个helloword程序"></a>编写一个helloword程序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g$ mkdir wlsworkspace</span><br><span class="line">alberts@home-pc:/mnt/g$ <span class="built_in">cd</span> wlsworkspace</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace$ mkdir hello</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace$ <span class="built_in">cd</span> hello/</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go mod init github.com/alberts/go/hello</span><br><span class="line">go: creating new go.mod: module github.com/alberts/go/hello</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ touch hello.go</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ ls</span><br><span class="line">go.mod  hello.go</span><br></pre></td></tr></table></figure>
+<p>打开 <code>hello.go</code> 文件编写以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Hello,World!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存文件后使用 <code>go run</code> 命令运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go run hello.go</span><br><span class="line">Hello,World!</span><br></pre></td></tr></table></figure>
+<h1 id="安装VSCode插件"><a href="#安装VSCode插件" class="headerlink" title="安装VSCode插件"></a>安装VSCode插件</h1><h2 id="安装智能提示插件"><a href="#安装智能提示插件" class="headerlink" title="安装智能提示插件"></a>安装智能提示插件</h2><p>为了编写go代码方便，可以安装这个名为<code>Go</code>的插件，这个插件不是必须安装的，但是你在写go代码时VSCode会自动提示你安装这个插件，为了实现Go语法只能提醒，我们可以直接点击提示安装，或者在插件市场里搜索安装</p>
+<p>go插件</p>
+<p>插件安装完成后会提示下面的报错</p>
+<blockquote>
+<p>The “gopls” command is not available. Run “go get -v golang.org/x/tools/gopls” to install.</p>
+</blockquote>
+<p>说明安装这个插件需要依赖 <code>golang.org/x/tools/gopls</code> 这个包，我们可以根据提示安装</p>
+<h2 id="安装go依赖包"><a href="#安装go依赖包" class="headerlink" title="安装go依赖包"></a>安装go依赖包</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/gopls</span><br><span class="line">go: module golang.org/x/tools/gopls: Get <span class="string">"https://proxy.golang.org/golang.org/x/tools/gopls/@v/list"</span>: dial tcp 142.251.42.241:443: connect: connection refused</span><br></pre></td></tr></table></figure>
+<p>直接安装通常会因无法下载而失败，需要修改代理来改变下载地址</p>
+<h2 id="修改代理并重新安装依赖包"><a href="#修改代理并重新安装依赖包" class="headerlink" title="修改代理并重新安装依赖包"></a>修改代理并重新安装依赖包</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GO111MODULE=on</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOPROXY=https://goproxy.cn,direct</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOSUMDB=<span class="string">"sum.golang.org"</span></span><br></pre></td></tr></table></figure>
+<p>安装依赖包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/gopls</span><br><span class="line">go: downloading golang.org/x/tools v0.17.0</span><br><span class="line">go: downloading golang.org/x/tools/gopls v0.14.2</span><br><span class="line">go: downloading golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fd</span><br><span class="line">go: downloading golang.org/x/telemetry v0.0.0-20231114163143-69313e640400</span><br><span class="line">go: downloading github.com/sergi/go-diff v1.1.0</span><br><span class="line">go: downloading honnef.co/go/tools v0.4.5</span><br><span class="line">go: downloading mvdan.cc/gofumpt v0.4.0</span><br><span class="line">go: downloading mvdan.cc/xurls/v2 v2.4.0</span><br><span class="line">go: downloading golang.org/x/mod v0.14.0</span><br><span class="line">go: downloading golang.org/x/sync v0.4.0</span><br><span class="line">go: downloading golang.org/x/text v0.13.0</span><br><span class="line">go: downloading golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338</span><br><span class="line">go: downloading golang.org/x/sys v0.14.0</span><br><span class="line">go: downloading golang.org/x/vuln v1.0.1</span><br><span class="line">go: downloading github.com/google/go-cmp v0.5.9</span><br><span class="line">go: downloading github.com/BurntSushi/toml v1.2.1</span><br><span class="line">go: added github.com/BurntSushi/toml v1.2.1</span><br><span class="line">go: added github.com/google/go-cmp v0.5.9</span><br><span class="line">go: added github.com/sergi/go-diff v1.1.0</span><br><span class="line">go: added golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338</span><br><span class="line">go: added golang.org/x/mod v0.14.0</span><br><span class="line">go: added golang.org/x/sync v0.4.0</span><br><span class="line">go: added golang.org/x/sys v0.14.0</span><br><span class="line">go: added golang.org/x/telemetry v0.0.0-20231114163143-69313e640400</span><br><span class="line">go: added golang.org/x/text v0.13.0</span><br><span class="line">go: added golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fd</span><br><span class="line">go: added golang.org/x/tools/gopls v0.14.2</span><br><span class="line">go: added golang.org/x/vuln v1.0.1</span><br><span class="line">go: added honnef.co/go/tools v0.4.5</span><br><span class="line">go: added mvdan.cc/gofumpt v0.4.0</span><br><span class="line">go: added mvdan.cc/xurls/v2 v2.4.0</span><br></pre></td></tr></table></figure>
+<p>这次安装成功了，这些依赖包默认安装到了 <code>~/go/pkg</code>目录下，使用时直接在go文件中引用就行了 <code>import golang.org/x/sys</code></p>
+<p>以上这些包是Go语言的依赖管理工具，它们的作用如下：</p>
+<ul>
+<li>golang.org/x/tools: 提供了一系列用于开发Go语言的工具，如gopls等</li>
+<li>golang.org/x/tools/gopls: 是一个基于Go语言的代码补全和导航工具，它可以帮助开发者更高效地编写和调试Go代码</li>
+<li>golang.org/x/telemetry: 提供了一套用于收集和分析应用程序性能数据的库</li>
+<li>github.com/sergi/go-diff: 是一个用于比较两个Go源代码文件差异的工具</li>
+<li>honnef.co/go/tools: 提供了一些用于处理Go源代码的工具，如goimports（自动导入缺失的包）等</li>
+<li>mvdan.cc/gofumpt: 是一个用于格式化Go源代码的工具，它可以自动调整代码格式以符合Go语言的最佳实践</li>
+<li>mvdan.cc/xurls/v2: 是一个用于解析URL的库，它可以将URL分解为各个组成部分，方便开发者处理</li>
+<li>golang.org/x/mod: 是一个用于管理Go模块的库，它可以帮助你更好地组织和管理项目的依赖关系</li>
+<li>golang.org/x/sync: 提供了一组同步原语，如互斥锁、条件变量等，用于实现多线程编程中的同步机制</li>
+<li>golang.org/x/text: 提供了一个用于处理Unicode文本的库，它可以帮助你更方便地处理和操作文本数据</li>
+<li>golang.org/x/exp/typeparams: 提供了一个用于处理类型参数的库，它可以帮助你更方便地处理泛型编程中的类型参数问题</li>
+<li>golang.org/x/sys: 提供了一个用于访问操作系统功能的库，它可以帮助你更方便地处理操作系统相关的任务</li>
+<li>golang.org/x/vuln: 提供了一个用于管理已知安全漏洞的库，它可以帮助你更容易地识别和修复项目中的安全漏洞</li>
+<li>github.com/stamblerre/gocode: 提供Go语言的代码自动补全功能，用于IDEs和编辑器</li>
+<li>github.com/uudashr/gopkgs/v2/cmd/gopkgs: 命令行工具，帮助发现和使用Go语言软件包</li>
+<li>github.com/ramya-rao-a/go-outline: VSCode插件，为Go源代码文件生成结构大纲以便于导航</li>
+</ul>
+<p>总结一下需要安装的依赖包</p>
+<blockquote>
+<p>go get -v golang.org/x/tools/gopls<br>go get -v github.com/stamblerre/gocode<br>go get -v github.com/uudashr/gopkgs/v2/cmd/gopkgs<br>go get -v github.com/ramya-rao-a/go-outline</p>
+</blockquote>
+<p>根据VSCode提示安装后续的Tools，得到的控制台输出信息如下</p>
+<blockquote>
+<p>Tools environment: GOPATH=/home/alberts/go<br>Installing 6 tools at /home/alberts/go/bin in module mode.<br> gopkgs<br> go-outline<br> dlv<br> dlv-dap<br> staticcheck<br> gopls</p>
+<p>Installing github.com/uudashr/gopkgs/v2/cmd/gopkgs (gopkgs) SUCCEEDED<br>Installing github.com/ramya-rao-a/go-outline (go-outline) SUCCEEDED<br>Installing github.com/go-delve/delve/cmd/dlv (dlv) SUCCEEDED<br>Installing github.com/go-delve/delve/cmd/dlv@master (/home/alberts/go/bin/dlv-dap) SUCCEEDED<br>Installing honnef.co/go/tools/cmd/staticcheck (staticcheck) SUCCEEDED<br>Installing golang.org/x/tools/gopls (gopls) SUCCEEDED</p>
+<p>All tools successfully installed. You are ready to Go :).</p>
+</blockquote>
+<h1 id="go-mod-和-go-work"><a href="#go-mod-和-go-work" class="headerlink" title="go.mod 和 go.work"></a>go.mod 和 go.work</h1><h2 id="go-mod"><a href="#go-mod" class="headerlink" title="go.mod"></a>go.mod</h2><p><strong>Go语言从1.11版本开始引入了Go Modules，这个版本之后不再需要将项目放到GOPATH中</strong>。</p>
+<p>Go Modules是Go语言的依赖管理工具，它改变了之前必须使用GOPATH来管理依赖的模式。在Go 1.11及之后的版本中，通过go.mod文件来标记并跟踪每个软件包的版本，这意味着开发者可以在任何地方创建项目，而不必遵循GOPATH目录结构。</p>
+<p>此外，Go团队还增加了一个环境变量<code>GO111MODULE</code>来控制模块支持的启用和禁用。这个环境变量的命名中的”111”象征着它是在Go 1.11版本中引入的。</p>
+<p>总的来说，Go语言自1.11版本起，通过引入Go Modules，使得开发者不再受限于GOPATH，可以更加灵活地管理项目和依赖。这一变化被广泛认为是Go语言发展中的一个重大改进。</p>
+<h2 id="go-work"><a href="#go-work" class="headerlink" title="go.work"></a>go.work</h2><p>“go.work” 是Go 1.18版本新引入的一个功能，它被设计为解决在同一工作空间中处理多个模块的问题。在之前的版本中，开发者常常会遇到路径问题、版本冲突问题等挑战。为了应对这些情况，他们可能需要对每个模块的go.mod文件进行手动修改，过程繁琐且容易出错。</p>
+<p>“go.work”文件的主要作用就是来解决这些问题。它是一个特殊的文件，其中包含了use和replace指令，这些指令会覆盖工作区目录下的每个Go Module的go.mod文件中的内容。因此，开发者无需再对每个Go Module的go.mod文件进行手动修改，极大地简化了操作流程并提高了效率。</p>
+<p>此外，”go.work”文件的优先级高于go.mod文件中的定义。也就是说，如果在go.work和go.mod中同时指定了不同的代码仓库路径，那么go.work中的设置将会被优先采用。这一特性进一步加强了”go.work”文件在依赖管理中的重要性。</p>
+<h2 id="小试一下go-work"><a href="#小试一下go-work" class="headerlink" title="小试一下go.work"></a>小试一下go.work</h2><p>当前工作目录下有 <code>base</code> 和 <code>hello</code> 两个包含go.mod的工程，使用 <code>go work init</code> 命令可以初始化一个工作空间</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alberts@home-pc:/mnt/g/wlsworkspace$ ls</span><br><span class="line">base  hello</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace$ go work init base hello</span><br><span class="line">alberts@home-pc:/mnt/g/wlsworkspace$ cat go.work</span><br><span class="line">go 1.19</span><br><span class="line"></span><br><span class="line">use (</span><br><span class="line">        ./base</span><br><span class="line">        ./hello</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>初始化之后工程之间就可以相互引用彼此对外的包内容了</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>下载go压缩包 <code>wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz</code></li>
+<li>初始化工程目录hello <code>go mod init github.com/alberts/go/hello</code>，包名通常是支持https访问的网络地址</li>
+<li>初始化工作空间 <code>go work init base hello</code>，base 和 hello 都是包含go.mod文件的go工程</li>
+<li>安装依赖包 <code>go get -v golang.org/x/tools/gopls</code></li>
+<li>安装依赖包 <code>github.com/stamblerre/gocode</code></li>
+<li>安装依赖包 <code>github.com/uudashr/gopkgs/v2/cmd/gopkgs</code></li>
+<li>安装依赖包 <code>github.com/ramya-rao-a/go-outline</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/135586502" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>放下助人情节，尊重他人命运~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/" title="一个golang小白使用vscode搭建Ununtu20.04下的go开发环境">http://AlbertGithubHome.github.io/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+          
+            <a href="/blog/tags/golang/" rel="tag"><i class="fa fa-tag"></i> golang</a>
+          
+            <a href="/blog/tags/vscode/" rel="tag"><i class="fa fa-tag"></i> vscode</a>
+          
+            <a href="/blog/tags/proxy/" rel="tag"><i class="fa fa-tag"></i> proxy</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2024/01/14/推荐一款通过ssh连接linux服务的开源工具WindTerm/" rel="next" title="推荐一款通过ssh连接linux服务的开源工具WindTerm">
+                <i class="fa fa-chevron-left"></i> 推荐一款通过ssh连接linux服务的开源工具WindTerm
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">237</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">570</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搭建go环境"><span class="nav-number">2.</span> <span class="nav-text">搭建go环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载go安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载go安装包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解压go压缩包完成安装"><span class="nav-number">2.2.</span> <span class="nav-text">解压go压缩包完成安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.3.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写一个helloword程序"><span class="nav-number">2.4.</span> <span class="nav-text">编写一个helloword程序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装VSCode插件"><span class="nav-number">3.</span> <span class="nav-text">安装VSCode插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装智能提示插件"><span class="nav-number">3.1.</span> <span class="nav-text">安装智能提示插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装go依赖包"><span class="nav-number">3.2.</span> <span class="nav-text">安装go依赖包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改代理并重新安装依赖包"><span class="nav-number">3.3.</span> <span class="nav-text">修改代理并重新安装依赖包</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#go-mod-和-go-work"><span class="nav-number">4.</span> <span class="nav-text">go.mod 和 go.work</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#go-mod"><span class="nav-number">4.1.</span> <span class="nav-text">go.mod</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-work"><span class="nav-number">4.2.</span> <span class="nav-text">go.work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小试一下go-work"><span class="nav-number">4.3.</span> <span class="nav-text">小试一下go.work</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
