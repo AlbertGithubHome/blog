@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,Tools,nslookup," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言这个命令出现在与运维同学沟通过程中，在此之前要是问我一个域名对应的服务器是IP地址是什么，我肯定优先想到的是 ping 这个命令，这个命令确实可以在回复的信息中看到IP地址，但是不全面，有时一个域名对应不止一个IP地址，这时就要用到 nslookup 命令了，这也是在沟通中学到的新知识点。">
+<meta name="keywords" content="linux,Tools,nslookup">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用nslookup命令查询域名系统的信息">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/01/29/使用nslookup命令查询域名系统的信息/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言这个命令出现在与运维同学沟通过程中，在此之前要是问我一个域名对应的服务器是IP地址是什么，我肯定优先想到的是 ping 这个命令，这个命令确实可以在回复的信息中看到IP地址，但是不全面，有时一个域名对应不止一个IP地址，这时就要用到 nslookup 命令了，这也是在沟通中学到的新知识点。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-02-19T15:22:29.280Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用nslookup命令查询域名系统的信息">
+<meta name="twitter:description" content="前言这个命令出现在与运维同学沟通过程中，在此之前要是问我一个域名对应的服务器是IP地址是什么，我肯定优先想到的是 ping 这个命令，这个命令确实可以在回复的信息中看到IP地址，但是不全面，有时一个域名对应不止一个IP地址，这时就要用到 nslookup 命令了，这也是在沟通中学到的新知识点。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2024/01/29/使用nslookup命令查询域名系统的信息/"/>
+
+
+
+
+
+  <title>使用nslookup命令查询域名系统的信息 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/01/29/使用nslookup命令查询域名系统的信息/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用nslookup命令查询域名系统的信息</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-01-29T22:11:51+08:00">
+                2024-01-29
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-02-19T23:22:29+08:00">
+                2024-02-19
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Network/" itemprop="url" rel="index">
+                    <span itemprop="name">Network</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/01/29/使用nslookup命令查询域名系统的信息/" class="leancloud_visitors" data-flag-title="使用nslookup命令查询域名系统的信息">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,527(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">12(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个命令出现在与运维同学沟通过程中，在此之前要是问我一个域名对应的服务器是IP地址是什么，我肯定优先想到的是 <code>ping</code> 这个命令，这个命令确实可以在回复的信息中看到IP地址，但是不全面，有时一个域名对应不止一个IP地址，这时就要用到 nslookup 命令了，这也是在沟通中学到的新知识点。</p>
+<a id="more"></a>
+<h1 id="常规使用"><a href="#常规使用" class="headerlink" title="常规使用"></a>常规使用</h1><p>学这个命令就是拿来用的，最常见的用法就是 <code>nslookup 域名</code> 来查询域名对应的IP，并且这个用法在Windows(cmd)、Mac、Linux下都是通用的，算是一个不错的跨平台命令，对比一下 <code>ping</code> 看看有什么区别：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Administrator&gt;ping a1.easemob.com</span><br><span class="line"></span><br><span class="line">正在 Ping a1-v2.easemob.com.x.easeslb.com [47.93.162.59] 具有 32 字节的数据:</span><br><span class="line">来自 47.93.162.59 的回复: 字节=32 时间=7ms TTL=88</span><br><span class="line">来自 47.93.162.59 的回复: 字节=32 时间=7ms TTL=88</span><br><span class="line">来自 47.93.162.59 的回复: 字节=32 时间=6ms TTL=88</span><br><span class="line">来自 47.93.162.59 的回复: 字节=32 时间=6ms TTL=88</span><br><span class="line"></span><br><span class="line">47.93.162.59 的 Ping 统计信息:</span><br><span class="line">    数据包: 已发送 = 4，已接收 = 4，丢失 = 0 (0% 丢失)，</span><br><span class="line">往返行程的估计时间(以毫秒为单位):</span><br><span class="line">    最短 = 6ms，最长 = 7ms，平均 = 6ms</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Administrator&gt;nslookup a1.easemob.com</span><br><span class="line">服务器:  UnKnown</span><br><span class="line">Address:  10.20.30.40</span><br><span class="line"></span><br><span class="line">名称:    a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">Addresses:  2408:4000:200::c5</span><br><span class="line">          2408:4000:200::17</span><br><span class="line">          47.93.162.59</span><br><span class="line">          39.97.9.52</span><br><span class="line">Aliases:  a1.easemob.com</span><br></pre></td></tr></table></figure>
+<p>以上都是在cmd下执行的，如果在PowerShell中有一个名叫 <code>Resolve-DnsName</code> 的替代命令，执行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\Administrator&gt; Resolve-DnsName a1.easemob.com</span><br><span class="line"></span><br><span class="line">Name                           Type   TTL   Section    NameHost</span><br><span class="line">----                           ----   ---   -------    --------</span><br><span class="line">a1.easemob.com                 CNAME  0     Answer     a1-v2.easemob.com.x.easeslb.com</span><br><span class="line"></span><br><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : AAAA</span><br><span class="line">TTL        : 0</span><br><span class="line">IP6Address : 2408:4000:200::17</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : AAAA</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP6Address : 2408:4000:200::c5</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">QueryType  : A</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP4Address : 47.93.162.59</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : A</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP4Address : 39.97.9.213</span><br></pre></td></tr></table></figure>
+<p>对于上述 <code>Resolve-DnsName</code> 命令的输出的结果解释如下：</p>
+<ol>
+<li><p><strong>CNAME 记录：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a1.easemob.com                 CNAME  0     Answer     a1-v2.easemob.com.x.easeslb.com</span><br></pre></td></tr></table></figure>
+<p>这一行表示 <code>a1.easemob.com</code> 是一个别名（CNAME）记录，指向了 <code>a1-v2.easemob.com.x.easeslb.com</code>。</p>
+</li>
+<li><p><strong>AAAA 记录（IPv6 地址）：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : AAAA</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP6Address : 2408:4000:200::17</span><br></pre></td></tr></table></figure>
+<p>这一行表示 <code>a1-v2.easemob.com.x.easeslb.com</code> 对应的 IPv6 地址是 <code>2408:4000:200::17</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : AAAA</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP6Address : 2408:4000:200::c5</span><br></pre></td></tr></table></figure>
+<p>这一行表示 <code>a1-v2.easemob.com.x.easeslb.com</code> 对应的另一个 IPv6 地址是 <code>2408:4000:200::c5</code>。</p>
+</li>
+<li><p><strong>A 记录（IPv4 地址）：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : A</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP4Address : 47.93.162.59</span><br></pre></td></tr></table></figure>
+<p>这一行表示 <code>a1-v2.easemob.com.x.easeslb.com</code> 对应的 IPv4 地址是 <code>47.93.162.59</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Name       : a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">QueryType  : A</span><br><span class="line">TTL        : 0</span><br><span class="line">Section    : Answer</span><br><span class="line">IP4Address : 39.97.9.213</span><br></pre></td></tr></table></figure>
+<p>这一行表示 <code>a1-v2.easemob.com.x.easeslb.com</code> 对应的另一个 IPv4 地址是 <code>39.97.9.213</code>。</p>
+</li>
+</ol>
+<p>综上所述，查询结果显示了域名 <code>a1.easemob.com</code> 的别名记录（CNAME）以及对应的IPv6和IPv4地址。IPv6地址有两个，分别是 <code>2408:4000:200::17</code> 和 <code>2408:4000:200::c5</code>，而IPv4地址有两个，分别是 <code>47.93.162.59</code> 和 <code>39.97.9.213</code>。</p>
+<h1 id="再从linux环境下学点不一样的"><a href="#再从linux环境下学点不一样的" class="headerlink" title="再从linux环境下学点不一样的"></a>再从linux环境下学点不一样的</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup a1.easemob.com</span><br><span class="line">Server:         127.0.0.53</span><br><span class="line">Address:        127.0.0.53<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">a1.easemob.com  canonical name = a1-v2.easemob.com.x.easeslb.com.</span><br><span class="line">Name:   a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">Address: 39.97.9.213</span><br><span class="line">Name:   a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">Address: 47.93.162.59</span><br><span class="line">Name:   a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">Address: 2408:4000:200::17</span><br><span class="line">Name:   a1-v2.easemob.com.x.easeslb.com</span><br><span class="line">Address: 2408:4000:200::c5</span><br></pre></td></tr></table></figure>
+<p>在linux环境下使用基础命令，还在cmd环境下的输出结果类似，但是比<code>Resolve-DnsName</code>命令输出的结果要简陋许多，但是可以通过添加参数来扩展命令。</p>
+<h2 id="type选项"><a href="#type选项" class="headerlink" title="type选项"></a>type选项</h2><p><code>nslookup</code> 命令中的 <code>type</code> 参数用于指定查询的记录类型，即你想要获取的特定 DNS 记录的类型。以下是一些常见的 <code>type</code> 参数及其解释：</p>
+<ul>
+<li><p><strong>A (Address Record):</strong><code>nslookup example.com type=A</code> 查询域名 <code>example.com</code> 的 IPv4 地址</p>
+</li>
+<li><p><strong>AAAA (IPv6 Address Record):</strong><code>nslookup example.com type=AAAA</code> 查询域名 <code>example.com</code> 的 IPv6 地址</p>
+</li>
+<li><p><strong>CNAME (Canonical Name Record):</strong><code>nslookup example.com type=CNAME</code> 查询域名 <code>example.com</code> 的别名记录</p>
+</li>
+<li><p><strong>MX (Mail Exchange Record):</strong><code>nslookup example.com type=MX</code> 查询域名 <code>example.com</code> 的邮件交换记录</p>
+</li>
+<li><p><strong>NS (Name Server Record):</strong><code>nslookup example.com type=NS</code> 查询域名 <code>example.com</code> 的域名服务器记录</p>
+</li>
+<li><p><strong>PTR (Pointer Record):</strong><code>nslookup 192.168.1.1 type=PTR</code> 查询 IP 地址 <code>192.168.1.1</code> 对应的域名</p>
+</li>
+<li><p><strong>SOA (Start of Authority Record):</strong><code>nslookup example.com type=SOA</code> 查询域名 <code>example.com</code> 的权威区域起始记录</p>
+</li>
+<li><p><strong>TXT (Text Record):</strong><code>nslookup example.com type=TXT</code> 查询域名 <code>example.com</code> 的文本记录</p>
+</li>
+<li><p><strong>SRV (Service Record):</strong><code>nslookup _ldap._tcp.example.com type=SRV</code> 查询服务记录，例如 LDAP 服务</p>
+</li>
+<li><p><strong>ANY (Any Record):</strong><code>nslookup example.com type=ANY</code>   查询域名 <code>example.com</code> 的所有记录类型</p>
+</li>
+</ul>
+<p>这些是常见的 <code>type</code> 参数，可以根据需要选择合适的类型来获取特定类型的 DNS 记录信息。在命令中，<code>type</code> 参数通常是可选的，如果不指定，默认为 <code>A</code> 记录</p>
+<h2 id="retry选项"><a href="#retry选项" class="headerlink" title="retry选项"></a>retry选项</h2><p>该参数用于设置在没有收到响应时的重试次数。如果发送的 DNS 查询请求没有得到响应，<code>nslookup</code> 将会尝试重新发送请求，次数由 <code>-retry</code> 指定</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup -retry=3 example.com</span><br></pre></td></tr></table></figure>
+<p>  这个示例中，<code>-retry=3</code> 表示设置重试次数为3次。如果第一次查询没有得到响应，<code>nslookup</code> 将尝试再次发送查询请求，最多重试3次</p>
+<h2 id="timeout选项"><a href="#timeout选项" class="headerlink" title="timeout选项"></a>timeout选项</h2><p>该参数用于设置等待响应的超时时间，以秒为单位。如果在指定的超时时间内没有收到响应，<code>nslookup</code> 将认为查询失败</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup -timeout=5 example.com</span><br></pre></td></tr></table></figure>
+<p>  这个示例中，<code>-timeout=5</code> 表示设置超时时间为5秒。如果在5秒内没有收到查询响应，<code>nslookup</code> 将认为查询失败</p>
+<h1 id="使用更强大的dig命令"><a href="#使用更强大的dig命令" class="headerlink" title="使用更强大的dig命令"></a>使用更强大的dig命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ dig a1.easemob.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; a1.easemob.com</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 1464</span><br><span class="line">;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 65494</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;a1.easemob.com.                        IN      A</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">a1.easemob.com.         0       IN      CNAME   a1-v2.easemob.com.x.easeslb.com.</span><br><span class="line">a1-v2.easemob.com.x.easeslb.com. 0 IN   A       47.93.162.59</span><br><span class="line">a1-v2.easemob.com.x.easeslb.com. 0 IN   A       39.97.9.213</span><br><span class="line"></span><br><span class="line">;; Query time: 0 msec</span><br><span class="line">;; SERVER: 127.0.0.53<span class="comment">#53(127.0.0.53)</span></span><br><span class="line">;; WHEN: 一 1月 29 21:53:40 CST 2024</span><br><span class="line">;; MSG SIZE  rcvd: 117</span><br></pre></td></tr></table></figure>
+<p>上述 <code>dig</code> 命令对域名 <code>a1.easemob.com</code> 进行查询的输出结构的含义解释如下：</p>
+<ol>
+<li><p><strong>头部信息 (<code>HEADER</code> 部分):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 1464</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>opcode</code>: 查询操作的类型，这里是 <code>QUERY</code> 表示标准查询。</li>
+<li><code>status</code>: 查询的状态，<code>NOERROR</code> 表示没有错误。</li>
+<li><code>id</code>: 查询的唯一标识符，这里是 1464。</li>
+</ul>
+</li>
+<li><p><strong>标志部分 (<code>flags</code> 部分):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>qr</code>: 查询响应标志位，这里是 <code>qr</code> 表示响应。</li>
+<li><code>rd</code>: 递归查询标志位，这里是 <code>rd</code> 表示递归查询。</li>
+<li><code>ra</code>: 递归可用标志位，这里是 <code>ra</code> 表示递归可用。</li>
+<li><code>QUERY: 1</code>: 查询的问题部分包含1个查询。</li>
+<li><code>ANSWER: 3</code>: 响应部分包含3个回答。</li>
+<li><code>AUTHORITY: 0</code>: 授权部分不包含任何信息。</li>
+<li><code>ADDITIONAL: 1</code>: 附加部分包含1个附加记录。</li>
+</ul>
+</li>
+<li><p><strong>OPT PSEUDOSECTION 部分:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">; EDNS: version: 0, flags:; udp: 65494</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>EDNS</code>: 扩展域名系统 (Extended DNS) 的信息。</li>
+<li><code>version: 0</code>: EDNS 的版本。</li>
+<li><code>flags:;</code>: EDNS 标志，这里为空。</li>
+<li><code>udp: 65494</code>: 用于 DNS 查询和响应的最大 UDP 数据包大小。</li>
+</ul>
+</li>
+<li><p><strong>请求部分 (<code>QUESTION SECTION</code>):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">;; QUESTION SECTION:</span><br><span class="line">;a1.easemob.com.                        IN      A</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询的问题部分，这里是查询域名 <code>a1.easemob.com</code> 的 <code>A</code> 记录。</li>
+</ul>
+</li>
+<li><p><strong>应答部分 (<code>ANSWER SECTION</code>):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">;; ANSWER SECTION:</span><br><span class="line">a1.easemob.com.         0       IN      CNAME   a1-v2.easemob.com.x.easeslb.com.</span><br><span class="line">a1-v2.easemob.com.x.easeslb.com. 0 IN   A       47.93.162.59</span><br><span class="line">a1-v2.easemob.com.x.easeslb.com. 0 IN   A       39.97.9.213</span><br></pre></td></tr></table></figure>
+<ul>
+<li>响应部分包含了查询的回答，这里包含了3个记录。</li>
+<li><code>CNAME</code> 记录：<code>a1.easemob.com</code> 是一个别名，指向 <code>a1-v2.easemob.com.x.easeslb.com</code>。</li>
+<li><code>A</code> 记录：<code>a1-v2.easemob.com.x.easeslb.com</code> 对应两个IPv4地址，分别是 <code>47.93.162.59</code> 和 <code>39.97.9.213</code>。</li>
+</ul>
+</li>
+<li><p><strong>查询时间 (<code>Query time</code>):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;; Query time: 0 msec</span><br></pre></td></tr></table></figure>
+<ul>
+<li>响应的查询时间，这里是 0 毫秒。</li>
+</ul>
+</li>
+<li><p><strong>DNS 服务器信息 (<code>SERVER</code> 和 <code>WHEN</code> 部分):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">;; SERVER: 127.0.0.53#53(127.0.0.53)</span><br><span class="line">;; WHEN: 一 1月 29 21:53:40 CST 2024</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>SERVER</code>: 显示响应的 DNS 服务器的IP地址和端口号。</li>
+<li><code>WHEN</code>: 显示响应的时间戳。</li>
+</ul>
+</li>
+<li><p><strong>消息大小 (<code>MSG SIZE</code>):</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;; MSG SIZE  rcvd: 117</span><br></pre></td></tr></table></figure>
+<ul>
+<li>响应消息的大小，这里是 117 字节。</li>
+</ul>
+</li>
+</ol>
+<p>综上所述，这个 <code>dig</code> 查询输出提供了关于域名 <code>a1.easemob.com</code> 的详细信息，包括查询问题、响应部分（包括 CNAME 和 A 记录）、查询时间、DNS 服务器信息以及响应消息的大小。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>使用 <code>nslookup</code> 命令可以用来查询域名对应的IP <code>nslookup a1.easemob.com</code></li>
+<li>使用 <code>nslookup</code> 命令也可以用来查询IP对应的域名 <code>nslookup 8.8.8.8 -ty=PTR 1.1.1.1</code></li>
+<li><code>nslookup</code> 是一个跨平台的命令，Windows(cmd)、Mac、Linux都可以使用</li>
+<li>在PowerShell中等价的命令是 <code>Resolve-DnsName</code>，默认输出信息较为详细</li>
+<li><code>dig</code> 命令也可用于查询域名的详细信息 <code>dig a1.easemob.com</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/135734670" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>曾经沧海难为水，除却巫山不是云，可以被压缩的时间才是生活，不得不花费的时间只是为了活着~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2024/01/29/使用nslookup命令查询域名系统的信息/" title="使用nslookup命令查询域名系统的信息">http://AlbertGithubHome.github.io/blog/2024/01/29/使用nslookup命令查询域名系统的信息/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/Tools/" rel="tag"><i class="fa fa-tag"></i> Tools</a>
+          
+            <a href="/blog/tags/nslookup/" rel="tag"><i class="fa fa-tag"></i> nslookup</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2024/01/21/一个golang小白使用vscode搭建go开发环境/" rel="next" title="一个golang小白使用vscode搭建Ununtu20.04下的go开发环境">
+                <i class="fa fa-chevron-left"></i> 一个golang小白使用vscode搭建Ununtu20.04下的go开发环境
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/" rel="prev" title="简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决">
+                简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">240</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">577</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常规使用"><span class="nav-number">2.</span> <span class="nav-text">常规使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#再从linux环境下学点不一样的"><span class="nav-number">3.</span> <span class="nav-text">再从linux环境下学点不一样的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#type选项"><span class="nav-number">3.1.</span> <span class="nav-text">type选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retry选项"><span class="nav-number">3.2.</span> <span class="nav-text">retry选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#timeout选项"><span class="nav-number">3.3.</span> <span class="nav-text">timeout选项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用更强大的dig命令"><span class="nav-number">4.</span> <span class="nav-text">使用更强大的dig命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

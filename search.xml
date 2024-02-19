@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[在golang语言中简单使用protobuf时遭遇go_package困难重重]]></title>
+    <url>%2Fblog%2F2024%2F02%2F18%2F%E5%9C%A8golang%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8protobuf%E6%97%B6%E9%81%AD%E9%81%87go-package%E5%9B%B0%E9%9A%BE%E9%87%8D%E9%87%8D%2F</url>
+    <content type="text"><![CDATA[前言Protobuf，全称Protocol Buffers，是一种由Google开发的用于序列化结构化数据的开源数据交换格式，Golang作为一种后端语言，免不了使用protobuf这种数据交换格式，本来打算写个小例子展示一下怎样在go语言中使用protobuf，结果遇到的问题到不少，特别是这个go_package的要求，也是之前在项目开发过程中遇到的，这次就查找一下具体原因以及怎么使用吧。 编写示例为了能对这个示例有一个整体的轮廓，我先把编写好的目录结构展示一下，后面再逐步实现 123456789$ tree lib_protobuflib_protobuf├── go.mod├── go.sum├── lib_protobuf.go├── msgproto│ └── examplemsg.pb.go└── srcproto └── examplemsg.proto 简单解释下，examplemsg.proto proto源文件，examplemsg.pb.go 是proto导出文件，lib_protobuf.go 是proto协议使用和测试文件 示例初始化执行下面的命令，创建示例基础目录文件结构 12345678910111213$ mkdir lib_protobuf$ cd lib_protobuf$ mkdir srcproto$ touch srcproto/examplremsg.proto$ touch lib_protobuf.go$ go mod init lib_protobufgo: creating new go.mod: module lib_protobufgo: to add module requirements and sums: go mod tidy$ go mod tidy$ lsgo.mod lib_protobuf.go srcproto 编写协议文件内容先编写proto文件，文件内容如下： 1234567syntax = "proto3";message Person &#123; string name = 1; int32 age = 2; repeated string hobbies = 3;&#125; 这个协议文件只定义了一个名为 Person 的结构，其中包括 name 、age、hobbies 三个字段 导出协议文件这是本文的重点，至于怎么用proto文件定义结构，各个语言都是相通的，但是在导出时遇到 go_package 文件却是 golang 语言特有的，所以本文重点在这部分多花些篇幅，解释一下遇到的各种问题 protoc 和 protoc-gen-go导出时需要是使用工具 protoc，而平时你可能听说过或者在.pb.go文件中看到过 protoc-gen-go 这个工具的名字，其实 protoc-gen-go 是一个用于生成 Go 代码的插件，它是 Protocol Buffers 编译器 protoc 的一部分。当您使用 protoc 编译 .proto 文件时，可以通过指定 --go_out 标志来指定要使用的 protoc-gen-go 插件，从而生成对应的 Go 代码文件。这个插件会根据 .proto 文件中定义的消息和服务等内容，生成与之对应的 Go 结构体、接口和方法等代码。因此，protoc-gen-go 和 protoc 是紧密相关的，它们共同用于将 Protocol Buffers 文件编译为 Go 语言中的数据结构和服务定义。 执行导出命令使用protoc将proto文件导出golang可用的文件最重要的两个参数如下： --proto_path：proto源文件所在文件夹--go_out：proto文件导出的目标文件夹 执行命令如下： 1234567891011$ cd lib_protobuf$ protoc --proto_path=srcproto --go_out=. examplemsg.protoprotoc-gen-go: unable to determine Go import path for "examplemsg.proto"Please specify either: • a "go_package" option in the .proto source file, or • a "M" argument on the command line.See https://developers.google.com/protocol-buffers/docs/reference/go-generated#package for more information.--go_out: protoc-gen-go: Plugin failed with status code 1. 不出意外的果然出意外了，告诉我不能确定 examplemsg.proto 文件的导入路径，换句话说就是现在这样不能导出一个可以被正常导入的包，有两种解决办法，第一种就是在.proto文件中添加 go_package 选项，第二种是在执行导出的命令行中添加M参数，详细的解释参考链接 https://developers.google.com/protocol-buffers/docs/reference/go-generated#package 官方推荐是用第一种方式，也就是直接在.proto文件中添加 go_package 选项，假如我们这样写： 1option go_package = "msgproto"; 然后直接导出会遇到新的错误，提示”msgproto”并不是文件”examplemsg.proto”的一个有效的导入路径 12345678$ protoc --proto_path=srcproto --go_out=. examplemsg.protoprotoc-gen-go: invalid Go import path "msgproto" for "examplemsg.proto"The import path must contain at least one period ('.') or forward slash ('/') character.See https://developers.google.com/protocol-buffers/docs/reference/go-generated#package for more information.--go_out: protoc-gen-go: Plugin failed with status code 1. 要求必须至少包含一个 . 或者 /，那么把选项改成下面这样就可以了 1option go_package = "./msgproto"; 有时为了在当前目录下生成，又要指定包名，可以写成这样： 1option go_package = "./;msgproto"; 使用分号将包路径和包名分开，但这种方法官方并不推荐，因为按照golang的包管理习惯，文件夹下的所有文件包名应该与文件名相同，通过包的路径能够推测是包名才对，否则写成 option go_package = &quot;./msgprotoA;msgprotoB&quot;; 就很奇怪了 关于go_package至少包含一个 . 或者 /的要求，据说v1.4.0以上的版本就要求必须加/了，最近查了一些资料，解释如下： 在 Protocol Buffers（Protobuf）中，go_package 选项用于指定生成的 Go 代码的包名和导入路径。要求导入路径（import path）必须包含至少一个点（.）或正斜杠（/）的原因与 Go 语言的模块系统和包导入机制有关 这个要求是因为在导出时，protoc 需要能够将生成的代码文件放置在文件系统的适当位置，并且需要能够以合适的包路径来导入这些生成的代码。在大多数情况下，包路径应该具有与文件系统路径相对应的结构，因此至少需要包含一个句点（.）或正斜杠（/）字符来指示层次结构。 如果导入路径不包含这些字符，那么生成的代码文件将无法以合适的方式组织和导入，可能会导致编译器无法正确识别代码的位置和包结构。因此，为了确保生成的代码能够被正确导入和使用，protoc 对导入路径设置了这个最低要求。 但是我觉得这个解释不能让人信服，我把go_package的值写成 .msgproto、msgproto. 或者 ..msgproto 都是能正常导出的，并没有看到这种限制的好处，其中深层次的原因还得在今后的使用过程中慢慢体会了 编写协议使用文件在文件 lib_protobuf.go 中编写如下内容，执行 go mod tidy 和 go run . 查看输出结果 12345678910111213141516171819202122232425262728293031323334package mainimport ( "fmt" "log" msg "lib_protobuf/msgproto" "google.golang.org/protobuf/proto")func main() &#123; p := &amp;msg.Person&#123; Name: "Alice", Age: 30, Hobbies: []string&#123;"reading", "running"&#125;, &#125; // 序列化 data, err := proto.Marshal(p) if err != nil &#123; log.Fatalf("Failed to encode person: %v", err) &#125; // 反序列化 newP := &amp;msg.Person&#123;&#125; err = proto.Unmarshal(data, newP) if err != nil &#123; log.Fatalf("Failed to decode person: %v", err) &#125; fmt.Println("Original Person:", p) fmt.Println("Decoded Person:", newP)&#125; 123$ go run .Original Person: name:"Alice" age:30 hobbies:"reading" hobbies:"running"Decoded Person: name:"Alice" age:30 hobbies:"reading" hobbies:"running" 体会有关 go_package 值官方给出的示例是这种 example.com/project/protos/fizz，这就跟go.mod文件中的module定义一样，比如 module github.com/tealeg/xlsx 或 module github.com/peterbourgon/diskv/v3，提供的是一种导出之后的引用写法 但是 go_package 和 module 还确实有一些不同，因为它在导出时真的会根据 go_package 生成相应的路径，所以针对这些去情况我觉得一种比较好的写法是从项目根目录开始写，导出的目录也是根目录，这样在引用时直接写 go_package 就可以了，但是具体情况还需灵活应对 1option go_package = "lib_protobuf/msgproto"; 12$ lib_protobuf$ protoc --proto_path=srcproto --go_out=.. examplemsg.proto 12345678import ( "fmt" "log" msg "lib_protobuf/msgproto" "google.golang.org/protobuf/proto") 总结 Protobuf是一种由Google开发的用于序列化结构化数据的开源数据交换格式 使用protoc 工具可以将 .proto 文件导出成golang可用的数据交换文件 protoc-gen-go 是一个用于生成 Go 代码的插件，它是 Protocol Buffers 编译器 protoc 的一部分 .proto文件中的go_package选项的值至少需要包含一个 . 或者 / go_package 的值官方给出的示例是这种类似module名的写法 example.com/project/protos/fizz ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 仰天大笑出门去，我辈岂是蓬蒿人。不好意思，我们绝大多数都是蓬蒿人，都是陪跑的NPC，只是在穷尽一生的努力想做一颗稍微不那么矮的蓬蒿而已~ 2024-2-18 16:44:18]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>开发语言</tag>
+        <tag>golang</tag>
+        <tag>protobuf</tag>
+        <tag>protoc</tag>
+        <tag>go_package</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决]]></title>
+    <url>%2Fblog%2F2024%2F02%2F09%2F%E7%AE%80%E5%8D%95%E8%81%8A%E8%81%8Ago%E8%AF%AD%E8%A8%80%E4%B8%AD%E5%BC%95%E7%94%A8%E6%A8%A1%E5%9D%97%E7%9A%84%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%BB%A5%E5%8F%8Ainvalid-should-be-v0-or-v1-not-v2%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%2F</url>
+    <content type="text"><![CDATA[@[toc] 前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这个go.mod以及go.sum要不要自己手动管理，带着这个疑问我做了一些测试可以得出，go.mod 的最初不需要手动管理，如果后来需要调整引入包的版本，可以手动调整。 以下是来自ChatGPT的关于 go.mod 和 go.sum 作用的回答，还是比较清晰的，如果还不太明白可以看看后面的例子感受一下 go.mod 和 go.sum 文件是 Go Modules 的重要组成部分，用于管理项目的依赖关系。共同为 Go 项目提供了依赖管理的基础，确保了项目的稳定性和可维护性： go.mod： 定义了项目的模块信息，包括模块名称、版本和依赖项等。 确定了项目的模块根目录。 记录了项目所依赖的其他模块及其版本信息。 提供了一种清晰的方式来管理项目的依赖关系，使得项目的构建和维护更加可靠和可控。 go.sum： 记录了每个依赖模块的哈希值，以保证项目的构建是可复现的。 确保了项目依赖项的完整性，防止恶意篡改或不完整的依赖项被用于构建项目。 当使用 go mod verify 命令时，go.sum 文件会被用来验证依赖项的完整性。 &gt; 通常情况下，go.mod 文件是由 go 工具自动生成和管理的，不需要手动修改。当你执行一些与模块相关的操作时（例如使用 go get 安装新的依赖、使用 go mod tidy 整理依赖、或者更新依赖版本等），go 工具会自动更新 go.mod 文件以反映这些变化，但是，在某些特定情况下，你可能需要手动编辑 go.mod 文件，例如： 手动添加或删除依赖项：你可能希望手动添加新的依赖项，或者删除不再需要的依赖项。在这种情况下，你需要手动编辑 go.mod 文件，并执行 go mod tidy 命令以确保依赖关系的一致性。 手动指定依赖版本：有时你可能希望显式地指定某个依赖项的特定版本。在这种情况下，你需要编辑 go.mod 文件，并指定对应的版本号。 总的来说，虽然 go.mod 文件通常是由 go 工具自动维护的，但在某些情况下手动编辑是必要的。在编辑 go.mod 文件时，确保遵循 Go 模块的规范，并注意保持文件的格式正确和依赖关系的一致性。 具体示例假设有一个需求，要读取 .xlsx 格式表格文件的所有页签名，解析Excel文件这么基础的工作肯定有人写好了，我们直接引入module不需要重新再写一遍了，我们新建一个包含go.mod的工程来使用它 12345678$ mkdir lib_xlsx$ cd lib_xlsx$ go mod init lib_xlsxgo: creating new go.mod: module lib_xlsx$ touch lib_xlsx.go$ lsgo.mod lib_xlsx.go go.mod的初始文件内容为 123module lib_xlsxgo 1.19 打开 lib_xlsx.go 文件编写如下代码： 1234567891011121314151617181920package mainimport ( "fmt" "log" "github.com/tealeg/xlsx")func main() &#123; xlFile, err := xlsx.OpenFile("example.xlsx") if err != nil &#123; log.Fatalf("Error opening file: %s", err) &#125; for _, sheet := range xlFile.Sheets &#123; fmt.Println("Sheet Name:", sheet.Name) &#125;&#125; 代码是不是很简单，此时不出意外IDE会提醒你 could not import github.com/tealeg/xlsx 的错误，因为我们还没下载这个包，只需要在命令行执行 go get github.com/tealeg/xlsx 既可下载，同时会自动更新 go.mod 和 go.sum 文件 12$ go get github.com/tealeg/xlsxgo: added github.com/tealeg/xlsx v1.0.5 自动更新后的 go.mod 文件内容，引用了 github.com/tealeg/xlsx 库的 v1.0.5 版本 12345module lib_xlsxgo 1.19require github.com/tealeg/xlsx v1.0.5 自动更新后的 go.sum 文件内容，记录了各个依赖库、间接依赖库以及项目go.mod文件的hash值 123456789github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=github.com/tealeg/xlsx v1.0.5 h1:+f8oFmvY8Gw1iUXzPk+kz+4GpbDZPK1FhPiQRd+ypgE=github.com/tealeg/xlsx v1.0.5/go.mod h1:btRS8dz54TDnvKNosuAqxrM1QgN1udgk9O34bDCnORM=gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 h1:YR8cESwS4TdDjEe65xsg0ogRM/Nc3DYOhEAlW+xobZo=gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0= 此时程序已经写完，依赖关系也已经下载好了，直接运行就可以 1234$ go run .Sheet Name: Sheet1Sheet Name: Sheet2Sheet Name: Sheet3 因为 go.mod 和 go.sum 文件共同为这个项目提供了依赖管理，别人在下载你这份源码时，先执行 go mod tidy 根据依赖关系下载正确的版本库，之后就可以直接编译运行了 手动升级依赖库到目前为止，我们并没有手动编辑过 go.mod 文件，只是在使用 go get github.com/tealeg/xlsx 自动更新了这个文件，假设这个例子的需求要扩展，引用的 github.com/tealeg/xlsx 功能是在v1.0.6 版本新加的，那么我么只需要将 go.mod 文件中的 v1.0.5 替换成 v1.0.6，然后执行 go mod tidy 即可下载正确的依赖库。 但如果要引用的依赖库版本不是 v0 或者 v1 版本的就不能这么处理了，具体做法看下面的问题。 should be v0 or v1, not v2当你手动把 go.mod 文件中的 v1.0.5 替换成 v2.x.x 执行 go mod tidy 时就会报一个错误 errors parsing go.mod: /xxx/lib_xlsx/go.mod:5: require github.com/tealeg/xlsx: version “v2.0.0” invalid: should be v0 or v1, not v2 问题的原因及细节可以参考这篇文档《[Go] 到底 go get 的版號怎麼運作的?》中关于“Semantic import version”的描述 复杂的原因简单说：Go有一个规范，就是在启用了Go Module的仓库上如果想使用 v2 及以上版本，需要在原引用库上添加版本标识简写，比如这个例子中，我们需要将 lib_xlsx.go 文件中引用包的代码改成下面这样 123456import ( "fmt" "log" "github.com/tealeg/xlsx/v3") 执行 go mod tidy 命令 123$ go mod tidygo: finding module for package github.com/tealeg/xlsx/v3go: found github.com/tealeg/xlsx/v3 in github.com/tealeg/xlsx/v3 v3.3.5 如果遇到下面这个问题，确认修改无误的话多尝试几次 $ go mod tidygo: finding module for package github.com/tealeg/xlsx/v3lib_xlsx imports github.com/tealeg/xlsx/v3: module github.com/tealeg/xlsx/v3: Get “https://proxy.golang.org/github.com/tealeg/xlsx/v3/@v/list“: EOF 执行过后 go.mod 和 go.sum 两个文件改变后的内容如下： 123456789101112131415161718module lib_xlsxgo 1.19require github.com/tealeg/xlsx/v3 v3.3.5require ( github.com/frankban/quicktest v1.14.6 // indirect github.com/google/btree v1.0.0 // indirect github.com/google/go-cmp v0.5.9 // indirect github.com/kr/pretty v0.3.1 // indirect github.com/kr/text v0.2.0 // indirect github.com/peterbourgon/diskv/v3 v3.0.1 // indirect github.com/rogpeppe/fastuuid v1.2.0 // indirect github.com/rogpeppe/go-internal v1.9.0 // indirect github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect golang.org/x/text v0.3.8 // indirect) 1234567891011121314151617181920212223242526272829github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=github.com/google/btree v1.0.0 h1:0udJVsspx3VBr5FwtLhQQtuAsVc79tTq0ocGIPAU6qo=github.com/google/btree v1.0.0/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=github.com/peterbourgon/diskv/v3 v3.0.1 h1:x06SQA46+PKIUftmEujdwSEpIx8kR+M9eLYsUxeYveU=github.com/peterbourgon/diskv/v3 v3.0.1/go.mod h1:kJ5Ny7vLdARGU3WUuy6uzO6T0nb/2gWcT1JiBvRmb5o=github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=github.com/pkg/profile v1.5.0 h1:042Buzk+NhDI+DeSAA62RwJL8VAuZUMQZUjCsRz1Mug=github.com/rogpeppe/fastuuid v1.2.0 h1:Ppwyp6VYCF1nvBTXL3trRso7mXMlRrw9ooo375wvi2s=github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa h1:2cO3RojjYl3hVTbEvJVqrMaFmORhL6O06qdW42toftk=github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa/go.mod h1:Yjr3bdWaVWyME1kha7X0jsz3k2DgXNa1Pj3XGyUAbx8=github.com/tealeg/xlsx/v3 v3.3.5 h1:dzmns01jRf0SveBe7VqkcO2LCLOcypcDI6H66PiZycQ=github.com/tealeg/xlsx/v3 v3.3.5/go.mod h1:KV4FTFtvGy0TBlOivJLZu/YNZk6e0Qtk7eOSglWksuA=golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=golang.org/x/text v0.3.8 h1:nAL+RVCQ9uMn3vJZbV+MRnydTJFPf8qqY42YiA6MrqY=golang.org/x/text v0.3.8/go.mod h1:E6s5w1FMmriuDzIBO73fBruAKo1PCIq6d2Q6DHfQ8WQ=golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b h1:QRR6H1YWRnHb4Y/HeNFCTJLFVxaq6wH4YuVdsUOr75U= 将 github.com/tealeg/xlsx 从 v1.0.5 升级到 v3.3.5 真是加了不少间接依赖库啊 至此 go.mod 文件的自动更新和手动维护我们就都尝试过了 总结 go.mod 和 go.sum 文件是 Go Modules 的重要组成部分，用于管理项目的依赖关系 go.mod 文件是由 go 工具自动生成和管理的，不需要手动修改，常用命令 go get xxx 和 go mod tidy 如果想显式地指定某个依赖项的特定版本才需要手动编辑 go.mod 文件 go.sum 文件记录了每个依赖模块的哈希值，以保证项目的构建是可复现的 如果在启用了Go Module的仓库想使用 v2 及以上版本，需要在原引用库路径末尾添加版本标识简写，比如v2、v3等 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 穷则独善其身，达则兼济天下，如今在这纷繁的世间，独善其身已实属不易，天下交给你们，我自顺其自然吧~ 2024-2-8 15:59:19]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>mod</tag>
+        <tag>import</tag>
+        <tag>xlsx</tag>
+        <tag>依赖库版本</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[使用nslookup命令查询域名系统的信息]]></title>
+    <url>%2Fblog%2F2024%2F01%2F29%2F%E4%BD%BF%E7%94%A8nslookup%E5%91%BD%E4%BB%A4%E6%9F%A5%E8%AF%A2%E5%9F%9F%E5%90%8D%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BF%A1%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[前言这个命令出现在与运维同学沟通过程中，在此之前要是问我一个域名对应的服务器是IP地址是什么，我肯定优先想到的是 ping 这个命令，这个命令确实可以在回复的信息中看到IP地址，但是不全面，有时一个域名对应不止一个IP地址，这时就要用到 nslookup 命令了，这也是在沟通中学到的新知识点。 常规使用学这个命令就是拿来用的，最常见的用法就是 nslookup 域名 来查询域名对应的IP，并且这个用法在Windows(cmd)、Mac、Linux下都是通用的，算是一个不错的跨平台命令，对比一下 ping 看看有什么区别： 123456789101112C:\Users\Administrator&gt;ping a1.easemob.com正在 Ping a1-v2.easemob.com.x.easeslb.com [47.93.162.59] 具有 32 字节的数据:来自 47.93.162.59 的回复: 字节=32 时间=7ms TTL=88来自 47.93.162.59 的回复: 字节=32 时间=7ms TTL=88来自 47.93.162.59 的回复: 字节=32 时间=6ms TTL=88来自 47.93.162.59 的回复: 字节=32 时间=6ms TTL=8847.93.162.59 的 Ping 统计信息: 数据包: 已发送 = 4，已接收 = 4，丢失 = 0 (0% 丢失)，往返行程的估计时间(以毫秒为单位): 最短 = 6ms，最长 = 7ms，平均 = 6ms 12345678910C:\Users\Administrator&gt;nslookup a1.easemob.com服务器: UnKnownAddress: 10.20.30.40名称: a1-v2.easemob.com.x.easeslb.comAddresses: 2408:4000:200::c5 2408:4000:200::17 47.93.162.59 39.97.9.52Aliases: a1.easemob.com 以上都是在cmd下执行的，如果在PowerShell中有一个名叫 Resolve-DnsName 的替代命令，执行结果如下： 123456789101112131415161718192021222324252627282930PS C:\Users\Administrator&gt; Resolve-DnsName a1.easemob.comName Type TTL Section NameHost---- ---- --- ------- --------a1.easemob.com CNAME 0 Answer a1-v2.easemob.com.x.easeslb.comName : a1-v2.easemob.com.x.easeslb.comQueryType : AAAATTL : 0IP6Address : 2408:4000:200::17Name : a1-v2.easemob.com.x.easeslb.comQueryType : AAAATTL : 0Section : AnswerIP6Address : 2408:4000:200::c5QueryType : ATTL : 0Section : AnswerIP4Address : 47.93.162.59Name : a1-v2.easemob.com.x.easeslb.comQueryType : ATTL : 0Section : AnswerIP4Address : 39.97.9.213 对于上述 Resolve-DnsName 命令的输出的结果解释如下： CNAME 记录： 1a1.easemob.com CNAME 0 Answer a1-v2.easemob.com.x.easeslb.com 这一行表示 a1.easemob.com 是一个别名（CNAME）记录，指向了 a1-v2.easemob.com.x.easeslb.com。 AAAA 记录（IPv6 地址）： 12345Name : a1-v2.easemob.com.x.easeslb.comQueryType : AAAATTL : 0Section : AnswerIP6Address : 2408:4000:200::17 这一行表示 a1-v2.easemob.com.x.easeslb.com 对应的 IPv6 地址是 2408:4000:200::17。 12345Name : a1-v2.easemob.com.x.easeslb.comQueryType : AAAATTL : 0Section : AnswerIP6Address : 2408:4000:200::c5 这一行表示 a1-v2.easemob.com.x.easeslb.com 对应的另一个 IPv6 地址是 2408:4000:200::c5。 A 记录（IPv4 地址）： 12345Name : a1-v2.easemob.com.x.easeslb.comQueryType : ATTL : 0Section : AnswerIP4Address : 47.93.162.59 这一行表示 a1-v2.easemob.com.x.easeslb.com 对应的 IPv4 地址是 47.93.162.59。 12345Name : a1-v2.easemob.com.x.easeslb.comQueryType : ATTL : 0Section : AnswerIP4Address : 39.97.9.213 这一行表示 a1-v2.easemob.com.x.easeslb.com 对应的另一个 IPv4 地址是 39.97.9.213。 综上所述，查询结果显示了域名 a1.easemob.com 的别名记录（CNAME）以及对应的IPv6和IPv4地址。IPv6地址有两个，分别是 2408:4000:200::17 和 2408:4000:200::c5，而IPv4地址有两个，分别是 47.93.162.59 和 39.97.9.213。 再从linux环境下学点不一样的1234567891011121314$ nslookup a1.easemob.comServer: 127.0.0.53Address: 127.0.0.53#53Non-authoritative answer:a1.easemob.com canonical name = a1-v2.easemob.com.x.easeslb.com.Name: a1-v2.easemob.com.x.easeslb.comAddress: 39.97.9.213Name: a1-v2.easemob.com.x.easeslb.comAddress: 47.93.162.59Name: a1-v2.easemob.com.x.easeslb.comAddress: 2408:4000:200::17Name: a1-v2.easemob.com.x.easeslb.comAddress: 2408:4000:200::c5 在linux环境下使用基础命令，还在cmd环境下的输出结果类似，但是比Resolve-DnsName命令输出的结果要简陋许多，但是可以通过添加参数来扩展命令。 type选项nslookup 命令中的 type 参数用于指定查询的记录类型，即你想要获取的特定 DNS 记录的类型。以下是一些常见的 type 参数及其解释： A (Address Record):nslookup example.com type=A 查询域名 example.com 的 IPv4 地址 AAAA (IPv6 Address Record):nslookup example.com type=AAAA 查询域名 example.com 的 IPv6 地址 CNAME (Canonical Name Record):nslookup example.com type=CNAME 查询域名 example.com 的别名记录 MX (Mail Exchange Record):nslookup example.com type=MX 查询域名 example.com 的邮件交换记录 NS (Name Server Record):nslookup example.com type=NS 查询域名 example.com 的域名服务器记录 PTR (Pointer Record):nslookup 192.168.1.1 type=PTR 查询 IP 地址 192.168.1.1 对应的域名 SOA (Start of Authority Record):nslookup example.com type=SOA 查询域名 example.com 的权威区域起始记录 TXT (Text Record):nslookup example.com type=TXT 查询域名 example.com 的文本记录 SRV (Service Record):nslookup _ldap._tcp.example.com type=SRV 查询服务记录，例如 LDAP 服务 ANY (Any Record):nslookup example.com type=ANY 查询域名 example.com 的所有记录类型 这些是常见的 type 参数，可以根据需要选择合适的类型来获取特定类型的 DNS 记录信息。在命令中，type 参数通常是可选的，如果不指定，默认为 A 记录 retry选项该参数用于设置在没有收到响应时的重试次数。如果发送的 DNS 查询请求没有得到响应，nslookup 将会尝试重新发送请求，次数由 -retry 指定 1nslookup -retry=3 example.com 这个示例中，-retry=3 表示设置重试次数为3次。如果第一次查询没有得到响应，nslookup 将尝试再次发送查询请求，最多重试3次 timeout选项该参数用于设置等待响应的超时时间，以秒为单位。如果在指定的超时时间内没有收到响应，nslookup 将认为查询失败 1nslookup -timeout=5 example.com 这个示例中，-timeout=5 表示设置超时时间为5秒。如果在5秒内没有收到查询响应，nslookup 将认为查询失败 使用更强大的dig命令12345678910111213141516171819202122$ dig a1.easemob.com; &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; a1.easemob.com;; global options: +cmd;; Got answer:;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 1464;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1;; OPT PSEUDOSECTION:; EDNS: version: 0, flags:; udp: 65494;; QUESTION SECTION:;a1.easemob.com. IN A;; ANSWER SECTION:a1.easemob.com. 0 IN CNAME a1-v2.easemob.com.x.easeslb.com.a1-v2.easemob.com.x.easeslb.com. 0 IN A 47.93.162.59a1-v2.easemob.com.x.easeslb.com. 0 IN A 39.97.9.213;; Query time: 0 msec;; SERVER: 127.0.0.53#53(127.0.0.53);; WHEN: 一 1月 29 21:53:40 CST 2024;; MSG SIZE rcvd: 117 上述 dig 命令对域名 a1.easemob.com 进行查询的输出结构的含义解释如下： 头部信息 (HEADER 部分): 1-&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 1464 opcode: 查询操作的类型，这里是 QUERY 表示标准查询。 status: 查询的状态，NOERROR 表示没有错误。 id: 查询的唯一标识符，这里是 1464。 标志部分 (flags 部分): 1;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1 qr: 查询响应标志位，这里是 qr 表示响应。 rd: 递归查询标志位，这里是 rd 表示递归查询。 ra: 递归可用标志位，这里是 ra 表示递归可用。 QUERY: 1: 查询的问题部分包含1个查询。 ANSWER: 3: 响应部分包含3个回答。 AUTHORITY: 0: 授权部分不包含任何信息。 ADDITIONAL: 1: 附加部分包含1个附加记录。 OPT PSEUDOSECTION 部分: 1; EDNS: version: 0, flags:; udp: 65494 EDNS: 扩展域名系统 (Extended DNS) 的信息。 version: 0: EDNS 的版本。 flags:;: EDNS 标志，这里为空。 udp: 65494: 用于 DNS 查询和响应的最大 UDP 数据包大小。 请求部分 (QUESTION SECTION): 12;; QUESTION SECTION:;a1.easemob.com. IN A 查询的问题部分，这里是查询域名 a1.easemob.com 的 A 记录。 应答部分 (ANSWER SECTION): 1234;; ANSWER SECTION:a1.easemob.com. 0 IN CNAME a1-v2.easemob.com.x.easeslb.com.a1-v2.easemob.com.x.easeslb.com. 0 IN A 47.93.162.59a1-v2.easemob.com.x.easeslb.com. 0 IN A 39.97.9.213 响应部分包含了查询的回答，这里包含了3个记录。 CNAME 记录：a1.easemob.com 是一个别名，指向 a1-v2.easemob.com.x.easeslb.com。 A 记录：a1-v2.easemob.com.x.easeslb.com 对应两个IPv4地址，分别是 47.93.162.59 和 39.97.9.213。 查询时间 (Query time): 1;; Query time: 0 msec 响应的查询时间，这里是 0 毫秒。 DNS 服务器信息 (SERVER 和 WHEN 部分): 12;; SERVER: 127.0.0.53#53(127.0.0.53);; WHEN: 一 1月 29 21:53:40 CST 2024 SERVER: 显示响应的 DNS 服务器的IP地址和端口号。 WHEN: 显示响应的时间戳。 消息大小 (MSG SIZE): 1;; MSG SIZE rcvd: 117 响应消息的大小，这里是 117 字节。 综上所述，这个 dig 查询输出提供了关于域名 a1.easemob.com 的详细信息，包括查询问题、响应部分（包括 CNAME 和 A 记录）、查询时间、DNS 服务器信息以及响应消息的大小。 总结 使用 nslookup 命令可以用来查询域名对应的IP nslookup a1.easemob.com 使用 nslookup 命令也可以用来查询IP对应的域名 nslookup 8.8.8.8 -ty=PTR 1.1.1.1 nslookup 是一个跨平台的命令，Windows(cmd)、Mac、Linux都可以使用 在PowerShell中等价的命令是 Resolve-DnsName，默认输出信息较为详细 dig 命令也可用于查询域名的详细信息 dig a1.easemob.com ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 曾经沧海难为水，除却巫山不是云，可以被压缩的时间才是生活，不得不花费的时间只是为了活着~]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>Tools</tag>
+        <tag>nslookup</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[一个golang小白使用vscode搭建Ununtu20.04下的go开发环境]]></title>
     <url>%2Fblog%2F2024%2F01%2F21%2F%E4%B8%80%E4%B8%AAgolang%E5%B0%8F%E7%99%BD%E4%BD%BF%E7%94%A8vscode%E6%90%AD%E5%BB%BAgo%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F</url>
     <content type="text"><![CDATA[前言先交代一下背景，距离正式接触golang这门语言已经有5年时间，平时偶尔也会用go写写工具和功能，但其实充其量就是语言小白，基本上就是按照教程配置好环境，按照需求写写逻辑，能跑起来就行了。golang随着这几年的变化，这门语言的变化还是非常大的，之前写过一篇《Go环境配置时遇到的GOPATH路径以及包管理问题》，可以看出之前配置的变量很像Java早期的配置环境，从1.11 版本之后go工程不必放到 GOPATH 路径中了，通过go.mod文件来标记并跟踪每个软件包的版本，灵活度大大提高，从此 GOPATH 概念逐渐淡化，在1.18版本新引入一个新功能go.work，它被设计为解决在同一工作空间中处理多个模块的问题，使得go工程的模块管理更加方便。 简单描述下我的开发环境，Windows10 + VSCode1.58.0 + WLS1.0 - Ubuntu20.04，平时工作都是在Ubuntu上，习惯了在Linux上的开发，所以即使是自己家的电脑也安装了子系统，就当成Ubuntu 来用就行了，Vscode安装在Windows上，直接连接到子系统上进行代码编写，以上是前提，本文的重点是在Ubuntu20.04系统上安装go的编译和运行环境。 搭建go环境我选择的go版本是1.19，已经支持 go.sum 和 go.work，同时也为了和工作开发保持一致，没必要用太新的特性，现在的go包管理已经不想早期的Java，不再依赖 GOPATH，和 Python3.x 更像了，只管下载包然后在各自的工程目录下使用就行了，必要时需要指定使用库的版本。 下载go安装包go语言的官网是 https://golang.google.cn/dl/，下载1.19版本的Linux包go1.19.linux-amd64.tar.gz，这个网址通常下载很慢，可以改为go语言中文网https://studygolang.com/dl来下载1.19版本go1.19.linux-amd64.tar.gz 可以通过浏览器下载拷贝到指定位置，也可以通过wget命令下载 12345678910111213141516alberts@home-pc:~$ wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz--2024-01-21 17:22:11-- https://golang.google.cn/dl/go1.19.linux-amd64.tar.gzResolving golang.google.cn (golang.google.cn)... 203.208.50.34Connecting to golang.google.cn (golang.google.cn)|203.208.50.34|:443... connected.HTTP request sent, awaiting response... 302 FoundLocation: https://dl.google.com/go/go1.19.linux-amd64.tar.gz [following]--2024-01-21 17:22:12-- https://dl.google.com/go/go1.19.linux-amd64.tar.gzResolving dl.google.com (dl.google.com)... 220.181.174.161, 2401:3800:4001:807::1001Connecting to dl.google.com (dl.google.com)|220.181.174.161|:443... connected.HTTP request sent, awaiting response... 200 OKLength: 148796421 (142M) [application/x-gzip]Saving to: ‘go1.19.linux-amd64.tar.gz’go1.19.linux-amd64.tar.gz 100%[==============================&gt;] 141.90M 3.62MB/s in 31s2024-01-21 17:22:43 (4.54 MB/s) - ‘go1.19.linux-amd64.tar.gz’ saved [148796421/148796421] 解压go压缩包完成安装go的运行环境直接解压拷贝到指定位置就可以了，我把go解压安装到了 /usr/local/go 目录，解压之前也清理掉老的目录，如果之前没安装过，rm这条命令可以不使用 123sudo surm -rf /usr/local/gotar -C /usr/local -xzf go1.19.linux-amd64.tar.gz 配置环境变量这一步有点类似Windows中的修改注册表，我安装了新的程序，需要通知系统当使用 go 命令时需要去哪个目录下寻找可执行程序，具体操作如下 使用vim编辑.bashrc文件 1alberts@home-pc:~$ vim ~/.bashrc 到文件的末尾添加以下代码 1alberts@home-pc:~$ export PATH=$PATH:/usr/local/go/bin 重新加载配置文件 1alberts@home-pc:~$ source ~/.bashrc 查看版本是否安装成功 12alberts@home-pc:~$ go versiongo version go1.19 linux/amd64 查看版本显示出 go1.19 linux/amd64, 至此go语言的基础开发环境就配置好了 编写一个helloword程序123456789alberts@home-pc:/mnt/g$ mkdir wlsworkspacealberts@home-pc:/mnt/g$ cd wlsworkspacealberts@home-pc:/mnt/g/wlsworkspace$ mkdir helloalberts@home-pc:/mnt/g/wlsworkspace$ cd hello/alberts@home-pc:/mnt/g/wlsworkspace/hello$ go mod init github.com/alberts/go/hellogo: creating new go.mod: module github.com/alberts/go/helloalberts@home-pc:/mnt/g/wlsworkspace/hello$ touch hello.goalberts@home-pc:/mnt/g/wlsworkspace/hello$ lsgo.mod hello.go 打开 hello.go 文件编写以下内容： 1234567package mainimport "fmt"func main() &#123; fmt.Println("Hello,World!")&#125; 保存文件后使用 go run 命令运行 12alberts@home-pc:/mnt/g/wlsworkspace/hello$ go run hello.goHello,World! 安装VSCode插件安装智能提示插件为了编写go代码方便，可以安装这个名为Go的插件，这个插件不是必须安装的，但是你在写go代码时VSCode会自动提示你安装这个插件，为了实现Go语法只能提醒，我们可以直接点击提示安装，或者在插件市场里搜索安装 go插件 插件安装完成后会提示下面的报错 The “gopls” command is not available. Run “go get -v golang.org/x/tools/gopls” to install. 说明安装这个插件需要依赖 golang.org/x/tools/gopls 这个包，我们可以根据提示安装 安装go依赖包12alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/goplsgo: module golang.org/x/tools/gopls: Get "https://proxy.golang.org/golang.org/x/tools/gopls/@v/list": dial tcp 142.251.42.241:443: connect: connection refused 直接安装通常会因无法下载而失败，需要修改代理来改变下载地址 修改代理并重新安装依赖包123alberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GO111MODULE=onalberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOPROXY=https://goproxy.cn,directalberts@home-pc:/mnt/g/wlsworkspace/hello$ go env -w GOSUMDB="sum.golang.org" 安装依赖包 1234567891011121314151617181920212223242526272829303132alberts@home-pc:/mnt/g/wlsworkspace/hello$ go get -v golang.org/x/tools/goplsgo: downloading golang.org/x/tools v0.17.0go: downloading golang.org/x/tools/gopls v0.14.2go: downloading golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fdgo: downloading golang.org/x/telemetry v0.0.0-20231114163143-69313e640400go: downloading github.com/sergi/go-diff v1.1.0go: downloading honnef.co/go/tools v0.4.5go: downloading mvdan.cc/gofumpt v0.4.0go: downloading mvdan.cc/xurls/v2 v2.4.0go: downloading golang.org/x/mod v0.14.0go: downloading golang.org/x/sync v0.4.0go: downloading golang.org/x/text v0.13.0go: downloading golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338go: downloading golang.org/x/sys v0.14.0go: downloading golang.org/x/vuln v1.0.1go: downloading github.com/google/go-cmp v0.5.9go: downloading github.com/BurntSushi/toml v1.2.1go: added github.com/BurntSushi/toml v1.2.1go: added github.com/google/go-cmp v0.5.9go: added github.com/sergi/go-diff v1.1.0go: added golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338go: added golang.org/x/mod v0.14.0go: added golang.org/x/sync v0.4.0go: added golang.org/x/sys v0.14.0go: added golang.org/x/telemetry v0.0.0-20231114163143-69313e640400go: added golang.org/x/text v0.13.0go: added golang.org/x/tools v0.14.1-0.20231114185516-c9d3e7de13fdgo: added golang.org/x/tools/gopls v0.14.2go: added golang.org/x/vuln v1.0.1go: added honnef.co/go/tools v0.4.5go: added mvdan.cc/gofumpt v0.4.0go: added mvdan.cc/xurls/v2 v2.4.0 这次安装成功了，这些依赖包默认安装到了 ~/go/pkg目录下，使用时直接在go文件中引用就行了 import golang.org/x/sys 以上这些包是Go语言的依赖管理工具，它们的作用如下： golang.org/x/tools: 提供了一系列用于开发Go语言的工具，如gopls等 golang.org/x/tools/gopls: 是一个基于Go语言的代码补全和导航工具，它可以帮助开发者更高效地编写和调试Go代码 golang.org/x/telemetry: 提供了一套用于收集和分析应用程序性能数据的库 github.com/sergi/go-diff: 是一个用于比较两个Go源代码文件差异的工具 honnef.co/go/tools: 提供了一些用于处理Go源代码的工具，如goimports（自动导入缺失的包）等 mvdan.cc/gofumpt: 是一个用于格式化Go源代码的工具，它可以自动调整代码格式以符合Go语言的最佳实践 mvdan.cc/xurls/v2: 是一个用于解析URL的库，它可以将URL分解为各个组成部分，方便开发者处理 golang.org/x/mod: 是一个用于管理Go模块的库，它可以帮助你更好地组织和管理项目的依赖关系 golang.org/x/sync: 提供了一组同步原语，如互斥锁、条件变量等，用于实现多线程编程中的同步机制 golang.org/x/text: 提供了一个用于处理Unicode文本的库，它可以帮助你更方便地处理和操作文本数据 golang.org/x/exp/typeparams: 提供了一个用于处理类型参数的库，它可以帮助你更方便地处理泛型编程中的类型参数问题 golang.org/x/sys: 提供了一个用于访问操作系统功能的库，它可以帮助你更方便地处理操作系统相关的任务 golang.org/x/vuln: 提供了一个用于管理已知安全漏洞的库，它可以帮助你更容易地识别和修复项目中的安全漏洞 github.com/stamblerre/gocode: 提供Go语言的代码自动补全功能，用于IDEs和编辑器 github.com/uudashr/gopkgs/v2/cmd/gopkgs: 命令行工具，帮助发现和使用Go语言软件包 github.com/ramya-rao-a/go-outline: VSCode插件，为Go源代码文件生成结构大纲以便于导航 总结一下需要安装的依赖包 go get -v golang.org/x/tools/goplsgo get -v github.com/stamblerre/gocodego get -v github.com/uudashr/gopkgs/v2/cmd/gopkgsgo get -v github.com/ramya-rao-a/go-outline 根据VSCode提示安装后续的Tools，得到的控制台输出信息如下 Tools environment: GOPATH=/home/alberts/goInstalling 6 tools at /home/alberts/go/bin in module mode. gopkgs go-outline dlv dlv-dap staticcheck gopls Installing github.com/uudashr/gopkgs/v2/cmd/gopkgs (gopkgs) SUCCEEDEDInstalling github.com/ramya-rao-a/go-outline (go-outline) SUCCEEDEDInstalling github.com/go-delve/delve/cmd/dlv (dlv) SUCCEEDEDInstalling github.com/go-delve/delve/cmd/dlv@master (/home/alberts/go/bin/dlv-dap) SUCCEEDEDInstalling honnef.co/go/tools/cmd/staticcheck (staticcheck) SUCCEEDEDInstalling golang.org/x/tools/gopls (gopls) SUCCEEDED All tools successfully installed. You are ready to Go :). go.mod 和 go.workgo.modGo语言从1.11版本开始引入了Go Modules，这个版本之后不再需要将项目放到GOPATH中。 Go Modules是Go语言的依赖管理工具，它改变了之前必须使用GOPATH来管理依赖的模式。在Go 1.11及之后的版本中，通过go.mod文件来标记并跟踪每个软件包的版本，这意味着开发者可以在任何地方创建项目，而不必遵循GOPATH目录结构。 此外，Go团队还增加了一个环境变量GO111MODULE来控制模块支持的启用和禁用。这个环境变量的命名中的”111”象征着它是在Go 1.11版本中引入的。 总的来说，Go语言自1.11版本起，通过引入Go Modules，使得开发者不再受限于GOPATH，可以更加灵活地管理项目和依赖。这一变化被广泛认为是Go语言发展中的一个重大改进。 go.work“go.work” 是Go 1.18版本新引入的一个功能，它被设计为解决在同一工作空间中处理多个模块的问题。在之前的版本中，开发者常常会遇到路径问题、版本冲突问题等挑战。为了应对这些情况，他们可能需要对每个模块的go.mod文件进行手动修改，过程繁琐且容易出错。 “go.work”文件的主要作用就是来解决这些问题。它是一个特殊的文件，其中包含了use和replace指令，这些指令会覆盖工作区目录下的每个Go Module的go.mod文件中的内容。因此，开发者无需再对每个Go Module的go.mod文件进行手动修改，极大地简化了操作流程并提高了效率。 此外，”go.work”文件的优先级高于go.mod文件中的定义。也就是说，如果在go.work和go.mod中同时指定了不同的代码仓库路径，那么go.work中的设置将会被优先采用。这一特性进一步加强了”go.work”文件在依赖管理中的重要性。 小试一下go.work当前工作目录下有 base 和 hello 两个包含go.mod的工程，使用 go work init 命令可以初始化一个工作空间 12345678910alberts@home-pc:/mnt/g/wlsworkspace$ lsbase helloalberts@home-pc:/mnt/g/wlsworkspace$ go work init base helloalberts@home-pc:/mnt/g/wlsworkspace$ cat go.workgo 1.19use ( ./base ./hello) 初始化之后工程之间就可以相互引用彼此对外的包内容了 总结 下载go压缩包 wget https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz 初始化工程目录hello go mod init github.com/alberts/go/hello，包名通常是支持https访问的网络地址 初始化工作空间 go work init base hello，base 和 hello 都是包含go.mod文件的go工程 安装依赖包 go get -v golang.org/x/tools/gopls 安装依赖包 github.com/stamblerre/gocode 安装依赖包 github.com/uudashr/gopkgs/v2/cmd/gopkgs 安装依赖包 github.com/ramya-rao-a/go-outline ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 放下助人情节，尊重他人命运~]]></content>
@@ -82,8 +125,8 @@
         <category>Nginx</category>
       </categories>
       <tags>
-        <tag>网络协议</tag>
         <tag>Nginx</tag>
+        <tag>网络协议</tag>
         <tag>websockify</tag>
         <tag>websocket</tag>
         <tag>tcp/ip</tag>
@@ -906,9 +949,9 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
+        <tag>log</tag>
         <tag>历史记录</tag>
       </tags>
   </entry>
@@ -1389,9 +1432,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1403,9 +1446,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1646,10 +1689,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>log</tag>
+        <tag>branch</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>branch</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1854,8 +1897,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1882,8 +1925,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -1908,8 +1951,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2083,10 +2126,10 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
+        <tag>source</tag>
         <tag>gdb</tag>
         <tag>dir</tag>
         <tag>path</tag>
-        <tag>source</tag>
       </tags>
   </entry>
   <entry>
@@ -2110,9 +2153,9 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>HTTPS</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
+        <tag>HTTPS</tag>
         <tag>根证书</tag>
         <tag>中间人</tag>
       </tags>
@@ -2152,10 +2195,10 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>HTTPS</tag>
+        <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>加密</tag>
+        <tag>HTTPS</tag>
         <tag>证书</tag>
       </tags>
   </entry>
@@ -2169,9 +2212,9 @@
       <tags>
         <tag>公钥</tag>
         <tag>私钥</tag>
+        <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>加密</tag>
       </tags>
   </entry>
   <entry>
@@ -2182,9 +2225,9 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
-        <tag>reset</tag>
         <tag>HEAD</tag>
       </tags>
   </entry>
@@ -2354,8 +2397,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -2369,8 +2412,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -2499,8 +2542,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>source</tag>
         <tag>ERROR</tag>
+        <tag>source</tag>
         <tag>sql</tag>
       </tags>
   </entry>
