@@ -102,18 +102,18 @@
 
 
 
-<meta name="description" content="@[toc] 前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最">
+<meta name="description" content="前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这">
 <meta name="keywords" content="Go,mod,import,xlsx,依赖库版本">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决">
 <meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/index.html">
 <meta property="og:site_name" content="Albert World">
-<meta property="og:description" content="@[toc] 前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最">
+<meta property="og:description" content="前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2024-02-19T15:25:15.277Z">
+<meta property="og:updated_time" content="2024-02-19T15:48:12.961Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决">
-<meta name="twitter:description" content="@[toc] 前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最">
+<meta name="twitter:description" content="前言如果你接触go语言比较早，一定有过当年所有go源码全部放入 GOPATH 下的混乱经历，不过发展到今天，go的包管理使用 go.mod 和 go.work 已经能得心应手，满足绝大多数的开发不成问题，其实在 go.mod 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这">
 
 
 
@@ -391,7 +391,7 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-02-19T23:25:15+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2024-02-19T23:48:12+08:00">
                 2024-02-19
               </time>
             
@@ -445,7 +445,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,670(字)</span>
+            <span class="post-count">2,669(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -480,8 +480,7 @@
       
 
       
-        <p>@[toc]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如果你接触go语言比较早，一定有过当年所有go源码全部放入 <code>GOPATH</code> 下的混乱经历，不过发展到今天，go的包管理使用 <code>go.mod</code> 和 <code>go.work</code> 已经能得心应手，满足绝大多数的开发不成问题，其实在 <code>go.mod</code> 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这个go.mod以及go.sum要不要自己手动管理，带着这个疑问我做了一些测试可以得出，go.mod 的最初不需要手动管理，如果后来需要调整引入包的版本，可以手动调整。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如果你接触go语言比较早，一定有过当年所有go源码全部放入 <code>GOPATH</code> 下的混乱经历，不过发展到今天，go的包管理使用 <code>go.mod</code> 和 <code>go.work</code> 已经能得心应手，满足绝大多数的开发不成问题，其实在 <code>go.mod</code> 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这个go.mod以及go.sum要不要自己手动管理，带着这个疑问我做了一些测试可以得出，go.mod 的最初不需要手动管理，如果后来需要调整引入包的版本，可以手动调整。</p>
 <a id="more"></a>
 <p>以下是来自ChatGPT的关于 <code>go.mod</code> 和 <code>go.sum</code> 作用的回答，还是比较清晰的，如果还不太明白可以看看后面的例子感受一下</p>
 <blockquote>
