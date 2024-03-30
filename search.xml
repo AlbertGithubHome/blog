@@ -9,8 +9,8 @@
       </categories>
       <tags>
         <tag>开发语言</tag>
-        <tag>golang</tag>
         <tag>protobuf</tag>
+        <tag>golang</tag>
         <tag>protoc</tag>
         <tag>go_package</tag>
       </tags>
@@ -157,11 +157,11 @@
       </categories>
       <tags>
         <tag>Network</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
         <tag>openssl</tag>
         <tag>ssh-keygen</tag>
         <tag>pem</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -607,8 +607,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>find</tag>
+        <tag>linux</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -949,10 +949,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1574,9 +1574,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1690,9 +1690,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1897,8 +1897,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1951,8 +1951,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1978,8 +1978,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>SVN</tag>
         <tag>Excel</tag>
+        <tag>SVN</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -2004,9 +2004,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -2210,11 +2210,11 @@
         <category>加密与认证</category>
       </categories>
       <tags>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
         <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -2270,8 +2270,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>汇编</tag>
         <tag>windows</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -3027,9 +3027,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>find</tag>
         <tag>查找</tag>
+        <tag>linux</tag>
         <tag>grep</tag>
       </tags>
   </entry>

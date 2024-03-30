@@ -36,9 +36,9 @@
     
       <category term="开发语言" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"/>
     
-      <category term="golang" scheme="http://AlbertGithubHome.github.io/blog/tags/golang/"/>
-    
       <category term="protobuf" scheme="http://AlbertGithubHome.github.io/blog/tags/protobuf/"/>
+    
+      <category term="golang" scheme="http://AlbertGithubHome.github.io/blog/tags/golang/"/>
     
       <category term="protoc" scheme="http://AlbertGithubHome.github.io/blog/tags/protoc/"/>
     
@@ -335,15 +335,15 @@
     
       <category term="Network" scheme="http://AlbertGithubHome.github.io/blog/tags/Network/"/>
     
+      <category term="公钥" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%85%AC%E9%92%A5/"/>
+    
+      <category term="私钥" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%A7%81%E9%92%A5/"/>
+    
       <category term="openssl" scheme="http://AlbertGithubHome.github.io/blog/tags/openssl/"/>
     
       <category term="ssh-keygen" scheme="http://AlbertGithubHome.github.io/blog/tags/ssh-keygen/"/>
     
       <category term="pem" scheme="http://AlbertGithubHome.github.io/blog/tags/pem/"/>
-    
-      <category term="公钥" scheme="http://AlbertGithubHome.github.io/blog/tags/%E5%85%AC%E9%92%A5/"/>
-    
-      <category term="私钥" scheme="http://AlbertGithubHome.github.io/blog/tags/%E7%A7%81%E9%92%A5/"/>
     
   </entry>
   
