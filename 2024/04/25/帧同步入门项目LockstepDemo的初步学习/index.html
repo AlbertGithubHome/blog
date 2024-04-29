@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Lockstep,帧同步,js,demo,源码分析," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言上一篇文章介绍了 LockstepDemo 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。  基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送">
+<meta name="keywords" content="Lockstep,帧同步,js,demo,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="帧同步入门项目LockstepDemo的初步学习">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言上一篇文章介绍了 LockstepDemo 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。  基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-04-29T14:56:38.580Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="帧同步入门项目LockstepDemo的初步学习">
+<meta name="twitter:description" content="前言上一篇文章介绍了 LockstepDemo 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。  基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/"/>
+
+
+
+
+
+  <title>帧同步入门项目LockstepDemo的初步学习 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">帧同步入门项目LockstepDemo的初步学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-25T01:00:00+08:00">
+                2024-04-25
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T22:56:38+08:00">
+                2024-04-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/LockStep/" itemprop="url" rel="index">
+                    <span itemprop="name">LockStep</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/" class="leancloud_visitors" data-flag-title="帧同步入门项目LockstepDemo的初步学习">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">5,779(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">24(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上一篇文章介绍了 <a href="https://github.com/ookcode/LockstepDemo" target="_blank" rel="noopener">LockstepDemo</a> 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。</p>
+<ul>
+<li>基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送确认包才执行帧数据，否则所有人等待，也就是一卡全卡。</li>
+<li>基于现在手游的流行程度和弱网环境，手游一般都采取乐观锁模式。即收到服务器推帧后，客户端立即执行，不等待其他人。这样卡顿的人自己卡，不影响其他人的游戏体验。同时卡顿的人在收到数据后，自行加速补帧来追赶上正确的游戏速度。</li>
+</ul>
+<a id="more"></a>
+<h2 id="连帧同步都出SDK了"><a href="#连帧同步都出SDK了" class="headerlink" title="连帧同步都出SDK了"></a>连帧同步都出SDK了</h2><p>插播一条消息，今天在搜索帧同步资料的时候，无意间发现了游戏巨头——腾讯居然发布了<a href="https://gcloud.tencent.com/pages/documents/details.html?projectId=208&amp;docId=3013" target="_blank" rel="noopener">帧同步SDK-LockStep</a>，简直“丧心病狂”，真的是盘子大了什么都做啊，不过也挺好，我可以从中学到不少问题的处理方案，我摘抄官方文档部分内容，感兴趣的可以去看看</p>
+<blockquote>
+<p>帧同步（LockStep）服务为手游开发提供一套快速、可靠的帧同步游戏开发框架。基于GCloud云服务<br>进行快速部署，同时支持TCP、UDP、RUDP三种通道。帧同步开发框架提供一致性数学库与一致性检测工具，并且针对弱网设计具有高可靠、低延时的特性。</p>
+<p>帧同步与更为传统的状态同步均为游戏常见同步方案，主要区别在于：状态同步主要逻辑计算放在服务器端，将计算结果下发给客户端；而帧同步服务器仅仅起到收集客户端输入并广播的作用。基于帧同步相对状态同步流量消耗更低、开发效率更高、打击感更好等优点，《王者荣耀》选择了帧同步方案。</p>
+<p>《拳皇命运》项目从完全不熟悉帧同步技术的情况下，接入SDK仅用了两个月时间，将原有状态同步游戏，改造成为帧同步游戏；项目仅需编写游戏逻辑，无需关心同步、网络品质、录像回放等核心功能。</p>
+</blockquote>
+<p>专业的事情交给专业的人来做，如果之前没有积累，将这套SDK直接拿过来用也是不错的，我看到支持C++和C#两种语言，其他的语言就得自己去沟通了</p>
+<h1 id="LockstepDemo"><a href="#LockstepDemo" class="headerlink" title="LockstepDemo"></a>LockstepDemo</h1><p>言归正传，开始阅读LockstepDemo这个项目的源码，服务端app.js使用node运行，前端main.js+main.css+index.html，在浏览器中运行，其实主要的逻辑代码就在main.js中，后端就只有app.js一个文件，总共166行，前端还引用了jquery.min.js和socket.io.js两个库文件，但包含主要逻辑代码的main.js文件仅有328行。</p>
+<p>在开始阅读自定义逻辑代码之前先来看看引用的这两个库：</p>
+<h2 id="socket-io-js"><a href="#socket-io-js" class="headerlink" title="socket.io.js"></a>socket.io.js</h2><p>负责网络的建立、管理，消息的发送等等，看了逻辑中的调用真的是挺方便的</p>
+<ul>
+<li><code>var io = require(&quot;socket.io&quot;)(server）</code>: 创建基于 Node.js 的 WebSocket 服务器，并将其绑定到了一个 HTTP 服务器实例 server 上</li>
+<li><code>io.on(&#39;connection&#39;, function (socket) {...])</code>: 使用Socket.IO 的服务器实例的 on 方法来监听客户端与服务器建立连接的事件</li>
+<li><code>socket.on(&#39;join&#39;, function(account) {...})</code>: 使用与客户端建立的连接的对象 socket 的 on 方法来监听客户端发送的 ‘join’ 事件</li>
+<li><code>socket.emit(&quot;open&quot;, {...})</code>: 使用了 Socket.IO 库的 emit 方法来向当前客户端发送一个名为 “open” 的自定义事件，并附带自定义对象作为数据</li>
+<li><code>socket.broadcast.emit(&#39;system&#39;, ...)</code>: 用于向除当前连接的客户端之外的所有客户端发送消息</li>
+<li><code>io.sockets.emit(&#39;start&#39;, {...})</code>: 用于向所有连接的客户端发送消息</li>
+</ul>
+<h2 id="jquery-min-js"><a href="#jquery-min-js" class="headerlink" title="jquery.min.js"></a>jquery.min.js</h2><p>即使没有做过前端，jQuery这个库的大名也应该听过，它是一个流行的 JavaScript 库，简化了在网页开发中的 JavaScript 编程。它提供了一系列功能强大且易于使用的 API，使得诸如 DOM 操作、事件处理、动画效果、AJAX 请求等任务变得更加简单和高效，主要特点如下：</p>
+<ul>
+<li>简化 DOM 操作：提供了简洁而强大的 DOM 操作方法，使得选择元素、修改元素属性、添加/删除元素等操作变得更加便捷</li>
+<li>事件处理：提供了简单易用的事件处理方法，可以方便地为元素绑定事件、移除事件、触发事件等，大大简化了事件处理的代码编写</li>
+<li>动画效果：提供了丰富的动画效果和特效，可以通过简单的方法实现页面元素的平滑过渡、淡入淡出、滑动等效果，为用户提供更流畅的交互体验</li>
+<li>AJAX 请求：提供了简洁的 AJAX 方法，可以方便地进行异步数据加载和交互，从而实现更灵活和动态的网页内容加载和更新</li>
+<li>跨浏览器兼容性：封装了复杂的跨浏览器兼容性处理，使得开发者可以更加轻松地编写跨浏览器兼容的代码</li>
+</ul>
+<p>简单来说它就是一个封装了常用操作的库，稍后会在main.js发现它的使用方法，简单摘录如下：</p>
+<ul>
+<li><strong>文档加载完成事件</strong>：<code>$(function () {...})</code> 用于在文档加载完成后执行的函数，这是 jQuery 的快捷方式，等同于 <code>$(document).ready(function() {...})</code>，表示在 DOM 树构建完成后执行指定的函数</li>
+<li><strong>元素选择</strong>：<code>$(&#39;body&#39;)</code>、<code>$(&#39;#start_btn&#39;)</code>、<code>$(&#39;#reconnect_btn&#39;)</code> 等通过 jQuery 选择器选择了 HTML 元素。这些选择器能够基于元素的标签名、ID、类名等来选择元素，返回 jQuery 对象，以便进行后续的操作</li>
+<li><strong>事件处理</strong>：<code>$(&#39;body&#39;).keydown(function(e) {...})</code> 注册了键盘事件处理函数，当键盘按键按下时执行相应的操作</li>
+<li><strong>动画效果</strong>：<code>$(&quot;#tips&quot;).animate({...})</code> 使用了 jQuery 的动画效果，在提示框显示时执行动画效果，让提示框从屏幕中间上方滑动到屏幕中间</li>
+<li><strong>样式操作</strong>：<code>$(&quot;#tips&quot;).show()</code>、<code>$(&quot;#tips&quot;).fadeOut()</code> 等使用了 jQuery 提供的方法来控制元素的显示和隐藏</li>
+</ul>
+<p>在阅读app.js和main.js之前还是得说明一下，今天只介绍核心逻辑，像断线重连、消息提示、显示网络延迟等功能，都是在核心逻辑上的补充和优化，可以先忽略不看，并且这次看代码发现，整个运动的表现和实现逻辑是符合牛顿第一定律的，真的挺有意思：</p>
+<blockquote>
+<p>一切物体总保持匀速直线运动状态或静止状态，直到有外力迫使它改变这种状态为止</p>
+</blockquote>
+<p>这只是这个项目的特点，并不是所有的游戏都是这样的，有些游戏的实现就是和这惯性定律相违背的，比如很多游戏必须一直拖动摇杆才会移动，否则就会停住静止，它们所表达出来的就是，“力是维持物体运动的关键”，好了，扯得有点远了，一起看看代码实现吧</p>
+<h2 id="服务器app-js"><a href="#服务器app-js" class="headerlink" title="服务器app.js"></a>服务器app.js</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).Server()</span><br><span class="line"><span class="keyword">var</span> io = <span class="built_in">require</span>(<span class="string">"socket.io"</span>)(server, &#123;</span><br><span class="line">    allowEIO3: <span class="literal">true</span>,</span><br><span class="line">    cors: &#123;</span><br><span class="line">      origin: [<span class="string">"http://127.0.0.1:8080"</span>, <span class="string">"null"</span>],</span><br><span class="line">      methods: [<span class="string">"GET"</span>, <span class="string">"POST"</span>],</span><br><span class="line">      credentials: <span class="literal">true</span> <span class="comment">// 设置为true以允许使用凭据</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听3000端口</span></span><br><span class="line">server.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">   <span class="built_in">console</span>.log(<span class="string">"服务器启动成功，监听端口3000"</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>定义服务器实例，启动并监听3000端口，这里已经做了跨域允许访问的配置</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> g_onlines = &#123;&#125; <span class="comment">// 所有在线玩家</span></span><br><span class="line"><span class="keyword">var</span> g_commands = <span class="keyword">new</span> <span class="built_in">Array</span>() <span class="comment">// 指令数组</span></span><br><span class="line"><span class="keyword">var</span> g_commands_histroy = <span class="keyword">new</span> <span class="built_in">Array</span>() <span class="comment">// 历史指令，用于断线重连</span></span><br><span class="line"><span class="keyword">var</span> g_joinCount = <span class="number">0</span> <span class="comment">// 已准备的人数</span></span><br><span class="line"><span class="keyword">var</span> g_maxJoinCount = <span class="number">2</span> <span class="comment">// 最大人数</span></span><br><span class="line"><span class="keyword">var</span> g_stepTime = <span class="number">0</span> <span class="comment">// 当前step时间戳</span></span><br><span class="line"><span class="keyword">var</span> g_stepInterval = <span class="number">100</span> <span class="comment">// 每个step的间隔ms</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 游戏状态枚举</span></span><br><span class="line"><span class="keyword">var</span> STATUS = &#123;</span><br><span class="line">   WAIT:<span class="number">1</span>,</span><br><span class="line">   START:<span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> g_gameStatus = STATUS.WAIT</span><br></pre></td></tr></table></figure>
+<p>一些游戏全局变量和游戏状态枚举的定义，注释写的很详细，记一遍看下面的逻辑时能想起来就行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// frame定时器</span></span><br><span class="line"><span class="keyword">var</span> stepUpdateCounter = <span class="number">0</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params">dt</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">var</span> now = <span class="built_in">Date</span>.now()</span><br><span class="line">   <span class="keyword">if</span>(g_gameStatus == STATUS.START) &#123;</span><br><span class="line">      stepUpdateCounter += dt</span><br><span class="line">      <span class="keyword">if</span>(stepUpdateCounter &gt;= g_stepInterval) &#123;</span><br><span class="line">         g_stepTime++</span><br><span class="line">         stepUpdate()</span><br><span class="line">         stepUpdateCounter -= g_stepInterval</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动定时器</span></span><br><span class="line"><span class="keyword">var</span> lastUpdate = <span class="built_in">Date</span>.now()</span><br><span class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">var</span> now = <span class="built_in">Date</span>.now()</span><br><span class="line">   <span class="keyword">var</span> dt = now - lastUpdate</span><br><span class="line">   lastUpdate = now</span><br><span class="line">   update(dt)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>开始进入主要逻辑，lastUpdate是上次走过的时间，在游戏开始<code>g_gameStatus == STATUS.START</code>后不断将 <code>dt</code> 积累到变量 <code>stepUpdateCounter</code>，超过一帧的间隔后执行一帧逻辑 <code>stepUpdate()</code>，<code>setInterval</code> 是内部函数，第二个参数表示调用的时间间隔，默认为0，可以可以认为是游戏中常用的 <code>tick()</code> 函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// step定时器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stepUpdate</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="comment">// 过滤同帧多次指令</span></span><br><span class="line">   <span class="keyword">var</span> message = &#123;&#125;</span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> g_onlines) &#123;</span><br><span class="line">      message[key] = &#123;<span class="attr">step</span>:g_stepTime, <span class="attr">id</span>:key&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; g_commands.length; ++i) &#123;</span><br><span class="line">      <span class="keyword">var</span> command = g_commands[i]</span><br><span class="line">      command.step = g_stepTime</span><br><span class="line">      message[command.id] = command</span><br><span class="line">   &#125;</span><br><span class="line">   g_commands = <span class="keyword">new</span> <span class="built_in">Array</span>()</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 发送指令</span></span><br><span class="line">   <span class="keyword">var</span> commands = <span class="keyword">new</span> <span class="built_in">Array</span>()</span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> message) &#123;</span><br><span class="line">      commands.push(message[key])</span><br><span class="line">   &#125;</span><br><span class="line">   g_commands_histroy.push(commands)</span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> g_onlines) &#123;</span><br><span class="line">      g_onlines[key].socket.emit(<span class="string">'message'</span>, <span class="keyword">new</span> <span class="built_in">Array</span>(commands))</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是转发客户端操作的核心函数，首先是遍历所有玩家 <code>g_onlines</code>，执行 <code>message[key] = {step:g_stepTime, id:key}</code> 为每个玩家构建一个空指令，然后遍历当前收到的所有命令 <code>g_commands</code>，将命令的帧值设置为当前帧，并且过掉一帧中的多个指令，保证一帧只能朝一个方向运动，将收集到的所有指令 <code>commands</code> 通过 <code>socket.emit()</code> 函数发送给所有玩家 <code>g_onlines</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">socket</span>) </span>&#123;</span><br><span class="line">   socket.emit(<span class="string">"open"</span>, &#123;<span class="attr">id</span>:socket.id, <span class="attr">stepInterval</span>:g_stepInterval&#125;)</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 获取用户账户</span></span><br><span class="line">   <span class="function"><span class="keyword">function</span> <span class="title">getAccount</span>(<span class="params">socketId</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> g_onlines) &#123;</span><br><span class="line">         <span class="keyword">if</span>(socketId == g_onlines[key].socket.id) &#123;</span><br><span class="line">            <span class="keyword">return</span> key</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这是服务器上所有事件监听的基础，<code>io</code> 监听新玩家连接事件，建立连接后向客户端发送一个名为 “open” 的自定义事件，并附带了一个包含 id 和 stepInterval 属性的对象作为数据，id的值是 <code>socket.id</code>，<code>stepInterval</code>表示每帧的时间间隔，<code>getAccount()</code> 函数的作用通过<code>socket.id</code>获取账号名</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">socket.on(<span class="string">'join'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">account</span>) </span>&#123;</span><br><span class="line">   <span class="comment">// 顶号/断线重连</span></span><br><span class="line">   <span class="keyword">if</span>(g_onlines[account]) &#123;</span><br><span class="line">      g_onlines[account].socket.emit(<span class="string">'system'</span>, <span class="string">"被顶号了"</span>)</span><br><span class="line">      g_onlines[account].socket.disconnect()</span><br><span class="line">      <span class="keyword">if</span>(g_gameStatus == STATUS.START) &#123;</span><br><span class="line">         g_onlines[account] = &#123;<span class="attr">socket</span>: socket, <span class="attr">online</span>: <span class="literal">true</span>&#125;</span><br><span class="line">         socket.emit(<span class="string">'join'</span>, &#123;<span class="attr">result</span>:<span class="literal">true</span>, <span class="attr">message</span>:<span class="string">"正在断线重连..."</span>&#125;)</span><br><span class="line">         <span class="built_in">console</span>.log(account, <span class="string">"重连游戏"</span>)</span><br><span class="line">         socket.broadcast.emit(<span class="string">'system'</span>, account + <span class="string">"重新连接！"</span>)</span><br><span class="line">         socket.emit(<span class="string">'start'</span>, &#123;<span class="attr">player</span>:<span class="built_in">Object</span>.keys(g_onlines)&#125;)</span><br><span class="line">         socket.emit(<span class="string">'message'</span>, g_commands_histroy)</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 房间已满</span></span><br><span class="line">   <span class="keyword">if</span>(g_joinCount == g_maxJoinCount) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"房间已满"</span>, account, <span class="string">"加入失败"</span>)</span><br><span class="line">      socket.emit(<span class="string">'system'</span>, <span class="string">"房间已满"</span>)</span><br><span class="line">      socket.disconnect()</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 加入游戏</span></span><br><span class="line">   <span class="keyword">if</span>(g_joinCount &lt; g_maxJoinCount) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(account, <span class="string">"加入游戏"</span>)</span><br><span class="line">      socket.emit(<span class="string">'join'</span>, &#123;<span class="attr">result</span>:<span class="literal">true</span>, <span class="attr">message</span>:<span class="string">"匹配中..."</span>&#125;)</span><br><span class="line">      g_onlines[account] = &#123;<span class="attr">socket</span>: socket, <span class="attr">online</span>: <span class="literal">true</span>&#125;</span><br><span class="line">      g_joinCount++</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 开始游戏</span></span><br><span class="line">   <span class="keyword">if</span>(g_joinCount == g_maxJoinCount) &#123;</span><br><span class="line">      g_commands = <span class="keyword">new</span> <span class="built_in">Array</span>()</span><br><span class="line">      g_commands_histroy = <span class="keyword">new</span> <span class="built_in">Array</span>()</span><br><span class="line">      g_gameStatus = STATUS.START</span><br><span class="line">      io.sockets.emit(<span class="string">'start'</span>, &#123;<span class="attr">player</span>:<span class="built_in">Object</span>.keys(g_onlines)&#125;)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这是监听socket收到 <code>&#39;join&#39;</code> 事件的处理函数，实现逻辑有些技巧，通过查询账号是否已经登录过服务器，来判定是否为重连，如果为重连则一次发送 <code>&#39;join&#39;</code>、<code>&#39;start&#39;</code>、<code>&#39;message&#39;</code>事件和数据，其中 <code>&#39;message&#39;</code> 事件中的数据是从游戏开始以来的所有指令</p>
+<p>如果不是重连就要判断匹配人数，超过到 <code>g_maxJoinCount</code> 不允许进入，达到<code>g_maxJoinCount</code>游戏开始，通知客户开始游戏，否则通知客户端正在匹配中</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">socket.on(<span class="string">'timeSync'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">time</span>) </span>&#123;</span><br><span class="line">   socket.emit(<span class="string">'timeSync'</span>, &#123;<span class="attr">client</span>:time, <span class="attr">server</span>:<span class="built_in">Date</span>.now()&#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">json</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(g_gameStatus == STATUS.START) &#123;</span><br><span class="line">      <span class="comment">// <span class="doctag">TODO:</span>过滤高延迟的包 (json.step)</span></span><br><span class="line">      json.id = getAccount(socket.id)</span><br><span class="line">      <span class="keyword">if</span>(json.id) &#123;</span><br><span class="line">         g_commands.push(json)</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>socket.on(&#39;timeSync&#39;, function(time) {...})</code> 收到后立即返回，用于客户端计算延迟，<code>socket.on(&#39;message&#39;, function(json) {...})</code>，收到客户端指令后将其放入全局缓存指令，等待每帧处理</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">socket.on(<span class="string">'disconnect'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">var</span> account = getAccount(socket.id)</span><br><span class="line">   <span class="keyword">if</span>(account) &#123;</span><br><span class="line">      g_onlines[account].online = <span class="literal">false</span></span><br><span class="line">      <span class="built_in">console</span>.log(account, <span class="string">"离开游戏"</span>)</span><br><span class="line">      <span class="keyword">var</span> isGameOver = <span class="literal">true</span></span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> g_onlines) &#123;</span><br><span class="line">         <span class="keyword">if</span>(g_onlines[key].online) &#123;</span><br><span class="line">            isGameOver = <span class="literal">false</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span>(isGameOver) &#123;</span><br><span class="line">         io.sockets.emit(<span class="string">'system'</span>, <span class="string">"游戏结束"</span>)</span><br><span class="line">         g_joinCount = <span class="number">0</span></span><br><span class="line">         g_stepTime = <span class="number">0</span></span><br><span class="line">         g_gameStatus = STATUS.WAIT</span><br><span class="line">         g_onlines = &#123;&#125;</span><br><span class="line">         <span class="built_in">console</span>.log(<span class="string">"游戏结束"</span>)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         io.sockets.emit(<span class="string">'system'</span>, account + <span class="string">"离开了游戏！"</span>)</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>socket.on(&#39;disconnect&#39;, function () {...})</code> 断开连接是否要结束游戏的处理逻辑，如果在玩家断开后还有其他玩家在线，则游戏继续，等待玩家重连回来，否则有些结束</p>
+<p>完整的游戏代码就这么多，还是比较清晰的，记住服务器上监听和发送的各种事件，比如 <code>&#39;join&#39;</code>、<code>&#39;start&#39;</code>、<code>&#39;message&#39;</code>、<code>&#39;disconnect&#39;</code> 等，一会再客户端代码分析的时候也会出现，对照着分析逻辑就串起来了</p>
+<h2 id="客户端main-js"><a href="#客户端main-js" class="headerlink" title="客户端main.js"></a>客户端main.js</h2><p>客户端的代码行数相对多一些，我只把重要的部分列举出来：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 游戏对象</span></span><br><span class="line"><span class="keyword">var</span> GameObject = <span class="function"><span class="keyword">function</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">this</span>.id = id</span><br><span class="line">   <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">   <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">   <span class="keyword">this</span>.direction = DIRECTION.STOP</span><br><span class="line">   <span class="keyword">this</span>.speed = <span class="number">100</span></span><br><span class="line">   <span class="keyword">this</span>.move = <span class="function"><span class="keyword">function</span> (<span class="params">dt</span>) </span>&#123;</span><br><span class="line">      dt = dt / <span class="number">1000</span></span><br><span class="line">      <span class="keyword">var</span> x = <span class="keyword">this</span>.x</span><br><span class="line">      <span class="keyword">var</span> y = <span class="keyword">this</span>.y</span><br><span class="line">      <span class="keyword">switch</span>(<span class="keyword">this</span>.direction) &#123;</span><br><span class="line">         <span class="keyword">case</span> DIRECTION.UP:</span><br><span class="line">         &#123;</span><br><span class="line">            y -= <span class="keyword">this</span>.speed * dt</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">case</span> DIRECTION.DOWN:</span><br><span class="line">         &#123;</span><br><span class="line">            y += <span class="keyword">this</span>.speed * dt</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">case</span> DIRECTION.LEFT:</span><br><span class="line">         &#123;</span><br><span class="line">            x -= <span class="keyword">this</span>.speed * dt</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">case</span> DIRECTION.RIGHT:</span><br><span class="line">         &#123;</span><br><span class="line">            x += <span class="keyword">this</span>.speed * dt</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span>(x &lt;= (WIDTH - BOX_SIZE) &amp;&amp; x &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="keyword">this</span>.x = x</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span>(y &lt;= (HEIGHT - BOX_SIZE) &amp;&amp; y &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="keyword">this</span>.y = y</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码定义了一个函数，该函数可以用来创建游戏对象（Game Objects）的实例，在 JavaScript 中，函数也可以用来定义对象的构造函数。在这个例子中，函数 <code>GameObject</code> 就是一个构造函数，用于创建具有特定属性和方法的游戏对象。当你使用 <code>new GameObject(id)</code> 来调用这个函数时，它会返回一个新的对象实例，该实例拥有指定的 <code>id</code>、<code>x</code>、<code>y</code>、<code>direction</code>、<code>speed</code> 属性以及 <code>move()</code> 方法，尽管这段代码中的 <code>GameObject</code> 是一个函数，但它被设计用来创建具有特定属性和行为的对象。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="comment">// 画布</span></span><br><span class="line">   <span class="keyword">var</span> context = <span class="built_in">document</span>.getElementById(<span class="string">"canvas"</span>).getContext(<span class="string">"2d"</span>)</span><br><span class="line">   <span class="comment">// 每个step的间隔ms，服务器返回</span></span><br><span class="line">   <span class="keyword">var</span> stepInterval = <span class="number">0</span></span><br><span class="line">   <span class="comment">// 当前step时间戳</span></span><br><span class="line">   <span class="keyword">var</span> stepTime = <span class="number">0</span></span><br><span class="line">   <span class="comment">// 输入方向</span></span><br><span class="line">   <span class="keyword">var</span> inputDirection = <span class="literal">null</span></span><br><span class="line">   <span class="comment">// 游戏状态</span></span><br><span class="line">   <span class="keyword">var</span> gameStatus = STATUS.WAIT</span><br><span class="line">   <span class="comment">// 接受指令</span></span><br><span class="line">   <span class="keyword">var</span> recvCommands = <span class="keyword">new</span> <span class="built_in">Array</span>()</span><br><span class="line">   <span class="comment">// 所有游戏对象</span></span><br><span class="line">   <span class="keyword">var</span> gameObjects = &#123;&#125;</span><br><span class="line">   <span class="comment">// 是否连接socket</span></span><br><span class="line">   <span class="keyword">var</span> isConnected = <span class="literal">false</span></span><br><span class="line">   <span class="comment">// 当前执行中的指令</span></span><br><span class="line">   <span class="keyword">var</span> runningCommands = <span class="literal">null</span></span><br><span class="line">   <span class="comment">// 当前用户</span></span><br><span class="line">   <span class="keyword">var</span> currentAccount = <span class="literal">null</span></span><br><span class="line">   <span class="comment">// 是否正在加速运行延迟到达的包</span></span><br><span class="line">   <span class="keyword">var</span> isFastRunning = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">// 初始化UI显示</span></span><br><span class="line">   $(<span class="string">"#content"</span>).hide()</span><br><span class="line">   $(<span class="string">"#login"</span>).show()</span><br><span class="line">   $(<span class="string">"#tips"</span>).hide()</span><br><span class="line"></span><br><span class="line">   <span class="comment">//...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这是利用jQuery库的写法，等同于 <code>$(document).ready(function() {...})</code>，表示在 DOM 树构建完成后执行指定的函数，也就是每次加载完页面都会执行这个函数，这个函数里包含了客户端绝大部分逻辑，函数的开始定义了一些变量，用于记录游戏数据，具体含义参考注释即可，之后便初始化了界面显示</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 连接socket</span></span><br><span class="line">socket = io.connect(<span class="string">'http://127.0.0.1:3000'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// socket连接成功</span></span><br><span class="line">socket.on(<span class="string">'open'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">json</span>) </span>&#123;</span><br><span class="line">   isConnected = <span class="literal">true</span></span><br><span class="line">   stepInterval = json.stepInterval</span><br><span class="line">   id = json.id</span><br><span class="line">   <span class="built_in">console</span>.log(<span class="string">"Socket连接成功："</span>, id)</span><br><span class="line">   <span class="comment">// 断线重连自动登录</span></span><br><span class="line">   <span class="keyword">if</span>(localStorage.account) &#123;</span><br><span class="line">      setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">         $(<span class="string">"#account"</span>).val(localStorage.account)</span><br><span class="line">         localStorage.account = <span class="string">""</span></span><br><span class="line">         $(<span class="string">'#start_btn'</span>).click()</span><br><span class="line">      &#125;, <span class="number">0</span>)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>使用 <code>socket = io.connect(&#39;http://127.0.0.1:3000&#39;)</code> 语句连接服务器，再接收到 <code>&#39;open&#39;</code> 事件之后，使用服务器同步数据给客户端变量赋值，函数末尾是根据本地存储情况决定是否需要重连，这部分逻辑可以先不看</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收到游戏开始事件</span></span><br><span class="line">socket.on(<span class="string">'start'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">json</span>) </span>&#123;</span><br><span class="line">   <span class="comment">// 初始化GameObject</span></span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; json.player.length; ++i) &#123;</span><br><span class="line">      <span class="keyword">var</span> id = json.player[i]</span><br><span class="line">      gameObjects[id] = <span class="keyword">new</span> GameObject(id)</span><br><span class="line">   &#125;</span><br><span class="line">   gameStatus = STATUS.START</span><br><span class="line">   stepTime = <span class="number">0</span></span><br><span class="line">   showTips(<span class="string">"游戏开始"</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 收到指令</span></span><br><span class="line">socket.on(<span class="string">'message'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">json</span>)</span>&#123;</span><br><span class="line">   <span class="comment">// 储存收到的指令</span></span><br><span class="line">   <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; json.length; ++i) &#123;</span><br><span class="line">      <span class="keyword">var</span> command = json[i]</span><br><span class="line">      recvCommands.push(command)</span><br><span class="line">      stepTime = command[command.length - <span class="number">1</span>].step</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"**** recv "</span> + stepTime + <span class="string">" ****"</span>)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>收到游戏开始事件<code>&#39;start&#39;</code>之后，根据服务器下发的数据创建游戏对象 <code>gameObjects[id] = new GameObject(id)</code>， 收到<code>&#39;message&#39;</code>缓存服务器发送的指令到 <code>recvCommands</code> 中，后续在tick函数中处理</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发送指令</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendCommand</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(isFastRunning) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"正在加速执行延迟包，无法发送指令！"</span>)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">var</span> direction = inputDirection</span><br><span class="line">   socket.emit(<span class="string">"message"</span>, &#123;</span><br><span class="line">      direction: direction,</span><br><span class="line">      step:stepTime,</span><br><span class="line">   &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 键盘事件</span></span><br><span class="line">$(<span class="string">'body'</span>).keydown(<span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(gameStatus != STATUS.START) <span class="keyword">return</span></span><br><span class="line">   <span class="keyword">switch</span>(e.keyCode) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">38</span>:</span><br><span class="line">      &#123;</span><br><span class="line">         inputDirection = DIRECTION.UP</span><br><span class="line">         <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">40</span>:</span><br><span class="line">      &#123;</span><br><span class="line">         inputDirection = DIRECTION.DOWN</span><br><span class="line">         <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">37</span>:</span><br><span class="line">      &#123;</span><br><span class="line">         inputDirection = DIRECTION.LEFT</span><br><span class="line">         <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">39</span>:</span><br><span class="line">      &#123;</span><br><span class="line">         inputDirection = DIRECTION.RIGHT</span><br><span class="line">         <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">13</span>:</span><br><span class="line">      &#123;</span><br><span class="line">         inputDirection = DIRECTION.STOP</span><br><span class="line">         <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   sendCommand()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>监听键盘按键，键盘上下左右键移动方块，回车键停止方块，每次将按键指令发送给服务器，重点看下这段实现，这就涉及到我们前边提到的牛顿第一定律，也就是每次按键时向服务器发送一次，可以改变物体的运动方向或者停止，之后便不再向服务器发消息了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// frame定时器</span></span><br><span class="line"><span class="keyword">var</span> stepUpdateCounter = <span class="number">0</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params">dt</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(gameStatus == STATUS.START) &#123;</span><br><span class="line">      <span class="comment">// <span class="doctag">TODO:</span> 逻辑/UI分离</span></span><br><span class="line">      stepUpdateCounter += dt</span><br><span class="line">      <span class="keyword">if</span>(stepUpdateCounter &gt;= stepInterval) &#123;</span><br><span class="line">         stepUpdate()</span><br><span class="line">         stepUpdateCounter -= stepInterval</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 积攒的包过多时要加速运行</span></span><br><span class="line">      <span class="keyword">var</span> scale = <span class="built_in">Math</span>.ceil(recvCommands.length / <span class="number">3</span>)</span><br><span class="line">      <span class="keyword">if</span>(scale &gt; <span class="number">10</span>) scale = <span class="number">10</span></span><br><span class="line">      isFastRunning = (scale &gt; <span class="number">1</span>)</span><br><span class="line">      <span class="comment">// 执行指令</span></span><br><span class="line">      <span class="keyword">if</span>(recvCommands.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="keyword">var</span> ms = dt * scale</span><br><span class="line">         <span class="keyword">if</span>(runningCommands == <span class="literal">null</span>) &#123;</span><br><span class="line">            runningCommands = recvCommands[<span class="number">0</span>]</span><br><span class="line">            runningCommands.ms = stepInterval</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">if</span>(runningCommands.ms &lt; ms) &#123;</span><br><span class="line">            ms = runningCommands.ms</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; runningCommands.length; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> command = runningCommands[i]</span><br><span class="line">            <span class="keyword">if</span>(runningCommands.ms == stepInterval) <span class="built_in">console</span>.log(command)</span><br><span class="line">            <span class="keyword">var</span> obj = gameObjects[command.id]</span><br><span class="line">            <span class="keyword">if</span>(command.direction) &#123;</span><br><span class="line">               obj.direction = command.direction</span><br><span class="line">            &#125;</span><br><span class="line">            obj.move(ms)</span><br><span class="line">         &#125;</span><br><span class="line">         runningCommands.ms = runningCommands.ms - ms</span><br><span class="line">         <span class="keyword">if</span>(runningCommands.ms == <span class="number">0</span>) &#123;</span><br><span class="line">            recvCommands.shift()</span><br><span class="line">            runningCommands = <span class="literal">null</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 绘制</span></span><br><span class="line">      context.clearRect(<span class="number">0</span>, <span class="number">0</span>, WIDTH, HEIGHT)</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">var</span> key <span class="keyword">in</span> gameObjects) &#123;</span><br><span class="line">         <span class="keyword">var</span> obj = gameObjects[key]</span><br><span class="line">         context.fillStyle = <span class="string">"#000000"</span></span><br><span class="line">         context.fillRect(obj.x, obj.y, BOX_SIZE, BOX_SIZE)</span><br><span class="line">         context.font = <span class="string">"15px Courier New"</span>;</span><br><span class="line">         context.fillStyle = <span class="string">"#FFFFFF"</span>;</span><br><span class="line">         context.fillText(key, obj.x, obj.y + BOX_SIZE, BOX_SIZE);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动定时器</span></span><br><span class="line"><span class="keyword">var</span> lastUpdate = <span class="built_in">Date</span>.now()</span><br><span class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">var</span> now = <span class="built_in">Date</span>.now()</span><br><span class="line">   <span class="keyword">var</span> dt = now - lastUpdate</span><br><span class="line">   lastUpdate = now</span><br><span class="line">   update(dt)</span><br><span class="line">   <span class="keyword">if</span>(isConnected == <span class="literal">true</span>) &#123;</span><br><span class="line">      socket.emit(<span class="string">"timeSync"</span>, now)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这段代码是客户端的核心逻辑，需要多看几遍，看懂了这一段，帧同步的思想也就基本算掌握了，调用 <code>setInterval</code> 的逻辑比较好理解，之前在服务器代码中也存在，就是启动tick函数，不断积累 <code>dt</code>，用于做客户端物体移动的表现</p>
+<p>重点在 <code>setInterval</code> 我们化繁为简，不用看函数末尾的绘制部分，这一段就是根据GameObject的坐标绘制图形，因为这个项目没有实现UI表现和逻辑分离，所以函数开始更新变量 <code>stepUpdateCounter</code>的逻辑也没有用，简化完成后函数逻辑就剩下这些：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params">dt</span>) </span>&#123;</span><br><span class="line">   <span class="comment">// 积攒的包过多时要加速运行</span></span><br><span class="line">   <span class="keyword">var</span> scale = <span class="built_in">Math</span>.ceil(recvCommands.length / <span class="number">3</span>)</span><br><span class="line">   <span class="keyword">if</span>(scale &gt; <span class="number">10</span>) scale = <span class="number">10</span></span><br><span class="line">   isFastRunning = (scale &gt; <span class="number">1</span>)</span><br><span class="line">   <span class="comment">// 执行指令</span></span><br><span class="line">   <span class="keyword">if</span>(recvCommands.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">var</span> ms = dt * scale</span><br><span class="line">      <span class="keyword">if</span>(runningCommands == <span class="literal">null</span>) &#123;</span><br><span class="line">         runningCommands = recvCommands[<span class="number">0</span>]</span><br><span class="line">         runningCommands.ms = stepInterval</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span>(runningCommands.ms &lt; ms) &#123;</span><br><span class="line">         ms = runningCommands.ms</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; runningCommands.length; i++) &#123;</span><br><span class="line">         <span class="keyword">var</span> command = runningCommands[i]</span><br><span class="line">         <span class="keyword">if</span>(runningCommands.ms == stepInterval) <span class="built_in">console</span>.log(command)</span><br><span class="line">         <span class="keyword">var</span> obj = gameObjects[command.id]</span><br><span class="line">         <span class="keyword">if</span>(command.direction) &#123;</span><br><span class="line">            obj.direction = command.direction</span><br><span class="line">         &#125;</span><br><span class="line">         obj.move(ms)</span><br><span class="line">      &#125;</span><br><span class="line">      runningCommands.ms = runningCommands.ms - ms</span><br><span class="line">      <span class="keyword">if</span>(runningCommands.ms == <span class="number">0</span>) &#123;</span><br><span class="line">         recvCommands.shift()</span><br><span class="line">         runningCommands = <span class="literal">null</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意这个参数 <code>dt</code> 很微妙，虽然传入的值是tick实际的时间间隔，但分析完代码你会发现这个dt传入任意值，因为真正调用<code>obj.move</code>函数进行移动出入的参数是 <code>ms</code>，当 <code>ms</code> 等于 <code>dt</code> 时，是正常播放，当 <code>ms</code> &gt; <code>dt</code> 时，是加速播放，当 <code>ms</code> &lt; <code>dt</code> 时是减速播放，这里的代码只存在加速和正常两种情况</p>
+<p>看到没有，你可以通过 <code>scale</code> 变量人为的改变时间的快慢，是不是很神奇，所以在帧同步中绝对顺序是靠帧数来决定的，而物理时间只是一个数字，想快就快，想慢就慢</p>
+<p>思考下为什么会有这个判断 <code>if(runningCommands.ms &lt; ms) { ms = runningCommands.ms }</code>, 它的含义是无论你怎么加速，每个指令执行时间不能超过一帧的时间间隔，不然就和正常播放的逻辑数据不一致了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(command.direction) &#123;</span><br><span class="line">   obj.direction = command.direction</span><br><span class="line">&#125;</span><br><span class="line">obj.move(ms)</span><br></pre></td></tr></table></figure>
+<p>这几句比较有意思，翻译过来就是如果命令我改变方向，那么我就改变方向后移动，否则我按照原来的方向移动或者保持静止，再想想是不是惯性定律？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">runningCommands.ms = runningCommands.ms - ms</span><br><span class="line"><span class="keyword">if</span>(runningCommands.ms == <span class="number">0</span>) &#123;</span><br><span class="line">   recvCommands.shift()</span><br><span class="line">   runningCommands = <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后这几句处理的是一个tick跑不完一帧时间间隔的情况，逐个tick改变物体坐标，其实就是一个指令运行一帧的分段表现</p>
+<p>好了，写到这里基本上也讲完了，有什么疑问欢迎交流哈，我要睡觉去了</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>严格的帧同步，服务器必须等待所有客户端上报帧数才会下发当前帧命令，会造成一卡全卡</li>
+<li>乐观锁模式，服务器不等，会定时推帧，卡顿的人在收到数据后，自行加速补帧来追赶上正确的游戏速度</li>
+<li>一切物体总保持匀速直线运动状态或静止状态，直到有外力迫使它改变这种状态为止</li>
+<li>在帧同步中绝对顺序是靠帧数来决定的，而物理时间只是一个数字，想快就快，想慢就慢</li>
+<li>对于UDP丢包问题，上行采用重发3次，下行采用根据网络情况在2次到9次范围内调整</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/138139329" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>纵有千古，横有八荒，沧海一粟，还妄图超脱三界吗？</p>
+<p>2024-4-24 20:47:44</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/" title="帧同步入门项目LockstepDemo的初步学习">http://AlbertGithubHome.github.io/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Lockstep/" rel="tag"><i class="fa fa-tag"></i> Lockstep</a>
+          
+            <a href="/blog/tags/帧同步/" rel="tag"><i class="fa fa-tag"></i> 帧同步</a>
+          
+            <a href="/blog/tags/js/" rel="tag"><i class="fa fa-tag"></i> js</a>
+          
+            <a href="/blog/tags/demo/" rel="tag"><i class="fa fa-tag"></i> demo</a>
+          
+            <a href="/blog/tags/源码分析/" rel="tag"><i class="fa fa-tag"></i> 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2024/04/24/帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击/" rel="next" title="帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击">
+                <i class="fa fa-chevron-left"></i> 帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">245</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">590</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连帧同步都出SDK了"><span class="nav-number">1.1.</span> <span class="nav-text">连帧同步都出SDK了</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LockstepDemo"><span class="nav-number">2.</span> <span class="nav-text">LockstepDemo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#socket-io-js"><span class="nav-number">2.1.</span> <span class="nav-text">socket.io.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jquery-min-js"><span class="nav-number">2.2.</span> <span class="nav-text">jquery.min.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器app-js"><span class="nav-number">2.3.</span> <span class="nav-text">服务器app.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端main-js"><span class="nav-number">2.4.</span> <span class="nav-text">客户端main.js</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
