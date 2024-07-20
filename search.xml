@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[因为glibc版本不兼容不得已我重装了Dell R620的系统]]></title>
+    <url>%2Fblog%2F2024%2F07%2F20%2F%E5%9B%A0%E4%B8%BAglibc%E7%89%88%E6%9C%AC%E4%B8%8D%E5%85%BC%E5%AE%B9%E4%B8%8D%E5%BE%97%E5%B7%B2%E6%88%91%E9%87%8D%E8%A3%85%E4%BA%86Dell-R620%E7%9A%84%E7%B3%BB%E7%BB%9F%2F</url>
+    <content type="text"><![CDATA[前言我总以为这件事发生很久了，但刚刚去翻了聊天记录居然是上周发生的事情，趁着还没忘干净赶紧记录一下，对于服务器安装系统来说这还是第一次。 好久很久以前（大概是1个月前），我找运维装了一台服务器Dell PowerEdge R620，当时说好是Ubuntu20.04版本，但是装完后我也没注意，期间发生了很多事情，终于到上周的时候开始在这台机器上搭建Jenkins打包环境，整个过程还是比较顺利的，但是发现打包机上编译的程序版本无法在本地环境下运行，这时候仔细看才发现，原来运维安装的系统是 Ubuntu22.04，也不知道是因为粗心还是大意，不能运行的原因就是打包机上的glibc版本过高，本地环境无法支持，但这却引起了我的疑惑。 glibc版本和常用命令先附一个Linux发行版本和默认glibc版本对应关系的图表 Ubuntu Debian CentOS Glibc 22.04 - - 2.34 20.04 11 - 2.31 - 10 8 2.28 18.04 - - 2.27 - 9 - 2.24 16.04 - - 2.23 14.04 8 - 2.19 13.04 - 7 2.17 12.04 - - 2.15 - 7 - 2.13 - - 6 2.12 查询glibc版本的命令为 1ldd --version 查询动态库和可执行文件中的符号版本 123objdump -T my-program-or-so | grep GLIBC_strings /lib/x86_64-linux-gnu/libc.so.6 | grep GLIBC 查询一个目录下所有动态库中使用符号的glibc版本 1ls | grep '.so' | xargs objdump -T | grep GLIBC_ &gt; /tmp/symbol.log glibc版本差异的疑问目前我维护了两个项目，对于编译环境和运行环境不一样的问题，两个项目中都存在，但是A项目没问题，但是B项目有问题，具体的情况如下： A项目C++11编写，打包机Ubuntu16.04，glibc版本2.23，运行环境有CentOS7和Ubuntu16.04，相同的系统大概率没问题，而CentOS7的glibc是2.17版本，也没有问题，这让我很奇怪 打包机编译环境12345678910111213141516171819root@jenkins1604:~# cat /etc/os-releaseNAME="Ubuntu"VERSION="16.04.2 LTS (Xenial Xerus)"ID=ubuntuID_LIKE=debianPRETTY_NAME="Ubuntu 16.04.2 LTS"VERSION_ID="16.04"HOME_URL="http://www.ubuntu.com/"SUPPORT_URL="http://help.ubuntu.com/"BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"VERSION_CODENAME=xenialUBUNTU_CODENAME=xenialroot@jenkins1604:~# ldd --versionldd (Ubuntu GLIBC 2.23-0ubuntu5) 2.23Copyright (C) 2016 Free Software Foundation, Inc.This is free software; see the source for copying conditions. There is NOwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.Written by Roland McGrath and Ulrich Drepper.root@jenkins1604:~# 运行环境11234567891011121314151617181920$ cat /etc/os-releaseNAME="Ubuntu"VERSION="16.04.6 LTS (Xenial Xerus)"ID=ubuntuID_LIKE=debianPRETTY_NAME="Ubuntu 16.04.6 LTS"VERSION_ID="16.04"HOME_URL="http://www.ubuntu.com/"SUPPORT_URL="http://help.ubuntu.com/"BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"VERSION_CODENAME=xenialUBUNTU_CODENAME=xenial# shz @ 20200116GF in /mnt/e/linux on git:7bd9be2 x [9:47:34]$ ldd --versionldd (Ubuntu GLIBC 2.23-0ubuntu11) 2.23Copyright (C) 2016 Free Software Foundation, Inc.This is free software; see the source for copying conditions. There is NOwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.Written by Roland McGrath and Ulrich Drepper. 运行环境2123456789101112131415161718192021222324[root@hk-dev Debug]# cat /etc/os-releaseNAME="CentOS Linux"VERSION="7 (Core)"ID="centos"ID_LIKE="rhel fedora"VERSION_ID="7"PRETTY_NAME="CentOS Linux 7 (Core)"ANSI_COLOR="0;31"CPE_NAME="cpe:/o:centos:centos:7"HOME_URL="https://www.centos.org/"BUG_REPORT_URL="https://bugs.centos.org/"CENTOS_MANTISBT_PROJECT="CentOS-7"CENTOS_MANTISBT_PROJECT_VERSION="7"REDHAT_SUPPORT_PRODUCT="centos"REDHAT_SUPPORT_PRODUCT_VERSION="7"You have mail in /var/spool/mail/root[root@hk-dev Debug]# ldd --versionldd (GNU libc) 2.17Copyright (C) 2012 Free Software Foundation, Inc.This is free software; see the source for copying conditions. There is NOwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.Written by Roland McGrath and Ulrich Drepper. B项目C++20编写，原打包机Ubuntu20.04，glibc版本2.31，运行环境有Ubuntu20.04，相同的系统没出问题，后来因打包机替换系统升到Ubuntu22.04后，glibc版本为2.34，再到Ubuntu20.04系统上运行就报错了 ./server: /lib/x86_64-linux-gnu/libc.so.6: version GLIBC_2.34&#39; not found (required by ./server) 看起来是glibc版本问题导致的 原打包机编译环境12345678910111213141516171819root@ubuntu2004:~# cat /etc/os-releaseNAME="Ubuntu"VERSION="20.04.2 LTS (Focal Fossa)"ID=ubuntuID_LIKE=debianPRETTY_NAME="Ubuntu 20.04.2 LTS"VERSION_ID="20.04"HOME_URL="https://www.ubuntu.com/"SUPPORT_URL="https://help.ubuntu.com/"BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"VERSION_CODENAME=focalUBUNTU_CODENAME=focalroot@ubuntu2004:~# ldd --versionldd (Ubuntu GLIBC 2.31-0ubuntu9.16) 2.31Copyright (C) 2020 Free Software Foundation, Inc.This is free software; see the source for copying conditions. There is NOwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.Written by Roland McGrath and Ulrich Drepper. 新打包编译环境环境 Ubuntu22.04 glibc 2.34 运行环境123456789101112131415161718192021$ cat /etc/os-releaseNAME="Ubuntu"VERSION="20.04.2 LTS (Focal Fossa)"ID=ubuntuID_LIKE=debianPRETTY_NAME="Ubuntu 20.04.2 LTS"VERSION_ID="20.04"HOME_URL="https://www.ubuntu.com/"SUPPORT_URL="https://help.ubuntu.com/"BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"VERSION_CODENAME=focalUBUNTU_CODENAME=focal# shzhen @ 20200116GF in /mnt/c/Users/Administrator [20:42:28]$ ldd --versionldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31Copyright (C) 2020 Free Software Foundation, Inc.This is free software; see the source for copying conditions. There is NOwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.Written by Roland McGrath and Ulrich Drepper. 问题疑惑同样是高版本glibc的机器上编译，在低版本的glibc上运行，为什么A项目没问题，但是B项目出了问题呢，而且A项目的glibc版本2.23–&gt;2.17相差的还多，B项目的glibc版本2.34–&gt;2.31相差的还少，出问题的却是B项目，分析原因glibc应该是向下兼容的，高编译低运行本就不可行，属于正常现象，如果想实现这样运行，就要保证调用的符号在两个版本的库中没有变化，所以我查了A项目和B项目的符号表，发现： A项目中符号最高的版本是GLIBC_2.17，所以即使“高编译低运行”也是满足条件的 B项目中符号最高的版本是GLIBC_2.34，所以不能在glibc.2.31的Ubuntu20.04上运行 但B项目中使用高版本符号的就有几个，剩下的都低于2.29版本，理论上只要去掉这几个符号的引用就可以在Ubuntu20.04上运行，但是为了避免后续的麻烦，我还是把打包编译的机器重新做了系统Ubuntu20.04 123456789101112131415160000000000000000 DF *UND* 0000000000000000 (GLIBC_2.33) stat0000000000000000 w DF *UND* 0000000000000000 (GLIBC_2.34) pthread_once0000000000000000 w DF *UND* 0000000000000000 (GLIBC_2.34) __pthread_key_create0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) sem_trywait0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dladdr0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) sem_wait0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) sem_init0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) sem_timedwait0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) sem_destroy0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dlclose0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dlsym0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dlerror0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dlopen0000000000000000 w DF *UND* 0000000000000000 (GLIBC_2.34) pthread_once0000000000000000 w DF *UND* 0000000000000000 (GLIBC_2.34) __pthread_key_create0000000000000000 DF *UND* 0000000000000000 (GLIBC_2.34) dladdr 将服务器系统改为Ubuntu20.04对于重装系统我内心是拒绝的，前两天刚安装了一个PC电脑的windows系统，再往前推都好几年没装过了，不想来回折腾，再者说PC电脑安装Windows很熟悉，即使有问题网上搜一下也解决了，但是服务器安装系统之前确实没做过，并且还有一个我不愿意安装服务器系统的原因，就是这些服务器的硬盘配置的是Raid5磁盘阵列，因为不熟悉我真怕给它做坏了。 所以对于改为Ubuntu20.04系统这件事，我首先想到的就是将系统降级，但是尝试了一圈没有成功之后，我不得不硬着头皮重装系统了，当然在重装之前还查了Raid5相关信息，发现硬盘配置有专门的Raid卡控制，与操作系统没有关系，只要安装的时候不要把系统安装到原来的数据盘就不会影响原来的数据信息，单纯对做系统来说，硬盘可以当成普通的硬盘来看待，安装时选对盘符就行了。 开始安装安装教程可以参考《Dell服务器安装Ubuntu系统》、《dell r620安装Ubuntu全过程》 镜像地址参考 官方镜像下载、清华镜像，注意要选择服务器版本的，不需要带桌面那一套东西，体积会小一点，性能会好一点 首先是做系统启动盘，按照教程选择了UltraISO，之前用这个比较多，本来一直点下一步就行了，但是无论选择官方镜像还是清华的镜像，在制作的时候都会提示一个可能无法引导系统的警告，但最后是成功的，我就用它试了试 把U盘插到服务器上，开机按F11进入System BOIS设置，把U盘调到第一启动项，重启后进入U盘拷贝的进度条，但总是无法正确安装，还多次进入了 Emergency mode，重启关机都不好使，最后不得不强行关机了 然后我换成了使用Rufus来烧制启动U盘，这里涉及到几种选项，比如选BOIS还是UEFI，文件系统选GPT还是MBR，提供一个详细的步骤 运行 Rufus：打开 Rufus 应用程序（无需安装）。 选择设备：在 “Device” 下拉菜单中选择你的 U 盘。 选择引导类型：点击 “Boot selection” 旁边的 “Select” 按钮，选择你下载的 Ubuntu ISO 文件。 分区方案： 如果 Dell R620 使用 UEFI 固件模式，选择 “GPT” 作为分区方案。 如果你希望使用传统的 BIOS 模式，选择 “MBR” 作为分区方案。 目标系统： 如果选择 “GPT” 分区方案，目标系统应自动设置为 “UEFI (non CSM)”。 如果选择 “MBR” 分区方案，目标系统应自动设置为 “BIOS or UEFI”. 文件系统：选择 “FAT32”。 卷标：可以给你的 U 盘设置一个名称，比如 “Ubuntu_Install”。 启动创建：点击 “Start” 按钮，Rufus 会开始创建启动盘。过程大约需要几分钟。 BOIS 和 UEFI的区别BIOS（Basic Input/Output System）和UEFI（Unified Extensible Firmware Interface）是两种计算机固件接口，用于在操作系统启动之前初始化硬件和加载操作系统。它们在功能、性能和设计上有一些显著的区别。 BIOS，Basic Input/Output System 传统固件接口：BIOS是较早的固件接口，起源于20世纪80年代。 16位模式：运行在16位处理器模式下，具有1MB的地址空间限制。 MBR分区表：使用主引导记录（MBR）分区表，最多支持4个主分区，每个分区最大支持2TB。 启动速度较慢：由于初始化硬件的方式较为低效，启动速度较慢。 用户界面：通常是文本模式的界面，操作较为复杂。 扩展性差：扩展性和灵活性较差，难以适应现代硬件和软件的需求。 UEFI，Unified Extensible Firmware Interface 现代固件接口：UEFI是BIOS的继任者，设计初衷是替代BIOS，提供更丰富的功能和更好的性能。 32位或64位模式：运行在32位或64位处理器模式下，具有更大的地址空间。 GPT分区表：使用GUID分区表（GPT），支持更多的分区（最多128个），且每个分区可以超过2TB。 启动速度较快：初始化硬件的方式更高效，启动速度更快。 用户界面：支持图形用户界面（GUI），操作更加直观和友好。 扩展性强：具有更好的扩展性和灵活性，支持网络启动、远程诊断和修复等现代功能。 具体区别 启动过程： BIOS：在启动过程中，BIOS执行一系列的POST（Power-On Self Test）检查，然后查找并加载MBR中的引导代码。 UEFI：在启动过程中，UEFI固件会查找并执行EFI系统分区（ESP）中的引导管理程序，可以直接加载操作系统。 分区表支持： BIOS：仅支持MBR分区表，存在4个主分区的限制。 UEFI：支持GPT分区表，可以有更多的分区，且每个分区大小不受2TB限制。 硬件支持： BIOS：对现代硬件的支持有限，尤其在大容量存储设备和新型设备的支持上存在不足。 UEFI：设计时考虑了现代硬件的需求，支持更大容量的存储设备和多种新型设备。 安全性： BIOS：安全性较低，缺乏现代安全特性。 UEFI：支持Secure Boot等安全特性，防止恶意软件和未授权操作系统的启动。 BIOS和UEFI是两种不同的固件接口，UEFI是BIOS的继任者，提供了更丰富的功能、更好的性能和更强的扩展性。随着计算机技术的发展，UEFI已经成为现代计算机系统中广泛采用的固件接口，逐渐取代了传统的BIOS。 之前我不太关心这些，这次我听了ChatGPT的建议选择了UEFI、GPT、FAT32的选项，这也为我后面启动埋下了一个坑 再次安装这次无比顺利，将U盘设置为启动盘 选择语言 选择键盘 选择服务器类型Ubuntu Server 手动配置IP和网关 跳过代理设置 选择安装的盘符，注意别选错了，我这里是小心再小心，这是我最担心的一步了 输入主机名、用户名和密码 跳过升级Ubuntu Pro 安装OpenSSH Server 不勾选其他Feature安装 然后就等着安装完、更新完重启就行了 然后等它安装完我就等不及了，没等更新我就重启了，因为从早上捣鼓到下午了，然后电脑就打不开了，一直卡在开机界面，启动项也重新调整了，就是不起作用 解决开机问题每次开机屏幕就卡在下面这些信息上： No boot device avaiableCurrent boot node is set to BIOSPlease ensure aompatible bootable dedia is availableUse the system setup pargram to chaneg the boot mode as needed strlke F1 to retry boot, F2 for system setup, F11 for BIOS boot manager 一开始我总是把注意力放在最后一句，每个选项都尝试了也不行，找到两篇相关问题的解答，但是没解决问题 戴尔服务器安装Ubuntu系统时跳过strlke F1 to retry boot, F2 for system setup,F11 for BIOS boot manager解决方法 windowsServer2008开机出现strike f1 to retry boot，f2 for system setup ，f11 for BIOS boot manager 于是仔细看到这一句 “Use the system setup pargram to chaneg the boot mode as needed” 按F2 进入 System BOIS，将Boot Mode改为 UEFI 模式，成功进入系统，因为之前是BIOS，我制作的引导盘采用的是UEFI模式，后续买云服务器用的也是 Ubuntu 20.04 64位 UEFI版，保持统一吧 总结 保证开发环境、打包环境、运行环境一致，可以避免很多坑，这或许就是docker火起来的意义 使用系统自带的glibc版本，千万不要自己升级或降级，会引起连锁反应，这是很多前人给出的忠告 glibc的特点，兼容低版本的内容，所以理论上“低版本编译高版本运行”没问题，反过来一般不行，但存在特例 BIOS（Basic Input/Output System）和UEFI（Unified Extensible Firmware Interface）是两种计算机固件接口 UEFI是BIOS的继任者，提供了更丰富的功能、更好的性能和更强的扩展性，使用GUID分区表（GPT），支持更多的分区 Use the system setup pargram to chaneg the boot mode as needed ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 是你一直坚持走熟悉舒服的老路，过一眼望到头的人生，那看不见新的风景，遇不到新的经历也就怨不得别人了~ 2024-7-19 19:56:16]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>Dell</tag>
+        <tag>R620</tag>
+        <tag>glibc</tag>
+        <tag>BIOS</tag>
+        <tag>UEFI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[忙忙碌碌的混沌之中差点扑了个空而错过年中这条线]]></title>
+    <url>%2Fblog%2F2024%2F06%2F30%2F%E5%BF%99%E5%BF%99%E7%A2%8C%E7%A2%8C%E7%9A%84%E6%B7%B7%E6%B2%8C%E4%B9%8B%E4%B8%AD%E5%B7%AE%E7%82%B9%E6%89%91%E4%BA%86%E4%B8%AA%E7%A9%BA%E8%80%8C%E9%94%99%E8%BF%87%E5%B9%B4%E4%B8%AD%E8%BF%99%E6%9D%A1%E7%BA%BF%2F</url>
+    <content type="text"><![CDATA[前言突然意识到过完这个周末已经7月份了，他预示着我的2024年已经过半了，过年回家仿佛还是昨天的事情，怎么转眼间已经到了年中了。心里还是不愿承认这件事，翻开自己2024年的打卡清单，列表显示已经到了26周，从另一方面证明了年中这条线已经到来，再看看打卡清单上这惨不忍睹的“成果”，真的有点难以接受。 2024打卡清单是2023年终总结的产物，为的是将时间周期细化，每周记录自己的变化，分别从总结、刷题、跑步、读书来简单记录自己完成了哪些，如今看看这清单，已经有一个月没总结了、一个月没刷题了、2个半月没有读书了，跑步属于硬蹭，每周忙忙碌碌的奔跑我暂且将其归为跑步，否则这一两个月的打卡就是0蛋了。 一个规律行进的人突然出现了一两个月的空白一定是遇到了什么问题，也不算是找借口，我也来回忆一下这两个月究竟发生了什么，借口也罢、困难也罢，这些暂时都过去了。 初见端倪面对周围环境的不景气，同学们即将被毕业的传闻在2023年底传了出来，在真真假假的传闻过后，同组一位同学不得不离开去寻找新的出路，剩下的伙伴报团取暖，也在努力探索着的新的途径，忙忙碌碌工作到年底，随着新年的喜气洋洋的气息，毕业的寒风好像被冲淡了很多，但是新年回来后的工作热情并没有持续多久，就有更多悲观的信息陆续流传出来。 话说无风不起浪，这种环境下大家还是宁可信其有，不可信其无，也有不少人早早的开始做了准备，平时我也是会和大家聊聊做好总结，寻找新机会的话题，但接下来这次的毕业信息雷厉风行，4月中旬组内另一小伙伴在3天内毕业离开了，从此也拉开了我这最近两个月的混沌经历。 混沌初始随着并肩战斗的小伙伴被迫依次离开，其实剩下的人都如履薄冰，好在这股风已经刮了很久，大家在心里上没有很意外，无非是对未来出路的迷茫，虽然不知道自己什么时候离开，但是基本默认自己离开只是时间早晚的事。 而这段时间我在做什么呢？简单来说就是总结加准备吧，因为项目组是有游戏在线上运行的，不管后续项目组的人要怎样处理，必然涉及到项目的整理和交接，所以提早做准备免得最后被毕业时手忙脚乱吧。 当然这段时间还没到真正混乱时刻，我还在接触新的知识，比如Go的语法、新的框架、帧同步，k8s，AI应用等等，就这样在边总结、边准备的情况下，我的时间来到了五一劳动节，平稳的度过了这个节日，而混沌的经历也从此开始。 力不从心自劳动节过完从河北回京，到端午结束从天津回京，这一个月的时间，真正的体会了一次力不从心的感觉，老人生病，带着挂号、看病、预约检查、手术排期、住院，最多一天跑3家医院。而我也迎来了毕业通知，准备办理离职、项目交接、指定方案、反复沟通、新工作的寻找，办卡。小孩子看病、挂号、运动会的参加、儿童节参与、跟老师的互动和沟通。租住的出租屋要换上下水管道，要有人盯着。老家的麦收，农忙，播种，全家人多地的来回奔波。其中很多事情我并没有参与多少，这都是一家人一起挺过来的，但是真的心累，累的不行，每天歇下来时只想睡觉，好在事情一件一件地解决了。 这也是为什么最近这段时间的生活打卡清单上只有“跑步”这一项了，每天都是风风火火的奔跑忙碌。 心力交瘁因为之前意识到要做项目交接，所以上文提到我已经做了准备，对于数据的交接基本没什么问题，但是数据量巨大，每次同步得10个小时左右，只要有一点问题那便是再花费个10小时，另外工作流程的移交才是交接工作的难点。 时间来到了6月初，已经完成了数据交接，并在月初按预定计划申请了交接的各类账号和权限，其中各种求爷爷告奶奶的心酸只有自己才懂，最后一天因数据同步验证问题忙到了很晚，没有拿到离职证明，不得不第二周星期一办完最后手续，本来以为在入职新公司前这段时间可以好好休息一下了，不曾想去拿离职证明那天却是我接下来一个月最轻松的一天。 6月份这将近一个月对我的洗礼不仅是知识层面的，更多的是精神上的，作为游戏服务端的主程，对比之前的执行大兵，免不了要处理团队内外沟通的事情，相比之前闷头开发时的纯粹真的是累了很多，但是这一个月的洗礼让我认识到，跟人打交道真的必跟计算机打交道累的太多了。 很多流程只能按照规章制度办，但是如果你的权限足够高，或者你有一个可以说得上话的领导，那么这些规章制度就可以靠边站，流程也可以特批特办，倒不是说去做违规的事，比如半夜12点让流程线上的人帮你审批多少有点不近人情，并且大半夜的你也找不到人，但是在紧急情况下，你如果可以联系到对方的领导，还是可以紧急特批特办的，毕竟是合规的事情，也不需要担什么风险，只是一个大头兵对于半夜卡流程这件事一般还是推不动的，只能向上反映。 这一个月说了太多的好话，请了太多的人帮忙，走了太多的审批流，特批了太多的紧急状况，吃了太多的外卖，过去几年我都没吃这么多外卖，回望上周的工作总结，我觉得自己就是个超人，这工作强度已经赶上前年出版本，以及去年上线测试时的强度了，这种活真的挺难干的，一方面是专业技能的掌握，而另一方面也考验着人际关系。 拾遗补缺最近这一个月的工作环境错综复杂，工作地点就换了好几次，有过忍饥挨饿，也有过通宵处理，有时连最基本的网络都保证不了，原本一个月都用不了3个G流量的我，这个月竟然破天荒的使用了20多个G，虽然有很多需要靠人际关系才能解决的问题，但是也有很多专业性的问题，即使不是第一次遇到，也有了新的认知和理解，所以简单罗列下，作为后续深入理解的源头吧。 首先是网络Vlan的搭建，重温了子网的划分与设计，网络拓扑查看，无线网与有线网的连通，3层路由器与二层交换机的数据转发，IP与MAC地址的绑定，DHCP的配置与地址池的设定，CentOS和Ubuntu静态IP的配置，WiFi6对老旧网卡的不兼容性。 Dell R620服务器的基本硬件构成，iDrac接口的IP配置和用户信息配置，通过iDrac对机器的功率、温度、硬盘的监控，服务器硬盘的保护，服务器周围环境注意的问题，温度的控制，UPS电源的选择等等。 Raid的构成和分类，独立硬盘冗余阵列 Raid0、Raid1、Raid2、Raid3、Raid4、Raid5、Raid6、Raid10、Raid50、Raid100等，根据情况不同，选择不同的配置，但是2、4、6好像很少用，而比较中庸的Raid5是常常出现的选择，可以容忍一块硬盘损坏，出现问题后，将损坏的硬盘取下，换上Dell原装硬盘可以自动重建。 gitlab备份和还原，解决git库迁移是lfs check出错的问题，svn服务器备份，svn在linux环境下保存密码，Linux查看硬件配置dmidecode，查看硬盘信息，第一次完成硬盘挂载，虚拟机向物理机同步数据，rysnc-daemon模式的配置。 docker环境下搭建jenkins，gitlab，svn等，docker虽然可以挂在硬盘保证数据不丢失，但是如果出现镜像内访问外部服务实现起来会比较麻烦，如果访问镜像内原本没有的程序也比较麻烦，举个例子，用docker搭建gitlab，只对外提供访问，可以很方便的实现，也能快速升级，但是docker搭建jenkins就很麻烦了，单独的jenkins镜像缺少某些特定工具，并且作为打包环境需要经常访问其他的服务，放在容器中我感觉不太方便。 在一天之内接触了4种苹果类型的设备，这是之前都没碰过的，iMac、Mac Studio、Mac Mini、黑苹果，了解了Darwin名字的来源，Mac Os系统的变迁，我觉的“访达”这个对Finder的翻译非常棒，苹果打包所需的Unity和XCode的安装，jenkins-lts的安装，MacOs的开机启动程序，jenkins版本的替换，Java11的安装，Grooxy语法等。 服务器的迁移，注意应用程序目录的数据迁移，还有用户目录下各个隐藏文件的迁移，比如.ssh、.subversion、.gitconfig 等等，这决定你是否可以用新机器完全替代旧机器。 Microsoft Intune的认证、Mac系统公司门户的认证，VPN远程访问，办公网、研发网，解决WOA无法登录问题，网络验证授权等。 总结 2024年已经过半，突然间才发现今年已经过了26周，而最近的打卡清单缺惨不忍睹 辛苦奔忙的一个月让自己感觉力不从心，而最近过渡的一个月仿佛让自己又回到了备战上线时的强度 程序员的工作本来只费身体和脑子，最近接触的人有点多，感觉心也跟着累了 人际关系的积累不是一朝一夕能实现的，而技术知识的学习却可以速成，多总结吧 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 但凡是由人操作的流程，都可以有一些例外，当你被告知仅能等待流程审批时，说明你还不够硬，起码没有硬到可以帮你特批的地步~ 2024-6-30 22:45:56]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>年中</tag>
+        <tag>2024</tag>
+        <tag>离职</tag>
+        <tag>新起点</tag>
+        <tag>人际关系</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[有关服务器安全的反思]]></title>
+    <url>%2Fblog%2F2024%2F05%2F28%2F%E6%9C%89%E5%85%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8%E7%9A%84%E5%8F%8D%E6%80%9D%2F</url>
+    <content type="text"><![CDATA[前言人都说学的越多，不懂的东西也就越多，很多人都会有这个感受，面对信息爆炸的互联网时代，有种“学不完，根本学不完”沧桑无力感，最近有关服务器安全的了解又扩展了我的知识面，填补了部分认知盲区，究竟什么是服务器安全？ MySQL数据库的安全这是前段时间的疑问，《linux环境下如果掌控了系统root账户就能对上面安装的MySQL数据为所欲为了吗》，当时出现这个疑问是因为安装完MySQL数据库，提示我有这样一样配置文件 /etc/mysql/debian.cnf，打开文件内容展示如下： 1234567891011# Automatically generated for Debian scripts. DO NOT TOUCH![client]host = localhostuser = debian-sys-maintpassword = xg9vyvjNly3vUSsmsocket = /var/run/mysqld/mysqld.sock[mysql_upgrade]host = localhostuser = debian-sys-maintpassword = xg9vyvjNly3vUSsmsocket = /var/run/mysqld/mysqld.sock 明明白白的写着用户名和密码，当时感觉不可思议，这数据库不是轻松就被破解了吗？事实确实如此，因为你是root用户，即便没有这个配置文件，你也可以通过修改MySQL配置重启服务来跳过密码，所以如果你拿到root密码，那么你就是这服务器世界的主宰，你就可以为所欲为。 物理服务器假设你没有服务器root用户密码，或者忘记了服务器root密码要怎么办呢？你可以在开机的时候按e修改grub的kernel行到single模式下，就可以轻易获得root权限，并且能够改root密码，有没有颠覆你的认知。什么？任何人只要重启下服务器就把我的root密码改了？这是真的吗？这确实是真的。 下面我摘录了一些网友的回复，挺逗的，但仔细想想说的很有道理 能接触到物理机的，都别说什么安全 这个事吧，放在机房的玩意有个不成文的规矩：能物理摸到的设备都允许你重置密码。 90年代的一句老话：能物理摸到设备的人，都可以看作是这台设备的主人。 Linux：我就是一个软件，你搞物理袭击，讲武德吗？ 退一万步说，就算在机器旁边也不能重设密码，那把硬盘拆了拿回去不也一样？ 物理安全是信息安全的基础。摸到你机器了，还谈什么安全。 日常运维或者使用当中需要面临的更大的挑战是丢失了，改错了密码。从我的经验来看，丢失密码的机会比丢失硬件的机会大至少100倍 比如海底电缆可以被剪断，怎么保证安全性？ 为什么要这样设计呢？仔细想想也能明白个大概，就是能触碰到物理机的人一定默认拥有所有权，他去改密码一定是到了不得不改的情况，如果你非说改密码的人是偷偷进去的，那是保安的责任，Linux系统不背这个锅！ 机器设计有一个规矩就是机器的物理持有者对机器拥有事实上的超管理员权限。比如说路由器背后的reset。比如说主板cmos清除针。因为事实上，管理员忘记密码往往比密码受到黑客攻击更常见，造成的损失也更大。至于提数据加密的，那是另一个话题，我们这里说的是操作权。黑客无法窃取你用bitlocker加密的数据，但这不妨碍他把你数据删光，所以从这个角度上，bitlocker不能保证你的数据安全，它保证的只是不泄密。 所以看到这些是不是就释然了，系统保证的安全是建立在物理机安全的基础之上的，连机器都在人家手里，还谈什么安全呢？ 总结 在Linux系统上如果登录了root用户就可以为所欲为进入任何一个MySQL数据库 如果摸到了物理服务器默认你就是它的主人，你可以通过很便捷的方式来修改它的密码 物理安全是信息安全基础，Linux就是一个软件，你搞物理偷袭它可扛不住 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 凡是人总有取舍，你取了你认为重要的东西，舍弃了我，这只是你的选择而已，若是我因为没有被选择，就心生怨恨，那这世界岂不是有太多不可原谅之处，毕竟谁也没有责任要以我为先，以我为重，无论我如何希望也不能强求。 2024-5-27 21:16:17]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>root</tag>
+        <tag>安全</tag>
+        <tag>密码</tag>
+        <tag>物理机</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[面对AI你到底能做什么？怎样能让其为我所用]]></title>
+    <url>%2Fblog%2F2024%2F05%2F07%2F%E9%9D%A2%E5%AF%B9AI%E4%BD%A0%E5%88%B0%E5%BA%95%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F%E6%80%8E%E6%A0%B7%E8%83%BD%E8%AE%A9%E5%85%B6%E4%B8%BA%E6%88%91%E6%89%80%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[前言面对AI铺天盖地的新闻，大有替代万事万物的之势，但如果要问AI能做什么？你是否会在心里打个问号？它好像只能用来聊天，又好像什么都能做，ChatGPT现在是我每天都要使用的工具，每天只是对话问问题，特定领域的问题确实比搜索引擎更精准一些，但是对AI的使用也就仅限于此，难道AI只有这么大点能力吗？ 仔细想想不是的，起码还有Midjourney这个生成图的应用，还有Sora 这个文本转视频的工具，但是在这些工具出现之前我怎么就没想到呢？我们是不是可以抛弃这种被动使用的局面，自动动手做一些AI方面的应用呢？答案是肯定的，之前没做出来是因为我们没有这样想过，一旦开了这个头，你会发现AI真的可以做很多东西！ 思路引导究竟怎么开始呢？先得找到需求，然后实现需求。作为一个程序员我们就从程序编码的例子出手，我们都会算两个数的加法，一开始数据比较小，需求计算的总量也比较小，所以口算、笔算都能满足需求，随着应用场景的增加，数据量也越来越大，那么人工计算就有些力不从心了。 这时作为以懒著称的程序员转了转脑筋，干脆实现一个加法计算器吧，需要计算时我把两个数字输入进去，直接就能得到结果，大大加快了计算速度 1234567891011121314#include&lt;iostream&gt;using namespace std;int add(int a, int b) &#123; return a + b;&#125;int main() &#123; int num1, num2; cout &lt;&lt; "请输入两个整数：" &lt;&lt; endl; cin &gt;&gt; num1 &gt;&gt; num2; cout &lt;&lt; "两数之和为：" &lt;&lt; add(num1, num2) &lt;&lt; endl; return 0;&#125; 我们使用已经掌握的代码知识，解决了现有的需求，提高了工作效率，那么AI相关的应用要怎么样实现呢？ 为AI找活干在创建AI应用之前，我们先来想想AI的特点，或者局限一点，想想ChatGPT的特点：语言理解与知识问答、逻辑推理与数学问题解答、编程代码的理解与编写、智能教育产品、儿童英语教育等等，我们抓住其中一点，来完成我们的工作，比如语言理解。 想想在学校时是否经常需要总结文章大意？看材料时是否经常需要概括全文思想？这些事不正是AI所擅长的吗，如果我们偷懒会把要总结的内容告诉ChatGPT，让它帮我们总结一下，第二天又有这个题目，再次告诉ChatGPT，让它帮我们总结一下，有没有发现？我们又陷入了经常做重复工作的情景，怎么抽象出一个需求呢？ 需求就是：实现一个应用，接受输入一段文字，20个字概括文字内容的大意，要求总结文字通俗易懂、言简意赅 这仿佛变成了我们上面的add函数，只是总结的过程是调用AI来完成的，我们只需要输入一段文字就能得到总结性输出，去除了中间多余的人工步骤 具体实现面对这个AI需求，我们可以利用ChatGPT的API接口从头搭建一个接受输入和返回输出的应用，类似实现一个 add 函数，也可以利用一些开放平台的能力，比如 讯飞开放平台，通过低代码的形式来快速搭建AI应用。 登录讯飞星火SparkDesk产品首页，在左上角，点击进入“助手中心” 在星火助手中心页面，点击右上方“助手创作中心” 在助手创作中心，点击“立即创建”，进入新建助手页面，开始创建助手的创建之旅 接下来的内容就自己探索吧，根据需求在左侧填写内容，右侧可以进行调试，觉得运行还不错的话可以点击创建按钮，也可以上架后给更多人使用至此，一个利用AI特点制作的应用就完成了，虽然很简单，但是开启了一个怎样使用AI的时代，话说我之前真不知道怎么用AI，做平台的这些人脑子真是太灵光了 总结 AI不是万能的，要学会利用AI，合理掌控AI为我所用 利用AI庞大知识库的特点，进一步封装成特定的应用，可以更好的满足需求 完事开头难，有时不是你不会，只是你不知，一旦开了头便打开了一扇窗 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 面对未知的状况，每个人心里都会有些小九九，根据自己的状况做出合适的选择，一旦选了便不需再回头，水有舟可渡，山有路可行~ 2024-5-6 21:41:21]]></content>
+      <categories>
+        <category>AI</category>
+      </categories>
+      <tags>
+        <tag>人工智能</tag>
+        <tag>AI</tag>
+        <tag>Thinking</tag>
+        <tag>卖铲子</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[帧同步入门项目LockstepDemo的初步学习]]></title>
     <url>%2Fblog%2F2024%2F04%2F25%2F%E5%B8%A7%E5%90%8C%E6%AD%A5%E5%85%A5%E9%97%A8%E9%A1%B9%E7%9B%AELockstepDemo%E7%9A%84%E5%88%9D%E6%AD%A5%E5%AD%A6%E4%B9%A0%2F</url>
     <content type="text"><![CDATA[前言上一篇文章介绍了 LockstepDemo 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。 基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送确认包才执行帧数据，否则所有人等待，也就是一卡全卡。 基于现在手游的流行程度和弱网环境，手游一般都采取乐观锁模式。即收到服务器推帧后，客户端立即执行，不等待其他人。这样卡顿的人自己卡，不影响其他人的游戏体验。同时卡顿的人在收到数据后，自行加速补帧来追赶上正确的游戏速度。 连帧同步都出SDK了插播一条消息，今天在搜索帧同步资料的时候，无意间发现了游戏巨头——腾讯居然发布了帧同步SDK-LockStep，简直“丧心病狂”，真的是盘子大了什么都做啊，不过也挺好，我可以从中学到不少问题的处理方案，我摘抄官方文档部分内容，感兴趣的可以去看看 帧同步（LockStep）服务为手游开发提供一套快速、可靠的帧同步游戏开发框架。基于GCloud云服务进行快速部署，同时支持TCP、UDP、RUDP三种通道。帧同步开发框架提供一致性数学库与一致性检测工具，并且针对弱网设计具有高可靠、低延时的特性。 帧同步与更为传统的状态同步均为游戏常见同步方案，主要区别在于：状态同步主要逻辑计算放在服务器端，将计算结果下发给客户端；而帧同步服务器仅仅起到收集客户端输入并广播的作用。基于帧同步相对状态同步流量消耗更低、开发效率更高、打击感更好等优点，《王者荣耀》选择了帧同步方案。 《拳皇命运》项目从完全不熟悉帧同步技术的情况下，接入SDK仅用了两个月时间，将原有状态同步游戏，改造成为帧同步游戏；项目仅需编写游戏逻辑，无需关心同步、网络品质、录像回放等核心功能。 专业的事情交给专业的人来做，如果之前没有积累，将这套SDK直接拿过来用也是不错的，我看到支持C++和C#两种语言，其他的语言就得自己去沟通了 LockstepDemo言归正传，开始阅读LockstepDemo这个项目的源码，服务端app.js使用node运行，前端main.js+main.css+index.html，在浏览器中运行，其实主要的逻辑代码就在main.js中，后端就只有app.js一个文件，总共166行，前端还引用了jquery.min.js和socket.io.js两个库文件，但包含主要逻辑代码的main.js文件仅有328行。 在开始阅读自定义逻辑代码之前先来看看引用的这两个库： socket.io.js负责网络的建立、管理，消息的发送等等，看了逻辑中的调用真的是挺方便的 var io = require(&quot;socket.io&quot;)(server）: 创建基于 Node.js 的 WebSocket 服务器，并将其绑定到了一个 HTTP 服务器实例 server 上 io.on(&#39;connection&#39;, function (socket) {...]): 使用Socket.IO 的服务器实例的 on 方法来监听客户端与服务器建立连接的事件 socket.on(&#39;join&#39;, function(account) {...}): 使用与客户端建立的连接的对象 socket 的 on 方法来监听客户端发送的 ‘join’ 事件 socket.emit(&quot;open&quot;, {...}): 使用了 Socket.IO 库的 emit 方法来向当前客户端发送一个名为 “open” 的自定义事件，并附带自定义对象作为数据 socket.broadcast.emit(&#39;system&#39;, ...): 用于向除当前连接的客户端之外的所有客户端发送消息 io.sockets.emit(&#39;start&#39;, {...}): 用于向所有连接的客户端发送消息 jquery.min.js即使没有做过前端，jQuery这个库的大名也应该听过，它是一个流行的 JavaScript 库，简化了在网页开发中的 JavaScript 编程。它提供了一系列功能强大且易于使用的 API，使得诸如 DOM 操作、事件处理、动画效果、AJAX 请求等任务变得更加简单和高效，主要特点如下： 简化 DOM 操作：提供了简洁而强大的 DOM 操作方法，使得选择元素、修改元素属性、添加/删除元素等操作变得更加便捷 事件处理：提供了简单易用的事件处理方法，可以方便地为元素绑定事件、移除事件、触发事件等，大大简化了事件处理的代码编写 动画效果：提供了丰富的动画效果和特效，可以通过简单的方法实现页面元素的平滑过渡、淡入淡出、滑动等效果，为用户提供更流畅的交互体验 AJAX 请求：提供了简洁的 AJAX 方法，可以方便地进行异步数据加载和交互，从而实现更灵活和动态的网页内容加载和更新 跨浏览器兼容性：封装了复杂的跨浏览器兼容性处理，使得开发者可以更加轻松地编写跨浏览器兼容的代码 简单来说它就是一个封装了常用操作的库，稍后会在main.js发现它的使用方法，简单摘录如下： 文档加载完成事件：$(function () {...}) 用于在文档加载完成后执行的函数，这是 jQuery 的快捷方式，等同于 $(document).ready(function() {...})，表示在 DOM 树构建完成后执行指定的函数 元素选择：$(&#39;body&#39;)、$(&#39;#start_btn&#39;)、$(&#39;#reconnect_btn&#39;) 等通过 jQuery 选择器选择了 HTML 元素。这些选择器能够基于元素的标签名、ID、类名等来选择元素，返回 jQuery 对象，以便进行后续的操作 事件处理：$(&#39;body&#39;).keydown(function(e) {...}) 注册了键盘事件处理函数，当键盘按键按下时执行相应的操作 动画效果：$(&quot;#tips&quot;).animate({...}) 使用了 jQuery 的动画效果，在提示框显示时执行动画效果，让提示框从屏幕中间上方滑动到屏幕中间 样式操作：$(&quot;#tips&quot;).show()、$(&quot;#tips&quot;).fadeOut() 等使用了 jQuery 提供的方法来控制元素的显示和隐藏 在阅读app.js和main.js之前还是得说明一下，今天只介绍核心逻辑，像断线重连、消息提示、显示网络延迟等功能，都是在核心逻辑上的补充和优化，可以先忽略不看，并且这次看代码发现，整个运动的表现和实现逻辑是符合牛顿第一定律的，真的挺有意思： 一切物体总保持匀速直线运动状态或静止状态，直到有外力迫使它改变这种状态为止 这只是这个项目的特点，并不是所有的游戏都是这样的，有些游戏的实现就是和这惯性定律相违背的，比如很多游戏必须一直拖动摇杆才会移动，否则就会停住静止，它们所表达出来的就是，“力是维持物体运动的关键”，好了，扯得有点远了，一起看看代码实现吧 服务器app.js1234567891011121314var server = require('http').Server()var io = require("socket.io")(server, &#123; allowEIO3: true, cors: &#123; origin: ["http://127.0.0.1:8080", "null"], methods: ["GET", "POST"], credentials: true // 设置为true以允许使用凭据 &#125;&#125;);// 监听3000端口server.listen(3000, function()&#123; console.log("服务器启动成功，监听端口3000")&#125;) 定义服务器实例，启动并监听3000端口，这里已经做了跨域允许访问的配置 1234567891011121314var g_onlines = &#123;&#125; // 所有在线玩家var g_commands = new Array() // 指令数组var g_commands_histroy = new Array() // 历史指令，用于断线重连var g_joinCount = 0 // 已准备的人数var g_maxJoinCount = 2 // 最大人数var g_stepTime = 0 // 当前step时间戳var g_stepInterval = 100 // 每个step的间隔ms// 游戏状态枚举var STATUS = &#123; WAIT:1, START:2&#125;var g_gameStatus = STATUS.WAIT 一些游戏全局变量和游戏状态枚举的定义，注释写的很详细，记一遍看下面的逻辑时能想起来就行 12345678910111213141516171819202122// frame定时器var stepUpdateCounter = 0function update(dt) &#123; var now = Date.now() if(g_gameStatus == STATUS.START) &#123; stepUpdateCounter += dt if(stepUpdateCounter &gt;= g_stepInterval) &#123; g_stepTime++ stepUpdate() stepUpdateCounter -= g_stepInterval &#125; &#125;&#125;// 启动定时器var lastUpdate = Date.now()setInterval(function() &#123; var now = Date.now() var dt = now - lastUpdate lastUpdate = now update(dt)&#125;) 开始进入主要逻辑，lastUpdate是上次走过的时间，在游戏开始g_gameStatus == STATUS.START后不断将 dt 积累到变量 stepUpdateCounter，超过一帧的间隔后执行一帧逻辑 stepUpdate()，setInterval 是内部函数，第二个参数表示调用的时间间隔，默认为0，可以可以认为是游戏中常用的 tick() 函数 12345678910111213141516171819202122232425// step定时器function stepUpdate() &#123; // 过滤同帧多次指令 var message = &#123;&#125; for(var key in g_onlines) &#123; message[key] = &#123;step:g_stepTime, id:key&#125; &#125; for(var i = 0; i &lt; g_commands.length; ++i) &#123; var command = g_commands[i] command.step = g_stepTime message[command.id] = command &#125; g_commands = new Array() // 发送指令 var commands = new Array() for(var key in message) &#123; commands.push(message[key]) &#125; g_commands_histroy.push(commands) for(var key in g_onlines) &#123; g_onlines[key].socket.emit('message', new Array(commands)) &#125;&#125; 这是转发客户端操作的核心函数，首先是遍历所有玩家 g_onlines，执行 message[key] = {step:g_stepTime, id:key} 为每个玩家构建一个空指令，然后遍历当前收到的所有命令 g_commands，将命令的帧值设置为当前帧，并且过掉一帧中的多个指令，保证一帧只能朝一个方向运动，将收集到的所有指令 commands 通过 socket.emit() 函数发送给所有玩家 g_onlines 1234567891011121314io.on('connection', function (socket) &#123; socket.emit("open", &#123;id:socket.id, stepInterval:g_stepInterval&#125;) // 获取用户账户 function getAccount(socketId) &#123; for(var key in g_onlines) &#123; if(socketId == g_onlines[key].socket.id) &#123; return key &#125; &#125; &#125; //...&#125;) 这是服务器上所有事件监听的基础，io 监听新玩家连接事件，建立连接后向客户端发送一个名为 “open” 的自定义事件，并附带了一个包含 id 和 stepInterval 属性的对象作为数据，id的值是 socket.id，stepInterval表示每帧的时间间隔，getAccount() 函数的作用通过socket.id获取账号名 12345678910111213141516171819202122232425262728293031323334353637socket.on('join', function(account) &#123; // 顶号/断线重连 if(g_onlines[account]) &#123; g_onlines[account].socket.emit('system', "被顶号了") g_onlines[account].socket.disconnect() if(g_gameStatus == STATUS.START) &#123; g_onlines[account] = &#123;socket: socket, online: true&#125; socket.emit('join', &#123;result:true, message:"正在断线重连..."&#125;) console.log(account, "重连游戏") socket.broadcast.emit('system', account + "重新连接！") socket.emit('start', &#123;player:Object.keys(g_onlines)&#125;) socket.emit('message', g_commands_histroy) return &#125; &#125; // 房间已满 if(g_joinCount == g_maxJoinCount) &#123; console.log("房间已满", account, "加入失败") socket.emit('system', "房间已满") socket.disconnect() return &#125; // 加入游戏 if(g_joinCount &lt; g_maxJoinCount) &#123; console.log(account, "加入游戏") socket.emit('join', &#123;result:true, message:"匹配中..."&#125;) g_onlines[account] = &#123;socket: socket, online: true&#125; g_joinCount++ &#125; // 开始游戏 if(g_joinCount == g_maxJoinCount) &#123; g_commands = new Array() g_commands_histroy = new Array() g_gameStatus = STATUS.START io.sockets.emit('start', &#123;player:Object.keys(g_onlines)&#125;) &#125;&#125;) 这是监听socket收到 &#39;join&#39; 事件的处理函数，实现逻辑有些技巧，通过查询账号是否已经登录过服务器，来判定是否为重连，如果为重连则一次发送 &#39;join&#39;、&#39;start&#39;、&#39;message&#39;事件和数据，其中 &#39;message&#39; 事件中的数据是从游戏开始以来的所有指令 如果不是重连就要判断匹配人数，超过到 g_maxJoinCount 不允许进入，达到g_maxJoinCount游戏开始，通知客户开始游戏，否则通知客户端正在匹配中 12345678910111213socket.on('timeSync', function(time) &#123; socket.emit('timeSync', &#123;client:time, server:Date.now()&#125;)&#125;)socket.on('message', function(json) &#123; if(g_gameStatus == STATUS.START) &#123; // TODO:过滤高延迟的包 (json.step) json.id = getAccount(socket.id) if(json.id) &#123; g_commands.push(json) &#125; &#125;&#125;) socket.on(&#39;timeSync&#39;, function(time) {...}) 收到后立即返回，用于客户端计算延迟，socket.on(&#39;message&#39;, function(json) {...})，收到客户端指令后将其放入全局缓存指令，等待每帧处理 1234567891011121314151617181920212223socket.on('disconnect', function () &#123; var account = getAccount(socket.id) if(account) &#123; g_onlines[account].online = false console.log(account, "离开游戏") var isGameOver = true for(var key in g_onlines) &#123; if(g_onlines[key].online) &#123; isGameOver = false &#125; &#125; if(isGameOver) &#123; io.sockets.emit('system', "游戏结束") g_joinCount = 0 g_stepTime = 0 g_gameStatus = STATUS.WAIT g_onlines = &#123;&#125; console.log("游戏结束") &#125; else &#123; io.sockets.emit('system', account + "离开了游戏！") &#125; &#125;&#125;) socket.on(&#39;disconnect&#39;, function () {...}) 断开连接是否要结束游戏的处理逻辑，如果在玩家断开后还有其他玩家在线，则游戏继续，等待玩家重连回来，否则有些结束 完整的游戏代码就这么多，还是比较清晰的，记住服务器上监听和发送的各种事件，比如 &#39;join&#39;、&#39;start&#39;、&#39;message&#39;、&#39;disconnect&#39; 等，一会再客户端代码分析的时候也会出现，对照着分析逻辑就串起来了 客户端main.js客户端的代码行数相对多一些，我只把重要的部分列举出来： 1234567891011121314151617181920212223242526272829303132333435363738394041// 游戏对象var GameObject = function(id) &#123; this.id = id this.x = 0 this.y = 0 this.direction = DIRECTION.STOP this.speed = 100 this.move = function (dt) &#123; dt = dt / 1000 var x = this.x var y = this.y switch(this.direction) &#123; case DIRECTION.UP: &#123; y -= this.speed * dt break &#125; case DIRECTION.DOWN: &#123; y += this.speed * dt break &#125; case DIRECTION.LEFT: &#123; x -= this.speed * dt break &#125; case DIRECTION.RIGHT: &#123; x += this.speed * dt break &#125; &#125; if(x &lt;= (WIDTH - BOX_SIZE) &amp;&amp; x &gt;= 0) &#123; this.x = x &#125; if(y &lt;= (HEIGHT - BOX_SIZE) &amp;&amp; y &gt;= 0) &#123; this.y = y &#125; &#125;&#125; 这段代码定义了一个函数，该函数可以用来创建游戏对象（Game Objects）的实例，在 JavaScript 中，函数也可以用来定义对象的构造函数。在这个例子中，函数 GameObject 就是一个构造函数，用于创建具有特定属性和方法的游戏对象。当你使用 new GameObject(id) 来调用这个函数时，它会返回一个新的对象实例，该实例拥有指定的 id、x、y、direction、speed 属性以及 move() 方法，尽管这段代码中的 GameObject 是一个函数，但它被设计用来创建具有特定属性和行为的对象。 12345678910111213141516171819202122232425262728293031$(function () &#123; // 画布 var context = document.getElementById("canvas").getContext("2d") // 每个step的间隔ms，服务器返回 var stepInterval = 0 // 当前step时间戳 var stepTime = 0 // 输入方向 var inputDirection = null // 游戏状态 var gameStatus = STATUS.WAIT // 接受指令 var recvCommands = new Array() // 所有游戏对象 var gameObjects = &#123;&#125; // 是否连接socket var isConnected = false // 当前执行中的指令 var runningCommands = null // 当前用户 var currentAccount = null // 是否正在加速运行延迟到达的包 var isFastRunning = false // 初始化UI显示 $("#content").hide() $("#login").show() $("#tips").hide() //...&#125;) 这是利用jQuery库的写法，等同于 $(document).ready(function() {...})，表示在 DOM 树构建完成后执行指定的函数，也就是每次加载完页面都会执行这个函数，这个函数里包含了客户端绝大部分逻辑，函数的开始定义了一些变量，用于记录游戏数据，具体含义参考注释即可，之后便初始化了界面显示 123456789101112131415161718// 连接socketsocket = io.connect('http://127.0.0.1:3000')// socket连接成功socket.on('open', function(json) &#123; isConnected = true stepInterval = json.stepInterval id = json.id console.log("Socket连接成功：", id) // 断线重连自动登录 if(localStorage.account) &#123; setTimeout(function () &#123; $("#account").val(localStorage.account) localStorage.account = "" $('#start_btn').click() &#125;, 0) &#125;&#125;) 使用 socket = io.connect(&#39;http://127.0.0.1:3000&#39;) 语句连接服务器，再接收到 &#39;open&#39; 事件之后，使用服务器同步数据给客户端变量赋值，函数末尾是根据本地存储情况决定是否需要重连，这部分逻辑可以先不看 12345678910111213141516171819202122// 收到游戏开始事件socket.on('start',function(json) &#123; // 初始化GameObject for(var i = 0; i &lt; json.player.length; ++i) &#123; var id = json.player[i] gameObjects[id] = new GameObject(id) &#125; gameStatus = STATUS.START stepTime = 0 showTips("游戏开始")&#125;)// 收到指令socket.on('message',function(json)&#123; // 储存收到的指令 for(var i = 0; i &lt; json.length; ++i) &#123; var command = json[i] recvCommands.push(command) stepTime = command[command.length - 1].step console.log("**** recv " + stepTime + " ****") &#125;&#125;) 收到游戏开始事件&#39;start&#39;之后，根据服务器下发的数据创建游戏对象 gameObjects[id] = new GameObject(id)， 收到&#39;message&#39;缓存服务器发送的指令到 recvCommands 中，后续在tick函数中处理 123456789101112131415161718192021222324252627282930313233343536373839404142434445// 发送指令function sendCommand() &#123; if(isFastRunning) &#123; console.log("正在加速执行延迟包，无法发送指令！") return &#125; var direction = inputDirection socket.emit("message", &#123; direction: direction, step:stepTime, &#125;)&#125;// 键盘事件$('body').keydown(function(e) &#123; if(gameStatus != STATUS.START) return switch(e.keyCode) &#123; case 38: &#123; inputDirection = DIRECTION.UP break &#125; case 40: &#123; inputDirection = DIRECTION.DOWN break &#125; case 37: &#123; inputDirection = DIRECTION.LEFT break &#125; case 39: &#123; inputDirection = DIRECTION.RIGHT break &#125; case 13: &#123; inputDirection = DIRECTION.STOP break &#125; &#125; sendCommand()&#125;) 监听键盘按键，键盘上下左右键移动方块，回车键停止方块，每次将按键指令发送给服务器，重点看下这段实现，这就涉及到我们前边提到的牛顿第一定律，也就是每次按键时向服务器发送一次，可以改变物体的运动方向或者停止，之后便不再向服务器发消息了 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465// frame定时器var stepUpdateCounter = 0function update(dt) &#123; if(gameStatus == STATUS.START) &#123; // TODO: 逻辑/UI分离 stepUpdateCounter += dt if(stepUpdateCounter &gt;= stepInterval) &#123; stepUpdate() stepUpdateCounter -= stepInterval &#125; // 积攒的包过多时要加速运行 var scale = Math.ceil(recvCommands.length / 3) if(scale &gt; 10) scale = 10 isFastRunning = (scale &gt; 1) // 执行指令 if(recvCommands.length &gt; 0) &#123; var ms = dt * scale if(runningCommands == null) &#123; runningCommands = recvCommands[0] runningCommands.ms = stepInterval &#125; if(runningCommands.ms &lt; ms) &#123; ms = runningCommands.ms &#125; for (var i = 0; i &lt; runningCommands.length; i++) &#123; var command = runningCommands[i] if(runningCommands.ms == stepInterval) console.log(command) var obj = gameObjects[command.id] if(command.direction) &#123; obj.direction = command.direction &#125; obj.move(ms) &#125; runningCommands.ms = runningCommands.ms - ms if(runningCommands.ms == 0) &#123; recvCommands.shift() runningCommands = null &#125; &#125; // 绘制 context.clearRect(0, 0, WIDTH, HEIGHT) for(var key in gameObjects) &#123; var obj = gameObjects[key] context.fillStyle = "#000000" context.fillRect(obj.x, obj.y, BOX_SIZE, BOX_SIZE) context.font = "15px Courier New"; context.fillStyle = "#FFFFFF"; context.fillText(key, obj.x, obj.y + BOX_SIZE, BOX_SIZE); &#125; &#125;&#125;// 启动定时器var lastUpdate = Date.now()setInterval(function() &#123; var now = Date.now() var dt = now - lastUpdate lastUpdate = now update(dt) if(isConnected == true) &#123; socket.emit("timeSync", now) &#125;&#125;) 这段代码是客户端的核心逻辑，需要多看几遍，看懂了这一段，帧同步的思想也就基本算掌握了，调用 setInterval 的逻辑比较好理解，之前在服务器代码中也存在，就是启动tick函数，不断积累 dt，用于做客户端物体移动的表现 重点在 setInterval 我们化繁为简，不用看函数末尾的绘制部分，这一段就是根据GameObject的坐标绘制图形，因为这个项目没有实现UI表现和逻辑分离，所以函数开始更新变量 stepUpdateCounter的逻辑也没有用，简化完成后函数逻辑就剩下这些： 12345678910111213141516171819202122232425262728293031function update(dt) &#123; // 积攒的包过多时要加速运行 var scale = Math.ceil(recvCommands.length / 3) if(scale &gt; 10) scale = 10 isFastRunning = (scale &gt; 1) // 执行指令 if(recvCommands.length &gt; 0) &#123; var ms = dt * scale if(runningCommands == null) &#123; runningCommands = recvCommands[0] runningCommands.ms = stepInterval &#125; if(runningCommands.ms &lt; ms) &#123; ms = runningCommands.ms &#125; for (var i = 0; i &lt; runningCommands.length; i++) &#123; var command = runningCommands[i] if(runningCommands.ms == stepInterval) console.log(command) var obj = gameObjects[command.id] if(command.direction) &#123; obj.direction = command.direction &#125; obj.move(ms) &#125; runningCommands.ms = runningCommands.ms - ms if(runningCommands.ms == 0) &#123; recvCommands.shift() runningCommands = null &#125; &#125;&#125; 注意这个参数 dt 很微妙，虽然传入的值是tick实际的时间间隔，但分析完代码你会发现这个dt传入任意值，因为真正调用obj.move函数进行移动出入的参数是 ms，当 ms 等于 dt 时，是正常播放，当 ms &gt; dt 时，是加速播放，当 ms &lt; dt 时是减速播放，这里的代码只存在加速和正常两种情况 看到没有，你可以通过 scale 变量人为的改变时间的快慢，是不是很神奇，所以在帧同步中绝对顺序是靠帧数来决定的，而物理时间只是一个数字，想快就快，想慢就慢 思考下为什么会有这个判断 if(runningCommands.ms &lt; ms) { ms = runningCommands.ms }, 它的含义是无论你怎么加速，每个指令执行时间不能超过一帧的时间间隔，不然就和正常播放的逻辑数据不一致了 1234if(command.direction) &#123; obj.direction = command.direction&#125;obj.move(ms) 这几句比较有意思，翻译过来就是如果命令我改变方向，那么我就改变方向后移动，否则我按照原来的方向移动或者保持静止，再想想是不是惯性定律？ 12345runningCommands.ms = runningCommands.ms - msif(runningCommands.ms == 0) &#123; recvCommands.shift() runningCommands = null&#125; 最后这几句处理的是一个tick跑不完一帧时间间隔的情况，逐个tick改变物体坐标，其实就是一个指令运行一帧的分段表现 好了，写到这里基本上也讲完了，有什么疑问欢迎交流哈，我要睡觉去了 总结 严格的帧同步，服务器必须等待所有客户端上报帧数才会下发当前帧命令，会造成一卡全卡 乐观锁模式，服务器不等，会定时推帧，卡顿的人在收到数据后，自行加速补帧来追赶上正确的游戏速度 一切物体总保持匀速直线运动状态或静止状态，直到有外力迫使它改变这种状态为止 在帧同步中绝对顺序是靠帧数来决定的，而物理时间只是一个数字，想快就快，想慢就慢 对于UDP丢包问题，上行采用重发3次，下行采用根据网络情况在2次到9次范围内调整 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 纵有千古，横有八荒，沧海一粟，还妄图超脱三界吗？ 2024-4-24 20:47:44]]></content>
@@ -230,11 +290,11 @@
       </categories>
       <tags>
         <tag>Network</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
         <tag>openssl</tag>
         <tag>ssh-keygen</tag>
         <tag>pem</tag>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -680,8 +740,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
+        <tag>find</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -1647,9 +1707,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -1705,8 +1765,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>函数</tag>
         <tag>语法糖</tag>
+        <tag>函数</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -1819,9 +1879,9 @@
         <category>Network</category>
       </categories>
       <tags>
+        <tag>ping</tag>
         <tag>network</tag>
         <tag>ip</tag>
-        <tag>ping</tag>
         <tag>子网掩码</tag>
         <tag>MAC</tag>
       </tags>
@@ -1849,9 +1909,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
+        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -1970,8 +2030,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2024,8 +2084,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2051,8 +2111,8 @@
         <category>Tools</category>
       </categories>
       <tags>
-        <tag>Excel</tag>
         <tag>SVN</tag>
+        <tag>Excel</tag>
         <tag>Spreadsheet-Compare</tag>
       </tags>
   </entry>
@@ -2077,9 +2137,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -2283,11 +2343,11 @@
         <category>加密与认证</category>
       </categories>
       <tags>
+        <tag>公钥</tag>
+        <tag>私钥</tag>
         <tag>加密</tag>
         <tag>认证</tag>
         <tag>非对称加密</tag>
-        <tag>公钥</tag>
-        <tag>私钥</tag>
       </tags>
   </entry>
   <entry>
@@ -2298,10 +2358,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
+        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -2343,8 +2403,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>windows</tag>
         <tag>汇编</tag>
+        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -3100,9 +3160,9 @@
         <category>linux</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>find</tag>
         <tag>查找</tag>
-        <tag>linux</tag>
         <tag>grep</tag>
       </tags>
   </entry>
