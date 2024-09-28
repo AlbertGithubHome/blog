@@ -346,6 +346,1429 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/07/04/换个角度来看看C-中的左值、右值、左值引用、右值引用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/07/04/换个角度来看看C-中的左值、右值、左值引用、右值引用/" itemprop="url">换个角度来看看C++中的左值、右值、左值引用、右值引用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-04T17:06:54+08:00">
+                2021-07-04
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-07-05T00:37:51+08:00">
+                2021-07-05
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/07/04/换个角度来看看C-中的左值、右值、左值引用、右值引用/" class="leancloud_visitors" data-flag-title="换个角度来看看C++中的左值、右值、左值引用、右值引用">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,612(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>对于左值和右值有一个不太严谨的定义——在赋值表达式 <code>=</code> 左侧是的左值，而在 <code>=</code> 右侧的是右值。通过不断学习和尝试，最近我发现一个新的说法更加贴切，那就是“左值是容器，右值是东西”。对于这个定义我们可以类比一下水杯和水，通过水杯可以操作水杯中的水，操作过程中的中间结果如果想要进一步操作，可以将其放入其他的水杯，如果没有水杯就无法找到曾经操作过的水了，也就无法继续操作了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">int</span> c = a + b;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，变量 <code>a</code>，<code>b</code>, <code>c</code> 都是水杯，而 <code>2</code>、<code>6</code>、<code>a + b</code> 都是被用来操作的水，只有把这些“水”放到“水杯”中才能被找到，才可以进行下一步操作。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/07/04/换个角度来看看C-中的左值、右值、左值引用、右值引用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/07/04/C-11中std-move和std-forward到底干了啥/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/07/04/C-11中std-move和std-forward到底干了啥/" itemprop="url">C++11中std::move和std::forward到底干了啥</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-04T00:28:50+08:00">
+                2021-07-04
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-07-21T23:37:58+08:00">
+                2021-07-21
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/07/04/C-11中std-move和std-forward到底干了啥/" class="leancloud_visitors" data-flag-title="C++11中std::move和std::forward到底干了啥">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,641(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">11(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>C++11中的右值引用的出现，在特定情况下减少了对象的拷贝，提升了C++程序的效率，伴随而来的 <code>std::move</code> 和 <code>std::forward</code> 也大量出现在程序代码中，但是这两个函数究竟干了啥呢？其实他们的本质都是转换函数，也就是完成左值和右值之间的转换，需要注意的是左值可以转换成右值，但是右值无法转换成左值。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/07/04/C-11中std-move和std-forward到底干了啥/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/06/26/手把手搭建一个redis集群/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/06/26/手把手搭建一个redis集群/" itemprop="url">手把手搭建一个redis集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-26T10:42:50+08:00">
+                2021-06-26
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-06-27T00:43:52+08:00">
+                2021-06-27
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/06/26/手把手搭建一个redis集群/" class="leancloud_visitors" data-flag-title="手把手搭建一个redis集群">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">6,351(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">31(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>所谓“难者不会，会者不难”，这不只是一句简简单单的俗语，而是历经人类进化史而得到的历史经验，只有亲身体会过才会越发了解这句话的意义。当你苦思冥想几天几夜难以解决的问题，一句过来人的点拨便可瞬间化解，这是人生路上的需要经历的，愿每个人在关键时刻都能得到善良人的点拨。</p>
+<p>人生有四个境界：①不知道自己不知道；②知道自己不知道；③不知道自己知道，④知道自己知道。不同的境界对应着不同的人生，仔细想想这四种境界并没有哪一种是绝对的好与坏，具体怎么选择取决于你想要什么样的人生，想想坐井观天的那只青蛙，属于“不知道自己不知道”的典型，如果它每天逍遥快活，完全没必要非得跳出井来卷入井外的纷争。</p>
+<p>长久以来自给自足的小农经济，如果没有战乱，没有暴政，没有入侵，耕田织布的生活不也挺好，但是人性是贪婪的，欲望促使人们侵略、扩张，使得一些人进入了“知道自己不知道”的境界，于是加速了人与人之间的交流。进入现代社会以后，信息爆炸，越来越多的人“觉醒”了，但只是“觉醒”而不付出努力就会使自己陷入焦虑，其实焦虑不可怕，重要的是你要采取什么措施来缓解焦虑。</p>
+<p>题外话扯多了，回归正题，写这篇总结的主要还是一个学习记录，也希望这样的记录可以解决一些人的困惑，这些东西并不复杂，也许只是我这个初学者才会关心的问题，但是现在有一种现象，就是大佬们不愿写基础的东西，而小白们想成为大佬从基础学习，却发现路上的坑让他们头破血流。一句学神们口中的“不难证明”，可能你几个月都证明不出来，这个问题是双方面的，一方面小白认为这东西很难，不知道怎么入手，另一方面大神感觉这东西这么简单还需要学？</p>
+<p>屠龙勇士中成恶龙，大神们经过时间的洗礼，很多人已经忘记了自己曾经的头破血流，忘记了自己怎么从小白一步步走来，所以遇到困惑的人不要先入为主，不要认为这个东西太简单了怎么可能有人不会？耐心聆听给出建议，或许可以瞬间打通他的任督二脉。</p>
+<p>好了，好了，又跑题了，拉回来，我们从头来搭建一个redis集群，不过搭建之前我们先来看看“安装”这个词。</p>
+<h1 id="安装的含义"><a href="#安装的含义" class="headerlink" title="安装的含义"></a>安装的含义</h1><p>安装软件、安装程序、安装APP，自从电子设备飞入寻常百姓家，我们每天都在安装、安装、安装。但是这个词并不是电子设备出现后才诞生的。这个词自古就有，安装——本意是：把机件、器材等固定在一定的位置。那么软件、APP的安装就是把它们放在一定的位置。</p>
+<p>软件是什么？至今我都记得初中的一道计算机的题目，我是04年在学校机房第一次接触到真的计算机，当时有一道题是问：Windows是系统软件，还是应用软件？当时这种题目真的是死记硬背啊，脑子里完全没有概念，每周只有一节课，还不一定每个人都有机器，那时的软件对我来说就是一个迷。</p>
+<p>现在接触计算机也这么多年了，对软件也有了一些认识。软件可以说是用来向发出计算机发出任务的东西，当我们对一个人发号任务指令时，能通过声音传递给人，然后接到指令的人可以完成相应的任务，当我们给计算机发送指令时，可以通过键盘、鼠标等把指令输进去，也可以运行软件来完成某些计算机任务，其实软件就是一些提前编好的任务指令的集合。</p>
+<p>那么安装软件就是把软件放到对应的地方，为什么要安装？为什么要放到指定的地方？随便放有什么问题？其实还是为了方便。就像生活中我们把床安装在卧室，把马桶安装在厕所一样，大家都是这样，已经成了习惯。如果你把床安装在厕所，并不是不能用来睡觉，只是其他人在来到厕所睡觉这件事上有些不太习惯。</p>
+<p>因为软件并不只是一个东西，他还有数据啊、配置啊、服务啊等等，所以这些东西都要放在相应的位置，并且做一个登记，就像你把床放到厕所一样，这种不一样的习惯更要登记下来，否则对于一个普通人来说，肯定会去卧室找床，而不是厕所。</p>
+<p>windows中软件的傻瓜式安装降低了软件的安装难度，它有一个注册表，里面记录了很多奇奇怪怪的东西，在windows上安装软件也就是把软件的各部分发到对应的位置，然后通过注册表这个总管登记入册，但是有些软件不太友好，安装的时候一顿乱放，卸载的时候不自己清理干净，导致出现很多问题，比如当年的SQLServer和3DMax，当时为了再次安装不得不重做了好多次系统。</p>
+<p>在linux中安装软件就没有注册表这个东西，只要把软件各部分按照类型分别放好就行，比如可执行程序放<code>/usr/bin/</code>，库文件放<code>/usr/lib</code>，配置文件放 <code>/etc/</code>等等，卸载就是把这些新加的东西删除就可以了，相比windows的注册表要简单一些。</p>
+<p>好了，接下来我们就来安装配置一下redis-cluster，看了一下，本地机器真的很干净，什么都没有，现在从安装redis开始吧。</p>
+<h1 id="安装redis"><a href="#安装redis" class="headerlink" title="安装redis"></a>安装redis</h1><ol>
+<li>系统是ubuntu16.04，偷个懒，直接通过命令 <code>sudo apt-get install redis-server</code> 安装吧，当然你也可以通过源码编译安装，这都是可以的，输出信息如下：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/src$$ sudo apt-get install redis-server</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree</span><br><span class="line">Reading state information... Done</span><br><span class="line">The following additional packages will be installed:</span><br><span class="line">  libjemalloc1 redis-tools</span><br><span class="line">Suggested packages:</span><br><span class="line">  ruby-redis</span><br><span class="line">The following NEW packages will be installed:</span><br><span class="line">  libjemalloc1 redis-server redis-tools</span><br><span class="line">0 upgraded, 3 newly installed, 0 to remove and 125 not upgraded.</span><br><span class="line">Need to get 519 kB of archives.</span><br><span class="line">After this operation, 1,507 kB of additional disk space will be used.</span><br><span class="line">Do you want to <span class="built_in">continue</span>? [Y/n] Y</span><br><span class="line">Get:1 http://mirrors.tuna.tsinghua.edu.cn/ubuntu xenial/universe amd64 libjemalloc1 amd64 3.6.0-9ubuntu1 [78.9 kB]</span><br><span class="line">Get:2 http://mirrors.tuna.tsinghua.edu.cn/ubuntu xenial-updates/universe amd64 redis-tools amd64 2:3.0.6-1ubuntu0.4 [95.5 kB]</span><br><span class="line">Get:3 http://mirrors.tuna.tsinghua.edu.cn/ubuntu xenial-updates/universe amd64 redis-server amd64 2:3.0.6-1ubuntu0.4 [344 kB]</span><br><span class="line">Fetched 519 kB <span class="keyword">in</span> 13s (38.0 kB/s)</span><br><span class="line">Selecting previously unselected package libjemalloc1.</span><br><span class="line">(Reading database ... 33895 files and directories currently installed.)</span><br><span class="line">Preparing to unpack .../libjemalloc1_3.6.0-9ubuntu1_amd64.deb ...</span><br><span class="line">Unpacking libjemalloc1 (3.6.0-9ubuntu1) ...</span><br><span class="line">Selecting previously unselected package redis-tools.</span><br><span class="line">Preparing to unpack .../redis-tools_2%3a3.0.6-1ubuntu0.4_amd64.deb ...</span><br><span class="line">Unpacking redis-tools (2:3.0.6-1ubuntu0.4) ...</span><br><span class="line">Selecting previously unselected package redis-server.</span><br><span class="line">Preparing to unpack .../redis-server_2%3a3.0.6-1ubuntu0.4_amd64.deb ...</span><br><span class="line">Unpacking redis-server (2:3.0.6-1ubuntu0.4) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> libc-bin (2.23-0ubuntu11) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> man-db (2.7.5-1) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> ureadahead (0.100.0-19.1) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> systemd (229-4ubuntu21.27) ...</span><br><span class="line">Setting up libjemalloc1 (3.6.0-9ubuntu1) ...</span><br><span class="line">Setting up redis-tools (2:3.0.6-1ubuntu0.4) ...</span><br><span class="line">Setting up redis-server (2:3.0.6-1ubuntu0.4) ...</span><br><span class="line">invoke-rc.d: could not determine current runlevel</span><br><span class="line">Processing triggers <span class="keyword">for</span> libc-bin (2.23-0ubuntu11) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> ureadahead (0.100.0-19.1) ...</span><br><span class="line">Processing triggers <span class="keyword">for</span> systemd (229-4ubuntu21.27) ...</span><br><span class="line">albert@home-pc:/usr/src$</span><br></pre></td></tr></table></figure>
+<ol>
+<li>安装完查找一下命令安装的位置，redis服务器和客户端应该都在 <code>/usr/bin/</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/src$ <span class="built_in">which</span> redis-server</span><br><span class="line">/usr/bin/redis-server</span><br><span class="line">albert@home-pc:/usr/src$ <span class="built_in">which</span> redis-cli</span><br><span class="line">/usr/bin/redis-cli</span><br></pre></td></tr></table></figure>
+<ol>
+<li>修改配置文件，设置密码，通过 <code>sudo vim /etc/redis/redis.conf</code> 命令打开文件搜索 requirepass 找到下面这一行，把前面的#去掉，requirepass 后面的就是密码，可以自己修改。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Warning: since Redis is pretty fast an outside user can try up to</span><br><span class="line"># 150k passwords per second against a good box. This means that you should</span><br><span class="line"># use a very strong password otherwise it will be very easy to break.</span><br><span class="line">#</span><br><span class="line"># requirepass foobared  #把这一行前面的&apos;#&apos;去掉就行，密码我就不改了</span><br><span class="line"></span><br><span class="line"># Command renaming.</span><br></pre></td></tr></table></figure>
+<ol>
+<li>启动redis，直接运行 <code>sudo redis-server /etc/redis/redis.conf</code>，redis服务器就起来了</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/c/Users/Albert$ sudo redis-server /etc/redis/redis.conf</span><br><span class="line">albert@home-pc:/mnt/c/Users/Albert$ ps -ef | grep redis</span><br><span class="line">root       663     1  0 13:52 ?        00:00:00 redis-server 127.0.0.1:6379</span><br></pre></td></tr></table></figure>
+<ol>
+<li>启动客户端使用redis，连接默认的6379端口，密码<code>foobared</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/mnt/c/Users/Albert$ redis-cli -a foobared -p 6379</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> name redis-test</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get name</span><br><span class="line"><span class="string">"redis-test"</span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> age 18</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get age</span><br><span class="line"><span class="string">"18"</span></span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>至此redis就可以使用了，测试了<code>set</code>和<code>get</code>两个命令如上</li>
+</ol>
+<h1 id="redis编译安装"><a href="#redis编译安装" class="headerlink" title="redis编译安装"></a>redis编译安装</h1><p>忽然发现Ubuntu16.04自带的 <code>redis3.0.6</code> 版本太低了，无法自动配置集群，所以决定编译安装，如果自动安装完redis版本在5以上，那就不需要编译安装了。</p>
+<ol>
+<li>新建<code>/usr/local/redis/</code>目录并进入，然后下载redis源码<a href="https://download.redis.io/releases/redis-6.2.4.tar.gz" target="_blank" rel="noopener">redis-6.2.4.tar.gz</a></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>$ mkdir redis</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>$ sudo mkdir redis</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>$ <span class="built_in">cd</span> redis/</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis$ sudo wget https://download.redis.io/releases/redis-6.2.4.tar.gz</span><br><span class="line">--2021-06-26 14:10:42--  https://download.redis.io/releases/redis-6.2.4.tar.gz</span><br><span class="line">Resolving download.redis.io (download.redis.io)... 45.60.125.1</span><br><span class="line">Connecting to download.redis.io (download.redis.io)|45.60.125.1|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: 2457940 (2.3M) [application/octet-stream]</span><br><span class="line">Saving to: ‘redis-6.2.4.tar.gz’</span><br><span class="line"></span><br><span class="line">redis-6.2.4.tar.gz               100%[========================================&gt;]   2.34M  45.4KB/s    <span class="keyword">in</span> 54s</span><br><span class="line"></span><br><span class="line">2021-06-26 14:11:37 (44.3 KB/s) - ‘redis-6.2.4.tar.gz’ saved [2457940/2457940]</span><br><span class="line"></span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis$</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>运行 <code>sudo tar -zxvf redis-6.2.4.tar.gz</code> 命令解压文件</p>
+</li>
+<li><p>运行 <code>cd redis-6.2.4</code> 进入 redis-6.2.4 目录</p>
+</li>
+<li><p>直接运行 <code>sudo make &amp;&amp; make install</code> 即可，如果遇到了 ‘/bin/sh: 1: pkg-config: not found’ 错误，先通过 <code>sudo apt-get install pkg-config</code> 安装 <code>pkg-config</code>，再运行 <code>make</code> 即可。</p>
+</li>
+<li><p>这次 <code>redis-server</code> 和 <code>redis-cli</code> 都被安装到了 <code>/usr/local/bin/</code> 目录，版本是 <code>6.2.4</code>，接下来我们就用这个版本来搭建redis集群</p>
+</li>
+</ol>
+<h1 id="redis集群"><a href="#redis集群" class="headerlink" title="redis集群"></a>redis集群</h1><p>为什么要用redis集群？很直接的原因就是一个redis不够用了，需要使用好几个来组合分摊数据量和压力，那么搭建redis集群其实就是启动多个redis程序实例，让他们配合工作就好了，他们之间的配合是redis本身实现的，我们只需要配置启动多个实例就行了，因为redis集群最少需要三主三从，所以我们启动6个实例，：</p>
+<ol>
+<li>新建 <code>/usr/local/redis-cluster</code> 目录并进入</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>$ sudo mkdir redis-cluster</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>$ <span class="built_in">cd</span> redis-cluster/</span><br></pre></td></tr></table></figure>
+<ol>
+<li>为了彼此的配置、数据、日志不相互影响，6个实例需要分别配置，我们建立如下的目录结构，按照端口号配置6个配置文件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── redis-6301.conf</span><br><span class="line">│   ├── redis-6302.conf</span><br><span class="line">│   ├── redis-6303.conf</span><br><span class="line">│   ├── redis-6304.conf</span><br><span class="line">│   ├── redis-6305.conf</span><br><span class="line">│   └── redis-6306.conf</span><br><span class="line">├── data</span><br><span class="line">│   ├── redis-6301</span><br><span class="line">│   ├── redis-6302</span><br><span class="line">│   ├── redis-6303</span><br><span class="line">│   ├── redis-6304</span><br><span class="line">│   ├── redis-6305</span><br><span class="line">│   └── redis-6306</span><br><span class="line">└── <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>修改redis配置文件，需要修改的配置文件中的内容如下，首先把下面几项前面的#去掉，然后按照端口号命名相互影响的目录和文件名，以第一个实例端口6301为例：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pidfile /var/run/redis/redis-server.pid</span><br><span class="line">port 6379</span><br><span class="line">logfile /var/log/redis/redis-server.log</span><br><span class="line">dir /var/ilib/redis</span><br><span class="line">dbfilename dump.rdb</span><br><span class="line"></span><br><span class="line">#requirepass foobared</span><br><span class="line">#cluster-enabled yes</span><br><span class="line">#cluster-config-file nodes-6379.conf</span><br><span class="line">#cluster-node-timeout 15000</span><br></pre></td></tr></table></figure>
+<p>文件 <code>redis-6301.conf</code> 修改后的文件内容如下，接下来5个配置文件分别按照6302, 6303, 6304, 6305, 6306来配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pidfile /var/run/redis/redis-6301-server.pid</span><br><span class="line">port 6301</span><br><span class="line">logfile /usr/local/redis-cluster/log/redis-6301-server.log</span><br><span class="line">dir /usr/local/redis-cluster/data/redis-6301</span><br><span class="line">dbfilename dump-6301.rdb</span><br><span class="line"></span><br><span class="line">requirepass foobared</span><br><span class="line">cluster-enabled yes</span><br><span class="line">cluster-config-file nodes-6301.conf</span><br><span class="line">cluster-node-timeout 15000</span><br></pre></td></tr></table></figure>
+<ol>
+<li>进入 <code>/usr/local/redis-cluster</code> 目录并启动实例：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6301.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6302.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6303.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6304.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6305.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo /usr/<span class="built_in">local</span>/bin/redis-server conf/redis-6306.conf</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ ps -ef | grep redis</span><br><span class="line">root       663     1  0 13:52 ?        00:00:00 redis-server 127.0.0.1:6379</span><br><span class="line">root      5928     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6301 [cluster]</span><br><span class="line">root      5935     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6302 [cluster]</span><br><span class="line">root      5942     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6303 [cluster]</span><br><span class="line">root      5949     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6304 [cluster]</span><br><span class="line">root      5956     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6305 [cluster]</span><br><span class="line">root      5963     1  0 14:57 ?        00:00:00 /usr/<span class="built_in">local</span>/bin/redis-server 127.0.0.1:6306 [cluster]</span><br></pre></td></tr></table></figure>
+<p>此时查看目录已经生成了默认的节点文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/local/redis-cluster$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── redis-6301.conf</span><br><span class="line">│   ├── redis-6302.conf</span><br><span class="line">│   ├── redis-6303.conf</span><br><span class="line">│   ├── redis-6304.conf</span><br><span class="line">│   ├── redis-6305.conf</span><br><span class="line">│   └── redis-6306.conf</span><br><span class="line">├── data</span><br><span class="line">│   ├── redis-6301</span><br><span class="line">│   │   └── nodes-6301.conf</span><br><span class="line">│   ├── redis-6302</span><br><span class="line">│   │   └── nodes-6302.conf</span><br><span class="line">│   ├── redis-6303</span><br><span class="line">│   │   └── nodes-6303.conf</span><br><span class="line">│   ├── redis-6304</span><br><span class="line">│   │   └── nodes-6304.conf</span><br><span class="line">│   ├── redis-6305</span><br><span class="line">│   │   └── nodes-6305.conf</span><br><span class="line">│   └── redis-6306</span><br><span class="line">│       └── nodes-6306.conf</span><br><span class="line">└── log</span><br><span class="line">    ├── redis-6301-server.log</span><br><span class="line">    ├── redis-6302-server.log</span><br><span class="line">    ├── redis-6303-server.log</span><br><span class="line">    ├── redis-6304-server.log</span><br><span class="line">    ├── redis-6305-server.log</span><br><span class="line">    └── redis-6306-server.log</span><br><span class="line"></span><br><span class="line">9 directories, 18 files</span><br></pre></td></tr></table></figure>
+<ol>
+<li>虽然实例都启动起来了，但是现在每个实例是单独的，需要把它们连接到一起，运行如下命令 <code>redis-cli -a foobared --cluster create 127.0.0.1:6301 127.0.0.1:6302 127.0.0.1:6303 127.0.0.1:6304 127.0.0.1:6305 127.0.0.1:6306 --cluster-replicas 1</code> 即可，命令中的 <code>--cluster-replicas 1</code> 表示为每个主节点都提供一个从节点，中间还需要输入 yes，这样运行完就形成了一个三主三从的redis集群：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ redis-cli -a foobared --cluster create 127.0.0.1:6301 127.0.0.1:6302 127.0.0.1:6303 127.0.0.1:6304 127.0.0.1:6305 127.0.0.1:6306 --cluster-replicas 1</span><br><span class="line">Warning: Using a password with <span class="string">'-a'</span> or <span class="string">'-u'</span> option on the <span class="built_in">command</span> line interface may not be safe.</span><br><span class="line">&gt;&gt;&gt; Performing <span class="built_in">hash</span> slots allocation on 6 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 127.0.0.1:6305 to 127.0.0.1:6301</span><br><span class="line">Adding replica 127.0.0.1:6306 to 127.0.0.1:6302</span><br><span class="line">Adding replica 127.0.0.1:6304 to 127.0.0.1:6303</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation <span class="keyword">for</span> anti-affinity</span><br><span class="line">[WARNING] Some slaves are <span class="keyword">in</span> the same host as their master</span><br><span class="line">M: 5d60bdad15a6f8ceec188a1081e9381f181a5c5e 127.0.0.1:6301</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 8c814d4a32763d47723398fcf8f596d7b6340afc 127.0.0.1:6302</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">M: 7bc53b512772c3a1df3217facca283ff9564d32d 127.0.0.1:6303</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: b39bdb5b6e720e9fbedd43e58b57661910dcc3d7 127.0.0.1:6304</span><br><span class="line">   replicates 5d60bdad15a6f8ceec188a1081e9381f181a5c5e</span><br><span class="line">S: 5fef2bedd430bf86cdff63cb2f852aeb21e1b18f 127.0.0.1:6305</span><br><span class="line">   replicates 8c814d4a32763d47723398fcf8f596d7b6340afc</span><br><span class="line">S: 0123b160087743a5296807145b426d9b9cefcf21 127.0.0.1:6306</span><br><span class="line">   replicates 7bc53b512772c3a1df3217facca283ff9564d32d</span><br><span class="line">Can I <span class="built_in">set</span> the above configuration? (<span class="built_in">type</span> <span class="string">'yes'</span> to accept): yes</span><br><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting <span class="keyword">for</span> the cluster to join</span><br><span class="line">.</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 127.0.0.1:6301)</span><br><span class="line">M: 5d60bdad15a6f8ceec188a1081e9381f181a5c5e 127.0.0.1:6301</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: b39bdb5b6e720e9fbedd43e58b57661910dcc3d7 127.0.0.1:6304</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 5d60bdad15a6f8ceec188a1081e9381f181a5c5e</span><br><span class="line">M: 7bc53b512772c3a1df3217facca283ff9564d32d 127.0.0.1:6303</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 5fef2bedd430bf86cdff63cb2f852aeb21e1b18f 127.0.0.1:6305</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8c814d4a32763d47723398fcf8f596d7b6340afc</span><br><span class="line">M: 8c814d4a32763d47723398fcf8f596d7b6340afc 127.0.0.1:6302</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 0123b160087743a5296807145b426d9b9cefcf21 127.0.0.1:6306</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7bc53b512772c3a1df3217facca283ff9564d32d</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check <span class="keyword">for</span> open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+<h1 id="redis集群的使用"><a href="#redis集群的使用" class="headerlink" title="redis集群的使用"></a>redis集群的使用</h1><p>当使用<code>redis-cli</code>连接集群的时候，直接连3个主节点的任意一个就可以，把cluster当成一个整理来看待，测试如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/local/redis-cluster$ redis-cli -a foobared -p 6301</span><br><span class="line">Warning: Using a password with &apos;-a&apos; or &apos;-u&apos; option on the command line interface may not be safe.</span><br><span class="line">127.0.0.1:6301&gt; get name</span><br><span class="line">(error) MOVED 5798 127.0.0.1:6302</span><br><span class="line">127.0.0.1:6301&gt; set name cluster-test</span><br><span class="line">(error) MOVED 5798 127.0.0.1:6302</span><br><span class="line">127.0.0.1:6301&gt;</span><br></pre></td></tr></table></figure>
+<p>我们发现测试Redis命令的时候报错了，显示 <code>(error) MOVED 5798 127.0.0.1:6302</code>，这说明 <code>name</code> 这个键不在端口为 6301 这个实例上，而在端口为 6302 这个实例上，使用 <code>cluster nodes</code> 命令可以查询集群的节点信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6301&gt; cluster nodes</span><br><span class="line">b39bdb5b6e720e9fbedd43e58b57661910dcc3d7 127.0.0.1:6304@16304 slave 5d60bdad15a6f8ceec188a1081e9381f181a5c5e 0 1624711999000 1 connected</span><br><span class="line">7bc53b512772c3a1df3217facca283ff9564d32d 127.0.0.1:6303@16303 master - 0 1624712000000 3 connected 10923-16383</span><br><span class="line">5fef2bedd430bf86cdff63cb2f852aeb21e1b18f 127.0.0.1:6305@16305 slave 8c814d4a32763d47723398fcf8f596d7b6340afc 0 1624711998971 2 connected</span><br><span class="line">5d60bdad15a6f8ceec188a1081e9381f181a5c5e 127.0.0.1:6301@16301 myself,master - 0 1624712000000 1 connected 0-5460</span><br><span class="line">8c814d4a32763d47723398fcf8f596d7b6340afc 127.0.0.1:6302@16302 master - 0 1624711999978 2 connected 5461-10922</span><br><span class="line">0123b160087743a5296807145b426d9b9cefcf21 127.0.0.1:6306@16306 slave 7bc53b512772c3a1df3217facca283ff9564d32d 0 1624712000991 3 connected</span><br></pre></td></tr></table></figure>
+<p>这种情况下可以手动连接端口为6302的节点，也可以在连接 6301 时添加一个 <code>-c</code> 参数，这样在当前实例找不到指定的键时会自动切换，下面测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/local/redis-cluster$ redis-cli -a foobared -p 6301 -c</span><br><span class="line">Warning: Using a password with &apos;-a&apos; or &apos;-u&apos; option on the command line interface may not be safe.</span><br><span class="line">127.0.0.1:6301&gt; set name cluster666</span><br><span class="line">-&gt; Redirected to slot [5798] located at 127.0.0.1:6302</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6302&gt; get name</span><br><span class="line">&quot;cluster666&quot;</span><br><span class="line">127.0.0.1:6302&gt;</span><br></pre></td></tr></table></figure>
+<p>自动跳转到了端口为6302的实例上，这波操作挺666</p>
+<h1 id="C-工程连接使用redis-cluster"><a href="#C-工程连接使用redis-cluster" class="headerlink" title="C++工程连接使用redis-cluster"></a>C++工程连接使用redis-cluster</h1><p><code>redis-cli</code> 可以在集群的各个节点之间自动跳转，那是人家的本事，如果是你想自己连接集群，首先看看你使用的是那个库了。</p>
+<p>如果使用的语言是C/C++，并且用的是最常见的hiredis，那么很抱歉它本身不提供集群的便利访问，像 <code>MGET</code>，<code>MSET</code> 这种操作多个键的命令得自己花点力气了，不过如果你考虑换一个库那么这些问题就解决了。</p>
+<p><code>hiredis-vip</code> 是第一个选择，这个名字听起来好像充了前才能用，实际上是“唯品会 一家专门做特卖的网站”，它先搞出来开源的，可以把集群看成一个整体，连接任一节点就可以操作，但是这个库有个问题，不支持认证，所以后来人在这个基础上进行了二次开发。<a href="https://github.com/vipshop/hiredis-vip" target="_blank" rel="noopener">hiredis-vip源码</a></p>
+<p><code>hiredis-cluster</code> 就是这个二次创作的产物，现在算是官方推荐产品了，如果你想方便的操作集群，不妨下载这个库<a href="https://github.com/Nordix/hiredis-cluster" target="_blank" rel="noopener">hiredis-cluster源码</a>试试，另外<a href="https://github.com/sewenew/redis-plus-plus" target="_blank" rel="noopener">redis-plus-plus</a>也属于官方推荐产品，有时间可以了解一下。</p>
+<h2 id="hiredis-cluster"><a href="#hiredis-cluster" class="headerlink" title="hiredis-cluster"></a>hiredis-cluster</h2><p>今天拿 <code>hiredis-cluster</code> 开刀，看看它怎么用，改天再研究那个 <code>redis-plus-plus</code>。</p>
+<ol>
+<li>首先创建一个目录 <code>/usr/local/redis-cluster-cli</code>，进入目录下载源码：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ sudo mkdir -p /usr/<span class="built_in">local</span>/redis-cluster-cli</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/redis-cluster-cli</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli$ sudo wget https://github.com/Nordix/hiredis-cluster/archive/refs/tags/0.6.0.tar.gz</span><br><span class="line">--2021-06-26 22:01:15--  https://github.com/Nordix/hiredis-cluster/archive/refs/tags/0.6.0.tar.gz</span><br><span class="line">Resolving github.com (github.com)... 140.82.114.3</span><br><span class="line">Connecting to github.com (github.com)|140.82.114.3|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 302 Found</span><br><span class="line">Location: https://codeload.github.com/Nordix/hiredis-cluster/tar.gz/refs/tags/0.6.0 [following]</span><br><span class="line">--2021-06-26 22:01:16--  https://codeload.github.com/Nordix/hiredis-cluster/tar.gz/refs/tags/0.6.0</span><br><span class="line">Resolving codeload.github.com (codeload.github.com)... 13.229.189.0</span><br><span class="line">Connecting to codeload.github.com (codeload.github.com)|13.229.189.0|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: unspecified [application/x-gzip]</span><br><span class="line">Saving to: ‘0.6.0.tar.gz’</span><br><span class="line"></span><br><span class="line">0.6.0.tar.gz       [        &lt;=&gt;                                      ]  69.58K  19.4KB/s    <span class="keyword">in</span> 3.6s</span><br><span class="line"></span><br><span class="line">2021-06-26 22:01:21 (19.4 KB/s) - ‘0.6.0.tar.gz’ saved [71249]</span><br></pre></td></tr></table></figure>
+<ol>
+<li>解压源码，进入目录hiredis-cluster-0.6.0</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli$ sudo tar -zxvf 0.6.0.tar.gz</span><br><span class="line">hiredis-cluster-0.6.0/</span><br><span class="line">hiredis-cluster-0.6.0/.clang-format</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">hiredis-cluster-0.6.0/tests/test_utils.h</span><br><span class="line">hiredis-cluster-0.6.0/win32.h</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli$ ls</span><br><span class="line">0.6.0.tar.gz  hiredis-cluster-0.6.0</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli$ <span class="built_in">cd</span> hiredis-cluster-0.6.0/</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli/hiredis-cluster-0.6.0$</span><br></pre></td></tr></table></figure>
+<ol>
+<li>按照README文档编译库文件</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/local/redis-cluster-cli/hiredis-cluster-0.6.0$ sudo mkdir build &amp;&amp; cd build</span><br><span class="line">albert@home-pc:/usr/local/redis-cluster-cli/hiredis-cluster-0.6.0/build$ sudo cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISABLE_TESTS=ON ..</span><br><span class="line">CMake Error at CMakeLists.txt:1 (cmake_minimum_required):</span><br><span class="line">  CMake 3.11 or higher is required.  You are running version 3.5.1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-- Configuring incomplete, errors occurred!</span><br></pre></td></tr></table></figure>
+<p>oh no！要求cmake版本最低3.11，而我的ubuntu16.04自带的cmake是3.5.1，好吧我先去升个级</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://www.cmake.org/files/v3.11/cmake-3.11.3.tar.gz</span><br><span class="line">$ tar xf cmake-3.11.3.tar.gz</span><br><span class="line">$ <span class="built_in">cd</span> cmake-3.11.3</span><br><span class="line">$ ./configure</span><br><span class="line">$ make</span><br><span class="line">$ sudo make install</span><br></pre></td></tr></table></figure>
+<ol>
+<li>继续编译 hiredis-cluster 库，先运行cmake生成Makefile文件，然后运行 <code>make</code> 命令开始编译：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli/hiredis-cluster-0.6.0/build$ sudo cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISABLE_TESTS=ON ..</span><br><span class="line">-- The C compiler identification is GNU 5.4.0</span><br><span class="line">-- The CXX compiler identification is GNU 5.4.0</span><br><span class="line">-- Check <span class="keyword">for</span> working C compiler: /usr/bin/cc</span><br><span class="line">-- Check <span class="keyword">for</span> working C compiler: /usr/bin/cc -- works</span><br><span class="line">-- Detecting C compiler ABI info</span><br><span class="line">-- Detecting C compiler ABI info - <span class="keyword">done</span></span><br><span class="line">-- Detecting C compile features</span><br><span class="line">-- Detecting C compile features - <span class="keyword">done</span></span><br><span class="line">-- Check <span class="keyword">for</span> working CXX compiler: /usr/bin/c++</span><br><span class="line">-- Check <span class="keyword">for</span> working CXX compiler: /usr/bin/c++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - <span class="keyword">done</span></span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - <span class="keyword">done</span></span><br><span class="line">Detected version: 0.5.0</span><br><span class="line">Downloading dependency <span class="string">'hiredis'</span>..</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli/hiredis-cluster-0.6.0/build$ sudo make</span><br><span class="line">Scanning dependencies of target hiredis_cluster</span><br><span class="line">[  5%] Building C object CMakeFiles/hiredis_cluster.dir/adlist.c.o</span><br><span class="line">[ 11%] Building C object CMakeFiles/hiredis_cluster.dir/command.c.o</span><br><span class="line">[ 17%] Building C object CMakeFiles/hiredis_cluster.dir/crc16.c.o</span><br><span class="line">[ 23%] Building C object CMakeFiles/hiredis_cluster.dir/dict.c.o</span><br><span class="line">[ 29%] Building C object CMakeFiles/hiredis_cluster.dir/hiarray.c.o</span><br><span class="line">[ 35%] Building C object CMakeFiles/hiredis_cluster.dir/hircluster.c.o</span><br><span class="line">[ 41%] Building C object CMakeFiles/hiredis_cluster.dir/hiutil.c.o</span><br><span class="line">[ 47%] Linking C shared library libhiredis_cluster.so</span><br><span class="line">[ 47%] Built target hiredis_cluster</span><br><span class="line">Scanning dependencies of target hiredis</span><br><span class="line">[ 52%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/alloc.c.o</span><br><span class="line">[ 58%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/async.c.o</span><br><span class="line">[ 64%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/dict.c.o</span><br><span class="line">[ 70%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/hiredis.c.o</span><br><span class="line">[ 76%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/net.c.o</span><br><span class="line">[ 82%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/read.c.o</span><br><span class="line">[ 88%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/sds.c.o</span><br><span class="line">[ 94%] Building C object _deps/hiredis-build/CMakeFiles/hiredis.dir/sockcompat.c.o</span><br><span class="line">[100%] Linking C shared library libhiredis.so</span><br><span class="line">[100%] Built target hiredis</span><br></pre></td></tr></table></figure>
+<ol>
+<li>进入 <code>/usr/local/redis-cluster-cli/hiredis-cluster-0.6.0</code> 目录，新建 <code>cluster-cli.cpp</code> 文件，编写测试代码如下：</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hircluster.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">timeout</span> = &#123;</span><span class="number">1</span>, <span class="number">500000</span>&#125;; <span class="comment">// 1.5s</span></span><br><span class="line"></span><br><span class="line">    redisClusterContext *cc = redisClusterContextInit();</span><br><span class="line">    redisClusterSetOptionAddNodes(cc, <span class="string">"127.0.0.1:6301"</span>);</span><br><span class="line">    redisClusterSetOptionConnectTimeout(cc, timeout);</span><br><span class="line">    redisClusterSetOptionPassword(cc, <span class="string">"foobared"</span>);</span><br><span class="line">    redisClusterSetOptionRouteUseSlots(cc);</span><br><span class="line">    redisClusterConnect2(cc);</span><br><span class="line">    <span class="keyword">if</span> (cc &amp;&amp; cc-&gt;err) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Error: %s\n"</span>, cc-&gt;errstr);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    redisReply *reply =</span><br><span class="line">        (redisReply *)redisClusterCommand(cc, <span class="string">"SET %s %s"</span>, <span class="string">"name"</span>, <span class="string">"cluster999"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"SET: %s\n"</span>, reply-&gt;str);</span><br><span class="line">    freeReplyObject(reply);</span><br><span class="line"></span><br><span class="line">    redisReply *reply2 = (redisReply *)redisClusterCommand(cc, <span class="string">"GET %s"</span>, <span class="string">"name"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"GET: %s\n"</span>, reply2-&gt;str);</span><br><span class="line">    freeReplyObject(reply2);</span><br><span class="line"></span><br><span class="line">    redisClusterFree(cc);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>运行如下命令，编译代码，然后运行，结果和预期一致，虽然连接的是端口为6301的实例，也成功取到了端口为6302实例上的数据：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli/hiredis-cluster-0.6.0$ sudo gcc cluster-cli.cpp -I ./build/_deps/ -L ./build/ -Wl,-rpath=./build -lhiredis_cluster -L ./build/_deps/hiredis-build/ -Wl,-rpath=./build/_deps/hiredis-build/ -lhiredis -o cluster-cli</span><br><span class="line">albert@home-pc:/usr/<span class="built_in">local</span>/redis-cluster-cli/hiredis-cluster-0.6.0$ ./cluster-cli</span><br><span class="line">SET: OK</span><br><span class="line">GET: cluster999</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>安装软件其实就是把软件的各部分数据放到它该放的地方而已，卸载软件就是把这些数据删掉了</li>
+<li>redis也是一款软件，与其他软件并无不同，想要使用多个同时使用，启动多个实例就好了，需要注意配置别冲突</li>
+<li>单独运行的redis实例之间不会有沟通，想要这些实例联合起来工作，需要把它们组成一个集群</li>
+<li><code>hiredis-cluster</code> 和 <code>cluster-plus-plus</code> 是使用的C/C++连接redis集的官方推荐库</li>
+</ul>
+<hr>
+<h2 id="gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt"><a href="#gt-gt-反爬链接，请勿点击，原地爆炸，概不负责！-lt-lt" class="headerlink" title=" ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== "></a><center><a href="https://blog.csdn.net/albertsh/article/details/107587859" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center></h2><blockquote>
+<p>一念动山海，一念山海平~</p>
+<p>2021-6-27 00:35:13</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/" itemprop="url">cpplint中filter参数的每个可选项的含义</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-17T00:31:29+08:00">
+                2021-06-17
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-06-20T22:02:49+08:00">
+                2021-06-20
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/" class="leancloud_visitors" data-flag-title="cpplint中filter参数的每个可选项的含义">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,670(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">12(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>cpplint</code> 是一款优秀的代码格式检查工具，有了它可以统一整个团队的代码风格，完整的工具就是一个Python脚本，如果安装了Python环境，直接使用 <code>pip install cpplint</code> 命令就可以安装了，非常的方便。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/06/17/cpplint中filter参数的每个可选项的含义/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/05/24/C-对我来说简直就是星辰大海/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/05/24/C-对我来说简直就是星辰大海/" itemprop="url">C++对我来说简直就是星辰大海，为了避免翻船，我选择从小河沟出发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-24T22:36:30+08:00">
+                2021-05-24
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-05-28T00:42:25+08:00">
+                2021-05-28
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/05/24/C-对我来说简直就是星辰大海/" class="leancloud_visitors" data-flag-title="C++对我来说简直就是星辰大海，为了避免翻船，我选择从小河沟出发">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,635(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">14(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>你学的越多，不懂的东西反而越多~</p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>以前觉得 C++ 并没有什么复杂的，不就是 C 语言加上类定义、模板、容器、算法函数这些就可以了吗，只要我不用，它就难不倒我，用到了查查文档也就搞定了，真的是年少轻狂啊。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/05/24/C-对我来说简直就是星辰大海/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/" itemprop="url">使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-15T15:23:13+08:00">
+                2021-05-15
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2021-07-10T16:37:32+08:00">
+                2021-07-10
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/" class="leancloud_visitors" data-flag-title="使用AddressSanitizer搭配addr2line查找C/C++内存泄漏问题">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,409(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">16(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>指针是C/C++程序中的利器，同时也引入了风险，现代C++中增加了智能指针来降低使用“裸”指针带来的风险，但是智能指针不是一颗银弹，它不能解决所有的指针问题，内存泄漏在C/C++程序开发中依旧是值得注意的，学会合理、合适的方法来查找内存泄漏问题也是一项有用的技能。</p>
+<p>通常内存泄漏问题会在开发到一定程度时集中检查，一些检测方法长时间不去使用难免会忘记，所以本文记录一种自己常用的检测方法，方便日后查阅。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2021/05/15/使用AddressSanitizer搭配addr2line查找C-C-内存泄漏问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/04/30/linux文件权限简单备忘知识点/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1197,1307 +2620,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/03/28/C-中常见的字符判断与处理方法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/03/28/C-中常见的字符判断与处理方法/" itemprop="url">C++中常见的字符判断与处理方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T18:01:24+08:00">
-                2021-03-28
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-03-28T23:34:08+08:00">
-                2021-03-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
-                    <span itemprop="name">C/C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/03/28/C-中常见的字符判断与处理方法/" class="leancloud_visitors" data-flag-title="C++中常见的字符判断与处理方法">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,297(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>字符串处理是编程世界中一项基础技能，特别是对于C/C++的程序员们，远没有那么多华丽的工具可以使用，大多数时候都需要一个个字符来判断和处理，甚至对于C语言来说都没有字符串类型，字符数组是其常见的等价结构，所以稳扎稳打的基本功尤其重要。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/03/28/C-中常见的字符判断与处理方法/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/03/21/C-中反向遍历map时怎样删除元素/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/03/21/C-中反向遍历map时怎样删除元素/" itemprop="url">C++中反向遍历map时怎样删除元素</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-21T15:08:49+08:00">
-                2021-03-21
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-03-21T20:02:17+08:00">
-                2021-03-21
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
-                    <span itemprop="name">C/C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/03/21/C-中反向遍历map时怎样删除元素/" class="leancloud_visitors" data-flag-title="C++中反向遍历map时怎样删除元素">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,104(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天在解决一个问题 <a href="https://leetcode-cn.com/problems/number-of-orders-in-the-backlog/" target="_blank" rel="noopener">《5710. 积压订单中的订单总数》</a> 时用到了map的反向遍历，看到问题时首先想到了优先队列，但是需要维护一个大根堆和一个小根堆，感觉操作起来比较麻烦，突发奇想使用map就能够解决。map本身就是有序的，正向遍历可以得到从小到大的序列，而反向遍历就可以得到从大到小的序列，这个思路本身没有错，但是解题时卡在了反向遍历时如何删除元素的知识点上，特此记录一下。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/03/21/C-中反向遍历map时怎样删除元素/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/03/14/解决git命令会将结果输出到单独窗口必须按q才能退出的问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/03/14/解决git命令会将结果输出到单独窗口必须按q才能退出的问题/" itemprop="url">解决git命令会将结果输出到单独窗口必须按q才能退出的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-14T16:19:15+08:00">
-                2021-03-14
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-03-14T22:26:22+08:00">
-                2021-03-14
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
-                    <span itemprop="name">Git</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/03/14/解决git命令会将结果输出到单独窗口必须按q才能退出的问题/" class="leancloud_visitors" data-flag-title="解决git命令会将结果输出到单独窗口必须按q才能退出的问题">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">964(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">4(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>平时会在 windows+linux 两种环境下进行开发，版本控制软件用 git 比较多，但是一直有个小问题，在 windows 下使用 <code>git Bash</code> 比较顺手，但是在 linux 使用 git 部分命令的时候，常常会打开一个新的窗口，按q键才能退出，比如 <code>git branch</code>、<code>git log</code>、<code>git show</code> 等等。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/03/14/解决git命令会将结果输出到单独窗口必须按q才能退出的问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/" itemprop="url">Python中int、str、bytes相互转化，还有2进制、16进制表示，你想要的都在这里了</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-05T00:04:47+08:00">
-                2021-03-05
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-03-07T00:25:58+08:00">
-                2021-03-07
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/" class="leancloud_visitors" data-flag-title="Python中int、str、bytes相互转化，还有2进制、16进制表示，你想要的都在这里了">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,420(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">11(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>数据类型转换是个很基础的操作，很多语言中都要做这些转换，例如前一段时间刚刚总结了<a href="https://blog.csdn.net/albertsh/article/details/113765130" target="_blank" rel="noopener">《C/C++中string和int相互转换的常用方法》</a>，python 自从分离出 python3 版本之后，<code>str</code> 和 <code>bytes</code> 两个类型弄蒙了一大票人，在这两种类型的转换上我可是花了不少时间，记住一点，别随随便便使用 <code>str()</code> 函数，很多数据使用 <code>str()</code> 变成字符串之后再想恢复可就难了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/03/05/Python中int、str、byte相互转化，还有2进制、16进制表示，你想要的都在这里了/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/" itemprop="url">linux环境下的mount命令到底有什么玄机</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-22T22:54:42+08:00">
-                2021-02-22
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-02-28T00:18:06+08:00">
-                2021-02-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/" class="leancloud_visitors" data-flag-title="linux环境下的mount命令到底有什么玄机">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,536(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">16(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>linux 环境下的 <code>mount</code> 命令可以挂载一个文件系统，这个命令目前是我所知命令中最陌生的一个，至今没有使用过，真的一次都没有挂载过，平时用的最多是的 Windwos 系统，完全不需要挂载，安装新硬盘自动就会出现盘符，稍微复杂点就是通过磁盘管理器来分区，或者使用魔术分区助手搞一点复杂的分区或格式化操作。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/02/22/linux环境下的mount命令到底有什么玄机/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/" itemprop="url">Go环境配置时遇到的GOPATH路径以及包管理问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T22:39:19+08:00">
-                2021-02-19
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2021-02-21T23:29:58+08:00">
-                2021-02-21
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
-                    <span itemprop="name">Go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/" class="leancloud_visitors" data-flag-title="Go环境配置时遇到的GOPATH路径以及包管理问题">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,351(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>过了个年回到工作岗位，发现之前好好的 <code>Go</code> 环境无法进行调试了，于是又重新配置了一次，弄好之后的新参数与原来有一些不一样的地方，甚至还有一些矛盾的地方，真搞不清楚原来的配置参数怎么能成功调试的，也是奇了怪了。配置过程中还遇到了一些问题，特别记录一下，防止今后遇到类似问题还要苦苦寻找。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2021/02/19/Go环境配置时遇到的GOPATH路径以及包管理问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/blog/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/25/">25</a><a class="extend next" rel="next" href="/blog/page/14/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/blog/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/26/">26</a><a class="extend next" rel="next" href="/blog/page/14/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2543,7 +2670,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">249</span>
+                <span class="site-state-item-count">255</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2554,7 +2681,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">41</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2565,7 +2692,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">606</span>
+                <span class="site-state-item-count">637</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

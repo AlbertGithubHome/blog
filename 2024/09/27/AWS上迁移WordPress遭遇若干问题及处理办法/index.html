@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="aws,ALB,Route53,WordPress,ACM,postfix," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言前段时间不是在迁移AWS嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从">
+<meta name="keywords" content="aws,ALB,Route53,WordPress,ACM,postfix">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS上迁移WordPress遭遇若干问题及处理办法">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言前段时间不是在迁移AWS嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-09-28T07:23:52.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS上迁移WordPress遭遇若干问题及处理办法">
+<meta name="twitter:description" content="前言前段时间不是在迁移AWS嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/"/>
+
+
+
+
+
+  <title>AWS上迁移WordPress遭遇若干问题及处理办法 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AWS上迁移WordPress遭遇若干问题及处理办法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-09-27T01:00:00+08:00">
+                2024-09-27
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:23:52+08:00">
+                2024-09-28
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
+                    <span itemprop="name">Practical</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" class="leancloud_visitors" data-flag-title="AWS上迁移WordPress遭遇若干问题及处理办法">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">6,570(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">25(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前段时间不是在<a href="https://blog.csdn.net/albertsh/article/details/142427271" target="_blank" rel="noopener">迁移AWS</a>嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从心的感觉。</p>
+<a id="more"></a>
+<p>为了避免这种现象，我尽量保持克制，不随意发散，按着时间先后发生的主线，来说说遇到了哪些问题，又是怎么解决的，解决方案或许不完美，只是提供一种思路。</p>
+<h1 id="问题的产生"><a href="#问题的产生" class="headerlink" title="问题的产生"></a>问题的产生</h1><p>前文提到我已经把原来的AWS实例迁移到新的账号下了，其实繁杂的工作才刚刚起步，首先是访问IP，为了每次重启后IP地址不发生变化，我们不能采用自动分配的公共IP，而要申请弹性IP关联到对应的实例上，注意弹性IP关联到正在运行的实例上时不收费，但是如果不关联或者关联的实例不运行，则需要支付费用，大约$0.005/小时。</p>
+<p>当然这都是小问题，真正的问题还在后面，比如域名需要转移，域名的解析需要重新配置，SSL证书要重新申请，花费时间最多的还是网站用户上报信息发送邮件功能不可用的问题，不过还好，凭借这知识积累和渊博的互联网，基本都找到了解决方案，下面逐项来介绍一下。</p>
+<h1 id="域名转移与DNS解析"><a href="#域名转移与DNS解析" class="headerlink" title="域名转移与DNS解析"></a>域名转移与DNS解析</h1><p>域名转移据说在国外非常顺畅，但这次不是常用的GoDaddy，也不是上次虐我千百遍的JPDirect，是一个叫Onamae服务网站，使用这个网站最大的难点不是技术上的，而是语言层面的，全网站只有日文，凭借着我的有道词典和小伙伴的日语助攻，域名顺利转移，但是我废了九牛二虎之力也没找到原来的DNS记录配置在哪里，找不到DNS记录意味着我无法将域名解析到新的EC2。</p>
+<p>后来想起了Vercel验证域名的经历，这个域名不会也把域名服务器改到别处了吧，一查果然是改到aws了，那必然是用了Route53啊。</p>
+<p><strong>Amazon Route 53</strong> 是 AWS 提供的高度可用和可扩展的云域名系统（DNS）服务，主要用于将用户访问的域名（如 <code>example.com</code>）映射到网络资源（如 EC2 实例、负载均衡器、S3 存储桶等）。Route 53 提供域名注册、DNS 解析、流量管理、以及健康检查等功能。</p>
+<p>Route53 提供高度可用的 DNS 解析服务，将域名映射到 AWS 资源或其他 IP 地址，支持 A 记录（IPv4 地址）、AAAA 记录（IPv6 地址）、CNAME、MX 等常见 DNS 记录类型。支持多种路由策略，如简单路由、加权路由、基于延迟的路由、地理位置路由、故障转移路由等，帮助实现流量优化和高可用性。</p>
+<p>每月前 25 个托管区域每个 $0.50，超过部分按 $0.10/托管区域/月收费。首 10 亿次查询为 $0.40 每百万次查询，超过部分按 $0.20 每百万次查询计费。在全球多个 AWS 区域提供服务，确保最快速的 DNS 解析速度。</p>
+<p>总的来说就是Onamae甩锅了，有人查询DNS记录，Onamae指着AWS说你问他，我不管了，这个域名由他全权负责。</p>
+<h1 id="解析域名到EC2与启用SSL"><a href="#解析域名到EC2与启用SSL" class="headerlink" title="解析域名到EC2与启用SSL"></a>解析域名到EC2与启用SSL</h1><p>现在是个网站就HTTPS，也不管是不是有隐私数据，反正我就得加上显得安全，那我们也随大流别特立独行了，去搞个SSL证书吧，虽然给官网买个好点的证书也付得起，但毕竟免费的更具性价比，在AWS上有免费的证书可用，访问ACM即可申请。</p>
+<p><strong>AWS Certificate Manager (ACM)</strong> 是 Amazon Web Services 提供的服务，用于轻松管理 SSL/TLS 证书，来保护网站和应用程序的网络流量。ACM 自动化了证书的申请、颁发、续订、以及配置过程，从而简化了安全管理。</p>
+<p>ACM 支持免费申请 <strong>公有 SSL/TLS 证书</strong>，用于保护基于 HTTPS 协议的流量。支持单域名、多域名和通配符证书。可以将 ACM 证书快速部署到多个 AWS 服务上，如 <strong>Elastic Load Balancers (ELB/ALB/NLB)</strong>、<strong>CloudFront</strong>、<strong>API Gateway</strong>、和 <strong>Elastic Beanstalk</strong>。</p>
+<p>申请时，需要验证域名的所有权，ACM 支持 <strong>DNS 验证</strong> 和 <strong>Email 验证</strong>，证书可以直接部署在 ALB、CloudFront 等 AWS 服务上，无需手动上传证书，ACM 会自动检测到即将到期的证书，并在过期前完成自动续订。ACM 是一个简化 SSL/TLS 证书管理的服务，特别适合不希望手动处理证书申请、安装和续订的用户。它与 AWS 其他服务深度集成，确保用户在 AWS 上可以轻松实现网站和应用的安全性。</p>
+<p>看了这些介绍是不是心动了，申请步骤也非常方便，基本上填写一个域名<code>example.com</code> 其他参数默认就可以了，前文提到ACM需要验证域名的所有权，这一点AWS做的非常方便，之前我们已经修改Onamae购买的域名NS指向了Route53，这里可以选择<strong>DNS 验证</strong>，在申请SSL证书后会有一个按钮，将验证的DNS记录添加到Route53，一步到位非常的人性化，添加完验证DNS记录后，证书状态会显示为 <code>等待验证</code>，这个过程我等待了1-2小时，然后状态切换成了 <code>已颁发</code>，可能因为我使用新买的域名进行的测试。</p>
+<p>进行到这遇到了一个难题，SSL给谁用？如果我在Route53中将域名解析到EC2，那么我这个SSL证书就得放到EC2上，不管是配置到Nginx、Apache，还是应用程序自己处理都比较麻烦，所以我们充分利用AWS的服务架构，申请一个ELB，将SSL证书分配到ELB上，然后Route53将域名解析到ELB，ELB收到请求后再将流量转发到EC2。</p>
+<h2 id="申请ALB完成转发"><a href="#申请ALB完成转发" class="headerlink" title="申请ALB完成转发"></a>申请ALB完成转发</h2><p>AWS ELB（Elastic Load Balancing）是亚马逊云服务（AWS）提供的一项负载均衡服务，主要分为ALB、NLB、CLB，旨在自动分配进入应用程序的流量，以确保高可用性和可靠性。ELB 可以帮助你管理和优化应用程序的流量，同时确保后端服务器不会因过载而失效。</p>
+<p>ELB 能够根据流量自动扩展和缩减负载均衡能力，以适应流量的变化，支持 SSL/TLS 加密，确保数据在传输过程中安全。集成了 AWS CloudWatch，可以实时监控负载均衡器的性能和流量，并提供访问日志。支持 HTTP、HTTPS、TCP 和 WebSocket 等多种协议。</p>
+<h3 id="ELB分类"><a href="#ELB分类" class="headerlink" title="ELB分类"></a>ELB分类</h3><ol>
+<li><p><strong>应用负载均衡器（ALB）</strong>：</p>
+<ul>
+<li>最适合 HTTP 和 HTTPS 流量，能够根据请求的内容进行智能路由。</li>
+<li>支持基于内容的路由、SSL 终止、WebSocket 和 HTTP/2。</li>
+<li>提供更细粒度的流量控制和监控功能。</li>
+</ul>
+</li>
+<li><p><strong>网络负载均衡器（NLB）</strong>：</p>
+<ul>
+<li>设计用于处理 TCP 流量，能够提供极低的延迟和高吞吐量。</li>
+<li>可以处理数百万个请求，并支持静态 IP 地址。</li>
+<li>适合高性能、低延迟的应用场景，如游戏和实时数据处理。</li>
+</ul>
+</li>
+<li><p><strong>经典负载均衡器（CLB）</strong>：</p>
+<ul>
+<li>早期的负载均衡器，支持 HTTP、HTTPS 和 TCP。</li>
+<li>提供基本的负载均衡功能，但不具备 ALB 和 NLB 的高级功能。</li>
+<li>目前已不再推荐用于新应用，AWS 建议用户使用 ALB 或 NLB。</li>
+</ul>
+</li>
+</ol>
+<p>因为使用的是 HTTP 和 HTTPS 流量的应用程序，所以需要选择 ALB，NLB是不会解析到应用层协议的，使用ALB可以进行SSL终止，那什么是SSL终止呢？</p>
+<p><strong>SSL终止</strong>（SSL Termination）是在负载均衡器或代理服务器等中间设备上处理SSL/TLS加密和解密的技术。</p>
+<h3 id="SSL终止及优点"><a href="#SSL终止及优点" class="headerlink" title="SSL终止及优点"></a>SSL终止及优点</h3><p><strong>SSL终止</strong>指的是当客户端与服务器之间的连接使用SSL/TLS加密时，SSL连接在中间设备（如负载均衡器）上终止（解密）。之后，终止SSL加密的数据将作为未加密的数据在中间设备和后端服务器之间传输。</p>
+<ul>
+<li><strong>性能提升</strong>：后端服务器不需要处理SSL/TLS加解密工作，减轻了服务器的负担，特别是对于高流量的网站，能够提高整体的性能和响应速度。</li>
+<li><strong>集中管理SSL证书</strong>：SSL证书只需要在负载均衡器等设备上配置，无需在每台后端服务器上安装SSL证书，简化了证书的管理和更新流程。</li>
+<li><strong>简化架构</strong>：SSL终止简化了网络架构，尤其适合需要将流量分配给多台服务器的负载均衡环境。</li>
+<li><strong>支持多种协议</strong>：可以支持HTTP、WebSocket等不加密协议的通信形式，而客户端仍然认为其连接是安全的。</li>
+</ul>
+<h3 id="SSL终止的工作流程"><a href="#SSL终止的工作流程" class="headerlink" title="SSL终止的工作流程"></a>SSL终止的工作流程</h3><ol>
+<li>客户端发起HTTPS请求。</li>
+<li>负载均衡器或代理服务器接收请求，并在此解密SSL加密的数据。</li>
+<li>解密后，负载均衡器将未加密的数据转发给后端服务器（通过HTTP等协议）。</li>
+<li>服务器处理请求并将结果返回给负载均衡器。</li>
+<li>负载均衡器将响应数据重新加密，并返回给客户端。</li>
+</ol>
+<p>在创建ALB时有几个需要注意的点，面向互联网还是内部？IPv4还是双栈？网络映射到哪？安全组怎么配？侦听器和路由是什么？这些问题看着深奥，其实一点也不简单，我用大白话试着解释一下？</p>
+<ul>
+<li>面向互联网还是内部，就是问给公网用户访问还是内网访问，这个就是字面意思</li>
+<li>IPv4还是双栈，就是问只用IPv4还是需要支持IPv6，我不太懂，选了双栈，功能多总没坏处</li>
+<li>网络映射到哪，就是选一个子网和至少两个可用区域，为了说明流量的去向</li>
+<li>安全组怎么配，按照EC2的规则配就行了，这个就是EC2的前面的一道门，注意开启443端口的流入哈</li>
+<li>侦听器和路由是什么，这个是个重点，就是说监听某个端口，然后将流量导入到目标组，按照我们的目的肯定是监听443，然后导向EC2实例的80啊，选择443时就可以使用前文里申请的SSL证书了</li>
+</ul>
+<p>回答了上面的问题，又引出了新的问题，我选择的子网不让我选择双栈怎么办？目标组又是什么？</p>
+<p>如果你选择的是双栈（IPv4/IPv6），确保子网有 IPv6 CIDR 块。<strong>CIDR块</strong>（Classless Inter-Domain Routing Block）是一种表示IP地址范围的方式。它用于描述一个网络及其子网的大小，并且广泛应用于现代网络，特别是在分配和管理IP地址时。如果没有就去子网里添加。</p>
+<p>目标组就是把流量目标组到一起，定义一个目标组，目的就是精确表示流量去到的地方，我目前的需求是导向到具体的EC2，所以目标组里可以只选择一个EC2实例，其实你也可以选择多个实例去做类似负载均衡的需求</p>
+<p>到这里ALB基本就配置完了，这时可以将这个ALB的DNS信息复制添加到Route53里，以别名的形式添加，这一套路径就走下来了</p>
+<p>用于访问域名，交给Route53解析地址，Route53将ALB地址返回，流量以HTTPS形式到达ALB，使用证书解密出数据，数据以HTTP形式从ALB到达目标组中的EC2实例，完成一次请求，EC2不用关心证书的问题，多数一句，这样的EC2如果不直接访问可以不配置公网IP和弹性IP。</p>
+<p>进行到这里网站跑起来了，访问也正常了，貌似问题都解决了，但旅途怎会如此顺利？接下来就将迎来业务引发的问题——发邮件不成功，经历了这次的折腾我看到了更本质的东西。</p>
+<h1 id="邮件发送问题"><a href="#邮件发送问题" class="headerlink" title="邮件发送问题"></a>邮件发送问题</h1><p>当你不熟悉一件事情的时候总会认为它很神秘，就像我之前认为邮件特别复杂、特别庞大一样，经过这次折腾之后发现它的轮廓清晰了起来，再说问题之前，我们先来看一段历史。</p>
+<p>1987 年 9 月14 日晚上，北京车道沟十号院中一座树木掩映的小楼里，李澄炯教授等13 位中、德科学家聚拢在一台西门子7760 大型计算机周围，成功发出中国第一封电子邮件。 这座小楼，就是中国兵器工业计算机应用技术研究所的所在地。</p>
+<blockquote>
+<p>“Across the Great Wall we can reach every corner in the world”（“越过长城，走向世界”）。这是西方世界第一次通过互联网听到中国的声音。</p>
+</blockquote>
+<p>看到Great Wall和这个句子含义总联想到另一个词，有点讽刺~</p>
+<p>现在看来，邮件本质是数据的发送，从数据层面来看与HTTP请求并无不同，只是使用了另一种更适合它的协议，将数据传递到目的地罢了。</p>
+<p>我很早就不觉得HTTP神秘了，为什么呢？因为整天接触它，但是我在前两天还在觉得Email神秘，因为平时用的少也没有过多研究过，这次趁着解决问题稍微拓展了一下，感觉知识面又变宽了一点点。</p>
+<p>好了，接下来说遇到的问题，迁移的WordPress有一个提交表单发邮件的功能，使用了一个叫 <code>MW WP WPForm</code> 的插件，可以<a href="https://mw-wp-form.web-soudan.co.jp/manual/auto_mail/" target="_blank" rel="noopener">自动回复邮件</a>以及<a href="https://mw-wp-form.web-soudan.co.jp/manual/admin_mail/" target="_blank" rel="noopener">向管理员发送表单邮件</a>，但是我将WordPress迁移到新的AWS实例后，这个功能失效了</p>
+<p>官方也给出了一些<a href="https://mw-wp-form.web-soudan.co.jp/faq/" target="_blank" rel="noopener">FAQ</a></p>
+<blockquote>
+<p>“There was an error trying to send your message. Please try again later.” is a message that appears when an email fails to send. There are two main reasons why this message appears:</p>
+<ul>
+<li>WordPress itself cannot send emails</li>
+<li>The email body is not set on the MW WP Form form editing screen</li>
+</ul>
+</blockquote>
+<p>虽然不能直接解决我的问题，但是我发现了一件事，就是这个插件本身不能发送邮件，它要求WordPress必须本身可以发送邮件才可以，怎么理解这句话呢？首先你要理解插件的作用，插件是在原项目或作品上通过加载的方式丰富完善原来的内容，本身并不能提供一些基础的能力。</p>
+<p>因为插件一般与源系统是解耦的，所以只能通过系统提供的一些钩子或事件来改善原系统功能，就以 <code>MW WP WPForm</code> 这个插件为例，WordPress本身是可以利用 PHP 的 <code>WP_Mail</code> 发送邮件的，但是相对来说使用较复杂，需要传递很多参数，而 <code>MW WP WPForm</code> 就是将这些参数便利化的插件，当我收到你要发邮件的请求时由插件负责组装参数和调用函数，大大方便了邮件发送的操作。</p>
+<p>但是如果本身调用 <code>WP_Mail</code> 都发不了邮件，那么这个插件也就无能为力了。</p>
+<p>其实 <code>WP_Mail</code> 只是为 WordPress 提供了发送邮件的功能逻辑，并不是发邮件的基础架构，以Linux为例，与邮件相关的命令有 <code>mail</code>、<code>sendmail</code>、<code>postfix</code> 等，其中 <code>mail</code> 是一个邮件客户端，用于发送和接收邮件，可以这样使用 <code>mail -s &quot;Subject&quot; user@example.com</code>，<code>sendmail</code> 和 <code>postfix</code> 是邮件传输代理（MTA），主要用于处理邮件的发送和接收。在现代 Linux 系统中，<code>postfix</code> 通常被认为是比 <code>sendmail</code> 更好的选择，因为它更安全、易于管理且性能优越。</p>
+<p>这些才是Linux系统发送邮件的基础结构，WordPress的 <code>WP_Mail</code> 函数主要依赖于 PHP 的 <code>mail()</code> 函数来发送邮件，而PHP 的 <code>mail()</code> 函数通过系统的邮件传输代理（通常是 <code>sendmail</code> 或 <code>postfix</code>）来发送邮件，确保适当的 MTA 已安装并配置正确，才能保证 PHP 可以成功发送邮件。</p>
+<p>初步分析是这台机器邮件服务没有配置好，那就查查log吧，打开 <code>/var/log/maillog</code> 文件看到以下字样：</p>
+<blockquote>
+<p>Sep 26 16:14:29 ip-192-168-2-26 postfix/smtp[9198]: connect to mx2.qq.com[240d:c040:1:40::133]:25: Network is unreachable</p>
+</blockquote>
+<p>咦？25号端口咋不通呢？看了看安全规则也没限制25号端口，还有就是我现在的系统是直接镜像过来的，配置应该一模一样才对，为什么之前的实例可以发送邮件，而镜像过来的新实例就不行呢？</p>
+<p>后来我又创建一个简单实例，然后搭建了WordPress，依旧发不了邮件，然后我就查了一下发现<a href="https://aws.amazon.com/cn/ec2/faqs/" target="_blank" rel="noopener">AWS-FAQ</a>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">EC2 SMTP 端点策略的变化</span><br><span class="line">问：ID 格式会发生怎样的变化？</span><br><span class="line"></span><br><span class="line">自 2020 年 1 月 7 日起，Amazon EC2 开始推出一项变化来限制默认情况下通过端口 25 的电子邮件流量，</span><br><span class="line">从而防止客户和其他收件人收到垃圾邮件和电子邮件滥用。端口 25 通常用作发送电子邮件的默认 SMTP 端口。</span><br><span class="line">在过去请求并取消了端口 25 限制的 AWS 账户将不受此变化影响。</span><br></pre></td></tr></table></figure>
+<p>原来是AWS把新实例的25端口封锁了，之前的实例是2019年申请的没有受到影响，进一步查询，发现不只AWS这样做，阿里云也封锁了25号端口，要是申请解封会花一些时间还不一定成功，我还是想想别的办法。</p>
+<h2 id="解决邮件问题"><a href="#解决邮件问题" class="headerlink" title="解决邮件问题"></a>解决邮件问题</h2><p>既然25号端口不好用，我就用SMTP的SSL端口465吧，可是怎么改变发送的端口呢？我查到了WordPress的 <code>WP MIAL SMTP</code> 插件，填写qq邮箱的SMPT服务器，添加qq邮箱和授权码，就搞定了，真是太方便，设置完终于可以发邮件了，泪流满面，天知道这个过程我持续了多久，熬了多少个夜晚。</p>
+<p>这个插件的安装我是在测试实例时搞得，正当我想要在正式实例上安装 <code>WP MIAL SMTP</code> 插件时，提示我WordPress版本5.2.4太低无法安装，之前安装的那个测试环境是6.2.4，天塌了呀，那没办法升级WordPress吧，找到升级按钮那么一点，开始转圈圈，然后提示我升级失败，天又塌了呀。</p>
+<p>鬼知道我都遇到了什么，既然不让我安装 <code>WP MIAL SMTP</code>，那我安装个别的呗，后来找到了 <code>Easy WP SMTP</code> 可以在当前版本安装，整个使用过程和 <code>WP MIAL SMTP</code> 几乎一毛一样，看起来就像换了个主题，结果就是一样好使，事情还没完。</p>
+<p>刚刚配置的是我的QQ邮箱，但是这里总不能把邮件都扔我邮箱吧，最终要换成企业微信邮箱，但是当我配置为公司企业微信邮箱再提交表单发邮件时，虽然邮件正常回复给QQ邮箱了，但是插件 <code>WP MIAL SMTP</code> 测试页面报了一个警告和错误</p>
+<blockquote>
+<p>Domain Check Results</p>
+<ul>
+<li>spf<blockquote>
+<p>Action Needed: It doesn’t look like the SPF record required by your SMTP server has been added to your domain. Please contact your SMTP server provider for details on how to find the SPF record, and how to add this record to your domain’s DNS.</p>
+</blockquote>
+</li>
+<li>dmarc<blockquote>
+<p>Action Recommended: It doesn’t look like DMARC has been set up on your domain (xxx.com). We recommend using the DMARC protocol because it helps protect your domain from &gt;&gt;unauthorized use. Please check out this step-by-step guide for details on how to add the DMARC record to your domain’s DNS.</p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>其实一开始我也没当回事，查了<code>Easy WP SMTP</code>插件的<a href="https://easywpsmtp.com/docs/how-to-create-dmarc-record/" target="_blank" rel="noopener">文档</a>，还提供了一个<a href="https://mxtoolbox.com/SuperTool.aspx" target="_blank" rel="noopener">查询DNS信息的工具</a>,但是我没有放在心上，不撞南墙怎会回头，后来再给Gmail发邮件的时候，邮件被退回了，错误原因写的还算清楚</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">无法发送到 yyy@gmail.com</span><br><span class="line">退信原因    发件人（support@xxx.com）域名的DNS记录未设置或设置错误导致对方拒收此邮件。</span><br><span class="line">host gmail-smtp-in.l.google.com[172.253.118.27] said: 550-5.7.26 Your email has been blocked because</span><br><span class="line">the sender is unauthenticated. Gmail requires all senders to authenticate with either SPF or DKIM.</span><br><span class="line">Authentication results:  DKIM = did not pass  SPF [xxx.com] with ip: [18.169.211.239] = did not pass</span><br><span class="line">For instructions on setting up authentication,</span><br><span class="line">go to  https://support.google.com/mail/answer/81126#authentication d9443c01a7336-20af16e543csi13995695ad.54 - gsmtp (in reply to end of DATA command)</span><br><span class="line">解决方案    请通知你的邮箱管理员为邮箱域名设置正确的DNS(SPF、DKIM、DMARC)记录。</span><br><span class="line">详细请见 http://service.exmail.qq.com/cgi-bin/help?subtype=1&amp;&amp;no=1000580&amp;&amp;id=20012。</span><br></pre></td></tr></table></figure>
+<p>在自己企业微信的域名上添加两行记录就可以了，这样就可以顺利的发邮件给GMail了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">主机记录：@</span><br><span class="line">记录类型：TXT</span><br><span class="line">记录值为：v=spf1 include:spf.mail.qq.com ~all</span><br><span class="line"></span><br><span class="line">主机记录： _dmarc</span><br><span class="line">记录类型：TXT</span><br><span class="line">记录值: v=DMARC1; p=none; rua=mailto:mailauth-reports@qq.com</span><br></pre></td></tr></table></figure>
+<p><strong>SPF（Sender Policy Framework）</strong> 是一种电子邮件验证协议，用于防止邮件伪造和垃圾邮件。SPF 的验证原理基于 DNS（域名系统）记录。<strong>DMARC（Domain-based Message Authentication, Reporting &amp; Conformance）</strong> 是一种邮件身份验证协议，用于增强电子邮件的安全性，防止邮件伪造和钓鱼攻击。它建立在 SPF（Sender Policy Framework）和 DKIM（DomainKeys Identified Mail）之上，通过提供发送方的政策声明和报告机制来实现。</p>
+<p>有关SPF和DMARC的详细原理可以自己去扩展，这里只做简单介绍了。</p>
+<p>本来事情到这里就比较完美了，但是架不住技术人有一个爱折腾的心，我不装插件行不行呢？</p>
+<h2 id="原生解决邮件问题"><a href="#原生解决邮件问题" class="headerlink" title="原生解决邮件问题"></a>原生解决邮件问题</h2><h3 id="临时测试"><a href="#临时测试" class="headerlink" title="临时测试"></a>临时测试</h3><p>既然装了个插件能解决发邮件的问题，那我能不能自己搞个简单配置文件来做（貌似写代码的人有技术洁癖），说干就干，我先是在测试的WordPress上进行，版本6.2.4，ChatGPT提示我直接在主题下面的 <code>functions.php</code> 文件里加代码就行，路径 <code>/wp-content/themes/你的主题名/functions.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">configure_smtp</span><span class="params">( PHPMailer $phpmailer )</span> </span>&#123;</span><br><span class="line">    $phpmailer-&gt;isSMTP();</span><br><span class="line">    $phpmailer-&gt;Host       = <span class="string">'smtp.qq.com'</span>;       <span class="comment">// 你的 SMTP 服务器</span></span><br><span class="line">    $phpmailer-&gt;SMTPAuth   = <span class="keyword">true</span>;</span><br><span class="line">    $phpmailer-&gt;Port       = <span class="number">465</span>;                 <span class="comment">// SMTP 端口，465 是 SSL 的常用端口</span></span><br><span class="line">    $phpmailer-&gt;Username   = <span class="string">'707070901@qq.com'</span>;  <span class="comment">// 你的 SMTP 用户名</span></span><br><span class="line">    $phpmailer-&gt;Password   = <span class="string">'SMTPjyiqwhzlSMTP'</span>;  <span class="comment">// 你的 SMTP 密码</span></span><br><span class="line">    $phpmailer-&gt;SMTPSecure = <span class="string">'ssl'</span>;               <span class="comment">// 加密类型，使用 ssl</span></span><br><span class="line">    $phpmailer-&gt;From       = <span class="string">'707070901@qq.com'</span>;  <span class="comment">// 发件人地址</span></span><br><span class="line">    $phpmailer-&gt;FromName   = <span class="string">'Your Name'</span>;         <span class="comment">// 发件人姓名</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add_action( <span class="string">'phpmailer_init'</span>, <span class="string">'configure_smtp'</span> );</span><br></pre></td></tr></table></figure>
+<p>一测试发邮件，网站崩溃了，最后在开头加了一句 <code>use PHPMailer\PHPMailer\PHPMailer;</code> 问题解决</p>
+<h3 id="正式修改"><a href="#正式修改" class="headerlink" title="正式修改"></a>正式修改</h3><p>后来我又到正式的WordPress上修改，这次为6.2.4版本，但是这个WordPress主题是自定义的，我没找到 <code>functions.php</code>，ChatGPT又给我出了主意，让我自己创建一个我没听，而是采用了他说的另一种方法，使用 mu-plugins 文件夹，如果你确保这段代码始终运行（甚至在你切换主题时），可以使用 WordPress 的 mu-plugins 机制（”must-use plugins”）。</p>
+<p>在/var/www/sanctus-senki.com/cms/wp-content/下新建文件夹 <code>mu-plugins</code></p>
+<p>在这个文件夹下新建文件 <code>custom-smtp.php</code> 编写下面内容，这个版本不能在开头加 <code>use PHPMailer\PHPMailer\PHPMailer;</code>代码段，否则报错</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// Custom SMTP configuration for WordPress</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">configure_smtp</span><span class="params">( PHPMailer $phpmailer )</span> </span>&#123;</span><br><span class="line">    $phpmailer-&gt;isSMTP();</span><br><span class="line">    $phpmailer-&gt;Host       = <span class="string">'smtp.qq.com'</span>;       <span class="comment">// 你的 SMTP 服务器</span></span><br><span class="line">    $phpmailer-&gt;SMTPAuth   = <span class="keyword">true</span>;</span><br><span class="line">    $phpmailer-&gt;Port       = <span class="number">465</span>;                 <span class="comment">// SMTP 端口，465 是 SSL 的常用端口</span></span><br><span class="line">    $phpmailer-&gt;Username   = <span class="string">'707070901@qq.com'</span>;  <span class="comment">// 你的 SMTP 用户名</span></span><br><span class="line">    $phpmailer-&gt;Password   = <span class="string">'SMTPjyiqwhzlSMTP'</span>;  <span class="comment">// 你的 SMTP 密码</span></span><br><span class="line">    $phpmailer-&gt;SMTPSecure = <span class="string">'ssl'</span>;               <span class="comment">// 加密类型，使用 ssl</span></span><br><span class="line">    <span class="comment">//$phpmailer-&gt;From       = '707070901@qq.com';// 发件人地址（这里不强制发件人可以显示转发哦）</span></span><br><span class="line">    $phpmailer-&gt;FromName   = <span class="string">'Your Name'</span>;         <span class="comment">// 发件人姓名</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add_action( <span class="string">'phpmailer_init'</span>, <span class="string">'configure_smtp'</span> );</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>好了，这件事告一段落了，大道至简，经历了由简到繁，由繁化简的历程，才明白简约的可贵。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>AWS Route53 提供高度可用的 DNS 解析服务，将域名映射到 AWS 资源或其他 IP 地址</li>
+<li>ACM 支持免费申请 <strong>公有 SSL/TLS 证书</strong>，用于保护基于 HTTPS 协议的流量</li>
+<li>AWS ELB（Elastic Load Balancing）是AWS提供的一项负载均衡服务，主要分为ALB、NLB、CLB，旨在自动分配进入应用程序的流量，以确保高可用性和可靠性</li>
+<li>Linux系统下 <code>mail</code> 是一个邮件客户端，用于发送和接收邮件，<code>sendmail</code> 和 <code>postfix</code> 是邮件传输代理（MTA），主要用于处理邮件的发送和接收</li>
+<li>自 2020 年 1 月 7 日起，Amazon EC2 开始限制默认情况下通过端口 25 的电子邮件流量</li>
+<li>记住WordPress的 <code>MW WP WPForm</code>、<code>WP MIAL SMTP</code>、<code>Easy WP SMTP</code> 插件，你或许以后用的上</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/142427271" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p> 过钢者易折，善柔者不败</p>
+<p>不必为人性感到意外，哪个人强大了不对弱者动武，哪个女人漂亮了不被男人惦记，<br>利刃在手，易起杀心，权大无边，总想乱来</p>
+<p>2024-9-26 20:26:55</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" title="AWS上迁移WordPress遭遇若干问题及处理办法">http://AlbertGithubHome.github.io/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/aws/" rel="tag"><i class="fa fa-tag"></i> aws</a>
+          
+            <a href="/blog/tags/ALB/" rel="tag"><i class="fa fa-tag"></i> ALB</a>
+          
+            <a href="/blog/tags/Route53/" rel="tag"><i class="fa fa-tag"></i> Route53</a>
+          
+            <a href="/blog/tags/WordPress/" rel="tag"><i class="fa fa-tag"></i> WordPress</a>
+          
+            <a href="/blog/tags/ACM/" rel="tag"><i class="fa fa-tag"></i> ACM</a>
+          
+            <a href="/blog/tags/postfix/" rel="tag"><i class="fa fa-tag"></i> postfix</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" rel="next" title="AWS镜像迁移登录问题二三则">
+                <i class="fa fa-chevron-left"></i> AWS镜像迁移登录问题二三则
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">255</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">637</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题的产生"><span class="nav-number">2.</span> <span class="nav-text">问题的产生</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#域名转移与DNS解析"><span class="nav-number">3.</span> <span class="nav-text">域名转移与DNS解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解析域名到EC2与启用SSL"><span class="nav-number">4.</span> <span class="nav-text">解析域名到EC2与启用SSL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#申请ALB完成转发"><span class="nav-number">4.1.</span> <span class="nav-text">申请ALB完成转发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ELB分类"><span class="nav-number">4.1.1.</span> <span class="nav-text">ELB分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL终止及优点"><span class="nav-number">4.1.2.</span> <span class="nav-text">SSL终止及优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL终止的工作流程"><span class="nav-number">4.1.3.</span> <span class="nav-text">SSL终止的工作流程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#邮件发送问题"><span class="nav-number">5.</span> <span class="nav-text">邮件发送问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解决邮件问题"><span class="nav-number">5.1.</span> <span class="nav-text">解决邮件问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原生解决邮件问题"><span class="nav-number">5.2.</span> <span class="nav-text">原生解决邮件问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#临时测试"><span class="nav-number">5.2.1.</span> <span class="nav-text">临时测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正式修改"><span class="nav-number">5.2.2.</span> <span class="nav-text">正式修改</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
