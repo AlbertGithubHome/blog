@@ -1177,10 +1177,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1660,9 +1660,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>Dijkstra</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
-        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1674,9 +1674,9 @@
       </categories>
       <tags>
         <tag>C++</tag>
-        <tag>Floyd</tag>
         <tag>算法</tag>
         <tag>最短路径</tag>
+        <tag>Floyd</tag>
       </tags>
   </entry>
   <entry>
@@ -1860,8 +1860,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>语法糖</tag>
         <tag>函数</tag>
+        <tag>语法糖</tag>
         <tag>函数库</tag>
       </tags>
   </entry>
@@ -1918,9 +1918,9 @@
       <tags>
         <tag>git</tag>
         <tag>branch</tag>
+        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
-        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1933,9 +1933,9 @@
       <tags>
         <tag>int</tag>
         <tag>Python</tag>
+        <tag>hex</tag>
         <tag>str</tag>
         <tag>bytes</tag>
-        <tag>hex</tag>
       </tags>
   </entry>
   <entry>
@@ -2004,9 +2004,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>语法糖</tag>
         <tag>auto</tag>
         <tag>algorithm</tag>
-        <tag>语法糖</tag>
       </tags>
   </entry>
   <entry>
@@ -2125,8 +2125,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2179,8 +2179,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2453,10 +2453,10 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>reset</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>HEAD</tag>
-        <tag>reset</tag>
       </tags>
   </entry>
   <entry>
@@ -2498,8 +2498,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>windows</tag>
         <tag>汇编</tag>
+        <tag>windows</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -2784,8 +2784,8 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
-        <tag>hex</tag>
         <tag>Blob substring</tag>
+        <tag>hex</tag>
         <tag>concat</tag>
       </tags>
   </entry>
@@ -2884,8 +2884,8 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>linux</tag>
         <tag>函数</tag>
+        <tag>linux</tag>
         <tag>堆栈</tag>
       </tags>
   </entry>
