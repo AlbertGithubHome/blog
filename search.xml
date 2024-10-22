@@ -636,8 +636,8 @@
         <tag>linux</tag>
         <tag>运维</tag>
         <tag>rsync</tag>
-        <tag>mv</tag>
         <tag>cp</tag>
+        <tag>mv</tag>
       </tags>
   </entry>
   <entry>
@@ -835,8 +835,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
+        <tag>find</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -1177,10 +1177,10 @@
         <category>Git</category>
       </categories>
       <tags>
-        <tag>log</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
         <tag>历史记录</tag>
+        <tag>log</tag>
       </tags>
   </entry>
   <entry>
@@ -1334,8 +1334,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>locate</tag>
         <tag>which</tag>
         <tag>grep</tag>
@@ -1450,8 +1450,8 @@
       <tags>
         <tag>git</tag>
         <tag>commit</tag>
-        <tag>branch</tag>
         <tag>stash</tag>
+        <tag>branch</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -1917,10 +1917,10 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
-        <tag>log</tag>
         <tag>config</tag>
         <tag>pager</tag>
+        <tag>log</tag>
+        <tag>branch</tag>
       </tags>
   </entry>
   <entry>
@@ -1932,8 +1932,8 @@
       </categories>
       <tags>
         <tag>int</tag>
-        <tag>Python</tag>
         <tag>hex</tag>
+        <tag>Python</tag>
         <tag>str</tag>
         <tag>bytes</tag>
       </tags>
@@ -2125,8 +2125,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2153,8 +2153,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>文件</tag>
         <tag>sed</tag>
+        <tag>文件</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -2179,8 +2179,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>sort</tag>
         <tag>linux</tag>
+        <tag>sort</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2498,8 +2498,8 @@
       <tags>
         <tag>C/C++</tag>
         <tag>linux</tag>
-        <tag>汇编</tag>
         <tag>windows</tag>
+        <tag>汇编</tag>
         <tag>asm</tag>
       </tags>
   </entry>
@@ -2625,8 +2625,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>checkout</tag>
         <tag>reset</tag>
+        <tag>checkout</tag>
         <tag>revert</tag>
         <tag>restore</tag>
       </tags>
@@ -2640,8 +2640,8 @@
       </categories>
       <tags>
         <tag>git</tag>
-        <tag>branch</tag>
         <tag>checkout</tag>
+        <tag>branch</tag>
         <tag>push</tag>
         <tag>remote</tag>
       </tags>
@@ -3255,9 +3255,9 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>find</tag>
         <tag>linux</tag>
         <tag>查找</tag>
+        <tag>find</tag>
         <tag>grep</tag>
       </tags>
   </entry>
