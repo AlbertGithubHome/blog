@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/24/Redis内存碎片自动回收/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/29/GoAdmin框架实现的后台应用遇到的鉴权跳转问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -365,7 +365,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/10/24/Redis内存碎片自动回收/" itemprop="url">Redis内存碎片自动回收</a></h1>
+                <a class="post-title-link" href="/blog/2024/12/29/GoAdmin框架实现的后台应用遇到的鉴权跳转问题/" itemprop="url">GoAdmin框架实现的后台应用遇到的鉴权跳转问题</a></h1>
         
 
         <div class="post-meta">
@@ -377,8 +377,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T21:06:19+08:00">
-                2024-10-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-29T00:58:05+08:00">
+                2024-12-29
               </time>
             
 
@@ -393,7 +393,871 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:19:36+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:59:10+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/12/29/GoAdmin框架实现的后台应用遇到的鉴权跳转问题/" class="leancloud_visitors" data-flag-title="GoAdmin框架实现的后台应用遇到的鉴权跳转问题">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,486(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">15(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>GoAdmin是一个基于 <code>golang</code> 面向生产的数据可视化管理平台搭建框架，可以让你使用简短的代码在极短时间内搭建起一个管理后台，虽然我也会去修改和新增一些功能页面，但是它给我的感觉总像一个黑盒子，大概是我对Web开发的知识了解甚少，总是照葫芦画瓢的完成一些工作，最近在鉴权和会话过期的处理上遇到了一点点问题，直接GET访问页面在会话过期时会自动跳转到登录页面，而点击按钮提交表单时如果已经会话过期了却没有任何反应，我觉得是少设置了一些东西，绕了一大圈才算勉强解决，但这应该不是最优的方案，先记录一下，后续找到好的解决方案再优化。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/12/29/GoAdmin框架实现的后台应用遇到的鉴权跳转问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/29/Windows下使用adb实现在模拟器中ping/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/12/29/Windows下使用adb实现在模拟器中ping/" itemprop="url">Windows下使用adb实现在模拟器中ping</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-29T00:42:07+08:00">
+                2024-12-29
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:43:22+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/windows/" itemprop="url" rel="index">
+                    <span itemprop="name">windows</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/12/29/Windows下使用adb实现在模拟器中ping/" class="leancloud_visitors" data-flag-title="Windows下使用adb实现在模拟器中ping">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">825(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">4(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>有时在模拟器中测试应用不像在Windows这种开发环境中那么方便，毕竟Windows或者Linux下的工具五花八门，可以满足各种测试需求，比如应用在模拟器中无法登录时，想测试模拟器的网络情况，如果是在Windows或者Linux下各种网络工具任君挑选，但是在模拟器中运行个命令行下的ping命令的都费劲，但方法还是有的，我就找个不那么费劲的方法吧，记录在此方便查阅。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/12/29/Windows下使用adb实现在模拟器中ping/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/25/简单整理下protobuf中常用的几个工具函数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/12/25/简单整理下protobuf中常用的几个工具函数/" itemprop="url">简单整理下protobuf中常用的几个工具函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-25T23:30:00+08:00">
+                2024-12-25
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:57:28+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/12/25/简单整理下protobuf中常用的几个工具函数/" class="leancloud_visitors" data-flag-title="简单整理下protobuf中常用的几个工具函数">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,324(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">6(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>游戏项目中使用protobuf作为双端协议通讯的方式，算是一种中规中矩的方法了，偶尔会需要查看序列化后的消息占用空间大小，一直都是用序列化后的字符串来查看，即使临时测试一个结构占用空间也要序列化后才能调用 <code>.size()</code> 函数，最近偶然间发现有个 <code>ByteSizeLong()</code> 可直接用于BP结构上，这倒是简单了一点点，所以把常用的几个函数列举总结一下，免的自己时间太长忘记了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/12/25/简单整理下protobuf中常用的几个工具函数/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/21/使用mysqlx操作MySQL8-0数据库时遭遇CDK-Error-Connection-refused-generic-111-错误/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/12/21/使用mysqlx操作MySQL8-0数据库时遭遇CDK-Error-Connection-refused-generic-111-错误/" itemprop="url">使用mysqlx操作MySQL8.0数据库时遭遇CDK Error: Connection refused (generic:111)错误</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-21T00:00:00+08:00">
+                2024-12-21
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:55:16+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/12/21/使用mysqlx操作MySQL8-0数据库时遭遇CDK-Error-Connection-refused-generic-111-错误/" class="leancloud_visitors" data-flag-title="使用mysqlx操作MySQL8.0数据库时遭遇CDK Error: Connection refused (generic:111)错误">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,919(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">13(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>游戏服务器一个配置存储服务，使用 <code>mysql-connector-c++ 8.0</code> 连接 <code>MySQL 8.0</code> 数据库，使用 <code>MySQL X Protocol</code>， 它是 MySQL 8.0 引入的一种新的通信协议，它是为了支持现代应用程序开发需求而设计的。除了关系型数据存储外，MySQL X Protocol 可以方便地处理文档存储，允许存储和检索 JSON 等文档类型的数据，使其更适合现代的 NoSQL 风格的开发模式。该协议支持异步操作，提高了性能，允许更高效的并发处理，特别是在处理大量请求时。支持更丰富的数据操作，包括 CRUD 操作、事务处理、SQL 语句执行，并且可以处理复杂的查询，例如对文档存储的查询。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/12/21/使用mysqlx操作MySQL8-0数据库时遭遇CDK-Error-Connection-refused-generic-111-错误/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/17/Redis查询占用空间最大的10个key/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/12/17/Redis查询占用空间最大的10个key/" itemprop="url">Redis查询占用空间最大的10个key</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-17T23:45:00+08:00">
+                2024-12-17
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:53:15+08:00">
                 2024-12-29
               </time>
             
@@ -429,7 +1293,7 @@
 
           
           
-             <span id="/blog/2024/10/24/Redis内存碎片自动回收/" class="leancloud_visitors" data-flag-title="Redis内存碎片自动回收">
+             <span id="/blog/2024/12/17/Redis查询占用空间最大的10个key/" class="leancloud_visitors" data-flag-title="Redis查询占用空间最大的10个key">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -447,7 +1311,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,211(字)</span>
+            <span class="post-count">1,005(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -455,7 +1319,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
+            <span class="post-count">4(分)</span>
           </span>
 
           
@@ -478,15 +1342,30 @@
 
       
         
-          <p>@[TOC]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天说的是一个老问题了，关于 Redis 内存碎片的回收，以前用过几次，今天再次使用时发现自己没总结，没有可以拿来直接用的命令，花了一些时间去查找和测试，为了以后使用时更方便，我决定把整理一下放在这，等待再次相遇。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/10/24/Redis内存碎片自动回收/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近电脑性能告急，所有磁盘变红无空间，C盘更是剩下0字节，内存<code>90%+</code>，CPU占用<code>90%+</code>，使用spacesniffer查询哪些文件可以删除，优先被我干掉的是休眠功能自动生成的 hiberfil.sys 文件，然后这个内存分页文件 pagefile.sys 我没动，本来我的内存就不够用，删除了情况会更糟糕，然后映入眼帘是的 <code>dump.rdb</code> 文件，这个redis的持久化文件怎么这么大，足足有6个G，不仅占用了我6个G的C盘，还占用了我6个G的内存，不会是上次测试存储的大数据没删除吧，赶紧去瞅瞅。</p>
+<h1 id="查找Redis大key"><a href="#查找Redis大key" class="headerlink" title="查找Redis大key"></a>查找Redis大key</h1><p>查找的思路很简单粗暴，利用redis的API，将所有的key的大小查找出来，然后从大到小排序，找出最大的10个key。</p>
+<p>需要注意的是，我这是本地的测试环境，为了方便所以使用了 <code>keys</code> 这个令人闻风丧胆的命令来阻塞获取了所有的key，如果是在生产环境中可千万不要这么写，使用 <code>scan</code> 是一个很好的替代方案，查询代码如下：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3.6</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># 查询redis中占用空间最大的10个key</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"></span><br><span class="line"><span class="comment"># game redis</span></span><br><span class="line">redis_pool = redis.ConnectionPool(host=<span class="string">'127.0.0.1'</span>, password=<span class="string">'myword'</span>, port=<span class="number">6379</span>)</span><br><span class="line">redis_server = redis.Redis(connection_pool=redis_pool)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取所有键</span></span><br><span class="line">keys = redis_server.keys(<span class="string">'*'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取每个键的内存使用情况</span></span><br><span class="line">key_sizes = []</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> keys:</span><br><span class="line">    size = redis_server.memory_usage(key)</span><br><span class="line">    key_sizes.append((key, size))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按内存使用大小排序，取前10个</span></span><br><span class="line">top_keys = sorted(key_sizes, key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="keyword">True</span>)[:<span class="number">10</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="keyword">for</span> key, size <span class="keyword">in</span> top_keys:</span><br><span class="line">    print(<span class="string">f"Key: <span class="subst">&#123;key&#125;</span>, Size: <span class="subst">&#123;size&#125;</span> bytes"</span>)</span><br><span class="line">    <span class="comment">#redis_server.delete(key)</span></span><br></pre></td></tr></table></figure>
+<p>果然不出所料，内存占用前几名的key都是之前我做测试时使用的超大key，赶紧使用 <code>redis_server.delete(key)</code> 函数删除掉，因为当时测试使用了统一的AAA前缀，为了提高后续查找效率，我把获取key的代码改成了 <code>keys = redis_server.keys(&#39;AAA*&#39;)</code>，这样查找前10个key速度就快很多了</p>
+<h1 id="使用Scan命令优化"><a href="#使用Scan命令优化" class="headerlink" title="使用Scan命令优化"></a>使用Scan命令优化</h1><p>前面提到 <code>keys</code> 命令不要在生产环境使用，如果要遍历key最好使用 <code>scan</code> 来代替，所以优化后的代码如下：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接 Redis</span></span><br><span class="line">redis_pool = redis.ConnectionPool(host=<span class="string">'127.0.0.1'</span>, password=<span class="string">'myword'</span>, port=<span class="number">6379</span>)</span><br><span class="line">redis_server = redis.Redis(connection_pool=redis_pool)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 存储键和它们的内存使用情况</span></span><br><span class="line">key_sizes = []</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 SCAN 命令遍历所有键</span></span><br><span class="line">cursor = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    cursor, keys = redis_server.scan(cursor, count=<span class="number">1000</span>)  <span class="comment"># 每次扫描最多返回 1000 个键</span></span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> keys:</span><br><span class="line">        size = redis_server.memory_usage(key)</span><br><span class="line">        key_sizes.append((key, size))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果游标返回为 0，说明遍历完所有键</span></span><br><span class="line">    <span class="keyword">if</span> cursor == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 按内存使用大小排序，取前10个</span></span><br><span class="line">top_keys = sorted(key_sizes, key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="keyword">True</span>)[:<span class="number">10</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="keyword">for</span> key, size <span class="keyword">in</span> top_keys:</span><br><span class="line">    print(<span class="string">f"Key: <span class="subst">&#123;key&#125;</span>, Size: <span class="subst">&#123;size&#125;</span> bytes"</span>)</span><br><span class="line">    <span class="comment"># 如果需要删除键，可以在这里调用 redis_server.delete(key)</span></span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>Windows电脑磁盘不足时，如果不使用休眠功能，可以把C盘根目录的 hiberfil.sys 文件删掉</li>
+<li>获取所有可以的命令是 <code>keys</code>，但这是个阻塞命令，不要轻易在生产环境下使用，必要时使用 <code>scan</code> 命令代替</li>
+<li>使用 <code>redis_server.memory_usage(key)</code> 命令可以获取key占用内存大小，删除key使用 <code>redis_server.delete(key)</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/144471100" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>体系决定交易盈亏，规则决定交易生死，格局决定交易高度。真正的亏钱，源于贪婪，常常出现在看到别人盈利而担心自己赚不到这一波的时候~</p>
+<p>如果一直谨小慎微并不会亏多少，而当人因为一些外部原因获取超额盈利却把它作为自身能力时，也就逐步拉开了亏损的大幕</p>
+<p>2024-12-17 15:45:32</p>
+</blockquote>
+
+          
         
       
     </div>
@@ -563,7 +1442,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/14/linux内存相关命令的尝试/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -582,7 +1461,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/" itemprop="url">修复WordPress前后端分离时无法预览文章的问题</a></h1>
+                <a class="post-title-link" href="/blog/2024/12/14/linux内存相关命令的尝试/" itemprop="url">linux内存相关命令的尝试</a></h1>
         
 
         <div class="post-meta">
@@ -594,8 +1473,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T01:30:00+08:00">
-                2024-10-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-14T23:00:00+08:00">
+                2024-12-14
               </time>
             
 
@@ -610,1739 +1489,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:16:14+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:51:28+08:00">
                 2024-12-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/" class="leancloud_visitors" data-flag-title="修复WordPress前后端分离时无法预览文章的问题">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">781(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">3(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://i-blog.csdnimg.cn/direct/b40d92cc642e4c9cacca5e0fb1b1bc28.png?pic=center" alt="head"></p>
-<p>@[TOC]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>惊喜总在不经意间来临？前段时间刚刚总结了<a href="https://blog.csdn.net/albertsh/article/details/142577286" target="_blank" rel="noopener">WordPress迁移遇到的问题及解决办法</a>，费了九牛二虎之力似乎一切都走向正轨了，今天则又冒出点新花样，待发布的文章居然不能预览！这不都是常规功能吗？难道因为我迁移之后就不好使了，根据遇到的情况分析之后发现不是这样的，这个预览一直就不好使，已经过去5年了，也是有点醉了，好像到我手里就坏了一样，其实一直就不能用，5年前别人挖的坑我也要填，我就是一个填坑勇士。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/18/陷入产出危机的我聊聊近况/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/10/18/陷入产出危机的我聊聊近况/" itemprop="url">陷入产出危机的我聊聊近况</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-18T01:30:00+08:00">
-                2024-10-18
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:12:28+08:00">
-                2024-12-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/10/18/陷入产出危机的我聊聊近况/" class="leancloud_visitors" data-flag-title="陷入产出危机的我聊聊近况">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,392(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>@[TOC]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在总结文章时，我把自己当做一个内容产出者，当这样一个身份进入每天按部就班的平稳状态时会陷入一种焦虑，产生一种居然没有什么可写的感觉，如果任由这种焦虑泛滥，便会陷入一种无限内耗的状态，也不是无所事事，只是觉得做重复的工作没有看见提升就让人焦虑，性格使然。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/10/18/陷入产出危机的我聊聊近况/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" itemprop="url">AWS上迁移WordPress遭遇若干问题及处理办法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-09-27T01:00:00+08:00">
-                2024-09-27
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:23:52+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
-                    <span itemprop="name">Practical</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" class="leancloud_visitors" data-flag-title="AWS上迁移WordPress遭遇若干问题及处理办法">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">6,570(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">25(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前段时间不是在<a href="https://blog.csdn.net/albertsh/article/details/142427271" target="_blank" rel="noopener">迁移AWS</a>嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从心的感觉。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/09/22/AWS镜像迁移登录问题二三则/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" itemprop="url">AWS镜像迁移登录问题二三则</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-09-22T00:26:14+08:00">
-                2024-09-22
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:21:26+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
-                    <span itemprop="name">Practical</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" class="leancloud_visitors" data-flag-title="AWS镜像迁移登录问题二三则">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,814(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">7(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>关于云服务器之前用的多的还是国内的阿里云和腾讯云，也用过一点点的华为云，而今年接触的AWS和GCP比较多，使用场景渐渐多了起来，遇到的问题也渐渐多了起来，之前这些都是有专门的运维同事负责的，而现在降本增效之后只能自己上了，这两条在捣鼓AWS，就先记录一些AWS上遇到的问题和解决办法吧，关于问题我尽量贴一些原始的报错，便于有相同问题的人进行对照。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/08/31/在Supabase创建用户登录并获取token的操作实践/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/08/31/在Supabase创建用户登录并获取token的操作实践/" itemprop="url">在Supabase创建用户登录并获取token的操作实践</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-08-31T00:30:00+08:00">
-                2024-08-31
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:18:37+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/08/31/在Supabase创建用户登录并获取token的操作实践/" class="leancloud_visitors" data-flag-title="在Supabase创建用户登录并获取token的操作实践">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,573(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">10(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>网站是我今年加点儿比较重的技能，另一项是物理机与云主机，既要接网线做系统换硬盘，又要对比多个运营商买点互联网基础服务，反正截止到现在来看今年过的有些不一样，小游戏的兴起预示着前端快速出demo的时代到来，看看市场上对游戏后端的招聘的寥寥岗位，或许服务器开发正在迎来冰点，今天不聊游戏，我们来看看网站开发的相关内容。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/08/31/在Supabase创建用户登录并获取token的操作实践/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/08/15/记一次购买希捷二手盘并挂载到WSL2上的经历/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/08/15/记一次购买希捷二手盘并挂载到WSL2上的经历/" itemprop="url">记一次购买希捷二手盘并挂载到WSL2上的经历</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-08-15T01:00:00+08:00">
-                2024-08-15
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:16:24+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
-                    <span itemprop="name">Practical</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/08/15/记一次购买希捷二手盘并挂载到WSL2上的经历/" class="leancloud_visitors" data-flag-title="记一次购买希捷二手盘并挂载到WSL2上的经历">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,622(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>事情的起因是上一个合作的运维小伙伴告诉我不要过分依赖Raid5，他每周要从机房更换10几块坏掉的Dell服务器硬盘，最好准备几块大容量硬盘做额外的数据备份，一般是1主2备，刚开始接触这块准备先搞一个备份盘，毕竟有Raid5可以在前面顶一顶，主要还是因为穷，哈哈。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/08/15/记一次购买希捷二手盘并挂载到WSL2上的经历/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/08/06/安装了Anaconda并简单使用了以后谈谈自己的理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/08/06/安装了Anaconda并简单使用了以后谈谈自己的理解/" itemprop="url">安装了Anaconda并简单使用了以后谈谈自己的理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-08-06T02:00:00+08:00">
-                2024-08-06
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:09:48+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/08/06/安装了Anaconda并简单使用了以后谈谈自己的理解/" class="leancloud_visitors" data-flag-title="安装了Anaconda并简单使用了以后谈谈自己的理解">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,488(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">6(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>因为需要使用多个版本的Python解释器，在寻找方案时找到了 <code>conda</code>,真正用过之后理解了conda所说的虚拟环境，Anaconda是一个创造小房间的工具，小房间内的主力环境可以是Python也可以是R。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/08/06/安装了Anaconda并简单使用了以后谈谈自己的理解/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/08/01/当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/08/01/当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子/" itemprop="url">当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-08-01T10:04:57+08:00">
-                2024-08-01
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:06:53+08:00">
-                2024-09-28
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/08/01/当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子/" class="leancloud_visitors" data-flag-title="当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,495(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>处理域名转移这件事已经过去好几天，终于抽出点时间来总结一下，解决这件事大概花了2周多时间，因为时差的原因导致沟通缓慢，今天准备长话短说，省略掉中间的细枝末节，只讲讲遇到了什么问题，最后怎么解决的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/08/01/当Vercel的域名验证规则碰上JPDirect这种不配合的同学把我的脑袋擦出了火星子/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/07/20/因为glibc版本不兼容不得已我重装了Dell-R620的系统/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/07/20/因为glibc版本不兼容不得已我重装了Dell-R620的系统/" itemprop="url">因为glibc版本不兼容不得已我重装了Dell R620的系统</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-07-20T00:30:00+08:00">
-                2024-07-20
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-07-20T23:09:51+08:00">
-                2024-07-20
               </time>
             
           </span>
@@ -2377,7 +1525,7 @@
 
           
           
-             <span id="/blog/2024/07/20/因为glibc版本不兼容不得已我重装了Dell-R620的系统/" class="leancloud_visitors" data-flag-title="因为glibc版本不兼容不得已我重装了Dell R620的系统">
+             <span id="/blog/2024/12/14/linux内存相关命令的尝试/" class="leancloud_visitors" data-flag-title="linux内存相关命令的尝试">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -2395,7 +1543,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">4,012(字)</span>
+            <span class="post-count">3,042(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2403,7 +1551,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">17(分)</span>
+            <span class="post-count">12(分)</span>
           </span>
 
           
@@ -2426,15 +1574,908 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我总以为这件事发生很久了，但刚刚去翻了聊天记录居然是上周发生的事情，趁着还没忘干净赶紧记录一下，对于服务器安装系统来说这还是第一次。</p>
-<p>好久很久以前（大概是1个月前），我找运维装了一台服务器Dell PowerEdge R620，当时说好是Ubuntu20.04版本，但是装完后我也没注意，期间发生了很多事情，终于到上周的时候开始在这台机器上搭建Jenkins打包环境，整个过程还是比较顺利的，但是发现打包机上编译的程序版本无法在本地环境下运行，这时候仔细看才发现，原来运维安装的系统是 Ubuntu22.04，也不知道是因为粗心还是大意，不能运行的原因就是打包机上的glibc版本过高，本地环境无法支持，但这却引起了我的疑惑。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>菜就多练，昨天看了一篇有关剖析 RocksDB 内存超限问题的文章，里面用了多种内存分析工具，看到那些貌似熟悉的名字，却一时也想不起怎么来用，当然像 free 和 top 这种命令还是比较熟的，但是像 vmstat 和 pidstat 这些就比较模糊了，翻了翻之前的总结也简单的描述过使用方法，但是对于这种已经忘记的实时也是不可回避的，菜就多练，今天就再练一练。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/07/20/因为glibc版本不兼容不得已我重装了Dell-R620的系统/#more" rel="contents">
+            <a class="btn" href="/blog/2024/12/14/linux内存相关命令的尝试/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/29/日常应用开发遇到的小问题二三则/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/29/日常应用开发遇到的小问题二三则/" itemprop="url">日常应用开发遇到的小问题二三则</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-29T20:21:48+08:00">
+                2024-11-29
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:49:42+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/29/日常应用开发遇到的小问题二三则/" class="leancloud_visitors" data-flag-title="日常应用开发遇到的小问题二三则">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">5,210(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">22(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这两天的工作又相对杂乱一些，处理一下A事情，又要搞一搞B事情，需要盯着C事情，还要尝试一下D事情，所以这篇总结没有什么主线，主要目的是记录一下最近解决的问题，先不展开讨论，当类似的问题积累一些再展开描述，我就先记录一下流水账了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/29/日常应用开发遇到的小问题二三则/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/21/git克隆报错时The-project-you-were-looking-for-could-not-be-found/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/21/git克隆报错时The-project-you-were-looking-for-could-not-be-found/" itemprop="url">git克隆报错时The project you were looking for could not be found...</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-21T01:45:00+08:00">
+                2024-11-21
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:47:38+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/21/git克隆报错时The-project-you-were-looking-for-could-not-be-found/" class="leancloud_visitors" data-flag-title="git克隆报错时The project you were looking for could not be found...">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">432(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">2(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>Ps D:>git clone <a href="http://gitlab.yyy.com/project/xxx.git" target="_blank" rel="noopener">http://gitlab.yyy.com/project/xxx.git</a><br>Cloning into ‘xxx’..<br>remote: The project you were looking for could not be found or you don’t have permission to view it.<br>fatal: repository ‘<a href="http://gitlab.yyy.com/project/xxx.git/&#39;not" target="_blank" rel="noopener">http://gitlab.yyy.com/project/xxx.git/&#39;not</a> found</p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>问题如上，使用 <code>git clone</code> 命令克隆一个仓库的时候，提示我项目找不到或者没有权限，一开始我还以为路径拼错了，核对了两遍确认仓库地址正确的，访问仓库的权限肯定也有的，我使用账号和密码可以成功登录gitlab网站并且看到这个项目，网上查询方案大概原因是电脑的git自动保存了其他的用户名密码信息，与当前项目的用户名密码与之前的发生冲突，处理掉这种情况就行了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/21/git克隆报错时The-project-you-were-looking-for-could-not-be-found/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/18/会打字就能建网站的广告词是否夸大其词呢/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/18/会打字就能建网站的广告词是否夸大其词呢/" itemprop="url">会打字就能建网站的广告词是否夸大其词呢</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-18T23:30:00+08:00">
+                2024-11-18
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:45:08+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/18/会打字就能建网站的广告词是否夸大其词呢/" class="leancloud_visitors" data-flag-title="会打字就能建网站的广告词是否夸大其词呢">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,207(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">8(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>首先声明这不是一篇广告文，只是我最近用了一款建站的产品，在使用过程中也遇到了一些问题，所以总结一下避免以后继续踩坑，其中“会打字就能建网站”的广告词还是挺吸引人的，给人一种“有手就行”的既视感。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/18/会打字就能建网站的广告词是否夸大其词呢/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/08/Docker启动gitlab后22端口被占用如何解决/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/08/Docker启动gitlab后22端口被占用如何解决/" itemprop="url">Docker启动gitlab后22端口被占用如何解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-08T00:30:00+08:00">
+                2024-11-08
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:41:08+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/08/Docker启动gitlab后22端口被占用如何解决/" class="leancloud_visitors" data-flag-title="Docker启动gitlab后22端口被占用如何解决">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">943(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">4(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这两天一直在研究Docker启动gitlab的问题，邮件问题暂时告一段落，当真正开始使用gitlab克隆的时候发现，之前22端口被占用无法启动，我就用2022端口做了一个映射，但是在gitab界面上提供的克隆地址类似这样 <code>git@gitlab.gameup.com:games/xxx.git</code>，丝毫没有端口 2022 的影子，执行 <code>git clone git@gitlab.gameup.com:games/xxx.git</code> 果然不可下载，所以搜索了一圈解决方案总结在此，方便日后查找。</p>
+<h1 id="Docker启动参数"><a href="#Docker启动参数" class="headerlink" title="Docker启动参数"></a>Docker启动参数</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run --detach \</span><br><span class="line">  --hostname gitlab.gameup.com \</span><br><span class="line">  --publish 443:443 --publish 80:80 --publish 2022:22 \</span><br><span class="line">  --name gitlab \</span><br><span class="line">  --restart always \</span><br><span class="line">  --volume /<span class="built_in">export</span>/docker/gitlab/config:/etc/gitlab \</span><br><span class="line">  --volume /<span class="built_in">export</span>/docker/gitlab/logs:/var/<span class="built_in">log</span>/gitlab \</span><br><span class="line">  --volume /<span class="built_in">export</span>/docker/gitlab/data:/var/opt/gitlab \</span><br><span class="line">  registry.cn-hangzhou.aliyuncs.com/z5z/gitlab-ce:latest</span><br></pre></td></tr></table></figure>
+<p>这个在之前的<a href="https://blog.csdn.net/albertsh/article/details/143493367" target="_blank" rel="noopener">文章</a>中提到过，因为 80 和 443端口正常可用，所有采用HTTP方式的下载 <code>git clone http://gitlab.gameup.com/games/xxx.git</code> 是正常的，而 SSH下载的这种方式，因为修改了默认端口，导致提供的链接无法下载，即使我像这样 <code>git clone git@gitlab.gameup.com:2022/games/xxx.git</code> 加上了端口也无法正常克隆。</p>
+<p>用一种比较笨的方法就是，关闭SSH服务或者将宿主机的SSH服务改个端口，但这是一台远程服务器，一般都通过SSH协议访问，关闭不太现实，修改端口的话倒是可行，可是之前这台机器上运行着多个任务，这意味着很多服务脚本都得修改，所以也不是很好的办法，不能因为加了个新服务就把原来的老脚本统统改一遍吧，尝试多次终于找到一个可以接收的方法。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><ol>
+<li><p>进入gitlab容器 <code>docker exec -it gitlab</code></p>
+</li>
+<li><p>修改配置文件 <code>/etc/gitlab/gitlab.rb</code> 中的内容</p>
+ <figure class="highlight rb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitlab_rails[<span class="string">'gitlab_shell_ssh_port'</span>] = <span class="number">2022</span></span><br></pre></td></tr></table></figure>
+<p> 注意这个设置只是修改了 GitLab 的显示信息，不会更改 GitLab 容器内的 SSH 服务端口</p>
+</li>
+<li><p>执行 <code>gitlab-ctl reconfigure</code> 即可</p>
+<p> 修改执行之后，再次查看gitlab下载地址发现改成了 <code>ssh://git@gitlab.gameup.com:2022/games/xxx.git</code>，不仅加了端口号，还在前面加上了 <code>ssh://</code>，怪不得我自己加端口号不能能用呢，关于这一点我也查到了相关解释：</p>
+</li>
+</ol>
+<blockquote>
+<p>GitLab 提供的 SSH 克隆地址（如 git@gitlab.gameup.com:2022/games/xxx.git）是一种简化格式，它没有指定协议前缀 ssh:// 和端口号。这是因为默认情况下，Git 使用 SSH 协议连接，并默认通过端口 22 来克隆和操作仓库。因此，这种简化格式省略了 ssh:// 前缀和端口号</p>
+<p>对于标准端口（22），简化格式的地址是有效的，因为 Git 客户端会默认使用 SSH 协议并连接到 22 端口,但是，当你的 SSH 端口不同于 22（如使用 2022 时），Git 默认的简化格式就不适用了，需要显式指定端口号或配置 SSH，也就是写成 ssh://git@gitlab.gameup.com:2022/games/xxx.git 的形式</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>使用docker启动gitlab遭遇22端口占用时可以选择其他端口映射 <code>--publish 2022:22</code></li>
+<li>修改映射端口后为了让下载地址显示正确，需要修改gitlab配置文件 <code>gitlab_rails[&#39;gitlab_shell_ssh_port&#39;] = 2022</code></li>
+<li><code>git@gitlab.gameup.com:games/xxx.git</code> 是一种ssh协议的简化形式，完整的地址应该为 <code>ssh://git@gitlab.gameup.com:22/games/xxx.git</code></li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/143577720" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>不要再抑郁下去了孩子，你要像一个，神经病一样活泼开朗，不要太在乎别人的目光，因为没人会注意你。</p>
+<p>2024-11-7 19:21:48</p>
+</blockquote>
+
+          
         
       
     </div>
@@ -2502,7 +2543,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/26/">26</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/28/">28</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2548,7 +2589,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">258</span>
+                <span class="site-state-item-count">273</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2559,7 +2600,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2570,7 +2611,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">648</span>
+                <span class="site-state-item-count">694</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

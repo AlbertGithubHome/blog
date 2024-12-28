@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/06/30/忙忙碌碌的混沌之中差点扑了个空而错过年中这条线/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/06/使用-Let’s-Encrypt-获取免费SSL证书/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -365,7 +365,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/06/30/忙忙碌碌的混沌之中差点扑了个空而错过年中这条线/" itemprop="url">忙忙碌碌的混沌之中差点扑了个空而错过年中这条线</a></h1>
+                <a class="post-title-link" href="/blog/2024/11/06/使用-Let’s-Encrypt-获取免费SSL证书/" itemprop="url">使用 Let’s Encrypt 获取免费SSL证书</a></h1>
         
 
         <div class="post-meta">
@@ -377,8 +377,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-06-30T22:54:44+08:00">
-                2024-06-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-06T23:45:00+08:00">
+                2024-11-06
               </time>
             
 
@@ -393,8 +393,657 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-07-20T22:26:08+08:00">
-                2024-07-20
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:39:02+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/06/使用-Let’s-Encrypt-获取免费SSL证书/" class="leancloud_visitors" data-flag-title="使用 Let’s Encrypt 获取免费SSL证书">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,644(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">7(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前不太了解SSL免费证书，只研究过一点自签名SSL证书的<a href="https://blog.csdn.net/shihengzhen101/article/details/134724042" target="_blank" rel="noopener">知识</a>，前几年的12306就是用的这种证书，访问网站时要求你下载安装并信任根证书，后来在腾讯云上薅了一个免费一年的SSL证书，过期后也就没有再更新，在我印象中SSL证书整的很贵，一般的不涉及隐私新的的交互也不需要非得 <code>HTTPS</code>。</p>
+<p>从今年我开始接触到了更多的SSL证书知识，原来腾讯云上的SSL证书过期后还可以免费申请，AWS上也有可以自动续期的免费SSL证书，甚至还有 <code>Let’s Encrypt</code>、<code>ZeroSSL</code>、<code>SSL For Free</code>、<code>Cloudflare</code>、<code>BuyPass</code> 等众多可以提供免费证书的机构，本文我们来试试 <code>Let’s Encrypt</code> 怎么用。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/06/使用-Let’s-Encrypt-获取免费SSL证书/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/06/若Git子模块的远端地址发生了变化本地应该怎么调整/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/06/若Git子模块的远端地址发生了变化本地应该怎么调整/" itemprop="url">若Git子模块的远端地址发生了变化本地应该怎么调整</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-06T00:15:00+08:00">
+                2024-11-06
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:36:37+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/06/若Git子模块的远端地址发生了变化本地应该怎么调整/" class="leancloud_visitors" data-flag-title="若Git子模块的远端地址发生了变化本地应该怎么调整">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,570(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">6(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个问题复杂在既有Git又有子模块，本身Git的门槛就稍微高一点，再加上子模块的运用，一旦出现这种远端地址发生修改的情况会让人有些懵，不知道怎么处理，通常会乱改一通，有时候好使有时候不好使，并不清楚其中的缘由，退一步讲，如果是一个单一的Git库，如果远端地址发生了变化，使用 <code>git remote set-url origin git@new_xxx</code> 命令就可以就行修改，但是这个命令在子模块情况下行不通，为了说明子模块影响哪些配置文件，接下来会简单罗列下git子模块相关命令。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/06/若Git子模块的远端地址发生了变化本地应该怎么调整/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/05/Gitlab新建用户无法收到邮件的问题解决办法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/05/Gitlab新建用户无法收到邮件的问题解决办法/" itemprop="url">Gitlab新建用户无法收到邮件的问题解决办法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-05T01:00:00+08:00">
+                2024-11-05
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:34:23+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/11/05/Gitlab新建用户无法收到邮件的问题解决办法/" class="leancloud_visitors" data-flag-title="Gitlab新建用户无法收到邮件的问题解决办法">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,200(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">11(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个问题网上解决的帖子很多，根本原因就是配置错误，修改好配置就可以了，我也没有其他的更加新奇的解决办法，之所以再总结一遍只是为了自己统一查找方便，同时把一些差异点记录一下，因为版本和运行环境的不同，可能跟网上的解决方案有一点点差异，先写答案再聊不同吧。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/11/05/Gitlab新建用户无法收到邮件的问题解决办法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/11/01/整个互联网发展de云里雾里/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/11/01/整个互联网发展de云里雾里/" itemprop="url">整个互联网发展de云里雾里</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-01T23:45:00+08:00">
+                2024-11-01
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:32:12+08:00">
+                2024-12-29
               </time>
             
           </span>
@@ -429,7 +1078,7 @@
 
           
           
-             <span id="/blog/2024/06/30/忙忙碌碌的混沌之中差点扑了个空而错过年中这条线/" class="leancloud_visitors" data-flag-title="忙忙碌碌的混沌之中差点扑了个空而错过年中这条线">
+             <span id="/blog/2024/11/01/整个互联网发展de云里雾里/" class="leancloud_visitors" data-flag-title="整个互联网发展de云里雾里">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -447,7 +1096,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,896(字)</span>
+            <span class="post-count">2,890(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -478,10 +1127,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>突然意识到过完这个周末已经7月份了，他预示着我的2024年已经过半了，过年回家仿佛还是昨天的事情，怎么转眼间已经到了年中了。心里还是不愿承认这件事，翻开自己2024年的打卡清单，列表显示已经到了26周，从另一方面证明了年中这条线已经到来，再看看打卡清单上这惨不忍睹的“成果”，真的有点难以接受。</p>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>本来被腾讯云的配置调整折腾两天了，一个实例在不同的界面有不同的价格，调整配置前后我都弄不清到底便宜了多少，有些区域因老架构缺货不得不选择低配的新架构，结果费用反而上涨了，比如本来想把<code>S2 32核 128G内存</code>的机器降低的到 <code>24核96G内存</code>，但S2高内存实例已经下架了，只能使用选择S5，好家伙！新的 S5.6XLARGE96 比目前用的 S2.8XLARGE128 还贵，配置降了1/3，价格反而上去了，真是“降本”降了个寂寞。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/06/30/忙忙碌碌的混沌之中差点扑了个空而错过年中这条线/#more" rel="contents">
+            <a class="btn" href="/blog/2024/11/01/整个互联网发展de云里雾里/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -562,7 +1211,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/05/28/有关服务器安全的反思/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/29/SVN克隆或更新遇到Error-Checksum-mismatch-for-xxx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -581,7 +1230,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/05/28/有关服务器安全的反思/" itemprop="url">有关服务器安全的反思</a></h1>
+                <a class="post-title-link" href="/blog/2024/10/29/SVN克隆或更新遇到Error-Checksum-mismatch-for-xxx/" itemprop="url">SVN克隆或更新遇到Error: Checksum mismatch for xxx</a></h1>
         
 
         <div class="post-meta">
@@ -593,8 +1242,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-05-28T01:30:00+08:00">
-                2024-05-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-29T23:45:00+08:00">
+                2024-10-29
               </time>
             
 
@@ -609,8 +1258,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-07-20T22:20:44+08:00">
-                2024-07-20
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:29:54+08:00">
+                2024-12-29
               </time>
             
           </span>
@@ -628,8 +1277,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
+                  <a href="/blog/categories/SVN/" itemprop="url" rel="index">
+                    <span itemprop="name">SVN</span>
                   </a>
                 </span>
 
@@ -645,7 +1294,7 @@
 
           
           
-             <span id="/blog/2024/05/28/有关服务器安全的反思/" class="leancloud_visitors" data-flag-title="有关服务器安全的反思">
+             <span id="/blog/2024/10/29/SVN克隆或更新遇到Error-Checksum-mismatch-for-xxx/" class="leancloud_visitors" data-flag-title="SVN克隆或更新遇到Error: Checksum mismatch for xxx">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -663,7 +1312,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,225(字)</span>
+            <span class="post-count">1,530(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -671,7 +1320,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">4(分)</span>
+            <span class="post-count">6(分)</span>
           </span>
 
           
@@ -694,10 +1343,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>人都说学的越多，不懂的东西也就越多，很多人都会有这个感受，面对信息爆炸的互联网时代，有种“学不完，根本学不完”沧桑无力感，最近有关服务器安全的了解又扩展了我的知识面，填补了部分认知盲区，究竟什么是服务器安全？</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><code>TortoiseSVN</code> 作为版本控制常用的工具，有一个更为人们熟知的名字 <code>SVN</code>，客观的讲SVN的门槛相比Git而言还是低一些的，用来存储一些文件并保留历史记录比较方便，但使用SVN还是会经常需要这样那样的问题，特别是当仓库很大的时候，提示的问题往往让初学者、甚至是经常使用的人一脸懵，比如这个 <code>Checksum mismatch for</code> 问题，通常SVN问题都有一个终极解法，那就是重新克隆一份再操作，这就像大多数的电脑问题重启后就能解决一样，不过偶尔有一些情景不适合采用重新克隆的解法，我们就得想一个更精确的办法去解决了。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/05/28/有关服务器安全的反思/#more" rel="contents">
+            <a class="btn" href="/blog/2024/10/29/SVN克隆或更新遇到Error-Checksum-mismatch-for-xxx/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -778,7 +1427,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/05/07/面对AI你到底能做什么？怎样能让其为我所用/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/24/Redis内存碎片自动回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -797,7 +1446,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/05/07/面对AI你到底能做什么？怎样能让其为我所用/" itemprop="url">面对AI你到底能做什么？怎样能让其为我所用</a></h1>
+                <a class="post-title-link" href="/blog/2024/10/24/Redis内存碎片自动回收/" itemprop="url">Redis内存碎片自动回收</a></h1>
         
 
         <div class="post-meta">
@@ -809,8 +1458,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-05-07T02:15:00+08:00">
-                2024-05-07
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T21:06:19+08:00">
+                2024-10-24
               </time>
             
 
@@ -825,8 +1474,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-07-20T22:17:20+08:00">
-                2024-07-20
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:27:09+08:00">
+                2024-12-29
               </time>
             
           </span>
@@ -844,8 +1493,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/AI/" itemprop="url" rel="index">
-                    <span itemprop="name">AI</span>
+                  <a href="/blog/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
                   </a>
                 </span>
 
@@ -861,7 +1510,7 @@
 
           
           
-             <span id="/blog/2024/05/07/面对AI你到底能做什么？怎样能让其为我所用/" class="leancloud_visitors" data-flag-title="面对AI你到底能做什么？怎样能让其为我所用">
+             <span id="/blog/2024/10/24/Redis内存碎片自动回收/" class="leancloud_visitors" data-flag-title="Redis内存碎片自动回收">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -879,7 +1528,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,310(字)</span>
+            <span class="post-count">1,210(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -910,10 +1559,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>面对AI铺天盖地的新闻，大有替代万事万物的之势，但如果要问AI能做什么？你是否会在心里打个问号？它好像只能用来聊天，又好像什么都能做，ChatGPT现在是我每天都要使用的工具，每天只是对话问问题，特定领域的问题确实比搜索引擎更精准一些，但是对AI的使用也就仅限于此，难道AI只有这么大点能力吗？</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天说的是一个老问题了，关于 Redis 内存碎片的回收，以前用过几次，今天再次使用时发现自己没总结，没有可以拿来直接用的命令，花了一些时间去查找和测试，为了以后使用时更方便，我决定把整理一下放在这，等待再次相遇。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/05/07/面对AI你到底能做什么？怎样能让其为我所用/#more" rel="contents">
+            <a class="btn" href="/blog/2024/10/24/Redis内存碎片自动回收/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -994,7 +1643,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -1013,7 +1662,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/" itemprop="url">帧同步入门项目LockstepDemo的初步学习</a></h1>
+                <a class="post-title-link" href="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/" itemprop="url">修复WordPress前后端分离时无法预览文章的问题</a></h1>
         
 
         <div class="post-meta">
@@ -1025,8 +1674,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-25T01:00:00+08:00">
-                2024-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T01:30:00+08:00">
+                2024-10-24
               </time>
             
 
@@ -1041,8 +1690,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T22:56:38+08:00">
-                2024-04-29
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:27:25+08:00">
+                2024-12-29
               </time>
             
           </span>
@@ -1060,8 +1709,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/LockStep/" itemprop="url" rel="index">
-                    <span itemprop="name">LockStep</span>
+                  <a href="/blog/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
                   </a>
                 </span>
 
@@ -1077,7 +1726,7 @@
 
           
           
-             <span id="/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/" class="leancloud_visitors" data-flag-title="帧同步入门项目LockstepDemo的初步学习">
+             <span id="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/" class="leancloud_visitors" data-flag-title="修复WordPress前后端分离时无法预览文章的问题">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -1095,876 +1744,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">5,779(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">24(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上一篇文章介绍了 <a href="https://github.com/ookcode/LockstepDemo" target="_blank" rel="noopener">LockstepDemo</a> 这个项目可以作为帧同步入门读物，解决了跨域限制的问题以后，这个开源项目就可以运行起来啦，虽然我没有使用js写过实际的项目，但看的多了自然也能看懂大部分的js代码了，作为一个帧同步领域的小白，我开始了阅读这个项目代码的旅程，看过之后确实解开了我之前的迷惑，所以简单记录一下学习心得。</p>
-<ul>
-<li>基础的帧同步模式，每个客户端必须回报给服务器收到帧数，服务器再次发送确认包才执行帧数据，否则所有人等待，也就是一卡全卡。</li>
-<li>基于现在手游的流行程度和弱网环境，手游一般都采取乐观锁模式。即收到服务器推帧后，客户端立即执行，不等待其他人。这样卡顿的人自己卡，不影响其他人的游戏体验。同时卡顿的人在收到数据后，自行加速补帧来追赶上正确的游戏速度。</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/04/25/帧同步入门项目LockstepDemo的初步学习/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/04/24/帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/04/24/帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击/" itemprop="url">帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-24T20:55:59+08:00">
-                2024-04-24
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T22:56:41+08:00">
-                2024-04-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/LockStep/" itemprop="url" rel="index">
-                    <span itemprop="name">LockStep</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/04/24/帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击/" class="leancloud_visitors" data-flag-title="帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,018(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">12(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>工作以来的每个游戏项目都是用的状态同步，所以一直想找时间看一下帧同步的实现细节，网上搜到了一些开源项目，有cocos的、有Unity的，有原生C#的，大多数项目作为入门资料来看都比较重，虽然定点数计算、UDP加速这些已经成为了帧同步策略的标配，但是对于一个初学者来说，这些内容的引入无疑增加了学习成本，所以我还是想找一款帧同步纯逻辑实现的代码，后来发现 <a href="https://github.com/ookcode/LockstepDemo" target="_blank" rel="noopener">LockstepDemo</a> 这个项目还不错，那就从它开始学吧。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/04/24/帧同步入门之日遭遇CORS（跨域资源共享）问题的暴击/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/03/29/k8s小白的学习初体验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/03/29/k8s小白的学习初体验/" itemprop="url">k8s小白的学习初体验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-03-29T10:04:18+08:00">
-                2024-03-29
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T23:06:36+08:00">
-                2024-04-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/k8s/" itemprop="url" rel="index">
-                    <span itemprop="name">k8s</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/03/29/k8s小白的学习初体验/" class="leancloud_visitors" data-flag-title="k8s小白的学习初体验">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,927(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">10(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>有些时候的巧合让人匪夷所思，前两周刚刚尝试了一遍Docker操作，紧接着就收到好朋友说要学习k8s容器部署的建议，最近两周抽空看了一些关于k8s的知识，相关概念真的是太多了，概念本身是枯燥的，但是当概念运行起来就有意思多了，这时候取出费曼学习大法，尝试着用自己的话来描述这些概念，看看自己是不是真的学会了。本文k8s相关概念均来自个人理解，后续随着学习深入可能会有改正，勿喷。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/03/29/k8s小白的学习初体验/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/03/09/将python编写的网站制作成docker镜像并上传到Github-Packages上/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/03/09/将python编写的网站制作成docker镜像并上传到Github-Packages上/" itemprop="url">将python编写的网站制作成docker镜像并上传到Github Packages上</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-03-09T02:00:00+08:00">
-                2024-03-09
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T22:44:17+08:00">
-                2024-04-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/03/09/将python编写的网站制作成docker镜像并上传到Github-Packages上/" class="leancloud_visitors" data-flag-title="将python编写的网站制作成docker镜像并上传到Github Packages上">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">3,173(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">13(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>@[toc]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>还记得上一篇<a href="https://blog.csdn.net/albertsh/article/details/136406152" target="_blank" rel="noopener">《借助ChatGPT使用Python搭建一个工具网站》</a>总结中我利用ChatGPT写了一个网站，最终它运行良好，就在昨天我看到了Github Packages，不久前刚刚使用了GitHub Actions，我发现Github在被微软收购后，并没有变的更“闭源”，之前广大网友还在调侃，最大的闭源软件公司收购了最大的开源平台，看来一切还在向好的方向发展，简单介绍下前面提到的这两个都是什么东西。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/03/09/将python编写的网站制作成docker镜像并上传到Github-Packages上/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/03/02/借助ChatGPT使用Python搭建一个工具网站/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2024/03/02/借助ChatGPT使用Python搭建一个工具网站/" itemprop="url">借助ChatGPT使用Python搭建一个工具网站</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-03-02T02:00:00+08:00">
-                2024-03-02
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2024-04-29T23:06:43+08:00">
-                2024-04-29
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/ChatGPT/" itemprop="url" rel="index">
-                    <span itemprop="name">ChatGPT</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2024/03/02/借助ChatGPT使用Python搭建一个工具网站/" class="leancloud_visitors" data-flag-title="借助ChatGPT使用Python搭建一个工具网站">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">760(字)</span>
+            <span class="post-count">780(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -1995,10 +1775,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>不知不觉ChatGPT已经风靡一年多了，现在基本每天工作时都会用到，相比于传统的搜索引擎它究竟强在哪呢？我觉得以往的搜索引擎是一个机器，你给它关键信息它能返回匹配关键词的内容数据，而ChatGPT更像是一个机器“人”，它同样可以返回给你匹配关键信息的数据，同时可以按照你的指令进行加工，更优秀的是它还记得你跟它说过的每一句话，就像拥有一个可以存储交流记录的大脑一样，你可以赋予它一些性格和规则，让它来帮你做事情，交流的多了它就能变成一个性格鲜明的“生物”，并且可以无条件接受你的命令，所以最近突发奇想让它帮我搭一个网站怎么样，说干就干起来了。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>惊喜总在不经意间来临？前段时间刚刚总结了<a href="https://blog.csdn.net/albertsh/article/details/142577286" target="_blank" rel="noopener">WordPress迁移遇到的问题及解决办法</a>，费了九牛二虎之力似乎一切都走向正轨了，今天则又冒出点新花样，待发布的文章居然不能预览！这不都是常规功能吗？难道因为我迁移之后就不好使了，根据遇到的情况分析之后发现不是这样的，这个预览一直就不好使，已经过去5年了，也是有点醉了，好像到我手里就坏了一样，其实一直就不能用，5年前别人挖的坑我也要填，我就是一个填坑勇士。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/03/02/借助ChatGPT使用Python搭建一个工具网站/#more" rel="contents">
+            <a class="btn" href="/blog/2024/10/24/修复WordPress前后端分离时无法预览文章的问题/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2079,7 +1859,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/02/18/在golang语言中简单使用protobuf时遭遇go-package困难重重/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/10/18/陷入产出危机的我聊聊近况/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -2098,7 +1878,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/02/18/在golang语言中简单使用protobuf时遭遇go-package困难重重/" itemprop="url">在golang语言中简单使用protobuf时遭遇go_package困难重重</a></h1>
+                <a class="post-title-link" href="/blog/2024/10/18/陷入产出危机的我聊聊近况/" itemprop="url">陷入产出危机的我聊聊近况</a></h1>
         
 
         <div class="post-meta">
@@ -2110,8 +1890,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-02-18T21:00:00+08:00">
-                2024-02-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-18T01:30:00+08:00">
+                2024-10-18
               </time>
             
 
@@ -2126,8 +1906,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-02-19T23:27:44+08:00">
-                2024-02-19
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:27:34+08:00">
+                2024-12-29
               </time>
             
           </span>
@@ -2145,8 +1925,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
-                    <span itemprop="name">Go</span>
+                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
+                    <span itemprop="name">Thinking</span>
                   </a>
                 </span>
 
@@ -2162,7 +1942,7 @@
 
           
           
-             <span id="/blog/2024/02/18/在golang语言中简单使用protobuf时遭遇go-package困难重重/" class="leancloud_visitors" data-flag-title="在golang语言中简单使用protobuf时遭遇go_package困难重重">
+             <span id="/blog/2024/10/18/陷入产出危机的我聊聊近况/" class="leancloud_visitors" data-flag-title="陷入产出危机的我聊聊近况">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -2180,7 +1960,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,141(字)</span>
+            <span class="post-count">1,391(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2188,7 +1968,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
+            <span class="post-count">5(分)</span>
           </span>
 
           
@@ -2211,10 +1991,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Protobuf，全称Protocol Buffers，是一种由Google开发的用于序列化结构化数据的开源数据交换格式，Golang作为一种后端语言，免不了使用protobuf这种数据交换格式，本来打算写个小例子展示一下怎样在go语言中使用protobuf，结果遇到的问题到不少，特别是这个go_package的要求，也是之前在项目开发过程中遇到的，这次就查找一下具体原因以及怎么使用吧。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在总结文章时，我把自己当做一个内容产出者，当这样一个身份进入每天按部就班的平稳状态时会陷入一种焦虑，产生一种居然没有什么可写的感觉，如果任由这种焦虑泛滥，便会陷入一种无限内耗的状态，也不是无所事事，只是觉得做重复的工作没有看见提升就让人焦虑，性格使然。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/02/18/在golang语言中简单使用protobuf时遭遇go-package困难重重/#more" rel="contents">
+            <a class="btn" href="/blog/2024/10/18/陷入产出危机的我聊聊近况/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2295,7 +2075,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -2314,7 +2094,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/" itemprop="url">简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决</a></h1>
+                <a class="post-title-link" href="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" itemprop="url">AWS上迁移WordPress遭遇若干问题及处理办法</a></h1>
         
 
         <div class="post-meta">
@@ -2326,8 +2106,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-02-09T00:45:00+08:00">
-                2024-02-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-09-27T01:00:00+08:00">
+                2024-09-27
               </time>
             
 
@@ -2342,8 +2122,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2024-02-19T23:48:12+08:00">
-                2024-02-19
+              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:23:52+08:00">
+                2024-09-28
               </time>
             
           </span>
@@ -2361,8 +2141,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Go/" itemprop="url" rel="index">
-                    <span itemprop="name">Go</span>
+                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
+                    <span itemprop="name">Practical</span>
                   </a>
                 </span>
 
@@ -2378,7 +2158,7 @@
 
           
           
-             <span id="/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/" class="leancloud_visitors" data-flag-title="简单聊聊go语言中引用模块的版本控制以及invalid: should be v0 or v1, not v2问题的解决">
+             <span id="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" class="leancloud_visitors" data-flag-title="AWS上迁移WordPress遭遇若干问题及处理办法">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -2396,7 +2176,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,669(字)</span>
+            <span class="post-count">6,570(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2404,7 +2184,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">12(分)</span>
+            <span class="post-count">25(分)</span>
           </span>
 
           
@@ -2427,10 +2207,226 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如果你接触go语言比较早，一定有过当年所有go源码全部放入 <code>GOPATH</code> 下的混乱经历，不过发展到今天，go的包管理使用 <code>go.mod</code> 和 <code>go.work</code> 已经能得心应手，满足绝大多数的开发不成问题，其实在 <code>go.mod</code> 引入之后，go的包管理就有了明显的改善，再也不像原来那样好似闹着玩一样了，关于go.mod使用和管理我也是一知半解，想要教程可去官网或者查找各种详解资料，只是最近有点疑惑，这个go.mod以及go.sum要不要自己手动管理，带着这个疑问我做了一些测试可以得出，go.mod 的最初不需要手动管理，如果后来需要调整引入包的版本，可以手动调整。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前段时间不是在<a href="https://blog.csdn.net/albertsh/article/details/142427271" target="_blank" rel="noopener">迁移AWS</a>嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从心的感觉。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2024/02/09/简单聊聊go语言中引用模块的版本控制以及invalid-should-be-v0-or-v1-not-v2问题的解决/#more" rel="contents">
+            <a class="btn" href="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/09/22/AWS镜像迁移登录问题二三则/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" itemprop="url">AWS镜像迁移登录问题二三则</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-09-22T00:26:14+08:00">
+                2024-09-22
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-09-28T15:21:26+08:00">
+                2024-09-28
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Practical/" itemprop="url" rel="index">
+                    <span itemprop="name">Practical</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" class="leancloud_visitors" data-flag-title="AWS镜像迁移登录问题二三则">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">1,814(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">7(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>关于云服务器之前用的多的还是国内的阿里云和腾讯云，也用过一点点的华为云，而今年接触的AWS和GCP比较多，使用场景渐渐多了起来，遇到的问题也渐渐多了起来，之前这些都是有专门的运维同事负责的，而现在降本增效之后只能自己上了，这两条在捣鼓AWS，就先记录一些AWS上遇到的问题和解决办法吧，关于问题我尽量贴一些原始的报错，便于有相同问题的人进行对照。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2502,7 +2498,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/26/">26</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/28/">28</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2548,7 +2544,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">258</span>
+                <span class="site-state-item-count">273</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2559,7 +2555,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2570,7 +2566,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">648</span>
+                <span class="site-state-item-count">694</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

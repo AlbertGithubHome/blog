@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/redis/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/Redis/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/redis/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/Redis/"/>
 
 
 
 
 
-  <title>标签: redis | Albert World</title>
+  <title>标签: Redis | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>redis<small>标签</small>
+        <h1>Redis<small>标签</small>
         </h1>
       </div>
 
@@ -349,9 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2021/06/26/手把手搭建一个redis集群/" itemprop="url">
+            <a class="post-title-link" href="/blog/2024/11/29/日常应用开发遇到的小问题二三则/" itemprop="url">
               
-                <span itemprop="name">手把手搭建一个redis集群</span>
+                <span itemprop="name">日常应用开发遇到的小问题二三则</span>
               
             </a>
         
@@ -359,9 +359,65 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2021-06-26T10:42:50+08:00"
-              content="2021-06-26" >
-          06-26
+              datetime="2024-11-29T20:21:48+08:00"
+              content="2024-11-29" >
+          11-29
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+      
+        
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/blog/2024/10/24/Redis内存碎片自动回收/" itemprop="url">
+              
+                <span itemprop="name">Redis内存碎片自动回收</span>
+              
+            </a>
+        
+      </h2>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2024-10-24T21:06:19+08:00"
+              content="2024-10-24" >
+          10-24
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+      
+        
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/blog/2020/08/05/Redis源码-BFS方式浏览main函数/" itemprop="url">
+              
+                <span itemprop="name">Redis源码-BFS方式浏览main函数</span>
+              
+            </a>
+        
+      </h2>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2020-08-05T23:35:19+08:00"
+              content="2020-08-05" >
+          08-05
         </time>
       </div>
 
@@ -421,7 +477,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">258</span>
+                <span class="site-state-item-count">273</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -432,7 +488,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -443,7 +499,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">648</span>
+                <span class="site-state-item-count">694</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1139,45 +1195,6 @@
             newcounter.save(null, {
               success: function(newcounter) {
                 var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-</body>
-</html>
-Id(url));
                 $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
               },
               error: function(newcounter, error) {

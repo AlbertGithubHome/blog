@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/01/29/2020年的春节，我们一起抗击新型冠状病毒/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -365,7 +365,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2020/01/29/2020年的春节，我们一起抗击新型冠状病毒/" itemprop="url">2020年的春节，我们一起抗击新型冠状病毒</a></h1>
+                <a class="post-title-link" href="/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/" itemprop="url">配置Beyond Compare 4作为git mergetool来解决git merge命令导致的文件冲突</a></h1>
         
 
         <div class="post-meta">
@@ -377,8 +377,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-29T15:52:16+08:00">
-                2020-01-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-21T23:31:49+08:00">
+                2020-05-21
               </time>
             
 
@@ -393,8 +393,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-02-09T17:46:09+08:00">
-                2020-02-09
+              <time title="更新于" itemprop="dateModified" datetime="2020-05-23T00:48:27+08:00">
+                2020-05-23
               </time>
             
           </span>
@@ -412,8 +412,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
                   </a>
                 </span>
 
@@ -429,7 +429,7 @@
 
           
           
-             <span id="/blog/2020/01/29/2020年的春节，我们一起抗击新型冠状病毒/" class="leancloud_visitors" data-flag-title="2020年的春节，我们一起抗击新型冠状病毒">
+             <span id="/blog/2020/05/21/配置Beyond-Compare-4作为git-mergetool来解决git-merge命令导致的文件冲突/" class="leancloud_visitors" data-flag-title="配置Beyond Compare 4作为git mergetool来解决git merge命令导致的文件冲突">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -447,7 +447,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,508(字)</span>
+            <span class="post-count">3,791(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -455,7 +455,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">5(分)</span>
+            <span class="post-count">16(分)</span>
           </span>
 
           
@@ -478,17 +478,81 @@
 
       
         
-          <blockquote>
-<p>终于到了什么都不用做，在家躺着就能为国家做贡献的时候了！</p>
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>使用 <code>git merge</code> 命令合并代码的时候可能会产生文件冲突，产生这种冲突的根本原因是文件的同一处同时被多次修改，这种同时修改常体现的不同分支上，当多个分支修改了同一处代码，再合并代码的时候就会产生冲突，因为 <code>git</code> 程序也不知道我们想要保留哪一份修改，这时就需要我们手动修改产生冲突的文件。</p>
+<p>当冲突内容很少的时候我们可以打开文本编辑器，找到 <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>、<code>===========</code> 和 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 这三行字符包裹的内容就是需要解决冲突的部分，但是当冲突内容特别多时我们还是习惯于通过可视化的工具来处理，<code>Beyond Compare</code> 就是这样一款工具，可以用来比较不同的文本文件、表格文件，还可以比较文件夹内容，之前用着比较习惯，所以在处理 <code>git</code> 冲突的时候也想使用这个工具来做，通过查找技术文档发现了下面的方法。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>鉴于大家都比较急，查找问题时想要直接找到答案，所以我这里直接说明配置步骤，送给不求甚解的小伙伴，也方便今后我可以直接找到，不过配置之前还是要先看一下前提。</p>
+<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><ul>
+<li>在 Windows 上安装了 <code>git</code> 客户端，可以执行 <code>git</code> 命令（废话！没装 <code>git</code> 怎么产生冲突的）</li>
+<li>安装了 <code>Beyond Compare 4</code> 这个软件，下载链接很多，自己找一个吧，实在找不到，那就放弃吧（找我要）</li>
+</ul>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>首先找到 <code>Beyond Compare</code> 的安装路径，比如我的软件安装路径是 <code>D:\mybc4\BComp.exe</code>，然后在 <code>git</code> 命令行客户端中执行下面命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>至此，<code>git mergetool</code> 就配置完了，当下次冲突的时候，直接使用 <code>git mergetool</code> 命令就可以调用 <code>Beyond Compare</code> 解决冲突文件了，但是你不好奇，这些设置命令都是什么意思吗？为什么执行完这些命令就能调用 <code>Beyond Compare 4</code> 这个软件了，如果你感兴趣可以接下往下看一看。</p>
+<h1 id="Beyond-Compare"><a href="#Beyond-Compare" class="headerlink" title="Beyond Compare"></a>Beyond Compare</h1><p>这是一款强大的比较工具，前面提到它可以比较文本、比较表格、比较文件夹，但是它的能力不仅限于此，它甚至可以比较MP3、比较图片、比较注册表，我们的目的是调用它的比较功能，但是前提是这款软件允许你调用，如果它不给你提供接口，你就是想调用也得绕上八百个圈才可以。</p>
+<p>这一点我们可以查询文档确定，文档是安装软件时自带的，名字为 <code>BCompare.chm</code>，如果找不到，安利你一个叫做 <code>Everything</code> 的软件，装上它以后，电脑中的一切东西都能搜索找到。</p>
+<p>这个文档应该很容易找到的，与软件的可执行文件在同一目录，其实我们使用的比较工具应该是 <code>BCompare.exe</code>，但是为什么在配置 <code>git mergetool</code> 的是后用的是 <code>BComp.exe</code> 呢？这一点文档中有写：</p>
+<blockquote>
+<p>BCompare.exe: This is the main application.  Only one copy will run at a time, regardless of how many windows you have open.  If you launch a second copy it will tell the existing copy to start a comparison and exit immediately.<br>BComp.exe: This is a Win32 GUI program.  If launched from a version control system, it should work just fine.  If launched from a console window, the console (or batch file) will not wait for it.</p>
 </blockquote>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>新型冠状病毒，一个看起来陌生的词语，使得原本最热闹的春季变得异常冷清，随着疫情范围的扩大，这个本来陌生的词语一次次冲击着人们的认知。这个病毒到底是什么，为什么扩散起来这么凶猛？</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/01/29/2020年的春节，我们一起抗击新型冠状病毒/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<p>文档是英文的，但是比较容易理解，总的来说 <code>BCompare.exe</code> 是主程序，<code>BComp.exe</code> 用在版本控制工具中更加优秀，至于文档中提到的主程序只能启动一个副本的说明，我试了一下并不是这样的，但是这不是重点，根据文档建议，我们应该调用 <code>BComp.exe</code> 程序。</p>
+<p>关于调用参数，文档中对于每种形式的比较也给出了说明，我们这里只列举两个文件和四个文件这两种参数，两个文件作为参数时常用来对比，我直接使用主程序对比文件就是这种形式，参数格式为 <code>BCompare.exe &quot;C:\Left File.ext&quot; &quot;C:\Right File.ext&quot;</code>，但是使用时我常把文件直接拖拽到软件上进行比较。四个文件作为参数时常用来处理文件冲突，参数类型为 <code>BCompare.exe C:\Left.ext C:\Right.ext C:\Center.ext C:\Output.ext</code>，参数中文件的名字表明处理时的位置和作用，看下面这个图就明白了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_cmp.png" alt="解决文件合并冲突1"></p>
+<p>从红框圈定的位置就可以发现和文件的对应关系了，最下面是最终的输出文件，也是我们可以手动修改的文件。</p>
+<h1 id="文件冲突及处理"><a href="#文件冲突及处理" class="headerlink" title="文件冲突及处理"></a>文件冲突及处理</h1><h2 id="产生冲突"><a href="#产生冲突" class="headerlink" title="产生冲突"></a>产生冲突</h2><p>先看一下 <code>git</code> 仓库的原始情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev</span><br><span class="line">Your branch is up to date with <span class="string">'origin/dev'</span>.</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br></pre></td></tr></table></figure>
+<p>在此基础上新建两个分支 <code>dev1</code> 和 <code>dev2</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev)</span><br><span class="line">$ git checkout -b dev1</span><br><span class="line">Switched to a new branch <span class="string">'dev1'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git checkout -b dev2</span><br><span class="line">Switched to a new branch <span class="string">'dev2'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git branch | grep dev</span><br><span class="line">  dev</span><br><span class="line">  dev1</span><br><span class="line">* dev2</span><br></pre></td></tr></table></figure>
+<p>在 <code>dev2</code> 分支上修改 <code>README.md</code> 文件后提交</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"this is dev2 test"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git add README.md</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git commit -m<span class="string">"update readme at dev2"</span></span><br><span class="line">[dev2 d8d80b7] update readme at dev2</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">this is dev2 <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>切换回 <code>dev1</code> 分支修改 <code>README.md</code> 文件后提交</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev2)</span><br><span class="line">$ git checkout dev1</span><br><span class="line">Switched to branch <span class="string">'dev1'</span></span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"this is dev1 test"</span>&gt;&gt;README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git add README.md</span><br><span class="line">warning: LF will be replaced by CRLF <span class="keyword">in</span> README.md.</span><br><span class="line">The file will have its original line endings <span class="keyword">in</span> your working directory</span><br><span class="line">git com -</span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git commit -m<span class="string">"update readme at dev1"</span></span><br><span class="line">[dev1 3136341] update readme at dev1</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">this is dev1 <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>这时在 <code>dev1</code> 分支上合并 <code>dev2</code> 分支上的修改就会产生冲突</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git merge dev2</span><br><span class="line">Auto-merging README.md</span><br><span class="line">CONFLICT (content): Merge conflict <span class="keyword">in</span> README.md</span><br><span class="line">Automatic merge failed; fix conflicts and <span class="keyword">then</span> commit the result.</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ cat README.md</span><br><span class="line">learn git branch <span class="built_in">command</span></span><br><span class="line">m2</span><br><span class="line"><span class="built_in">test</span> checkout</span><br><span class="line">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br><span class="line">this is dev1 <span class="built_in">test</span></span><br><span class="line">=======</span><br><span class="line">this is dev2 <span class="built_in">test</span></span><br><span class="line">&gt;&gt;&gt;&gt;&gt;&gt;&gt; dev2</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br></pre></td></tr></table></figure>
+<p>冲突产生了，文档中同一位置被两个分支修改后合并导致的，内容里出现了 <code>&lt;&lt;&lt;</code>、<code>===</code>、<code>&gt;&gt;&gt;</code>，包裹的内容被分成了两部分，上面一部分是当前分支修改的，下面一部分是从 <code>dev2</code> 分支合并过来的，还要注意虽然产生了产生了冲突，但是目录中并没有产生其他多余的文件。</p>
+<h2 id="解决冲突"><a href="#解决冲突" class="headerlink" title="解决冲突"></a>解决冲突</h2><p>这样的冲突比较简单，我们只要使用文本工具删除不想要的内容，保存后 <code>git add README.md</code>，然后再 <code>git commit</code> 就完成了冲突的解决，但是因为配置了 <code>git mergetool</code>，我们可以用它来解决冲突，直接在命令行敲命令 <code>git mergetool</code> 就可以:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git mergetool</span><br><span class="line">Merging:</span><br><span class="line">README.md</span><br><span class="line"></span><br><span class="line">Normal merge conflict <span class="keyword">for</span> <span class="string">'README.md'</span>:</span><br><span class="line">  &#123;<span class="built_in">local</span>&#125;: modified file</span><br><span class="line">  &#123;remote&#125;: modified file</span><br></pre></td></tr></table></figure>
+<p>这时光标不会退出，一闪一闪并且打开 <code>BComp.exe</code> 工具，截图如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_save.png" alt="解决文件合并冲突2"></p>
+<p>这时如果你打开 <code>git</code> 库所在目录会发现除了 <code>README.md</code> 还多了下面4个文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">README.md</span><br><span class="line">README_BACKUP_584.md</span><br><span class="line">README_BASE_584.md</span><br><span class="line">README_LOCAL_584.md</span><br><span class="line">README_REMOTE_584.md</span><br></pre></td></tr></table></figure>
+<p>按照自己的实际情况修改最下面的文件，然后点击箭头所指的保存按钮，关闭 <code>Beyond Compare</code>，查询一下仓库状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git status</span><br><span class="line">On branch dev1</span><br><span class="line">All conflicts fixed but you are still merging.</span><br><span class="line">  (use <span class="string">"git commit"</span> to conclude merge)</span><br><span class="line"></span><br><span class="line">Changes to be committed:</span><br><span class="line">        modified:   README.md</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ ls</span><br><span class="line">README.md</span><br></pre></td></tr></table></figure>
+<p>不但冲突文件没有了，还给我们自动执行 <code>git add README.md</code> 命令，我们只需要执行 <code>git commit</code> 就解决完了冲突。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1|MERGING)</span><br><span class="line">$ git commit</span><br><span class="line">[dev1 b348ae6] Merge branch <span class="string">'dev2'</span> into dev1</span><br><span class="line"></span><br><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git adog</span><br><span class="line">*   b348ae6 (HEAD -&gt; dev1) Merge branch <span class="string">'dev2'</span> into dev1</span><br><span class="line">|\</span><br><span class="line">| * d8d80b7 (dev2) update readme at dev2</span><br><span class="line">* | 3136341 update readme at dev1</span><br><span class="line">|/</span><br><span class="line">* 5f4181e (origin/dev, dev) add comments</span><br></pre></td></tr></table></figure>
+<h1 id="工具配置的参数含义"><a href="#工具配置的参数含义" class="headerlink" title="工具配置的参数含义"></a>工具配置的参数含义</h1><p>回过头来再看看 <code>git mergetool</code> 的4句配置到底有什么用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h2 id="git-config"><a href="#git-config" class="headerlink" title="git config"></a>git config</h2><p>首先你需要知道 <code>git config</code> 的作用，就是用来配置 <code>git</code> 的，加上了 <code>--global</code> 表示调整全局 <code>git</code> 配置，不加的话就是调整当前库的 <code>git</code> 配置。windows上的全局配置一般在 <code>C:\Users\用户名\.gitconfig</code>，如果你之前用过 <code>git</code>，一般会执行过 <code>git config --global user.name xxx</code> 对吧，这些命令都是来调整 <code>git</code> 配置的，打开这个 <code>.gitconfig</code> 你会看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line">    name = albert</span><br><span class="line">    email = albert@163.com</span><br><span class="line">[core]</span><br><span class="line">    autocrlf = true</span><br><span class="line">[alias]</span><br><span class="line">    st = status</span><br><span class="line">    adog = &quot;log --all --decorate --oneline --graph&quot;</span><br><span class="line">[merge]</span><br><span class="line">    tool = bc4</span><br><span class="line">[mergetool &quot;bc4&quot;]</span><br><span class="line">    cmd = \&quot;D:\\mybc4\\BComp.exe\&quot; \&quot;$LOCAL\&quot; \&quot;$REMOTE\&quot; \&quot;$BASE\&quot; \&quot;$MERGED\&quot;</span><br><span class="line">    trustExitCode = true</span><br><span class="line">[mergetool]</span><br><span class="line">    keepBackup = false</span><br></pre></td></tr></table></figure>
+<p>看看最后几行就是我们添加的4项配置，只不过到文件中变成了键值对的形式，经过测试后发现，这些属性最少两级，比如 <code>user.name</code> 、<code>core.autocrlf</code>，最多三级比如 <code>mergetool.bc4.cmd</code>、 <code>mergetool.bc4.trustExitCode</code>，如果级数再多会怎么办，你可以试试 <code>git config --global a.b.c.d.e test</code>，它最终也会被拆成三级如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[a &quot;b.c.d&quot;]</span><br><span class="line">    e = test</span><br></pre></td></tr></table></figure>
+<h2 id="git-mergetool"><a href="#git-mergetool" class="headerlink" title="git mergetool"></a>git mergetool</h2><p>这个需要查一下官方文档了，<code>git mergetool --help</code> 就能打开<a href="https://git-scm.com/docs" target="_blank" rel="noopener">git官方文档</a>，文档写得真不错，排版格式看着就很舒服。</p>
+<p>文档提到添加 <code>--tool-help</code> 选项可以列举可以的合并工具，展示如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">albert@home-pc MINGW64 /d/gitstart (dev1)</span><br><span class="line">$ git mergetool --tool-help</span><br><span class="line"><span class="string">'git mergetool --tool=&lt;tool&gt;'</span> may be <span class="built_in">set</span> to one of the following:</span><br><span class="line">                vimdiff</span><br><span class="line">                vimdiff2</span><br><span class="line">                vimdiff3</span><br><span class="line"></span><br><span class="line">        user-defined:</span><br><span class="line">                bc4.cmd <span class="string">"D:\Program Files\Beyond Compare 4\BComp.exe"</span> <span class="string">"<span class="variable">$LOCAL</span>"</span> <span class="string">"<span class="variable">$REMOTE</span>"</span> <span class="string">"<span class="variable">$BASE</span>"</span> <span class="string">"<span class="variable">$MERGED</span>"</span></span><br><span class="line"></span><br><span class="line">The following tools are valid, but not currently available:</span><br><span class="line">                araxis</span><br><span class="line">                bc</span><br><span class="line">                bc3</span><br><span class="line">                codecompare</span><br><span class="line">                deltawalker</span><br><span class="line">                diffmerge</span><br><span class="line">                diffuse</span><br><span class="line">                ecmerge</span><br><span class="line">                emerge</span><br><span class="line">                examdiff</span><br><span class="line">                guiffy</span><br><span class="line">                gvimdiff</span><br><span class="line">                gvimdiff2</span><br><span class="line">                gvimdiff3</span><br><span class="line">                kdiff3</span><br><span class="line">                meld</span><br><span class="line">                opendiff</span><br><span class="line">                p4merge</span><br><span class="line">                smerge</span><br><span class="line">                tkdiff</span><br><span class="line">                tortoisemerge</span><br><span class="line">                winmerge</span><br><span class="line">                xxdiff</span><br><span class="line"></span><br><span class="line">Some of the tools listed above only work <span class="keyword">in</span> a windowed</span><br><span class="line">environment. If run <span class="keyword">in</span> a terminal-only session, they will fail.</span><br></pre></td></tr></table></figure>
+<p>这一查才发现，原来 <code>git mergetool</code> 支持的工具有这么多，不过下面这些我都没安装，用一下上面列举的3个，试试 <code>git mergetool --tool=vimdiff</code>，果然打开了一个界面</p>
+<p><img src="https://cdn.jsdelivr.net/gh/albertgithubhome/cdn/img/card/bc4_vimdiff.png" alt="解决文件合并冲突3"></p>
+<p>幸亏不如 <code>Beyond Compare</code> 好用，不然我不是白配置了，不过这些工具确实方便，都不需要配置，只要安装了参数中指定一下就可以用了，比如这个 <code>bc3</code>，我猜它是 <code>Beyond Compare 3</code>，只不过我安装的是 <code>Beyond Compare 4</code> 这个版本。</p>
+<p>这些内置工具使用的前提是已经安装了，并且安装软件的目录放在了环境变量 <code>Path</code> 中，如果没有放在这个变量中需要通过 <code>mergetool.&lt;tool&gt;.path</code> 参数来配置，比如我把 <code>Beyond Compare 3</code> 安装在了 <code>D</code> 盘根目录，就可以设置 <code>git config --global mergetool.bc3.path &quot;D:\\&quot;</code>。</p>
+<p>我们在可用工具中没有找到 <code>Beyond Compare 4</code> 为什么我们可以用呢？因为 <code>git mergetool</code> 命令还支持自定义合并解决冲突的工具，只要指定 <code>mergetool.&lt;tool&gt;.cmd</code> 就可以调用了，就像 <code>git mergetool --tool-help</code> 查询结果中提到的 <code>user-defined: bc4.cmd &quot;D:\Program Files\Beyond Compare 4\BComp.exe&quot; &quot;$LOCAL&quot; &quot;$REMOTE&quot; &quot;$BASE&quot; &quot;$MERGED&quot;</code>，<code>git mergetool</code> 把 <code>bc4</code> 作为了一个等同于内置合并工具的软件。</p>
+<p>再来看看这4句配置的含义：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global merge.tool bc4</span><br><span class="line">git config --global mergetool.bc4.cmd <span class="string">"\"D:\\mybc4\\BComp.exe\" \"\$LOCAL\" \"\$REMOTE\" \"\$BASE\" \"\$MERGED\""</span></span><br><span class="line">git config --global mergetool.bc4.trustExitCode <span class="literal">true</span></span><br><span class="line">git config --global mergetool.keepBackup <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>第一句 <code>git config --global merge.tool bc4</code> 是说把 <code>git mergetool</code> 的默认工具配置成 <code>bc4</code>，如果不指定默认工具在使用时就需要写成 <code>git mergetool --tool=bc4</code> 或者 <code>git mergetool -t bc4</code> 了，可是 <code>bc4</code> 是我们自己起的名字，根本就没有这个名字啊，接着往下看。</p>
+<p>第二句 <code>git config --global mergetool.bc4.cmd &quot;\&quot;D:\\mybc4\\BComp.exe\&quot; \&quot;\$LOCAL\&quot; \&quot;\$REMOTE\&quot; \&quot;\$BASE\&quot; \&quot;\$MERGED\&quot;&quot;</code> 指定了工具 <code>bc4</code> 的调用路径和参数，后面的这4个参数都是 <code>git mergetool</code> 命令提供的，依次代表本地修改，被合并分支修改，两端未修改前版本文件，最终合并导出的文本文件。</p>
+<p>第三句 <code>git config --global mergetool.bc4.trustExitCode true</code>， 设置为 <code>true</code> 表示信任软件的返回码，并依据返回码确定合并是否成功，如果设置成 <code>false</code> 就会在合并完成后问你是否解决完冲突，设置成 <code>true</code> 会方便很多。</p>
+<p>第四句 <code>git config --global mergetool.keepBackup false</code>， 是指定在合并完成后删除备份文件 <code>*.orig</code>，这个文件会在调用 <code>git mergetool</code> 是产生 <code>*.orig</code> 备份文件，成功合并后自动删除就可以了。</p>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>至此终于弄明白这个 <code>git mergetool</code> 是怎么工作的了，但是想这样一个问题，这个 <code>&lt;tool&gt;.cmd</code> 一定得调用冲突解决工具吗？如果你从头看到这里应该会明白，这里只是给用户提供了一个调用自定义工具的方式，至于你调用什么它是不关心的，你完全可以在 <code>git mergetool</code> 的时候让电脑关机，这些都是可以的，在你明白了原理以后，一切都变得简单了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>Beyond Compare</code> 是一款强大的比较工具，合理的使用可以有效的提升工作效率</li>
+<li><code>git mergetool</code> 内置了很多可以使用的合并工具，并且支持调用自定义的合并工具</li>
+<li><code>git</code> 的官方文档写得真的挺详细，有时间可以多看一看，你会发现很多有意思的功能</li>
+<li>急于解决问题时可以不求甚解，解决问题后最好可以明白其中的缘由，这其实就是一种进步</li>
+</ul>
+<hr>
+<blockquote>
+<p>尽管科技很发达，但有些人一旦分开可能真的就是一生不见了</p>
+</blockquote>
+
+          
         
       
     </div>
@@ -565,7 +629,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/01/03/2019！一份迟到的年终总结/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/05/16/使用c-filt命令还原C-编译后的函数名/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -584,7 +648,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2020/01/03/2019！一份迟到的年终总结/" itemprop="url">2019！一份迟到的年终总结</a></h1>
+                <a class="post-title-link" href="/blog/2020/05/16/使用c-filt命令还原C-编译后的函数名/" itemprop="url">使用c++filt命令还原C++编译后的函数名</a></h1>
         
 
         <div class="post-meta">
@@ -596,8 +660,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-03T13:49:35+08:00">
-                2020-01-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-16T21:22:43+08:00">
+                2020-05-16
               </time>
             
 
@@ -612,227 +676,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-02-09T17:46:09+08:00">
-                2020-02-09
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2020/01/03/2019！一份迟到的年终总结/" class="leancloud_visitors" data-flag-title="2019！一份迟到的年终总结">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,218(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">7(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>长大了就要为小时候吹过的牛而奋斗~</p>
-</blockquote>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>2019即将过去，瞅一眼桌面右下角的时间，距离2020年还有63分51秒，这是我第一次这么强烈地想在一年结束之际写下点什么。本身是一个喜欢收集和总结知识的性格，但对自己的人生却少有总结，一方面感觉没什么可写，一方面也确实对自己太过宽容。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/01/03/2019！一份迟到的年终总结/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/" itemprop="url">单继承、多继承、菱形继承的虚函数表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-03T13:45:05+08:00">
-                2020-01-03
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2020-02-09T17:46:09+08:00">
-                2020-02-09
+              <time title="更新于" itemprop="dateModified" datetime="2020-05-17T11:22:00+08:00">
+                2020-05-17
               </time>
             
           </span>
@@ -867,7 +712,7 @@
 
           
           
-             <span id="/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/" class="leancloud_visitors" data-flag-title="单继承、多继承、菱形继承的虚函数表">
+             <span id="/blog/2020/05/16/使用c-filt命令还原C-编译后的函数名/" class="leancloud_visitors" data-flag-title="使用c++filt命令还原C++编译后的函数名">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -885,7 +730,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">5,159(字)</span>
+            <span class="post-count">2,511(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -893,7 +738,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">23(分)</span>
+            <span class="post-count">12(分)</span>
           </span>
 
           
@@ -916,10 +761,258 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近被问到一个关于多继承虚函数表的问题，当时回答是可能存在多个虚函数表，应该是顺序排列的，但具体怎么排列还是有些疑惑的，回答的时候到有点儿心虚。之后查了资料，做了简单的实验，可以确定的是对于继承了多个含有虚函数基类的子类来说，指向虚函数表的指针应该不止一个。</p>
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个命令功能单一，但是非常强大，可以用来还原C++编译后的函数名，为什么C++的函数名需要单独的命令来还原，因为他们看起来都是这样 <code>_ZNK4Json5ValueixEPKc</code>、这样 <code>_Z41__static_initialization_and_destruction_0ii</code> 或者这样的 <code>_ZN6apsara5pangu15ScopedChunkInfoINS0_12RafChunkInfoEED1Ev</code>，仅通过这一串字母很难知道原函数的名字是什么，参数类型就更难分析了，实际上C++在编译函数时有一套命名函数的规则，每种参数使用什么字母表示都是有约定的，但是通过学习这些约定来还原函数太麻烦了，还好有人编写了 <code>c++filt</code> 命令可以让我们直接得到编译前的函数名，真好……</p>
+<h1 id="C-编译后的函数名"><a href="#C-编译后的函数名" class="headerlink" title="C++编译后的函数名"></a>C++编译后的函数名</h1><p><code>C++</code> 编译后的函数名字非常古怪，相比而言 <code>C</code> 语言编译后的函数看起来就正常许多了，<code>extern &quot;C&quot;</code>、函数重载、<code>name mangling</code> 这些知识点都与 <code>C++</code> 这个奇怪的函数名有些关系，<code>extern &quot;C&quot;</code> 的作用简而言之就是告诉编译器和链接器被“我”修饰的变量和函数需要按照 <code>C</code> 语言方式进行编译和链接，这样做是由于 <code>C++</code> 支持函数重载，而 <code>C</code> 语言不支持，结果导致函数被 <code>C++</code> 编译后在符号库中的名字和被 <code>C</code>语言编译后的名字是不一样的，程序编译和连接就会出现问题，此类问题一般出现在 <code>C++</code> 代码调用 <code>C</code> 语言写的库函数的时候。</p>
+<p>而 <code>name mangling</code> 就是实现 <code>C++</code> 函数重载的一种技术或者叫做方式，要求同名的 <code>C++</code> 函数参数个数不同或参数类型不同，如果只有返回值类型不同，那么两个函数被认为是相同的函数，无法成功通过编译。接下来我们就来看几个例子，看看 <code>C++</code> 编译后的函数名有什么变化。</p>
+<h2 id="C-和C语言编译后的函数名对比"><a href="#C-和C语言编译后的函数名对比" class="headerlink" title="C++和C语言编译后的函数名对比"></a>C++和C语言编译后的函数名对比</h2><p>我们来写一段相同的代码，分别使用 <code>gcc</code> 和 <code>g++</code> 进行编译，从代码到可执行文件需要经历“预处理、编译、汇编、链接”4个步骤，接下来为了看到编译后函数名的不同，我们只进行前两步，生成汇编代码，再来比较不同。</p>
+<h3 id="gcc编译simple-c文件"><a href="#gcc编译simple-c文件" class="headerlink" title="gcc编译simple.c文件"></a>gcc编译simple.c文件</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// simple.c</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">myadd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">110</span>;</span><br><span class="line">    <span class="keyword">int</span> b = <span class="number">119</span>;</span><br><span class="line">    <span class="keyword">int</span> c = myadd(a, b);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>gcc simple.c -S</code> 生成汇编代码文件simple.s内容</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">    .file   <span class="string">"simple.c"</span></span><br><span class="line">    .text</span><br><span class="line">    .globl  myadd</span><br><span class="line">    .type   myadd, @function</span><br><span class="line">myadd:</span><br><span class="line">.LFB0:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    movl    %edi, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    %esi, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-4</span>(%rbp), %edx</span><br><span class="line">    movl    <span class="number">-8</span>(%rbp), %eax</span><br><span class="line">    addl    %edx, %eax</span><br><span class="line">    popq    %rbp</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE0:</span><br><span class="line">    .size   myadd, .-myadd</span><br><span class="line">    .globl  main</span><br><span class="line">    .type   main, @function</span><br><span class="line">main:</span><br><span class="line">.LFB1:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    subq    $<span class="number">16</span>, %rsp</span><br><span class="line">    movl    $<span class="number">110</span>, <span class="number">-12</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">119</span>, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-8</span>(%rbp), %edx</span><br><span class="line">    movl    <span class="number">-12</span>(%rbp), %eax</span><br><span class="line">    movl    %edx, %esi</span><br><span class="line">    movl    %eax, %edi</span><br><span class="line">    call    myadd</span><br><span class="line">    movl    %eax, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">0</span>, %eax</span><br><span class="line">    leave</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE1:</span><br><span class="line">    .size   main, .-main</span><br><span class="line">    .ident  <span class="string">"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609"</span></span><br><span class="line">    .section    .note.GNU-<span class="built_in">stack</span>,<span class="string">""</span>,@progbits</span><br></pre></td></tr></table></figure>
+<h3 id="g-编译simple-cpp文件"><a href="#g-编译simple-cpp文件" class="headerlink" title="g++编译simple.cpp文件"></a>g++编译simple.cpp文件</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// simple.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">myadd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">110</span>;</span><br><span class="line">    <span class="keyword">int</span> b = <span class="number">119</span>;</span><br><span class="line">    <span class="keyword">int</span> c = myadd(a, b);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>g++ simple.cpp -S</code> 生成汇编代码文件simple.s内容</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">    .file   <span class="string">"simple.cpp"</span></span><br><span class="line">    .text</span><br><span class="line">    .globl  _Z5myaddii</span><br><span class="line">    .type   _Z5myaddii, @function</span><br><span class="line">_Z5myaddii:</span><br><span class="line">.LFB0:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    movl    %edi, <span class="number">-20</span>(%rbp)</span><br><span class="line">    movl    %esi, <span class="number">-24</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">0</span>, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-20</span>(%rbp), %edx</span><br><span class="line">    movl    <span class="number">-24</span>(%rbp), %eax</span><br><span class="line">    addl    %edx, %eax</span><br><span class="line">    movl    %eax, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-4</span>(%rbp), %eax</span><br><span class="line">    popq    %rbp</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE0:</span><br><span class="line">    .size   _Z5myaddii, .-_Z5myaddii</span><br><span class="line">    .globl  main</span><br><span class="line">    .type   main, @function</span><br><span class="line">main:</span><br><span class="line">.LFB1:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    subq    $<span class="number">16</span>, %rsp</span><br><span class="line">    movl    $<span class="number">110</span>, <span class="number">-12</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">119</span>, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">0</span>, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-8</span>(%rbp), %edx</span><br><span class="line">    movl    <span class="number">-12</span>(%rbp), %eax</span><br><span class="line">    movl    %edx, %esi</span><br><span class="line">    movl    %eax, %edi</span><br><span class="line">    call    _Z5myaddii</span><br><span class="line">    movl    %eax, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">0</span>, %eax</span><br><span class="line">    leave</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE1:</span><br><span class="line">    .size   main, .-main</span><br><span class="line">    .ident  <span class="string">"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609"</span></span><br><span class="line">    .section    .note.GNU-<span class="built_in">stack</span>,<span class="string">""</span>,@progbits</span><br></pre></td></tr></table></figure>
+<p>虽然只有几行代码，可是生成汇编文件之后变成了50多行，我们只需要关注 <code>myadd()</code> 这个函数编译之后变成了什么就可以了，汇编代码虽然不好读，但是查找一个函数名应该没问题的，对照着上面的代码我们发现，<code>myadd()</code> 这个函数通过 <code>gcc</code> 编译之后的函数名还是 <code>myadd</code>，而通过 <code>g++</code> 编译之后的函数名变成了 <code>_Z5myaddii</code>，可以明显感觉到最后的两个字母 <code>i</code> 代表的是参数 <code>int</code>，使用 <code>c++filt</code> 命令还原如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ c++filt _Z5myaddii</span><br><span class="line">myadd(int, int)</span><br></pre></td></tr></table></figure>
+<h2 id="C-函数重载编译后的函数名对比"><a href="#C-函数重载编译后的函数名对比" class="headerlink" title="C++函数重载编译后的函数名对比"></a>C++函数重载编译后的函数名对比</h2><p>我们还是在刚才的代码的基础上增加一个参数类型不同的 <code>myadd</code> 函数，修改后的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">myadd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">myadd</span><span class="params">(<span class="keyword">float</span> a, <span class="keyword">float</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> c = myadd(<span class="number">110</span>, <span class="number">119</span>);</span><br><span class="line">    <span class="keyword">float</span> d = myadd(<span class="number">52.0f</span>, <span class="number">13.14f</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>g++ simple.cpp -S</code> 生成汇编代码文件simple.s内容为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">    .file   <span class="string">"simple.cpp"</span></span><br><span class="line">    .text</span><br><span class="line">    .globl  _Z5myaddii</span><br><span class="line">    .type   _Z5myaddii, @function</span><br><span class="line">_Z5myaddii:</span><br><span class="line">.LFB0:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    movl    %edi, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    %esi, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movl    <span class="number">-4</span>(%rbp), %edx</span><br><span class="line">    movl    <span class="number">-8</span>(%rbp), %eax</span><br><span class="line">    addl    %edx, %eax</span><br><span class="line">    popq    %rbp</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE0:</span><br><span class="line">    .size   _Z5myaddii, .-_Z5myaddii</span><br><span class="line">    .globl  _Z5myaddff</span><br><span class="line">    .type   _Z5myaddff, @function</span><br><span class="line">_Z5myaddff:</span><br><span class="line">.LFB1:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    movss   %xmm0, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movss   %xmm1, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movss   <span class="number">-4</span>(%rbp), %xmm0</span><br><span class="line">    addss   <span class="number">-8</span>(%rbp), %xmm0</span><br><span class="line">    popq    %rbp</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE1:</span><br><span class="line">    .size   _Z5myaddff, .-_Z5myaddff</span><br><span class="line">    .globl  main</span><br><span class="line">    .type   main, @function</span><br><span class="line">main:</span><br><span class="line">.LFB2:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">    pushq   %rbp</span><br><span class="line">    .cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">    .cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">    movq    %rsp, %rbp</span><br><span class="line">    .cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">    subq    $<span class="number">16</span>, %rsp</span><br><span class="line">    movl    $<span class="number">119</span>, %esi</span><br><span class="line">    movl    $<span class="number">110</span>, %edi</span><br><span class="line">    call    _Z5myaddii</span><br><span class="line">    movl    %eax, <span class="number">-8</span>(%rbp)</span><br><span class="line">    movss   .LC0(%rip), %xmm1</span><br><span class="line">    movss   .LC1(%rip), %xmm0</span><br><span class="line">    call    _Z5myaddff</span><br><span class="line">    movd    %xmm0, %eax</span><br><span class="line">    movl    %eax, <span class="number">-4</span>(%rbp)</span><br><span class="line">    movl    $<span class="number">0</span>, %eax</span><br><span class="line">    leave</span><br><span class="line">    .cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">    ret</span><br><span class="line">    .cfi_endproc</span><br><span class="line">.LFE2:</span><br><span class="line">    .size   main, .-main</span><br><span class="line">    .section    .rodata</span><br><span class="line">    .align <span class="number">4</span></span><br><span class="line">.LC0:</span><br><span class="line">    .<span class="keyword">long</span>   <span class="number">1095908721</span></span><br><span class="line">    .align <span class="number">4</span></span><br><span class="line">.LC1:</span><br><span class="line">    .<span class="keyword">long</span>   <span class="number">1112539136</span></span><br><span class="line">    .ident  <span class="string">"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609"</span></span><br><span class="line">    .section    .note.GNU-<span class="built_in">stack</span>,<span class="string">""</span>,@progbits</span><br></pre></td></tr></table></figure>
+<p>这次一共3个函数，生成的汇编代码更长，但是我们一眼就能看见汇编代码中包含 <code>_Z5myaddii</code> 和 <code>_Z5myaddff</code> 两个函数，这就是函数重载的产物，两个参数类型不同的同名函数编译之后生成了不同的名字，<code>_Z5myaddff</code> 函数末尾的两个 <code>f</code> 应该指的就是参数类型 <code>float</code>。</p>
+<h1 id="使用c-filt定位问题示例"><a href="#使用c-filt定位问题示例" class="headerlink" title="使用c++filt定位问题示例"></a>使用c++filt定位问题示例</h1><p>c++filt的作用就是还原函数名字，它可以帮我们查找动态链接库中缺少的函数，还原崩溃堆栈中一大串的函数名字母等等，下面来看一个崩溃堆栈的例子，代码内容尽量简写，只为了说明问题，现实情况可能要复杂的多。</p>
+<!-- ldd -r test.so -->
+<p>首先定义一个打印函数堆栈的函数，参考之前的总结<a href="https://blog.csdn.net/albertsh/article/details/100594143" target="_blank" rel="noopener">《linux环境下C++代码打印函数堆栈调用情况》</a>，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;execinfo.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_stack</span><span class="params">(<span class="keyword">int</span> nSignal)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> MAX_STACK_FRAMES = <span class="number">12</span>;</span><br><span class="line">    <span class="keyword">void</span> *pStack[MAX_STACK_FRAMES];</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">char</span> szStackInfo[<span class="number">1024</span> * MAX_STACK_FRAMES];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> ** pStackList = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> frames = backtrace(pStack, MAX_STACK_FRAMES);</span><br><span class="line">    pStackList = backtrace_symbols(pStack, frames);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == pStackList)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">strcpy</span>(szStackInfo, <span class="string">"stack traceback:\n"</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; frames; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">NULL</span> == pStackList[i])</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">strncat</span>(szStackInfo, pStackList[i], <span class="number">1024</span>);</span><br><span class="line">        <span class="built_in">strcat</span>(szStackInfo, <span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; szStackInfo; <span class="comment">// 输出到控制台，也可以打印到日志文件中</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再写一段隐藏着崩溃问题的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CTest</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">get_string</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> s;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_string</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; str)</span> </span>&#123;s = str;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> s;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">float</span> z)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = <span class="literal">nullptr</span>;</span><br><span class="line">    *p = <span class="number">110</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; z;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CTest* pTest = <span class="keyword">new</span> CTest();</span><br><span class="line">    pTest-&gt;set_string(<span class="string">"20200517"</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; s = pTest-&gt;get_string();</span><br><span class="line">    <span class="keyword">delete</span> pTest;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; str &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">if</span> (s == <span class="string">"20200517"</span>) foo(<span class="number">13.14</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> s = <span class="built_in">std</span>::to_string(a) + <span class="built_in">std</span>::to_string(b);</span><br><span class="line">    test(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    signal(SIGSEGV, show_stack);</span><br><span class="line">    func(<span class="number">250</span>, <span class="number">520</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译运行，果然崩溃了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ g++ simple.cpp --std=c++11</span><br><span class="line">$ ./a.out</span><br><span class="line">stack traceback:</span><br><span class="line">./a.out() [0x401aff]</span><br><span class="line">/lib/x86_64-linux-gnu/libc.so.6(+0x354b0) [0x7fd5f98b54b0]</span><br><span class="line">/lib/x86_64-linux-gnu/libc.so.6(+0x16eff6) [0x7fd5f99eeff6]</span><br><span class="line">/usr/lib/x86_64-linux-gnu/libstdc++.so.6(_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc+0x3a) [0x7fd5f9f9145a]</span><br><span class="line">./a.out() [0x4022b6]</span><br><span class="line">./a.out() [0x401d30]</span><br><span class="line">./a.out() [0x401e27]</span><br><span class="line">./a.out() [0x401ed8]</span><br><span class="line">/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf0) [0x7fd5f98a0830]</span><br><span class="line">./a.out() [0x4019f9]</span><br></pre></td></tr></table></figure>
+<p>这时崩溃的堆栈中发现了一个特别长的函数 <code>_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc</code>，使用 <code>c++filt</code> 命令来还原函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ c++filt _ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc</span><br><span class="line"><span class="built_in">std</span>::__cxx11::basic_string&lt;<span class="keyword">char</span>, <span class="built_in">std</span>::char_traits&lt;<span class="keyword">char</span>&gt;, <span class="built_in">std</span>::allocator&lt;<span class="keyword">char</span>&gt; &gt;::compare(<span class="keyword">char</span> <span class="keyword">const</span>*) <span class="keyword">const</span></span><br></pre></td></tr></table></figure>
+<p>从函数名来看是一个与字符串相关的 <code>compare</code> 函数，查看代码发现是 <code>s == &quot;20200517&quot;</code> 这一句的问题，所以说能确切的知道函数名对我们查找问题来说还是挺有帮助的。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>c++filt</code> 命令可以还原 <code>C++</code> 为实现函数重载采用 <code>name mangling</code> 搞出来的奇奇怪怪的函数名</li>
+<li>注册信号回调函数方式：<code>signal(SIGSEGV, show_stack);</code>，<code>SIGSEGV</code>代表无效的内存引用</li>
+<li>注意 <code>C</code> 语言和 <code>C++</code> 在编译后函数命名方式的不同，<code>C</code> 语言不支持严格意义的重载，C++支持</li>
+</ul>
+<hr>
+<blockquote>
+<p>阳光、空气、水，这些真的是好东西，当你真的快要失去它们才意识的到的话就有些晚了…</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/05/09/汇编指令入门级整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/05/09/汇编指令入门级整理/" itemprop="url">汇编指令入门级整理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-09T00:00:11+08:00">
+                2020-05-09
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-05-10T20:42:32+08:00">
+                2020-05-10
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/ASM/" itemprop="url" rel="index">
+                    <span itemprop="name">ASM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/05/09/汇编指令入门级整理/" class="leancloud_visitors" data-flag-title="汇编指令入门级整理">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,803(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们大都是被高级语言惯坏了的一代，源源不断的新特性正在逐步添加到各类高级语言之中，汇编作为最接近机器指令的低级语言，已经很少被直接拿来写程序了，不过我还真的遇到了一个，那是之前的一个同事，因为在写代码时遇到了成员函数权限及可见性的问题，导致他无法正确调用想执行的函数，结果他就开始在 <code>C++</code> 代码里嵌入汇编了，绕过了种种限制终于如愿以偿，但是读代码的我们傻眼了…</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2020/01/03/单继承、多继承、菱形继承的虚函数表/#more" rel="contents">
+            <a class="btn" href="/blog/2020/05/09/汇编指令入门级整理/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1000,7 +1093,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/05/05/C-11在左值引用的基础上增加右值引用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -1019,7 +1112,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/" itemprop="url">C++ STL中map的[]操作符使用时的一个坑</a></h1>
+                <a class="post-title-link" href="/blog/2020/05/05/C-11在左值引用的基础上增加右值引用/" itemprop="url">C++11在左值引用的基础上增加右值引用</a></h1>
         
 
         <div class="post-meta">
@@ -1031,8 +1124,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-14T10:39:58+08:00">
-                2019-12-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-05T16:52:16+08:00">
+                2020-05-05
               </time>
             
 
@@ -1047,8 +1140,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2020-02-26T23:02:09+08:00">
-                2020-02-26
+              <time title="更新于" itemprop="dateModified" datetime="2020-05-05T23:23:10+08:00">
+                2020-05-05
               </time>
             
           </span>
@@ -1083,7 +1176,7 @@
 
           
           
-             <span id="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/" class="leancloud_visitors" data-flag-title="C++ STL中map的[]操作符使用时的一个坑">
+             <span id="/blog/2020/05/05/C-11在左值引用的基础上增加右值引用/" class="leancloud_visitors" data-flag-title="C++11在左值引用的基础上增加右值引用">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -1101,439 +1194,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,660(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">7(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>学习C++，自从发现了map这个结构以后，就深深的被这种键值对的方式吸引了，写代码时也渐渐离不开这种结构了，一次偶然的机会发现这个map还有个 <code>[]</code> 运算符，仿佛又发现了新大陆一样，写代码更加方便了，殊不知一个深深的大坑正在前面等着我。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/12/14/C-STL中map的-操作符使用时的一个坑/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/12/03/MySQL中全局变量、会话变量、用户变量和局部变量的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/03/MySQL中全局变量、会话变量、用户变量和局部变量的区别/" itemprop="url">MySQL中全局变量、会话变量、用户变量和局部变量的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-03T17:05:32+08:00">
-                2019-12-03
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-12-08T12:36:30+08:00">
-                2019-12-08
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2019/12/03/MySQL中全局变量、会话变量、用户变量和局部变量的区别/" class="leancloud_visitors" data-flag-title="MySQL中全局变量、会话变量、用户变量和局部变量的区别">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,460(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前在项目的存储过程中发现有通过 <code>DECLARE</code> 关键字定义的变量如<code>DECLARE cnt INT DEFAULT 0;</code>，还有形如 <code>@count</code> 这样的变量，存储过程中拿过来直接就进行设置，像这样<code>set @count=1;</code>，这两种类型的变量究竟有什么区别却弄不清楚，赶紧上网查询资料，发现还有<code>@@sql_mode</code>这样的变量，这一个圈俩圈的到底是什么啊？会不会出现三个圈的情况？</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/12/03/MySQL中全局变量、会话变量、用户变量和局部变量的区别/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/11/30/MySQL数据库导入、导出、复制表、重命名表/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/30/MySQL数据库导入、导出、复制表、重命名表/" itemprop="url">MySQL数据库导入、导出、复制表、重命名表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-30T10:28:25+08:00">
-                2019-11-30
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-12-01T22:40:38+08:00">
-                2019-12-01
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2019/11/30/MySQL数据库导入、导出、复制表、重命名表/" class="leancloud_visitors" data-flag-title="MySQL数据库导入、导出、复制表、重命名表">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,607(字)</span>
+            <span class="post-count">3,102(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -1564,10 +1225,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>提前说明这是一篇小白总结，高手勿喷请绕行，写这篇总结的原因是发觉自己有时候确实眼高手低了，大道至简，花了很多时间去看索引、缓存、主从等等，等到出现实际问题的时候却发现自己磨磨蹭蹭写出的SQL语句居然有语法错误，看来还得稳扎稳打从基础入手，因为实际工作的用到的SQL并不多，现在把常用的几条总结一下，即使下次不能立马写出来，也能在这篇文章中的快速找到想要的。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>右值引用这个词是最开始是学习 <code>easylogging++</code> 这个日志开源项目的时候遇到的，当时遇到 <code>&amp;&amp;</code> 这样的写法先是一愣，还有这种写法？难道是引用的地址？结果查询资料才明白这叫做右值引用。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/11/30/MySQL数据库导入、导出、复制表、重命名表/#more" rel="contents">
+            <a class="btn" href="/blog/2020/05/05/C-11在左值引用的基础上增加右值引用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1648,7 +1309,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/11/20/Mysql导入数据库时报错ERROR-Unknown-command-0/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/04/24/简单聊聊C-C-中的左值和右值/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -1667,7 +1328,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/11/20/Mysql导入数据库时报错ERROR-Unknown-command-0/" itemprop="url">Mysql导入数据库时报错ERROR: Unknown command ' '</a></h1>
+                <a class="post-title-link" href="/blog/2020/04/24/简单聊聊C-C-中的左值和右值/" itemprop="url">简单聊聊C/C++中的左值和右值</a></h1>
         
 
         <div class="post-meta">
@@ -1679,8 +1340,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T14:28:10+08:00">
-                2019-11-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-24T23:26:23+08:00">
+                2020-04-24
               </time>
             
 
@@ -1695,8 +1356,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2019-11-23T10:05:25+08:00">
-                2019-11-23
+              <time title="更新于" itemprop="dateModified" datetime="2020-04-25T21:36:02+08:00">
+                2020-04-25
               </time>
             
           </span>
@@ -1714,8 +1375,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -1731,7 +1392,7 @@
 
           
           
-             <span id="/blog/2019/11/20/Mysql导入数据库时报错ERROR-Unknown-command-0/" class="leancloud_visitors" data-flag-title="Mysql导入数据库时报错ERROR: Unknown command ' '">
+             <span id="/blog/2020/04/24/简单聊聊C-C-中的左值和右值/" class="leancloud_visitors" data-flag-title="简单聊聊C/C++中的左值和右值">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -1749,7 +1410,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">757(字)</span>
+            <span class="post-count">2,788(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -1757,7 +1418,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">3(分)</span>
+            <span class="post-count">10(分)</span>
           </span>
 
           
@@ -1780,10 +1441,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前查询数据问题时多次使用过数据库导出导入命令，从来没发生过这种错误，那是一个风和日丽的上午，忽然来了一个紧急的任务，线上数据出问题了，需要马上处理一下，连上数据库备份服务器，找到备份数据直接下载下来，优雅（cong mang）地处理着这一切，本打算在Windows上直接导入查询处理一下算了，结果忙中添乱，导入数据库时居然报了一大堆错误，其中最扎眼的就是一连串的ERROR: Unknown command ‘\0’，没办法了，先找一台Linux服务器，上传导入数据分析处理一气呵成，处理完线上问题终于有时间回头来看看这个问题了。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>为什么标题要写成简单聊聊，而不是写成什么“C++中左值与右值详解”或者现在很流行的“惊了！看了这一篇左值与右值讲解，他吊打了面试官”，其实带有详解这个词是需要勇气的，最起码要融会贯通之后才敢这么说吧，本来是学习右值引用的，结果涉及到了左值和右值，然后去了解他们历史发现也是有些混乱，操作中又经常涉及到运算符优先级，真是越学越乱了。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/11/20/Mysql导入数据库时报错ERROR-Unknown-command-0/#more" rel="contents">
+            <a class="btn" href="/blog/2020/04/24/简单聊聊C-C-中的左值和右值/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1864,7 +1525,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/11/20/Mysql中Blob类型字段的插入、查看、截取和拼接/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/04/18/bat批处理（九）：替换带有等号-的字符串的子串/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -1883,7 +1544,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/11/20/Mysql中Blob类型字段的插入、查看、截取和拼接/" itemprop="url">Mysql中Blob类型字段的插入、查看、截取和拼接</a></h1>
+                <a class="post-title-link" href="/blog/2020/04/18/bat批处理（九）：替换带有等号-的字符串的子串/" itemprop="url">.bat批处理（九）：替换带有等号=的字符串的子串</a></h1>
         
 
         <div class="post-meta">
@@ -1895,8 +1556,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T13:51:47+08:00">
-                2019-11-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-18T18:01:16+08:00">
+                2020-04-18
               </time>
             
 
@@ -1911,227 +1572,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2019-11-23T10:05:25+08:00">
-                2019-11-23
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/blog/2019/11/20/Mysql中Blob类型字段的插入、查看、截取和拼接/" class="leancloud_visitors" data-flag-title="Mysql中Blob类型字段的插入、查看、截取和拼接">
-               <span class="post-meta-divider">|</span>
-               <br class="br-wordcount-valid">
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">热度</span>
-               
-                 <span class="leancloud-visitors-count"></span>℃
-             </span>
-          
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,039(字)</span>
-          </span>
-
-          <span class="post-time">&nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">9(分)</span>
-          </span>
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本来并没有太注意到Blob这个类型，在游戏的开发中存储数据常常使用这个类型，这里的使用其实是“机械”的使用，因为应用程序和Mysql数据库之间的逻辑已经封装好了，我只要把对应的数据扔到接口里就行了，可是最近发生了点问题，所以决定深入研究一下Blob类型的操作方法。</p>
-<p>问题是这样的，由于应用程序的一个逻辑错误，导致Mysql数据库中有一个Blob类型的字段的前几个字节被写入了错误的值，当然这个问题，我们可以通过应用程序处理，在逻辑中读出Blob字段的值，修改为正确值以后再写回到数据库中，可是这样有些麻烦，并且这些处理逻辑与业务无关。</p>
-<p>为了更方便的解决问题，决定使用SQL语句直接修改数据库，将错误的数据恢复正常，因为之前没有直接用SQL修改过Blob类型的字段，所以多花了一点时间用来测试，现在把整个过程记录一下，方便下次直接操作。</p>
-<p>在整个处理的过程中用到了查看、截取和拼接三种操作，为了让例子看起来更加精炼，我们把插入也测一下，然后创造出我们想要的精简后的数据，首先还是来看一下数据库版本。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/11/20/Mysql中Blob类型字段的插入、查看、截取和拼接/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-      
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/11/08/bat批处理（八）：各种形式的变量-0、-i、-i、var、-var-的含义和区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Albert Shi">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/blog/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Albert World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/08/bat批处理（八）：各种形式的变量-0、-i、-i、var、-var-的含义和区别/" itemprop="url">.bat批处理（八）：各种形式的变量%0、%i、%%i、var、%var%、!var!的含义和区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T15:49:15+08:00">
-                2019-11-08
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-11-17T00:58:44+08:00">
-                2019-11-17
+              <time title="更新于" itemprop="dateModified" datetime="2020-04-19T11:08:08+08:00">
+                2020-04-19
               </time>
             
           </span>
@@ -2166,7 +1608,7 @@
 
           
           
-             <span id="/blog/2019/11/08/bat批处理（八）：各种形式的变量-0、-i、-i、var、-var-的含义和区别/" class="leancloud_visitors" data-flag-title=".bat批处理（八）：各种形式的变量%0、%i、%%i、var、%var%、!var!的含义和区别">
+             <span id="/blog/2020/04/18/bat批处理（九）：替换带有等号-的字符串的子串/" class="leancloud_visitors" data-flag-title=".bat批处理（九）：替换带有等号=的字符串的子串">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -2184,7 +1626,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">2,103(字)</span>
+            <span class="post-count">2,675(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2192,7 +1634,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">阅读时长:</span>
-            <span class="post-count">8(分)</span>
+            <span class="post-count">10(分)</span>
           </span>
 
           
@@ -2215,10 +1657,10 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近使用批处理程序处理文件的时候，发现这 <code>bat</code>中的变量形式真是“变化多端”，有时候加1个百分号%，有时候加2个百分号%%，还有的时候加感叹号!，真是让初学者一头雾水，于是查询资料做了一些小测试，终于大致弄清楚了这些变量的含义，接下来一一列举出来。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天写这篇记录要解决的问题来源于最近一名读者的提问，之前写过一篇名为<a href="https://blog.csdn.net/albertsh/article/details/79919465" target="_blank" rel="noopener">《.bat批处理（六）：替换字符串中匹配的子串》</a>的总结文章，结果有读者在评论区提问说，如果想要替换的子串中包含等号 <code>=</code>，那么就无法替换了，问有没有什么办法可以解决。遇到这个问题的第一感觉应该挺好处理的吧，如果批处理程序在替换操作中认为等号 <code>=</code> 比较特殊，那就加个转义字符应该就可以了，但事实却证明这种想法有些天真了。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/11/08/bat批处理（八）：各种形式的变量-0、-i、-i、var、-var-的含义和区别/#more" rel="contents">
+            <a class="btn" href="/blog/2020/04/18/bat批处理（九）：替换带有等号-的字符串的子串/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2299,7 +1741,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2019/11/06/linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）/">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/04/08/C-11中的时间库std-chrono/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Albert Shi">
@@ -2318,7 +1760,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/11/06/linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）/" itemprop="url">linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）</a></h1>
+                <a class="post-title-link" href="/blog/2020/04/08/C-11中的时间库std-chrono/" itemprop="url">C++11中的时间库std::chrono（引发关于时间的思考）</a></h1>
         
 
         <div class="post-meta">
@@ -2330,8 +1772,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-06T12:31:02+08:00">
-                2019-11-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-08T23:18:13+08:00">
+                2020-04-08
               </time>
             
 
@@ -2346,8 +1788,8 @@
               
                 <span class="post-meta-item-text">更新于</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2019-11-17T00:58:44+08:00">
-                2019-11-17
+              <time title="更新于" itemprop="dateModified" datetime="2020-04-12T20:54:33+08:00">
+                2020-04-12
               </time>
             
           </span>
@@ -2365,8 +1807,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -2382,7 +1824,7 @@
 
           
           
-             <span id="/blog/2019/11/06/linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）/" class="leancloud_visitors" data-flag-title="linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）">
+             <span id="/blog/2020/04/08/C-11中的时间库std-chrono/" class="leancloud_visitors" data-flag-title="C++11中的时间库std::chrono（引发关于时间的思考）">
                <span class="post-meta-divider">|</span>
                <br class="br-wordcount-valid">
                <span class="post-meta-item-icon">
@@ -2400,7 +1842,227 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">字数统计:</span>
-            <span class="post-count">1,833(字)</span>
+            <span class="post-count">4,650(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">19(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>时间都去哪了？还没好好感受年轻就…</p>
+</blockquote>
+<hr>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>时间是宝贵的，我们无时无刻不在和时间打交道，这个任务明天下班前截止，你点的外卖还有5分钟才能送到，那个程序已经运行了整整48个小时，既然时间和我们联系这么紧密，我们总要定义一些术语来描述它，像前面说到的明天下班前、5分钟、48个小时都是对时间的描述，程序代码构建的程序世界也需要定义一些术语来描述时间。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2020/04/08/C-11中的时间库std-chrono/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/04/02/Win10通过带命令行的安全模式清除顽固的广告弹窗文件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/04/02/Win10通过带命令行的安全模式清除顽固的广告弹窗文件/" itemprop="url">Win10通过带命令行的安全模式清除顽固的广告弹窗文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-02T22:57:53+08:00">
+                2020-04-02
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-04-06T23:05:30+08:00">
+                2020-04-06
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/windows/" itemprop="url" rel="index">
+                    <span itemprop="name">windows</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/04/02/Win10通过带命令行的安全模式清除顽固的广告弹窗文件/" class="leancloud_visitors" data-flag-title="Win10通过带命令行的安全模式清除顽固的广告弹窗文件">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,008(字)</span>
           </span>
 
           <span class="post-time">&nbsp; | &nbsp;
@@ -2431,10 +2093,442 @@
 
       
         
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>经常使用电脑的人常常会接触到压缩文件，不管是软件、数据还是资料，下载之后通常就是一个压缩包，在Windows平台上如果安装了WinRAR或者360压缩，不管是什么格式的压缩文件，一般点击压缩文件右键选择解压选项即可，非常地方便。正因为长时间在Windows平台上方便的解压文件，导致我对打包、压缩的概念理解错误，结果在linux操作压缩文件时有很多疑问，今天终于明白了一点，专门总结一下，同时列举常用的压缩、解压命令，方便日后查找使用。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近电脑开机后偶尔会出现一个弹窗，这种广告弹窗见的多了也就麻木了，本来也没放在心上，随手一关就准备去做其他事情了，但是点击关闭按钮后这个广告弹窗居然还弹出了二次确认框，想想也忍了，毕竟广告商做半天就是为了让你多看几眼，当我用鼠标的光标接近这个确认按钮时，确认框消失了，整个广告页面居然还在！</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/blog/2019/11/06/linux环境下常用的打包、压缩、解压命令（tar、gzip、bzip2、zip）/#more" rel="contents">
+            <a class="btn" href="/blog/2020/04/02/Win10通过带命令行的安全模式清除顽固的广告弹窗文件/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/" itemprop="url">git stash帮你在切换分支前暂存不想提交的修改</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-25T23:27:38+08:00">
+                2020-03-25
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-03-29T14:36:50+08:00">
+                2020-03-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/" class="leancloud_visitors" data-flag-title="git stash帮你在切换分支前暂存不想提交的修改">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">4,116(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">18(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然间发现这个命令，正好解决了最近遇到的问题，使用 <code>Git</code> 管理代码时有这样一种场景，你正在分支 <code>branch2</code> 上开发新功能，突然刚刚提交测试的 <code>branch1</code> 分支上报了严重的BUG，需要尽快修改，这时候就需要切换到 <code>branch1</code> 分支上去修复BUG，但是你刚刚在分支 <code>branch2</code> 修改的文件还没有提交，接下来该怎么办？</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2020/03/25/git-stash帮你在切换分支前暂存不想提交的修改/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2020/03/19/没想到C-中的std-remove-if-函数历史还挺悠久/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/03/19/没想到C-中的std-remove-if-函数历史还挺悠久/" itemprop="url">没想到C++中的std::remove_if()函数历史还挺悠久</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-19T23:30:46+08:00">
+                2020-03-19
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2020-03-21T20:50:58+08:00">
+                2020-03-21
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2020/03/19/没想到C-中的std-remove-if-函数历史还挺悠久/" class="leancloud_visitors" data-flag-title="没想到C++中的std::remove_if()函数历史还挺悠久">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">2,481(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">10(分)</span>
+          </span>
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>看到 remove 这个单词的第一反应是什么意思？我的第一感觉是删除、去掉的意思，就像一个程序员看到 string 就会说是字符串，而不会说它是线、或者细绳的意思，可是C++里居然有个函数叫 <code>std::remove()</code>，调用完这个函数什么也没删除，这我就奇怪了，打开有道词典查询一下：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2020/03/19/没想到C-中的std-remove-if-函数历史还挺悠久/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2506,7 +2600,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/19/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/blog/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/26/">26</a><a class="extend next" rel="next" href="/blog/page/21/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/19/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/blog/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/28/">28</a><a class="extend next" rel="next" href="/blog/page/21/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2552,7 +2646,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">258</span>
+                <span class="site-state-item-count">273</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2563,7 +2657,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2574,7 +2668,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">648</span>
+                <span class="site-state-item-count">694</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/blog/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/blog/lib/pace/pace-theme-center-atom.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,运维,服务器,free,内存查询," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/atom.xml" title="Albert World" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/uploads/favicon.png?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言菜就多练，昨天看了一篇有关剖析 RocksDB 内存超限问题的文章，里面用了多种内存分析工具，看到那些貌似熟悉的名字，却一时也想不起怎么来用，当然像 free 和 top 这种命令还是比较熟的，但是像 vmstat 和 pidstat 这些就比较模糊了，翻了翻之前的总结也简单的描述过使用方法，但是对于这种已经忘记的实时也是不可回避的，菜就多练，今天就再练一练。">
+<meta name="keywords" content="linux,运维,服务器,free,内存查询">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux内存相关命令的尝试">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/2024/12/14/linux内存相关命令的尝试/index.html">
+<meta property="og:site_name" content="Albert World">
+<meta property="og:description" content="前言菜就多练，昨天看了一篇有关剖析 RocksDB 内存超限问题的文章，里面用了多种内存分析工具，看到那些貌似熟悉的名字，却一时也想不起怎么来用，当然像 free 和 top 这种命令还是比较熟的，但是像 vmstat 和 pidstat 这些就比较模糊了，翻了翻之前的总结也简单的描述过使用方法，但是对于这种已经忘记的实时也是不可回避的，菜就多练，今天就再练一练。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-12-28T16:51:28.413Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux内存相关命令的尝试">
+<meta name="twitter:description" content="前言菜就多练，昨天看了一篇有关剖析 RocksDB 内存超限问题的文章，里面用了多种内存分析工具，看到那些貌似熟悉的名字，却一时也想不起怎么来用，当然像 free 和 top 这种命令还是比较熟的，但是像 vmstat 和 pidstat 这些就比较模糊了，翻了翻之前的总结也简单的描述过使用方法，但是对于这种已经忘记的实时也是不可回避的，菜就多练，今天就再练一练。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/2024/12/14/linux内存相关命令的尝试/"/>
+
+
+
+
+
+  <title>linux内存相关命令的尝试 | Albert World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?019e5b8d17000ec5e4f29da9cc432cd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+      <a href="https://github.com/AlbertGithubHome" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Albert World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tools">
+          <a href="/blog/tools/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-wrench"></i> <br />
+            
+            工具
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://AlbertGithubHome.github.io/blog/blog/2024/12/14/linux内存相关命令的尝试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Albert Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Albert World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux内存相关命令的尝试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-14T23:00:00+08:00">
+                2024-12-14
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2024-12-29T00:51:28+08:00">
+                2024-12-29
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/blog/2024/12/14/linux内存相关命令的尝试/" class="leancloud_visitors" data-flag-title="linux内存相关命令的尝试">
+               <span class="post-meta-divider">|</span>
+               <br class="br-wordcount-valid">
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度</span>
+               
+                 <span class="leancloud-visitors-count"></span>℃
+             </span>
+          
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">字数统计:</span>
+            <span class="post-count">3,042(字)</span>
+          </span>
+
+          <span class="post-time">&nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">阅读时长:</span>
+            <span class="post-count">12(分)</span>
+          </span>
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>菜就多练，昨天看了一篇有关剖析 RocksDB 内存超限问题的文章，里面用了多种内存分析工具，看到那些貌似熟悉的名字，却一时也想不起怎么来用，当然像 free 和 top 这种命令还是比较熟的，但是像 vmstat 和 pidstat 这些就比较模糊了，翻了翻之前的总结也简单的描述过使用方法，但是对于这种已经忘记的实时也是不可回避的，菜就多练，今天就再练一练。</p>
+<a id="more"></a>
+<p>俗话说熟能生巧，有时候见的多了自然而然的就能发现规律了，比如 <code>stat</code> 这个词可是Linux命令中常见的面孔，它是单词 <code>statistics</code> 的缩写，也就统计的意思，所以就会出现类似 <code>iostat</code>、<code>vmstat</code>、<code>netstat</code>、<code>pidstat</code>、<code>mpstat</code> 等命令，相似的还有各种 ps 和 各种 top 相关的命令，今天此文因内存而起，我们就先看看内存相关的 <code>free</code>、<code>vmstat</code>、<code>pidstat</code>、<code>sar</code> 这几个命令。</p>
+<h1 id="free"><a href="#free" class="headerlink" title="free"></a>free</h1><p>free 命令是我最常用的内存命令，通常我使用时会加上 <code>-h</code> 参数更易读一些，命令虽简单，但是想完全理解却不易，并且不同的系统对于各列的参数实现还不完全相同，而我作为实用派，不愿想个学究一样去深挖各个参数的含义，还是以实用主义为主，明白各参数的基本含义即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:          7.3Gi       5.8Gi       377Mi        40Mi       1.1Gi       1.2Gi</span><br><span class="line">Swap:         9.0Gi       5.2Gi       3.7Gi</span><br></pre></td></tr></table></figure>
+<p><code>free -h</code> 的输出显示了系统内存和交换空间的使用情况，在我看来total≈used+available，buff/cache的空间可能一部分属于used，又有一部分属于available，free应该总是小于available的，大体就是这些规则，精确的公式我是给不出的，对于常用的判断够用了：</p>
+<hr>
+<h2 id="Mem-部分的解释"><a href="#Mem-部分的解释" class="headerlink" title="Mem 部分的解释"></a>Mem 部分的解释</h2><ul>
+<li><strong>total</strong>: 总的物理内存容量（7.3Gi）。</li>
+<li><strong>used</strong>: 已被使用的物理内存，包括应用程序和系统缓存（5.8Gi）。</li>
+<li><strong>free</strong>: 尚未分配的空闲物理内存（377Mi）。</li>
+<li><strong>shared</strong>: 共享内存，主要用于 <code>tmpfs</code> 和其他共享内存用途（40Mi）。</li>
+<li><strong>buff/cache</strong>: 用于缓冲区（buffer）和缓存（cache）的内存（1.1Gi）。<ul>
+<li>缓冲区用于临时存储写入磁盘的数据。</li>
+<li>缓存用于存储从磁盘读取的数据，以便更快地访问。</li>
+</ul>
+</li>
+<li><strong>available</strong>: 可供应用程序使用的内存（1.2Gi）。<ul>
+<li>这个值是对系统内存的综合估算，它考虑了缓存中可以释放的部分。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="Swap-部分的解释"><a href="#Swap-部分的解释" class="headerlink" title="Swap 部分的解释"></a>Swap 部分的解释</h2><ul>
+<li><strong>total</strong>: 系统的交换空间总大小（9.0Gi）。</li>
+<li><strong>used</strong>: 已被使用的交换空间（5.2Gi）。</li>
+<li><strong>free</strong>: 尚未使用的交换空间（3.7Gi）。</li>
+</ul>
+<h1 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h1><p>vmstat 是 Linux 和类 Unix 系统上的一个命令，用于实时监控系统性能，包括 CPU、内存、分页、磁盘 I/O 和上下文切换等信息。它非常适合用于分析系统瓶颈或性能问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ vmstat 2 5 -S M</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   <span class="keyword">in</span>   cs us sy id wa st</span><br><span class="line"> 0  0   5351    526    152   1062    0    0    11    21    2    2  3  1 96  0  0</span><br><span class="line"> 0  0   5351    526    152   1062    0    0     0     0 14509 35013  2  1 97  0  0</span><br><span class="line"> 0  0   5351    525    152   1063    0    0     0    86 14671 35064  2  1 97  0  0</span><br><span class="line"> 0  0   5351    525    152   1062    0    0     0    68 14692 35164  2  1 97  0  0</span><br><span class="line"> 2  0   5351    525    152   1063    0    0     0   122 14504 35142  2  1 96  0  0</span><br></pre></td></tr></table></figure>
+<p>这个命令表示每2秒刷新一次，共刷新显示5次，单位用M，接下来以第一行数字为例，解释数据含义：</p>
+<hr>
+<h2 id="Procs-进程"><a href="#Procs-进程" class="headerlink" title="Procs (进程)"></a>Procs (进程)</h2><ul>
+<li><strong><code>r</code></strong>: 正在运行队列中等待 CPU 的进程数。<code>0</code> 表示当前没有需要 CPU 的进程在排队。</li>
+<li><strong><code>b</code></strong>: 处于等待 I/O 的阻塞进程数。<code>0</code> 表示没有进程因等待 I/O 阻塞。</li>
+</ul>
+<h2 id="Memory-内存"><a href="#Memory-内存" class="headerlink" title="Memory (内存)"></a>Memory (内存)</h2><ul>
+<li><strong><code>swpd</code></strong>: 使用的交换空间大小（单位：MB）。<code>5351</code> 表示已使用 5351 MB 的交换空间。</li>
+<li><strong><code>free</code></strong>: 空闲内存大小（单位：MB）。<code>526</code> 表示当前系统有 526 MB 的空闲内存。</li>
+<li><strong><code>buff</code></strong>: 用于缓冲区的内存大小（单位：MB）。<code>152</code> 表示 152 MB 的内存被用作缓冲区。</li>
+<li><strong><code>cache</code></strong>: 用于缓存的内存大小（单位：MB）。<code>1062</code> 表示 1062 MB 的内存被用作文件缓存。</li>
+</ul>
+<h2 id="Swap-交换"><a href="#Swap-交换" class="headerlink" title="Swap (交换)"></a>Swap (交换)</h2><ul>
+<li><strong><code>si</code></strong>: 从磁盘交换到内存的数据速率（单位：MB/s）。<code>0</code> 表示当前没有从交换分区加载到内存的数据。</li>
+<li><strong><code>so</code></strong>: 从内存交换到磁盘的数据速率（单位：MB/s）。<code>0</code> 表示当前没有将内存数据写入交换分区。</li>
+</ul>
+<h2 id="IO-磁盘-I-O"><a href="#IO-磁盘-I-O" class="headerlink" title="IO (磁盘 I/O)"></a>IO (磁盘 I/O)</h2><ul>
+<li><strong><code>bi</code></strong>: 每秒从块设备（磁盘等）读取的数据量（单位：块）。<code>11</code> 表示每秒读取了 11 块数据。</li>
+<li><strong><code>bo</code></strong>: 每秒写入块设备的数据量（单位：块）。<code>21</code> 表示每秒写入了 21 块数据。</li>
+</ul>
+<h2 id="System-系统"><a href="#System-系统" class="headerlink" title="System (系统)"></a>System (系统)</h2><ul>
+<li><strong><code>in</code></strong>: 每秒中断数（硬件和软件中断）。 <code>2</code> 表示每秒发生了 2 次中断。</li>
+<li><strong><code>cs</code></strong>: 每秒上下文切换次数。 <code>2</code> 表示每秒进行了 2 次上下文切换。</li>
+</ul>
+<h2 id="CPU-处理器"><a href="#CPU-处理器" class="headerlink" title="CPU (处理器)"></a>CPU (处理器)</h2><ul>
+<li><strong><code>us</code></strong>: 用户态进程占用 CPU 时间的百分比。 <code>3</code> 表示 CPU 时间的 3% 用于运行用户进程。</li>
+<li><strong><code>sy</code></strong>: 内核态进程占用 CPU 时间的百分比。 <code>1</code> 表示 CPU 时间的 1% 用于运行内核进程。</li>
+<li><strong><code>id</code></strong>: CPU 空闲时间的百分比。 <code>96</code> 表示 CPU 时间的 96% 是空闲的。</li>
+<li><strong><code>wa</code></strong>: CPU 等待 I/O 完成的时间百分比。 <code>0</code> 表示 CPU 没有时间在等待 I/O 操作完成。</li>
+<li><strong><code>st</code></strong>: 被虚拟机（如 KVM）偷走的时间百分比。 <code>0</code> 表示没有 CPU 时间被虚拟机消耗。</li>
+</ul>
+<p>这个命令可以用来监控系统性能瓶颈：</p>
+<ul>
+<li>如果 r 的值过高，说明 CPU 短缺。</li>
+<li>如果 si 和 so 的值大，说明系统内存不足，频繁使用交换空间。</li>
+<li>如果 wa 的值高，说明 I/O 操作是瓶颈。</li>
+</ul>
+<h1 id="pidstat"><a href="#pidstat" class="headerlink" title="pidstat"></a>pidstat</h1><p>pidstat 是 Linux 系统中 sysstat 工具集的一部分，用于监控和报告单个进程的性能指标。它可以提供有关 CPU、内存、I/O、线程等的详细信息，帮助分析系统性能瓶颈。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ pidstat -p 242285 -r 2 5</span><br><span class="line">Linux 5.4.0-200-generic (ThinkPad-X390)     2024年12月14日  _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">15时10分47秒   UID       PID  minflt/s  majflt/s     VSZ     RSS   %MEM  Command</span><br><span class="line">15时10分49秒  1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br><span class="line">15时10分51秒  1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br><span class="line">15时10分53秒  1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br><span class="line">15时10分55秒  1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br><span class="line">15时10分57秒  1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br><span class="line">Average:     1000    242285      0.00      0.00  302184   79776   1.05  Game10010601</span><br></pre></td></tr></table></figure>
+<p>这个命令监控242285这个进程内存情况，每2秒刷新一次，共刷新显示5次，单位用M，接下来以第一行数字为例，解释数据含义：</p>
+<h2 id="标题行解释"><a href="#标题行解释" class="headerlink" title="标题行解释"></a>标题行解释</h2><ul>
+<li><strong><code>Linux 5.4.0-200-generic</code></strong>：运行的内核版本。</li>
+<li><strong><code>ThinkPad-X390</code></strong>：主机名。</li>
+<li><strong><code>2024年12月14日</code></strong>：当前日期。</li>
+<li><strong><code>_x86_64_</code></strong>：处理器架构。</li>
+<li><strong><code>(8 CPU)</code></strong>：系统中有 8 个 CPU 核心。</li>
+</ul>
+<h2 id="数据列解释"><a href="#数据列解释" class="headerlink" title="数据列解释"></a>数据列解释</h2><ul>
+<li><strong><code>时间</code></strong>：采样的时间戳。</li>
+<li><strong><code>UID</code></strong>：用户 ID，显示运行进程的用户（<code>1000</code> 表示非 root 用户）。</li>
+<li><strong><code>PID</code></strong>：进程 ID，这里是 <code>242285</code>。</li>
+<li><strong><code>minflt/s</code></strong>：每秒次要缺页错误数（<strong>无需从磁盘加载内存页</strong>）。</li>
+<li><strong><code>majflt/s</code></strong>：每秒主要缺页错误数（<strong>需要从磁盘加载内存页</strong>）。</li>
+<li><strong><code>VSZ</code></strong>：虚拟内存大小（以 KB 为单位）。这里是 <code>302184 KB</code>，即约 <code>302 MB</code>。</li>
+<li><strong><code>RSS</code></strong>：驻留内存大小（以 KB 为单位），即实际使用的物理内存。这里是 <code>79776 KB</code>，即约 <code>78 MB</code>。</li>
+<li><strong><code>%MEM</code></strong>：进程使用的物理内存百分比。这里是 <code>1.05%</code>。</li>
+<li><strong><code>Command</code></strong>：进程的名称或命令，这里是 <code>Game10010601</code>。</li>
+</ul>
+<p>这些行展示了每次采样的统计数据。这里看到该进程的 <code>minflt/s</code> 和 <code>majflt/s</code> 均为 <code>0.00</code>，表示没有发生缺页错误，内存访问性能良好。虚拟内存大小 (<code>VSZ</code>) 和驻留内存大小 (<code>RSS</code>) 都是恒定的，说明该进程的内存使用稳定。</p>
+<h1 id="sar"><a href="#sar" class="headerlink" title="sar"></a>sar</h1><p>sar（System Activity Report）命令是一个用于收集、报告和保存系统活动信息的工具，通常在 Linux 和 Unix 系统中使用。它是 sysstat 软件包的一部分，提供了对系统性能的详细监控和分析。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ sar -r 2 5</span><br><span class="line">Linux 5.4.0-200-generic (ThinkPad-X390)     2024年12月14日  _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">15时26分06秒 kbmemfree   kbavail kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty</span><br><span class="line">15时26分08秒    455724   1363580   5547036     72.86    160416    859272  23892108    140.53   4759984   1552228       428</span><br><span class="line">15时26分10秒    455684   1363544   5547052     72.86    160416    859280  23886860    140.50   4760760   1552232       436</span><br><span class="line">15时26分12秒    455456   1363320   5547276     72.87    160416    859284  23890572    140.53   4760420   1552236       476</span><br><span class="line">15时26分14秒    455456   1363324   5547272     72.87    160416    859288  23890572    140.53   4760476   1552240       480</span><br><span class="line">15时26分16秒    454700   1362572   5548028     72.88    160420    859284  23873744    140.43   4762228   1552244       480</span><br><span class="line">Average:       455404   1363268   5547333     72.87    160417    859282  23886771    140.50   4760774   1552236       460</span><br></pre></td></tr></table></figure>
+<p>这个命令表示每2秒刷新一次内存信息，共刷新显示5次，接下来以第一行数字为例，解释数据含义：</p>
+<h2 id="字段含义解释"><a href="#字段含义解释" class="headerlink" title="字段含义解释"></a>字段含义解释</h2><ul>
+<li><strong>时间戳</strong>（如 <code>15时26分08秒</code>）：表示采集数据的时间。</li>
+<li><strong><code>kbmemfree</code></strong>：可用内存（以 KB 为单位）。表示系统中尚未被使用的内存量。</li>
+<li><strong><code>kbavail</code></strong>：可用内存（即使在缓存和缓冲区中也可用的内存，以 KB 为单位）。这个值通常比 <code>kbmemfree</code> 更准确，因为它考虑了系统可以回收的缓存和缓冲区内存。</li>
+<li><strong><code>kbmemused</code></strong>：已使用内存（以 KB 为单位）。计算公式为：<code>总内存 - 可用内存</code>。</li>
+<li><strong><code>%memused</code></strong>：已使用内存的百分比。计算公式为：<code>(kbmemused / 总内存) * 100</code>。</li>
+<li><strong><code>kbbuffers</code></strong>：用于文件系统缓存的内存（以 KB 为单位）。这是 Linux 内核用于存储未写入硬盘的数据的缓存。</li>
+<li><strong><code>kbcached</code></strong>：用于缓存的内存（以 KB 为单位）。这些是存储在内存中的文件数据，Linux 会尽量使用这部分内存来加快读取速度。</li>
+<li><strong><code>kbcommit</code></strong>：提交内存（以 KB 为单位）。表示可以分配给进程的内存总量，达到该值时会导致内存不足。</li>
+<li><strong><code>%commit</code></strong>：提交内存的百分比。表示已提交内存与可用内存的比例。</li>
+<li><strong><code>kbactive</code></strong>：活动内存（以 KB 为单位）。表示最近被访问的内存页。</li>
+<li><strong><code>kbinact</code></strong>：非活动内存（以 KB 为单位）。表示不再被访问的内存页。</li>
+<li><strong><code>kbdirty</code></strong>：脏页内存（以 KB 为单位）。表示已被修改但尚未写入硬盘的内存。</li>
+</ul>
+<h2 id="示例分析"><a href="#示例分析" class="headerlink" title="示例分析"></a>示例分析</h2><ul>
+<li><code>kbmemfree</code> 在 455724 KB 左右，表示系统还有相当数量的可用内存，说实话也不算多了，才400多M。</li>
+<li><code>kbmemused</code> 的值为 5547036 KB，表示大约 5.5 GB 的内存已被使用，且 <code>%memused</code> 为 72.86%，表明内存使用率较高。</li>
+<li><code>kbbuffers</code> 和 <code>kbcached</code> 的值相对较小，这可能表示系统正在利用可用内存缓存数据，从而优化性能。</li>
+<li><code>kbcommit</code> 和 <code>%commit</code> 的值显示系统的内存承诺也在一个相对健康的范围。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><code>free -h</code> 最常用的内存查看工具，可以方便快捷知晓内存总体情况，查看总量与可用内存值</li>
+<li><code>vmstat 2 5 -S M</code> 可用于监控内存，分析系统瓶颈或性能问题，r 的值过高说明 CPU 短缺。si 和 so 的值大，说明系统内存不足，频繁使用交换空间</li>
+<li><code>pidstat -p 242285 -r 2 5</code> 可提供单个进程的内存使用信息，分析缺页情况</li>
+<li><code>sar -r 2 5</code> 可分析内存总体情况，查看活动内存、非活动内存、脏页内存等信息</li>
+<li>因统计口径的不同，可能会遇到两个命令查出来的值不同，这些不必强求，熟悉各个命令的特点，遇到问题多方比较就可以了</li>
+</ul>
+<hr>
+<center><a href="https://blog.csdn.net/albertsh/article/details/144139353" target="_blank" rel="noopener"> ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== </a></center>
+
+<hr>
+<blockquote>
+<p>我熬的不是夜，而是短暂的自由。因为我知道，一旦睡着了，再次醒来时我便不再属于我自已~</p>
+<p>2024-12-14 16:04:22</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/blog/uploads/wechat-qcode.jpg" alt="Albert Shi wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Albert Shi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://AlbertGithubHome.github.io/blog/2024/12/14/linux内存相关命令的尝试/" title="linux内存相关命令的尝试">http://AlbertGithubHome.github.io/blog/2024/12/14/linux内存相关命令的尝试/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    转载请注明出处！本文采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="external nofollow" target="_blank"> 知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>
+  </li>
+</ul>
+
+      </div>
+    
+
+    
+      
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+            <a href="/blog/tags/运维/" rel="tag"><i class="fa fa-tag"></i> 运维</a>
+          
+            <a href="/blog/tags/服务器/" rel="tag"><i class="fa fa-tag"></i> 服务器</a>
+          
+            <a href="/blog/tags/free/" rel="tag"><i class="fa fa-tag"></i> free</a>
+          
+            <a href="/blog/tags/内存查询/" rel="tag"><i class="fa fa-tag"></i> 内存查询</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2024/11/29/日常应用开发遇到的小问题二三则/" rel="next" title="日常应用开发遇到的小问题二三则">
+                <i class="fa fa-chevron-left"></i> 日常应用开发遇到的小问题二三则
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2024/12/17/Redis查询占用空间最大的10个key/" rel="prev" title="Redis查询占用空间最大的10个key">
+                Redis查询占用空间最大的10个key <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzgzMS8xMDM4NA"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/uploads/avatar.png"
+               alt="Albert Shi" />
+          <p class="site-author-name" itemprop="name">Albert Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description">阳光总在风雨后，大雨过后是冰雹</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives/">
+                <span class="site-state-item-count">273</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">694</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AlbertGithubHome" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/8fad76e7e05c" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-book"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/5179857/albert" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/albertsh" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                  
+                    
+                      CSDN
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/albert-shi-55/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-question-circle-o"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.modb.pro/topic/11649" target="_blank" title="墨天轮">
+                  
+                    <i class="fa fa-fw fa-database"></i>
+                  
+                    
+                      墨天轮
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.qqxiuzi.cn/daohang.htm" title="文字编码导航" target="_blank">文字编码导航</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/coderunner/" title="在线代码编译" target="_blank">在线代码编译</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://tool.lu/" title="在线工具集合" target="_blank">在线工具集合</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.runoob.com/" title="在线教程集合" target="_blank">在线教程集合</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#free"><span class="nav-number">2.</span> <span class="nav-text">free</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mem-部分的解释"><span class="nav-number">2.1.</span> <span class="nav-text">Mem 部分的解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Swap-部分的解释"><span class="nav-number">2.2.</span> <span class="nav-text">Swap 部分的解释</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vmstat"><span class="nav-number">3.</span> <span class="nav-text">vmstat</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Procs-进程"><span class="nav-number">3.1.</span> <span class="nav-text">Procs (进程)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-内存"><span class="nav-number">3.2.</span> <span class="nav-text">Memory (内存)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Swap-交换"><span class="nav-number">3.3.</span> <span class="nav-text">Swap (交换)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO-磁盘-I-O"><span class="nav-number">3.4.</span> <span class="nav-text">IO (磁盘 I/O)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#System-系统"><span class="nav-number">3.5.</span> <span class="nav-text">System (系统)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-处理器"><span class="nav-number">3.6.</span> <span class="nav-text">CPU (处理器)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pidstat"><span class="nav-number">4.</span> <span class="nav-text">pidstat</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标题行解释"><span class="nav-number">4.1.</span> <span class="nav-text">标题行解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据列解释"><span class="nav-number">4.2.</span> <span class="nav-text">数据列解释</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sar"><span class="nav-number">5.</span> <span class="nav-text">sar</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字段含义解释"><span class="nav-number">5.1.</span> <span class="nav-text">字段含义解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例分析"><span class="nav-number">5.2.</span> <span class="nav-text">示例分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert Shi</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+  <div class="theme-info">
+    Unless otherwise specified, this blog is licensed under a <a class="theme-link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 International License</a>.
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/blog/js/src/love.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YddznHWELsEJcncAdVUYR2Eq-gzGzoHsz", "aOLO8ydztUXjMdvQASrc8X4v");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
