@@ -105,7 +105,7 @@
 <meta name="description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Albert World">
-<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/aws/index.html">
+<meta property="og:url" content="http://AlbertGithubHome.github.io/blog/tags/AWS/index.html">
 <meta property="og:site_name" content="Albert World">
 <meta property="og:description" content="阳光总在风雨后，大雨过后是冰雹">
 <meta property="og:locale" content="zh-Hans">
@@ -140,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/aws/"/>
+  <link rel="canonical" href="http://AlbertGithubHome.github.io/blog/tags/AWS/"/>
 
 
 
 
 
-  <title>标签: aws | Albert World</title>
+  <title>标签: AWS | Albert World</title>
   
 
 
@@ -337,7 +337,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>aws<small>标签</small>
+        <h1>AWS<small>标签</small>
         </h1>
       </div>
 
@@ -349,37 +349,9 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/blog/2024/09/27/AWS上迁移WordPress遭遇若干问题及处理办法/" itemprop="url">
+            <a class="post-title-link" href="/blog/2024/10/18/陷入产出危机的我聊聊近况/" itemprop="url">
               
-                <span itemprop="name">AWS上迁移WordPress遭遇若干问题及处理办法</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2024-09-27T01:00:00+08:00"
-              content="2024-09-27" >
-          09-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/blog/2024/09/22/AWS镜像迁移登录问题二三则/" itemprop="url">
-              
-                <span itemprop="name">AWS镜像迁移登录问题二三则</span>
+                <span itemprop="name">陷入产出危机的我聊聊近况</span>
               
             </a>
         
@@ -387,9 +359,9 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2024-09-22T00:26:14+08:00"
-              content="2024-09-22" >
-          09-22
+              datetime="2024-10-18T01:30:00+08:00"
+              content="2024-10-18" >
+          10-18
         </time>
       </div>
 
@@ -449,7 +421,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives/">
-                <span class="site-state-item-count">255</span>
+                <span class="site-state-item-count">258</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -471,7 +443,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">637</span>
+                <span class="site-state-item-count">648</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1167,6 +1139,45 @@
             newcounter.save(null, {
               success: function(newcounter) {
                 var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+  var $element = $(document.getElementById(url));
                 $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
               },
               error: function(newcounter, error) {

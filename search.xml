@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Redis内存碎片自动回收]]></title>
+    <url>%2Fblog%2F2024%2F10%2F24%2FRedis%E5%86%85%E5%AD%98%E7%A2%8E%E7%89%87%E8%87%AA%E5%8A%A8%E5%9B%9E%E6%94%B6%2F</url>
+    <content type="text"><![CDATA[@[TOC] 前言今天说的是一个老问题了，关于 Redis 内存碎片的回收，以前用过几次，今天再次使用时发现自己没总结，没有可以拿来直接用的命令，花了一些时间去查找和测试，为了以后使用时更方便，我决定把整理一下放在这，等待再次相遇。 预制命令 查询内存情况 123456789101112131415161718192021222324[root@server ~]# redis-cli -a "password" info memory# Memoryused_memory:48320108840used_memory_human:45.00Gused_memory_rss:56677724160used_memory_rss_human:52.79Gused_memory_peak:57105514920used_memory_peak_human:53.18Gused_memory_peak_perc:84.62%used_memory_overhead:71864532used_memory_startup:786616used_memory_dataset:48248244308used_memory_dataset_perc:99.85%total_system_memory:135025369088total_system_memory_human:125.75Gused_memory_lua:37888used_memory_lua_human:37.00Kmaxmemory:0maxmemory_human:0Bmaxmemory_policy:noevictionmem_fragmentation_ratio:1.17mem_allocator:jemalloc-4.0.3active_defrag_running:0lazyfree_pending_objects:0 查询是否开启了自动清理碎片 123[root@server ~]# redis-cli -a "password" config get activedefrag1) "activedefrag"2) "no" 开启碎片自动清理 12[root@server ~]# redis-cli -a "password" config set activedefrag yesOK 关闭碎片自动清理 12[root@server ~]# redis-cli -a "password" config set activedefrag noOK 聊聊背后的东西上面已经把命令都烹饪好了，接下来可以聊聊背后的东西。 先学个单词 defrag /dɪˈfræɡ/，“整理磁盘碎片”的意思，后面的内容大部分都和这个单词有关。 Redis 的数据都存储在内存中，当我们的应用程序频繁修改 Redis 中的数据，特别是删除大量的Key时，就有可能会导致 Redis 产生内存碎片，或者是一些内存剩余，其实Redis删除Key之后使用的内存肯定少了，但是它不一定会释放出来，有时也算是一种预先分配的机制，就比如他的数据只有1个G，但是有可能申请1.2个G的空间，这样在添加新的key时，通常立马就可以使用，不必再去申请新的内存了。 过多的内存碎片会降低 Redis 的内存使用率，通过Redis 的 info memory 命令，查到内存使用率 mem_fragmentation_ratio:1.17，这个值的计算比较简单： mem_fragmentation_ratio = used_memory_rss / used_memory 其中 used_memory 表示 Redis 存储数据的内存大小，used_memory_rss 表示操作系统实际分配给 Redis 进程的内存大小。 Redis 从 4.0 版本开始，提供了自动碎片整理的功能，可以通过配置开启碎片自动整理，也可以 如果你使用的是 Redis 4.0 以下版本，只能通过重启实例来解决如果你使用的是 Redis 4.0 版本，它正好提供了自动碎片整理的功能，可以通过配置开启碎片自动整理，开启内存碎片整理必然会占用服务器的计算资源，这可能会导致 Redis 性能下降。所以是否开启这个功能，最好提前测试评估 究其原因，Redis 的碎片整理工作也是在主线程中执行的，当其进行碎片整理时，肯定会会消耗 CPU 计算资源，产生更多的耗时，从而可能影响到客户端的请求。 Redis 碎片整理的参数配置如下： 123456789101112# 开启自动内存碎片整理（总开关）activedefrag no# 内存使用 100MB 以下，不进行碎片整理active-defrag-ignore-bytes 100mb# 内存碎片率超过 10%，开始碎片整理active-defrag-threshold-lower 10# 内存碎片率超过 100%，尽最大努力碎片整理active-defrag-threshold-upper 100# 内存碎片整理占用 CPU 资源最小百分比active-defrag-cycle-min 1# 内存碎片整理占用 CPU 资源最大百分比active-defrag-cycle-max 25 本机查询情况如下： 1234567891011121314151617[root@server ~]# redis-cli -a "password" config get activedefrag1) "activedefrag"2) "yes"[root@server ~]# redis-cli -a "password" config get active-defrag-ignore-bytes1) "active-defrag-ignore-bytes"2) "104857600"[root@server ~]# redis-cli -a "password" config get active-defrag-threshold-lower1) "active-defrag-threshold-lower"2) "10"[root@server ~]# redis-cli -a "password" config get active-defrag-cycle-min1) "active-defrag-cycle-min"2) "25"[root@server ~]# redis-cli -a "password" config get active-defrag-cycle-max1) "active-defrag-cycle-max"2) "75"[root@server ~]# redis-cli -a "password" config get active-defrag-max-scan-fields(empty list or set) 总结 Redis 从 4.0 版本开始，提供了自动碎片整理的功能，可以通过配置开启碎片自动整理 内存查询 info memory， 查询碎片整理是否开启 config get activedefrag 开启碎片整理 config set activedefrag yes 关闭碎片整理 config set activedefrag no ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 不畏浮云遮望眼，只缘身在最高层。真的是这样吗？如果你太高了浮云遮住了你向下望的眼睛呢？太低看不到高处，而太高又看不清地处了呀~ 2024-10-24 20:15:17]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>defrag</tag>
+        <tag>config</tag>
+        <tag>memory</tag>
+        <tag>framentation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[修复WordPress前后端分离时无法预览文章的问题]]></title>
+    <url>%2Fblog%2F2024%2F10%2F24%2F%E4%BF%AE%E5%A4%8DWordPress%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E6%97%B6%E6%97%A0%E6%B3%95%E9%A2%84%E8%A7%88%E6%96%87%E7%AB%A0%E7%9A%84%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[@[TOC] 前言惊喜总在不经意间来临？前段时间刚刚总结了WordPress迁移遇到的问题及解决办法，费了九牛二虎之力似乎一切都走向正轨了，今天则又冒出点新花样，待发布的文章居然不能预览！这不都是常规功能吗？难道因为我迁移之后就不好使了，根据遇到的情况分析之后发现不是这样的，这个预览一直就不好使，已经过去5年了，也是有点醉了，好像到我手里就坏了一样，其实一直就不能用，5年前别人挖的坑我也要填，我就是一个填坑勇士。 问题表现问题最直接的表现就是文章保存草稿后，点击预览按钮跳转的不是刚刚编辑的文章预览页面，而是已发布的文章列表，很明显是跳转的链接不对，从已发布的文章链接来看，这个链接格式肯定是编辑过，通过查找资料我发现可以通过 WordPress后台菜单中的 设置 -&gt; 固定链接 来修改固定样式，查看后发现发布链接的样式已经从 https://008ct.top/?p=123 定义为 https://008ct.top/%category%/%year%/%post_id%/ 也就是在链接中增加了分类和年份信息。 再看预览链接的样式为 https://008ct.top/?p=123&amp;preview=true 和默认样式很相似，所以我就找了半天哪里能有修改预览样式的页面，转了一圈无果，后来发现后台的地址和前台地址设置不同，地址中多了一段 cms，完整预览格式应该为 https://008ct.top/cms/?p=123&amp;preview=true，默认打开的地址肯定是不行的，需要修改预览链接样式，朝这个方向努力后发现可以通过钩子函数来自定义预览链接。 解决问题我们可以使用下面这个过滤钩子preview_post_link来自定义预览链接，把下面的代码放到主题文件夹里的functions.php文件中，路径类似 /cms/wp-content/themes/xxxx/functions.php 1234function aw_custom_preview_link() &#123; return get_option('siteurl') . "/?p=" . get_the_ID() . "?preview=true";&#125;add_filter('preview_post_link', 'aw_custom_preview_link'); 其中 get_option(&#39;siteurl&#39;) 获取的是后台的地址，也就是 https://008ct.top/cms 这部分，如果想获取前台的地址可以使用 get_option(&#39;home&#39;)，这些都是在WordPress后台 设置 -&gt; 常规 页面里设置的，修改过后无需重启项目，直接访问待发布的文章，预览链接就可以使用啦。 总结 WordPress的可定制性真的很强，最近接触后深有体会 WordPress可通过设置 -&gt; 固定链接来设置文章的访问地址 WordPress可通过设置 -&gt; 常规 来设置前台和后台的访问地址 WordPress可通过钩子preview_post_link来自定义预览链接 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 故善人者，不善人之师；不善人者，善人之资。不贵其师，不爱其资，虽智大迷，是谓要妙 2024-10-23 20:03:53]]></content>
+      <categories>
+        <category>Web</category>
+      </categories>
+      <tags>
+        <tag>WordPress</tag>
+        <tag>预览</tag>
+        <tag>Web</tag>
+        <tag>preview</tag>
+        <tag>functions.php</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[陷入产出危机的我聊聊近况]]></title>
+    <url>%2Fblog%2F2024%2F10%2F18%2F%E9%99%B7%E5%85%A5%E4%BA%A7%E5%87%BA%E5%8D%B1%E6%9C%BA%E7%9A%84%E6%88%91%E8%81%8A%E8%81%8A%E8%BF%91%E5%86%B5%2F</url>
+    <content type="text"><![CDATA[@[TOC] 前言在总结文章时，我把自己当做一个内容产出者，当这样一个身份进入每天按部就班的平稳状态时会陷入一种焦虑，产生一种居然没有什么可写的感觉，如果任由这种焦虑泛滥，便会陷入一种无限内耗的状态，也不是无所事事，只是觉得做重复的工作没有看见提升就让人焦虑，性格使然。 我当然知道它的危害，所以我得找点事情来做，找点常规工作以外的事情来做，今天在依旧找不到话题的情况下，我决定写写最近一段时间的感受和经历，有些知识点之前已经总结过了，今天主要是在整体唠叨唠叨，写写最近一段时间干了点什么。 我的多重身份作为IT网管这是一个我在离职前就能预见到的身份，离开了之前庞大的机构，进入一个小小的初创团队，什么事情都得自己干，选网络运营商，配路由，搭建内部DNS服务器，甚至要亲自买机柜，买PDU，接网线，装系统等等等等，刚刚搭建完服务器还要盯着各个服务器的温度，功率太大导致跳闸还得呼哧呼哧搬着机器找一个合适的位置，反正网管的活我都干，能干的不能干的最后也都变成了能干的。 作为运维人员之前需要服务器，开个防火墙类似的，找运维说一声，或者提个单子等着就行了，现在不行了，机器得自己买，防火墙得自己配，费用要自己算，一切路都得自己趟，今年之前偶尔在阿里云或腾讯云上买个服务器玩玩，最近把AWS和GCP玩的66的，唯一差一点就是 Microsoft Azure 还没有用过，暂时还没有需求吧。 这么来说吧，用了一圈我发现各家云服务器的常用功能类似，只是每个人起了不同的名字，比如 AWS中的 EC2 在腾讯云叫 CVM（Cloud Virtual Machine），在阿里云叫 ECS（Elastic Compute Service) 在GCP 叫 Compute Engine，其他的服务也是类似的情况。 最近AWS用的比较多，我就把AWS的服务列举一下： EC2：云服务器 RDS：关系型数据库 Amazon MemoryDB：内存数据 Route 53：DNS解析 WAF &amp; Shield：应用防火墙 CloudFront：类CDN产品 S3：对象存储服务 IAM：安全控制服务 CloudWatch：监控和管理服务 此外用到的还有： AMI：预配置的虚拟机镜像 ALB：负载均衡服务 SSL：安全协议证书 还有一些小的概念，比如硬盘的gp2还是gp3，安全组的配置，弹性IP，在GCP中叫静态IP，密钥的创建和丢失密钥的处理方法，还有目标组，NameServer等等概念，反正搞这些东西的那段时间可把我忙坏了。 作为Web开发人员关于这个身份，我之前想到了一点点，但是没想到这段时间此类工作占比如此之重，接手了原来完整的一个网站，而且他还是我之前都没听说过的结构框架编写的，例如Nextjs框架，React库，服务器客户端组件、Vercel部署，Supabase存储等，每一项都花了不少时间，后来又迁移了Appsmith，使用了Docker，反正是磕磕绊绊的把这些东西接过来了。 再后来又接了一个WordPress的活，把原来的项目完整迁移过来，配置本地的STMP发送邮件服务，为了测试自己又完整的搭建了一遍WorldPress网站，还跑去GoDaddy上买了个域名，Route53完成DNS解析，ALB转接流量，SSL分配证书，又完整的搞了一遍。 作为游戏开发人员这个本应该属于我的角色，这段时间却花费时间较少，只能在前面这些工作的间隙抽空过来处理，当然线上的问题肯定优先解决，老项目也开发了几个较小的功能，同时做了一些优化和功能BUG的修复，新项目刚刚又在开发新功能了，也在梳理之前的框架，清理冗余的逻辑，精简模块的实现。 选购云服务器也是这一部分不可缺少的工作，自从来了这个小团队已经买了10来个服务器实例，用途各式各样，手法也越发熟练了。 哦对了，一开始还捣鼓了一阵儿打包的问题，把苹果各类机器和版本试了个遍，那是一段没有前半夜回家的日子。 总结 最近这4个月是近几年最匪夷所思的一段时间，仿佛什么事情都赶在一起了 这段时间游戏开发、网站开发、买服务器、装机器、接网线似乎什么都干 这段经历虽然不一定多彩，但肯定算的上多样，有些事情不经历靠书本是学不会的 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 这人生啊，又开始给我加强度了 虽然我年纪轻轻就谈人生显得有点可笑，但是每个看似深思熟虑的思考在高纬度看来同样可笑至极，蝼蚁罢了~ 2024-10-17 20:30:25]]></content>
+      <categories>
+        <category>Thinking</category>
+      </categories>
+      <tags>
+        <tag>Web</tag>
+        <tag>危机</tag>
+        <tag>产出</tag>
+        <tag>云服务器</tag>
+        <tag>AWS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[AWS上迁移WordPress遭遇若干问题及处理办法]]></title>
     <url>%2Fblog%2F2024%2F09%2F27%2FAWS%E4%B8%8A%E8%BF%81%E7%A7%BBWordPress%E9%81%AD%E9%81%87%E8%8B%A5%E5%B9%B2%E9%97%AE%E9%A2%98%E5%8F%8A%E5%A4%84%E7%90%86%E5%8A%9E%E6%B3%95%2F</url>
     <content type="text"><![CDATA[前言前段时间不是在迁移AWS嘛，采用了分享AMI的方式，废了九牛二虎之力，终于在没有密钥的情况下成功登录了转移后的EC2实例，那么我们肯定不单单是为了转移一个EC2实例而大费周章，实际目的还是为了里面的数据和服务，具体来说就是一套WordPress网站，对于一个新的知识和事物围绕它的有很多知识点，一旦发散的过快就发现东西太多了，什么也讲不明白，造成虎头蛇尾的现象，做技术内容输出的人经常有这种力不从心的感觉。 为了避免这种现象，我尽量保持克制，不随意发散，按着时间先后发生的主线，来说说遇到了哪些问题，又是怎么解决的，解决方案或许不完美，只是提供一种思路。 问题的产生前文提到我已经把原来的AWS实例迁移到新的账号下了，其实繁杂的工作才刚刚起步，首先是访问IP，为了每次重启后IP地址不发生变化，我们不能采用自动分配的公共IP，而要申请弹性IP关联到对应的实例上，注意弹性IP关联到正在运行的实例上时不收费，但是如果不关联或者关联的实例不运行，则需要支付费用，大约$0.005/小时。 当然这都是小问题，真正的问题还在后面，比如域名需要转移，域名的解析需要重新配置，SSL证书要重新申请，花费时间最多的还是网站用户上报信息发送邮件功能不可用的问题，不过还好，凭借这知识积累和渊博的互联网，基本都找到了解决方案，下面逐项来介绍一下。 域名转移与DNS解析域名转移据说在国外非常顺畅，但这次不是常用的GoDaddy，也不是上次虐我千百遍的JPDirect，是一个叫Onamae服务网站，使用这个网站最大的难点不是技术上的，而是语言层面的，全网站只有日文，凭借着我的有道词典和小伙伴的日语助攻，域名顺利转移，但是我废了九牛二虎之力也没找到原来的DNS记录配置在哪里，找不到DNS记录意味着我无法将域名解析到新的EC2。 后来想起了Vercel验证域名的经历，这个域名不会也把域名服务器改到别处了吧，一查果然是改到aws了，那必然是用了Route53啊。 Amazon Route 53 是 AWS 提供的高度可用和可扩展的云域名系统（DNS）服务，主要用于将用户访问的域名（如 example.com）映射到网络资源（如 EC2 实例、负载均衡器、S3 存储桶等）。Route 53 提供域名注册、DNS 解析、流量管理、以及健康检查等功能。 Route53 提供高度可用的 DNS 解析服务，将域名映射到 AWS 资源或其他 IP 地址，支持 A 记录（IPv4 地址）、AAAA 记录（IPv6 地址）、CNAME、MX 等常见 DNS 记录类型。支持多种路由策略，如简单路由、加权路由、基于延迟的路由、地理位置路由、故障转移路由等，帮助实现流量优化和高可用性。 每月前 25 个托管区域每个 $0.50，超过部分按 $0.10/托管区域/月收费。首 10 亿次查询为 $0.40 每百万次查询，超过部分按 $0.20 每百万次查询计费。在全球多个 AWS 区域提供服务，确保最快速的 DNS 解析速度。 总的来说就是Onamae甩锅了，有人查询DNS记录，Onamae指着AWS说你问他，我不管了，这个域名由他全权负责。 解析域名到EC2与启用SSL现在是个网站就HTTPS，也不管是不是有隐私数据，反正我就得加上显得安全，那我们也随大流别特立独行了，去搞个SSL证书吧，虽然给官网买个好点的证书也付得起，但毕竟免费的更具性价比，在AWS上有免费的证书可用，访问ACM即可申请。 AWS Certificate Manager (ACM) 是 Amazon Web Services 提供的服务，用于轻松管理 SSL/TLS 证书，来保护网站和应用程序的网络流量。ACM 自动化了证书的申请、颁发、续订、以及配置过程，从而简化了安全管理。 ACM 支持免费申请 公有 SSL/TLS 证书，用于保护基于 HTTPS 协议的流量。支持单域名、多域名和通配符证书。可以将 ACM 证书快速部署到多个 AWS 服务上，如 Elastic Load Balancers (ELB/ALB/NLB)、CloudFront、API Gateway、和 Elastic Beanstalk。 申请时，需要验证域名的所有权，ACM 支持 DNS 验证 和 Email 验证，证书可以直接部署在 ALB、CloudFront 等 AWS 服务上，无需手动上传证书，ACM 会自动检测到即将到期的证书，并在过期前完成自动续订。ACM 是一个简化 SSL/TLS 证书管理的服务，特别适合不希望手动处理证书申请、安装和续订的用户。它与 AWS 其他服务深度集成，确保用户在 AWS 上可以轻松实现网站和应用的安全性。 看了这些介绍是不是心动了，申请步骤也非常方便，基本上填写一个域名example.com 其他参数默认就可以了，前文提到ACM需要验证域名的所有权，这一点AWS做的非常方便，之前我们已经修改Onamae购买的域名NS指向了Route53，这里可以选择DNS 验证，在申请SSL证书后会有一个按钮，将验证的DNS记录添加到Route53，一步到位非常的人性化，添加完验证DNS记录后，证书状态会显示为 等待验证，这个过程我等待了1-2小时，然后状态切换成了 已颁发，可能因为我使用新买的域名进行的测试。 进行到这遇到了一个难题，SSL给谁用？如果我在Route53中将域名解析到EC2，那么我这个SSL证书就得放到EC2上，不管是配置到Nginx、Apache，还是应用程序自己处理都比较麻烦，所以我们充分利用AWS的服务架构，申请一个ELB，将SSL证书分配到ELB上，然后Route53将域名解析到ELB，ELB收到请求后再将流量转发到EC2。 申请ALB完成转发AWS ELB（Elastic Load Balancing）是亚马逊云服务（AWS）提供的一项负载均衡服务，主要分为ALB、NLB、CLB，旨在自动分配进入应用程序的流量，以确保高可用性和可靠性。ELB 可以帮助你管理和优化应用程序的流量，同时确保后端服务器不会因过载而失效。 ELB 能够根据流量自动扩展和缩减负载均衡能力，以适应流量的变化，支持 SSL/TLS 加密，确保数据在传输过程中安全。集成了 AWS CloudWatch，可以实时监控负载均衡器的性能和流量，并提供访问日志。支持 HTTP、HTTPS、TCP 和 WebSocket 等多种协议。 ELB分类 应用负载均衡器（ALB）： 最适合 HTTP 和 HTTPS 流量，能够根据请求的内容进行智能路由。 支持基于内容的路由、SSL 终止、WebSocket 和 HTTP/2。 提供更细粒度的流量控制和监控功能。 网络负载均衡器（NLB）： 设计用于处理 TCP 流量，能够提供极低的延迟和高吞吐量。 可以处理数百万个请求，并支持静态 IP 地址。 适合高性能、低延迟的应用场景，如游戏和实时数据处理。 经典负载均衡器（CLB）： 早期的负载均衡器，支持 HTTP、HTTPS 和 TCP。 提供基本的负载均衡功能，但不具备 ALB 和 NLB 的高级功能。 目前已不再推荐用于新应用，AWS 建议用户使用 ALB 或 NLB。 因为使用的是 HTTP 和 HTTPS 流量的应用程序，所以需要选择 ALB，NLB是不会解析到应用层协议的，使用ALB可以进行SSL终止，那什么是SSL终止呢？ SSL终止（SSL Termination）是在负载均衡器或代理服务器等中间设备上处理SSL/TLS加密和解密的技术。 SSL终止及优点SSL终止指的是当客户端与服务器之间的连接使用SSL/TLS加密时，SSL连接在中间设备（如负载均衡器）上终止（解密）。之后，终止SSL加密的数据将作为未加密的数据在中间设备和后端服务器之间传输。 性能提升：后端服务器不需要处理SSL/TLS加解密工作，减轻了服务器的负担，特别是对于高流量的网站，能够提高整体的性能和响应速度。 集中管理SSL证书：SSL证书只需要在负载均衡器等设备上配置，无需在每台后端服务器上安装SSL证书，简化了证书的管理和更新流程。 简化架构：SSL终止简化了网络架构，尤其适合需要将流量分配给多台服务器的负载均衡环境。 支持多种协议：可以支持HTTP、WebSocket等不加密协议的通信形式，而客户端仍然认为其连接是安全的。 SSL终止的工作流程 客户端发起HTTPS请求。 负载均衡器或代理服务器接收请求，并在此解密SSL加密的数据。 解密后，负载均衡器将未加密的数据转发给后端服务器（通过HTTP等协议）。 服务器处理请求并将结果返回给负载均衡器。 负载均衡器将响应数据重新加密，并返回给客户端。 在创建ALB时有几个需要注意的点，面向互联网还是内部？IPv4还是双栈？网络映射到哪？安全组怎么配？侦听器和路由是什么？这些问题看着深奥，其实一点也不简单，我用大白话试着解释一下？ 面向互联网还是内部，就是问给公网用户访问还是内网访问，这个就是字面意思 IPv4还是双栈，就是问只用IPv4还是需要支持IPv6，我不太懂，选了双栈，功能多总没坏处 网络映射到哪，就是选一个子网和至少两个可用区域，为了说明流量的去向 安全组怎么配，按照EC2的规则配就行了，这个就是EC2的前面的一道门，注意开启443端口的流入哈 侦听器和路由是什么，这个是个重点，就是说监听某个端口，然后将流量导入到目标组，按照我们的目的肯定是监听443，然后导向EC2实例的80啊，选择443时就可以使用前文里申请的SSL证书了 回答了上面的问题，又引出了新的问题，我选择的子网不让我选择双栈怎么办？目标组又是什么？ 如果你选择的是双栈（IPv4/IPv6），确保子网有 IPv6 CIDR 块。CIDR块（Classless Inter-Domain Routing Block）是一种表示IP地址范围的方式。它用于描述一个网络及其子网的大小，并且广泛应用于现代网络，特别是在分配和管理IP地址时。如果没有就去子网里添加。 目标组就是把流量目标组到一起，定义一个目标组，目的就是精确表示流量去到的地方，我目前的需求是导向到具体的EC2，所以目标组里可以只选择一个EC2实例，其实你也可以选择多个实例去做类似负载均衡的需求 到这里ALB基本就配置完了，这时可以将这个ALB的DNS信息复制添加到Route53里，以别名的形式添加，这一套路径就走下来了 用于访问域名，交给Route53解析地址，Route53将ALB地址返回，流量以HTTPS形式到达ALB，使用证书解密出数据，数据以HTTP形式从ALB到达目标组中的EC2实例，完成一次请求，EC2不用关心证书的问题，多数一句，这样的EC2如果不直接访问可以不配置公网IP和弹性IP。 进行到这里网站跑起来了，访问也正常了，貌似问题都解决了，但旅途怎会如此顺利？接下来就将迎来业务引发的问题——发邮件不成功，经历了这次的折腾我看到了更本质的东西。 邮件发送问题当你不熟悉一件事情的时候总会认为它很神秘，就像我之前认为邮件特别复杂、特别庞大一样，经过这次折腾之后发现它的轮廓清晰了起来，再说问题之前，我们先来看一段历史。 1987 年 9 月14 日晚上，北京车道沟十号院中一座树木掩映的小楼里，李澄炯教授等13 位中、德科学家聚拢在一台西门子7760 大型计算机周围，成功发出中国第一封电子邮件。 这座小楼，就是中国兵器工业计算机应用技术研究所的所在地。 “Across the Great Wall we can reach every corner in the world”（“越过长城，走向世界”）。这是西方世界第一次通过互联网听到中国的声音。 看到Great Wall和这个句子含义总联想到另一个词，有点讽刺~ 现在看来，邮件本质是数据的发送，从数据层面来看与HTTP请求并无不同，只是使用了另一种更适合它的协议，将数据传递到目的地罢了。 我很早就不觉得HTTP神秘了，为什么呢？因为整天接触它，但是我在前两天还在觉得Email神秘，因为平时用的少也没有过多研究过，这次趁着解决问题稍微拓展了一下，感觉知识面又变宽了一点点。 好了，接下来说遇到的问题，迁移的WordPress有一个提交表单发邮件的功能，使用了一个叫 MW WP WPForm 的插件，可以自动回复邮件以及向管理员发送表单邮件，但是我将WordPress迁移到新的AWS实例后，这个功能失效了 官方也给出了一些FAQ “There was an error trying to send your message. Please try again later.” is a message that appears when an email fails to send. There are two main reasons why this message appears: WordPress itself cannot send emails The email body is not set on the MW WP Form form editing screen 虽然不能直接解决我的问题，但是我发现了一件事，就是这个插件本身不能发送邮件，它要求WordPress必须本身可以发送邮件才可以，怎么理解这句话呢？首先你要理解插件的作用，插件是在原项目或作品上通过加载的方式丰富完善原来的内容，本身并不能提供一些基础的能力。 因为插件一般与源系统是解耦的，所以只能通过系统提供的一些钩子或事件来改善原系统功能，就以 MW WP WPForm 这个插件为例，WordPress本身是可以利用 PHP 的 WP_Mail 发送邮件的，但是相对来说使用较复杂，需要传递很多参数，而 MW WP WPForm 就是将这些参数便利化的插件，当我收到你要发邮件的请求时由插件负责组装参数和调用函数，大大方便了邮件发送的操作。 但是如果本身调用 WP_Mail 都发不了邮件，那么这个插件也就无能为力了。 其实 WP_Mail 只是为 WordPress 提供了发送邮件的功能逻辑，并不是发邮件的基础架构，以Linux为例，与邮件相关的命令有 mail、sendmail、postfix 等，其中 mail 是一个邮件客户端，用于发送和接收邮件，可以这样使用 mail -s &quot;Subject&quot; user@example.com，sendmail 和 postfix 是邮件传输代理（MTA），主要用于处理邮件的发送和接收。在现代 Linux 系统中，postfix 通常被认为是比 sendmail 更好的选择，因为它更安全、易于管理且性能优越。 这些才是Linux系统发送邮件的基础结构，WordPress的 WP_Mail 函数主要依赖于 PHP 的 mail() 函数来发送邮件，而PHP 的 mail() 函数通过系统的邮件传输代理（通常是 sendmail 或 postfix）来发送邮件，确保适当的 MTA 已安装并配置正确，才能保证 PHP 可以成功发送邮件。 初步分析是这台机器邮件服务没有配置好，那就查查log吧，打开 /var/log/maillog 文件看到以下字样： Sep 26 16:14:29 ip-192-168-2-26 postfix/smtp[9198]: connect to mx2.qq.com[240d:c040:1:40::133]:25: Network is unreachable 咦？25号端口咋不通呢？看了看安全规则也没限制25号端口，还有就是我现在的系统是直接镜像过来的，配置应该一模一样才对，为什么之前的实例可以发送邮件，而镜像过来的新实例就不行呢？ 后来我又创建一个简单实例，然后搭建了WordPress，依旧发不了邮件，然后我就查了一下发现AWS-FAQ： 123456EC2 SMTP 端点策略的变化问：ID 格式会发生怎样的变化？自 2020 年 1 月 7 日起，Amazon EC2 开始推出一项变化来限制默认情况下通过端口 25 的电子邮件流量，从而防止客户和其他收件人收到垃圾邮件和电子邮件滥用。端口 25 通常用作发送电子邮件的默认 SMTP 端口。在过去请求并取消了端口 25 限制的 AWS 账户将不受此变化影响。 原来是AWS把新实例的25端口封锁了，之前的实例是2019年申请的没有受到影响，进一步查询，发现不只AWS这样做，阿里云也封锁了25号端口，要是申请解封会花一些时间还不一定成功，我还是想想别的办法。 解决邮件问题既然25号端口不好用，我就用SMTP的SSL端口465吧，可是怎么改变发送的端口呢？我查到了WordPress的 WP MIAL SMTP 插件，填写qq邮箱的SMPT服务器，添加qq邮箱和授权码，就搞定了，真是太方便，设置完终于可以发邮件了，泪流满面，天知道这个过程我持续了多久，熬了多少个夜晚。 这个插件的安装我是在测试实例时搞得，正当我想要在正式实例上安装 WP MIAL SMTP 插件时，提示我WordPress版本5.2.4太低无法安装，之前安装的那个测试环境是6.2.4，天塌了呀，那没办法升级WordPress吧，找到升级按钮那么一点，开始转圈圈，然后提示我升级失败，天又塌了呀。 鬼知道我都遇到了什么，既然不让我安装 WP MIAL SMTP，那我安装个别的呗，后来找到了 Easy WP SMTP 可以在当前版本安装，整个使用过程和 WP MIAL SMTP 几乎一毛一样，看起来就像换了个主题，结果就是一样好使，事情还没完。 刚刚配置的是我的QQ邮箱，但是这里总不能把邮件都扔我邮箱吧，最终要换成企业微信邮箱，但是当我配置为公司企业微信邮箱再提交表单发邮件时，虽然邮件正常回复给QQ邮箱了，但是插件 WP MIAL SMTP 测试页面报了一个警告和错误 Domain Check Results spf Action Needed: It doesn’t look like the SPF record required by your SMTP server has been added to your domain. Please contact your SMTP server provider for details on how to find the SPF record, and how to add this record to your domain’s DNS. dmarc Action Recommended: It doesn’t look like DMARC has been set up on your domain (xxx.com). We recommend using the DMARC protocol because it helps protect your domain from &gt;&gt;unauthorized use. Please check out this step-by-step guide for details on how to add the DMARC record to your domain’s DNS. 其实一开始我也没当回事，查了Easy WP SMTP插件的文档，还提供了一个查询DNS信息的工具,但是我没有放在心上，不撞南墙怎会回头，后来再给Gmail发邮件的时候，邮件被退回了，错误原因写的还算清楚 123456789无法发送到 yyy@gmail.com退信原因 发件人（support@xxx.com）域名的DNS记录未设置或设置错误导致对方拒收此邮件。host gmail-smtp-in.l.google.com[172.253.118.27] said: 550-5.7.26 Your email has been blocked becausethe sender is unauthenticated. Gmail requires all senders to authenticate with either SPF or DKIM.Authentication results: DKIM = did not pass SPF [xxx.com] with ip: [18.169.211.239] = did not passFor instructions on setting up authentication,go to https://support.google.com/mail/answer/81126#authentication d9443c01a7336-20af16e543csi13995695ad.54 - gsmtp (in reply to end of DATA command)解决方案 请通知你的邮箱管理员为邮箱域名设置正确的DNS(SPF、DKIM、DMARC)记录。详细请见 http://service.exmail.qq.com/cgi-bin/help?subtype=1&amp;&amp;no=1000580&amp;&amp;id=20012。 在自己企业微信的域名上添加两行记录就可以了，这样就可以顺利的发邮件给GMail了。 1234567主机记录：@记录类型：TXT记录值为：v=spf1 include:spf.mail.qq.com ~all主机记录： _dmarc记录类型：TXT记录值: v=DMARC1; p=none; rua=mailto:mailauth-reports@qq.com SPF（Sender Policy Framework） 是一种电子邮件验证协议，用于防止邮件伪造和垃圾邮件。SPF 的验证原理基于 DNS（域名系统）记录。DMARC（Domain-based Message Authentication, Reporting &amp; Conformance） 是一种邮件身份验证协议，用于增强电子邮件的安全性，防止邮件伪造和钓鱼攻击。它建立在 SPF（Sender Policy Framework）和 DKIM（DomainKeys Identified Mail）之上，通过提供发送方的政策声明和报告机制来实现。 有关SPF和DMARC的详细原理可以自己去扩展，这里只做简单介绍了。 本来事情到这里就比较完美了，但是架不住技术人有一个爱折腾的心，我不装插件行不行呢？ 原生解决邮件问题临时测试既然装了个插件能解决发邮件的问题，那我能不能自己搞个简单配置文件来做（貌似写代码的人有技术洁癖），说干就干，我先是在测试的WordPress上进行，版本6.2.4，ChatGPT提示我直接在主题下面的 functions.php 文件里加代码就行，路径 /wp-content/themes/你的主题名/functions.php 12345678910111213function configure_smtp( PHPMailer $phpmailer ) &#123; $phpmailer-&gt;isSMTP(); $phpmailer-&gt;Host = 'smtp.qq.com'; // 你的 SMTP 服务器 $phpmailer-&gt;SMTPAuth = true; $phpmailer-&gt;Port = 465; // SMTP 端口，465 是 SSL 的常用端口 $phpmailer-&gt;Username = '707070901@qq.com'; // 你的 SMTP 用户名 $phpmailer-&gt;Password = 'SMTPjyiqwhzlSMTP'; // 你的 SMTP 密码 $phpmailer-&gt;SMTPSecure = 'ssl'; // 加密类型，使用 ssl $phpmailer-&gt;From = '707070901@qq.com'; // 发件人地址 $phpmailer-&gt;FromName = 'Your Name'; // 发件人姓名&#125;add_action( 'phpmailer_init', 'configure_smtp' ); 一测试发邮件，网站崩溃了，最后在开头加了一句 use PHPMailer\PHPMailer\PHPMailer; 问题解决 正式修改后来我又到正式的WordPress上修改，这次为6.2.4版本，但是这个WordPress主题是自定义的，我没找到 functions.php，ChatGPT又给我出了主意，让我自己创建一个我没听，而是采用了他说的另一种方法，使用 mu-plugins 文件夹，如果你确保这段代码始终运行（甚至在你切换主题时），可以使用 WordPress 的 mu-plugins 机制（”must-use plugins”）。 在/var/www/sanctus-senki.com/cms/wp-content/下新建文件夹 mu-plugins 在这个文件夹下新建文件 custom-smtp.php 编写下面内容，这个版本不能在开头加 use PHPMailer\PHPMailer\PHPMailer;代码段，否则报错 1234567891011121314151617&lt;?php// Custom SMTP configuration for WordPressfunction configure_smtp( PHPMailer $phpmailer ) &#123; $phpmailer-&gt;isSMTP(); $phpmailer-&gt;Host = 'smtp.qq.com'; // 你的 SMTP 服务器 $phpmailer-&gt;SMTPAuth = true; $phpmailer-&gt;Port = 465; // SMTP 端口，465 是 SSL 的常用端口 $phpmailer-&gt;Username = '707070901@qq.com'; // 你的 SMTP 用户名 $phpmailer-&gt;Password = 'SMTPjyiqwhzlSMTP'; // 你的 SMTP 密码 $phpmailer-&gt;SMTPSecure = 'ssl'; // 加密类型，使用 ssl //$phpmailer-&gt;From = '707070901@qq.com';// 发件人地址（这里不强制发件人可以显示转发哦） $phpmailer-&gt;FromName = 'Your Name'; // 发件人姓名&#125;add_action( 'phpmailer_init', 'configure_smtp' );?&gt; 好了，这件事告一段落了，大道至简，经历了由简到繁，由繁化简的历程，才明白简约的可贵。 总结 AWS Route53 提供高度可用的 DNS 解析服务，将域名映射到 AWS 资源或其他 IP 地址 ACM 支持免费申请 公有 SSL/TLS 证书，用于保护基于 HTTPS 协议的流量 AWS ELB（Elastic Load Balancing）是AWS提供的一项负载均衡服务，主要分为ALB、NLB、CLB，旨在自动分配进入应用程序的流量，以确保高可用性和可靠性 Linux系统下 mail 是一个邮件客户端，用于发送和接收邮件，sendmail 和 postfix 是邮件传输代理（MTA），主要用于处理邮件的发送和接收 自 2020 年 1 月 7 日起，Amazon EC2 开始限制默认情况下通过端口 25 的电子邮件流量 记住WordPress的 MW WP WPForm、WP MIAL SMTP、Easy WP SMTP 插件，你或许以后用的上 ==&gt;&gt; 反爬链接，请勿点击，原地爆炸，概不负责！&lt;&lt;== 过钢者易折，善柔者不败 不必为人性感到意外，哪个人强大了不对弱者动武，哪个女人漂亮了不被男人惦记，利刃在手，易起杀心，权大无边，总想乱来 2024-9-26 20:26:55]]></content>
@@ -636,8 +681,8 @@
         <tag>linux</tag>
         <tag>运维</tag>
         <tag>rsync</tag>
-        <tag>cp</tag>
         <tag>mv</tag>
+        <tag>cp</tag>
       </tags>
   </entry>
   <entry>
@@ -835,8 +880,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>find</tag>
+        <tag>linux</tag>
         <tag>shell</tag>
         <tag>rsync</tag>
         <tag>sed</tag>
@@ -1179,8 +1224,8 @@
       <tags>
         <tag>版本控制</tag>
         <tag>Git</tag>
-        <tag>历史记录</tag>
         <tag>log</tag>
+        <tag>历史记录</tag>
       </tags>
   </entry>
   <entry>
@@ -1334,8 +1379,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>查找</tag>
         <tag>find</tag>
+        <tag>查找</tag>
         <tag>locate</tag>
         <tag>which</tag>
         <tag>grep</tag>
@@ -1450,8 +1495,8 @@
       <tags>
         <tag>git</tag>
         <tag>commit</tag>
-        <tag>stash</tag>
         <tag>branch</tag>
+        <tag>stash</tag>
         <tag>tag</tag>
       </tags>
   </entry>
@@ -1521,9 +1566,9 @@
         <category>Git</category>
       </categories>
       <tags>
+        <tag>config</tag>
         <tag>版本控制</tag>
         <tag>Git</tag>
-        <tag>config</tag>
         <tag>pager</tag>
       </tags>
   </entry>
@@ -1802,9 +1847,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
-        <tag>recursion</tag>
         <tag>C++20</tag>
         <tag>coruntine</tag>
+        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -2125,8 +2170,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2153,8 +2198,8 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>sed</tag>
         <tag>文件</tag>
+        <tag>sed</tag>
         <tag>编辑</tag>
       </tags>
   </entry>
@@ -2179,8 +2224,8 @@
         <category>linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>sort</tag>
+        <tag>linux</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -2232,9 +2277,9 @@
       </categories>
       <tags>
         <tag>C/C++</tag>
+        <tag>recursion</tag>
         <tag>combination</tag>
         <tag>dp</tag>
-        <tag>recursion</tag>
       </tags>
   </entry>
   <entry>
@@ -3255,9 +3300,9 @@
         <category>linux</category>
       </categories>
       <tags>
+        <tag>find</tag>
         <tag>linux</tag>
         <tag>查找</tag>
-        <tag>find</tag>
         <tag>grep</tag>
       </tags>
   </entry>
